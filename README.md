@@ -1,2 +1,2 @@
-# ougibot
+# Ougi Bot
 Oshino Ougi
