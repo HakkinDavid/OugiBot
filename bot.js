@@ -7,18 +7,18 @@ client.on('ready', () => {
   client.user.setActivity("Minecraft")
 });
 
-client.on('message', (receivedMessage) => {
-    if (receivedMessage.author == client.user) { // Prevent bot from responding to its own messages
+client.on('message', (msg) => {
+    if (msg.author == client.user) { // Prevent bot from responding to its own messages
         return
     }
 
-    if (receivedMessage.content.startsWith("ougi")) {
-        processCommand(receivedMessage)
+    if (msg.content.startsWith("ougi") || msg.content.startsWith("Ougi") && !msg.author.bot) {
+        processCommand(msg)
     }
 })
 
-function processCommand(receivedMessage) {
-    let fullCommand = receivedMessage.content.substr(1) // Remove the leading exclamation mark
+function processCommand(msg) {
+    let fullCommand = msg.content.substr(1) // Remove the leading exclamation mark
     let splitCommand = fullCommand.split(" ") // Split the message up in to pieces for each space
     let primaryCommand = splitCommand[1] // The first word directly after the exclamation is the command
     let arguments = splitCommand.slice(2) // All other words are arguments/parameters/options for the command
@@ -27,42 +27,57 @@ function processCommand(receivedMessage) {
     console.log("Arguments: " + arguments) // There may not be any arguments
 
     if (primaryCommand == "help") {
-        helpCommand(arguments, receivedMessage)
+        helpCommand(arguments, msg)
     } else if (primaryCommand == "multiply") {
-        multiplyCommand(arguments, receivedMessage)
+        multiplyCommand(arguments, msg)
     } else {
-        receivedMessage.channel.send("Huh~")
+        msg.channel.send("Huh~")
     }
 }
 
-function helpCommand(arguments, receivedMessage) {
-    if (arguments == 'multiply') {
-        receivedMessage.channel.send("I'll gladly multiply the numbers you provide me as long you input more than two values, and only if you promise me to study math.")
-    } else {
-        receivedMessage.channel.send("Could you be more specific? Try asking *me* for `help [topic]`")
+function helpCommand(arguments, msg) {
+    if (arguments == 'list') {
+        msg.channel.send("As of now, I can `multiply`. Still improving!")
+    } else if (arguments == 'multiply') {
+        msg.channel.send("I'll gladly multiply the numbers you provide me as long you input more than two values, and only if you promise me to study math.")
+    } else if (arguments.length < 1) {
+        var options = ["Could you be more specific? Try asking *me* for `help [topic]`. A good start would be `help list`.", "Do you need help? Try asking *me* for `help [topic]`. As an example, use `help list`.", "Is there anything I could help you with? Ask *me* for `help [topic]`. You could try `help list`."];
+        var response = options[Math.floor(Math.random()*options.length)];
+        msg.channel.send(response).then().catch(console.error);
+    }
+    else {
+      var options = ["I don't get it.", "What do you mean?", "Word it right, baka."];
+      var response = options[Math.floor(Math.random()*options.length)];
+      msg.channel.send(response).then().catch(console.error);
     }
 }
 
-function multiplyCommand(arguments, receivedMessage) {
+function multiplyCommand(arguments, msg) {
     if (arguments.length < 2) {
-        receivedMessage.channel.send("It's unfair! Provide me (at least) 2 values. Try asking *me* to `multiply 9000 1 10` or `!multiply 1.5 2`")
+        msg.channel.send("It's not fair! Provide me (at least) 2 values. Try asking *me* to `multiply 9000 1 10` or `!multiply 1.5 2`")
         return
     }
     let product = 1
     arguments.forEach((value) => {
         product = product * parseFloat(value)
     })
-    receivedMessage.channel.send("The product of " + arguments + " multiplied together is: " + product.toString())
+    msg.channel.send("The product of " + arguments + " multiplied together is: " + product.toString())
 }
 
 client.on('message', msg => {
   if (msg.author == client.user) { // Prevent bot from responding to its own messages
       return
   }
-  if (msg.content.startsWith('hi ougi'||'Hello, Ougi'||'Hi Ougi'||'Hi, Ougi'||'hello ougi')) {
-    msg.reply('hello!');
+  if (msg.content.startsWith('hi ougi') || msg.content.startsWith('Hi ougi') || msg.content.startsWith('Hi Ougi') || msg.content.startsWith('hello ougi') || msg.content.startsWith('Hello ougi') || msg.content.startsWith('Hello Ougi')) {
+    var options = ["Hello", "Hi", "Hey!", ":flushed:", "<:clownflushed:630142296293376060>"];
+    var response = options[Math.floor(Math.random()*options.length)];
+    msg.channel.send(response).then().catch(console.error);
   }
-
+  if (msg.content.startsWith('bye ougi') || msg.content.startsWith('Bye ougi') || msg.content.startsWith('Bye Ougi') || msg.content.startsWith('goodbye ougi') || msg.content.startsWith('Goodbye ougi') || msg.content.startsWith('Goodbye Ougi')) {
+    var options = ["See you later!", "Sayonara", "Goodbye", "Oh, bye."];
+    var response = options[Math.floor(Math.random()*options.length)];
+    msg.channel.send(response).then().catch(console.error);
+  }
 });
 
 client.login(auth.token);
