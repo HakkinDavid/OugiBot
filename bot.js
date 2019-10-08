@@ -30,6 +30,8 @@ function processCommand(msg) {
         helpCommand(arguments, msg)
     } else if (primaryCommand == "multiply") {
         multiplyCommand(arguments, msg)
+    } else if(primaryCommand === "say") {
+        sayCommand(arguments, msg)
     } else {
         msg.channel.send("Huh~")
     }
@@ -37,9 +39,13 @@ function processCommand(msg) {
 
 function helpCommand(arguments, msg) {
     if (arguments == 'list') {
-        msg.channel.send("As of now, I can `multiply`. Still improving!")
+        msg.channel.send("As of now, I can help you with these topics: `multiply`, `say` and `prefix`. Still improving!")
     } else if (arguments == 'multiply') {
-        msg.channel.send("I'll gladly multiply the numbers you provide me as long you input more than two values, and only if you promise me to study math.")
+        msg.channel.send("I'll gladly multiply the numbers you provide me as long you input more than two values, and only if you promise me to study math: `multiply [value] [value] ...`.")
+    } else if (arguments == 'say') {
+        msg.channel.send("Do you want me to say something? Just ask *me* to `say [message]`.")
+    } else if (arguments == 'prefix') {
+        msg.channel.send("Just call me by my name!")
     } else if (arguments.length < 1) {
         var options = ["Could you be more specific? Try asking *me* for `help [topic]`. A good start would be `help list`.", "Do you need help? Try asking *me* for `help [topic]`. As an example, use `help list`.", "Is there anything I could help you with? Ask *me* for `help [topic]`. You could try `help list`."];
         var response = options[Math.floor(Math.random()*options.length)];
@@ -64,6 +70,12 @@ function multiplyCommand(arguments, msg) {
     msg.channel.send("The product of " + arguments + " multiplied together is: " + product.toString())
 }
 
+function sayCommand(arguments, msg) {
+    const sayMessage = arguments.join(" ");
+    msg.delete().catch(O_o=>{});
+    msg.channel.send(sayMessage);
+
+}
 client.on('message', msg => {
   if (msg.author == client.user) { // Prevent bot from responding to its own messages
       return
