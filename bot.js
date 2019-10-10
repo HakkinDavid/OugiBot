@@ -3,7 +3,7 @@ const client = new Discord.Client();
 const auth = require('./auth.json');
 
 client.on('ready', () => {
-  console.log(`${client.user.tag}: Hey there!`);
+  console.log(`${client.user.tag}: ola bb`);
   client.user.setActivity("Minecraft")
 });
 
@@ -101,8 +101,8 @@ client.on('message', msg => {
   if (msg.author == client.user) { // Prevent bot from responding to its own messages
       return
   }
-  if (msg.content.startsWith('hi ougi') || msg.content.startsWith('Hi ougi') || msg.content.startsWith('Hi Ougi') || msg.content.startsWith('hello ougi') || msg.content.startsWith('Hello ougi') || msg.content.startsWith('Hello Ougi')) {
-    var options = ["Hello", "Hi", "Hey!", ":flushed:", "<:clownflushed:630142296293376060>"];
+  if (msg.content.startsWith('hi ougi') || msg.content.startsWith('Hi ougi') || msg.content.startsWith('Hi Ougi') || msg.content.startsWith('hi Ougi') || msg.content.startsWith('hello ougi') || msg.content.startsWith('Hello ougi') || msg.content.startsWith('Hello Ougi') || msg.content.startsWith('hello Ougi') || msg.content.startsWith('hey ougi') || msg.content.startsWith('Hey ougi') || msg.content.startsWith('Hey Ougi') || msg.content.startsWith('hey Ougi')) {
+    var options = ["Hello", "Hi", "Hey!", ":flushed:", "<:clownflushed:630142296293376060>", "ola bb"];
     var response = options[Math.floor(Math.random()*options.length)];
     msg.channel.send(response).then().catch(console.error);
   }
