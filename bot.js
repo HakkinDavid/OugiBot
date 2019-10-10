@@ -21,7 +21,7 @@ function processCommand(msg) {
     let fullCommand = msg.content.substr(1) // Remove the leading exclamation mark
     let splitCommand = fullCommand.split(" ") // Split the message up in to pieces for each space
     let primaryCommand = splitCommand[1] // The first word directly after the exclamation is the command
-    let arguments = splitCommand.slice(2) // All other words are arguments/parameters/options for the command
+    var arguments = splitCommand.slice(2) // All other words are arguments/parameters/options for the command
 
     console.log("Command received: " + primaryCommand)
     console.log("Arguments: " + arguments) // There may not be any arguments
