@@ -3,7 +3,7 @@ const client = new Discord.Client();
 const auth = require('./auth.json');
 
 client.on('ready', () => {
-  console.log(`${client.user.tag} joins the battle!`);
+  console.log(`${client.user.tag}: Hey there!`);
   client.user.setActivity("Minecraft")
 });
 
