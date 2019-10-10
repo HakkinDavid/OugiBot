@@ -3,7 +3,7 @@ const client = new Discord.Client();
 const auth = require('./auth.json');
 
 client.on('ready', () => {
-  var options = ["Ougi: hi", "Ougi: ohayou", "Ougi: baka", "Ougi: hey there!", "Ougi: ola bb", "Ougi joins the battle!", "Creeper. \n Ougi: Aw man"];
+  var options = ["Ougi: hi", "Ougi: ohayou", "Ougi: baka", "Ougi: hey there!", "Ougi: ola bb", "Ougi joins the battle!", "Creeper. \nOugi: Aw man"];
   var response = options[Math.floor(Math.random()*options.length)];
   console.log(response)
   client.user.setActivity("Minecraft")
