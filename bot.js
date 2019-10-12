@@ -103,13 +103,18 @@ client.on('message', msg => {
   if (msg.author == client.user) { // Prevent bot from responding to its own messages
       return
   }
-  if (msg.content.startsWith('hi ougi') || msg.content.startsWith('Hi ougi') || msg.content.startsWith('Hi Ougi') || msg.content.startsWith('hi Ougi') || msg.content.startsWith('hello ougi') || msg.content.startsWith('Hello ougi') || msg.content.startsWith('Hello Ougi') || msg.content.startsWith('hello Ougi') || msg.content.startsWith('hey ougi') || msg.content.startsWith('Hey ougi') || msg.content.startsWith('Hey Ougi') || msg.content.startsWith('hey Ougi')) {
+  if (msg.content.toLowerCase().startsWith('hi ougi') || msg.content.toLowerCase().startsWith('hello ougi')) {
     var options = ["Hello", "Hi", "Hey!", ":flushed:", "<:clownflushed:630142296293376060>", "ola bb"];
     var response = options[Math.floor(Math.random()*options.length)];
     msg.channel.send(response).then().catch(console.error);
   }
-  if (msg.content.startsWith('bye ougi') || msg.content.startsWith('Bye ougi') || msg.content.startsWith('Bye Ougi') || msg.content.startsWith('goodbye ougi') || msg.content.startsWith('Goodbye ougi') || msg.content.startsWith('Goodbye Ougi')) {
+  if (msg.content.toLowerCase().startsWith('bye ougi') || msg.content.toLowerCase().startsWith('goodbye ougi')) {
     var options = ["See you later!", "Sayonara", "Goodbye", "Oh, bye."];
+    var response = options[Math.floor(Math.random()*options.length)];
+    msg.channel.send(response).then().catch(console.error);
+  }
+  if (msg.content.toLowerCase().startsWith('ola bb')) {
+    var options = ["ola bb", "ola", "k pasa bb", "ontas¿"];
     var response = options[Math.floor(Math.random()*options.length)];
     msg.channel.send(response).then().catch(console.error);
   }
