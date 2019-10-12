@@ -14,15 +14,15 @@ client.on('message', (msg) => {
         return
     }
 
-    if (msg.content.startsWith("ougi") || msg.content.startsWith("Ougi") && !msg.author.bot) {
+    if (msg.content.toLowerCase().startsWith("ougi") && !msg.author.bot) {
         processCommand(msg)
     }
 })
 
 function processCommand(msg) {
-    let fullCommand = msg.content.substr(1) // Remove the leading exclamation mark
-    let splitCommand = fullCommand.split(" ") // Split the message up in to pieces for each space
-    let primaryCommand = splitCommand[1] // The first word directly after the exclamation is the command
+    let fullCommand = msg.content.substr(1) // Remove Ougi's name
+    let splitCommand = fullCommand.toLowerCase().split(" ") // Split the message up in to pieces for each space
+    let primaryCommand = splitCommand[1] // The first word directly after Ougi's name is the command
     var arguments = splitCommand.slice(2) // All other words are arguments/parameters/options for the command
 
     console.log("Command received: " + primaryCommand)
@@ -38,6 +38,8 @@ function processCommand(msg) {
         answerCommand(arguments, msg)
     } else if (primaryCommand == "now"){
         nowCommand(arguments, msg)
+    } else if (primaryCommand == "meme") {
+        memeCommand(arguments, msg)
     } else {
         msg.channel.send("Huh~")
     }
@@ -45,7 +47,7 @@ function processCommand(msg) {
 
 function helpCommand(arguments, msg) {
     if (arguments == 'list') {
-        msg.channel.send("As of now, I can help you with these topics: `multiply`, `say`, `answer`, `now` and `prefix`. Still improving!")
+        msg.channel.send("As of now, I can help you with these topics: `multiply`, `say`, `answer`, `now`, `meme` and `prefix`. Still improving!")
     } else if (arguments == 'multiply') {
         msg.channel.send("I'll gladly multiply the numbers you provide me as long you input more than two values, and only if you promise me to study math: `multiply [value] [value] ...`.")
     } else if (arguments == 'say') {
@@ -54,6 +56,10 @@ function helpCommand(arguments, msg) {
         msg.channel.send("Are you curious about my opinion? Ask *me* to `answer [question]`.")
     } else if (arguments == 'now') {
         msg.channel.send("If you want to know how I'm feeling or what I'm doing, just tell *me* `now`")
+    } else if (arguments == 'meme'){
+        const attachment = new Discord.Attachment("./images/memehelp.png");
+        msg.delete().catch(O_o=>{});
+        msg.channel.send(attachment).then().catch(console.error);
     } else if (arguments == 'prefix') {
         msg.channel.send("Just call me by my name!")
     } else if (arguments.length < 1) {
@@ -94,30 +100,47 @@ function answerCommand(arguments, msg) {
 }
 
 function nowCommand(arguments, msg) {
-    var options = ["I'm feeling happy. What about you?", "I'm craving some food.", "It's a beatiful day outside, don't you think so? Flowers are singing, birds are blooming. *Wait, I screwed it up.*", "I'm just having an existential crisis: Does the Lighting McQueen have life insurance or car insurance?", "I'm eating some popcorns.", "I'm planning a way to defeat all those zombies around my Minecraft house.", "I'm *doing homework* but I should be doing homework.", "Have you ever played a videogame world cup and ranked first place? Neither me, but I'm making some coffee.", "I'm having a déjà vu.", "I was reading a book, called 'sʞooq pɐǝɹ oʇ ʍoH', I didn't understand a single word.", "Yesterday, I was back in the mine, got my pickaxe swinging from side to side, hoping to find some diamonds. When I thought I was safe, I overheard some hissing from right behind. Aw man.", "Hate me or love me, I tried playing Fortnite. Apparently I have to download it.", "I saw some memes today.", "I'm bored.", "I'm having a headache.", "I'm online.", "I feel confused, is a *taco* the same thing as a *sope* or an *enchilada*? I mean after all these are *tortillas* with stuff like meat or cheese.", "I'm kinda sad. My ice cream melted before I even tasted it.", "I want to know why roses are red and violets are blue.", "Is life made of 5 protons or why is it so Boron?", "I'm glad to have someone talking to me.", "I heard the convenience store is selling [愛] love. Can you lend me 298 yen?"]
+    var options = ["I'm feeling happy. What about you?", "I'm craving some food.", "It's a beatiful day outside, don't you think so? Flowers are singing, birds are blooming. *Wait, I screwed it up.*", "I'm just having an existential crisis: Does the Lighting McQueen have life insurance or car insurance?", "I'm eating some popcorns.", "I'm planning a way to defeat all those zombies around my Minecraft house.", "I'm *doing homework* but I should be doing homework.", "Have you ever played a videogame world cup and ranked first place? Neither me, but I'm making some coffee.", "I'm having a déjà vu.", "I was reading a book, called 'sʞooq pɐǝɹ oʇ ʍoH', I didn't understand a single word.", "Yesterday, I was back in the mine, got my pickaxe swinging from side to side, hoping to find some diamonds. When I thought I was safe, I overheard some hissing from right behind. Aw man.", "Hate me or love me, I tried playing Fortnite. Apparently I have to download it.", "I saw some memes today.", "I'm bored.", "I'm having a headache.", "I'm online.", "I feel confused, is a *taco* the same thing as a *sope* or an *enchilada*? I mean after all these are *tortillas* with stuff like meat or cheese.", "I'm kinda sad. My ice cream melted before I even tasted it.", "I want to know why roses are red and violets are blue.", "Is life made of 5 protons or why is it so Boron?", "I'm glad to have someone talking to me.", "I heard the convenience store is selling [愛] love. Can you lend me 298 yen?"];
     var response = options[Math.floor(Math.random()*options.length)];
     msg.channel.send(response).then().catch(console.error);
 }
-
+function memeCommand(arguments, msg) {
+    var call = arguments[0];
+    if (call == "list") {
+      var number = arguments[1];
+      var memelist = ["I am inevitable [ID: Inevitable]", "Impossible", "Wallace", "Yes", "Everything", "Did you do it? [ID: Didyoudoit]", "What did it cost? [ID: Whatdiditcost]", "Failure Snap [ID: Failuresnap]", "No", "Too late, 15 years too late. [ID: toolate]"];
+      if (number == "2") {
+        msg.channel.send("Ougi's Meme List:\n\`\`\`" + memelist.sort().slice(9).join("\n") + "\`\`\`")
+      }
+      else {
+        msg.channel.send("Ougi's Meme List (Page 1):\n\`\`\`" + memelist.sort().slice(0, 10).join("\n") + "\`\`\`")
+      }
+    }
+    else {
+        const attachment = new Discord.Attachment("./images/"+ call + ".png");
+        msg.delete().catch(O_o=>{});
+        msg.channel.send(attachment).then().catch(console.error);
+    }
+}
 client.on('message', msg => {
-  if (msg.author == client.user) { // Prevent bot from responding to its own messages
-      return
-  }
-  if (msg.content.toLowerCase().startsWith('hi ougi') || msg.content.toLowerCase().startsWith('hello ougi')) {
-    var options = ["Hello", "Hi", "Hey!", ":flushed:", "<:clownflushed:630142296293376060>", "ola bb"];
-    var response = options[Math.floor(Math.random()*options.length)];
-    msg.channel.send(response).then().catch(console.error);
-  }
-  if (msg.content.toLowerCase().startsWith('bye ougi') || msg.content.toLowerCase().startsWith('goodbye ougi')) {
-    var options = ["See you later!", "Sayonara", "Goodbye", "Oh, bye."];
-    var response = options[Math.floor(Math.random()*options.length)];
-    msg.channel.send(response).then().catch(console.error);
-  }
-  if (msg.content.toLowerCase().startsWith('ola bb')) {
-    var options = ["ola bb", "ola", "k pasa bb", "ontas¿"];
-    var response = options[Math.floor(Math.random()*options.length)];
-    msg.channel.send(response).then().catch(console.error);
-  }
+    if (msg.author == client.user) { // Prevent bot from responding to its own messages
+        return
+    }
+    if (msg.content.toLowerCase().startsWith('hi ougi') || msg.content.toLowerCase().startsWith('hello ougi')) {
+      var options = ["Hello", "Hi", "Hey!", ":flushed:", "<:clownflushed:630142296293376060>", "ola bb"];
+      var response = options[Math.floor(Math.random()*options.length)];
+      msg.channel.send(response).then().catch(console.error);
+    }
+    if (msg.content.toLowerCase().startsWith('bye ougi') || msg.content.toLowerCase().startsWith('goodbye ougi')) {
+      var options = ["See you later!", "Sayonara", "Goodbye", "Oh, bye."];
+      var response = options[Math.floor(Math.random()*options.length)];
+      msg.channel.send(response).then().catch(console.error);
+    }
+    if (msg.content.toLowerCase().startsWith('ola bb')) {
+      var options = ["ola bb", "ola", "k pasa bb", "ontas¿"];
+      var response = options[Math.floor(Math.random()*options.length)];
+      msg.channel.send(response).then().catch(console.error);
+    }
 });
 
 client.login(auth.token);
