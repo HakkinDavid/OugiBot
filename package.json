@@ -11,7 +11,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "build": "[ougi] build --output public"
+    "build": "[ougi] build --output public",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
