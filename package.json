@@ -13,12 +13,12 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  {
+    "scripts": {
+      "build": "Ougi Bot build --output public"
+    }
+  },
   "keywords": [],
   "author": "PlatinumDavid",
   "license": "ISC"
-}
-{
-  "scripts": {
-    "build": "Ougi Bot build --output public"
-  }
 }
