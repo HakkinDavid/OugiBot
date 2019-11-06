@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "description": "Oshino Ougi",
   "main": "bot.js",
+  "scripts": {
+    "build": "[my-framework] build --output public"
+  }
   "dependencies": {
     "discord.io": "^2.5.3",
     "discord.js": "^11.5.1",
@@ -13,12 +16,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  {
-    "scripts": {
-      "build": "[ougi] build --output public"
-    }
-  },
   "keywords": [],
   "author": "PlatinumDavid",
   "license": "ISC"
+
 }
