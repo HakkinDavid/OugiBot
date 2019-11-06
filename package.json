@@ -3,9 +3,6 @@
   "version": "0.0.1",
   "description": "Oshino Ougi",
   "main": "bot.js",
-  "scripts": {
-    "build": "ougi build --output public"
-  }
   "dependencies": {
     "discord.io": "^2.5.3",
     "discord.js": "^11.5.1",
@@ -14,6 +11,7 @@
   },
   "devDependencies": {},
   "scripts": {
+    "build": "ougi build --output public"
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
