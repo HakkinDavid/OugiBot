@@ -15,7 +15,7 @@
   },
   {
     "scripts": {
-      "build": "Ougi Bot build --output public"
+      "build": "[ougi] build --output public"
     }
   },
   "keywords": [],
