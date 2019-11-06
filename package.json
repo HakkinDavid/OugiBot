@@ -4,7 +4,7 @@
   "description": "Oshino Ougi",
   "main": "bot.js",
   "scripts": {
-    "build": "[my-framework] build --output public"
+    "build": "ougi build --output public"
   }
   "dependencies": {
     "discord.io": "^2.5.3",
