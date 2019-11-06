@@ -6,7 +6,10 @@ client.on('ready', () => {
   var options = ["Ougi: hi", "Ougi: ohayou", "Ougi: baka", "Ougi: hey there!", "Ougi: ola bb", "Ougi joins the battle!", "Creeper. \nOugi: Aw man"];
   var response = options[Math.floor(Math.random()*options.length)];
   console.log(response)
-  client.user.setActivity("Minecraft")
+  var doing = ["Minecraft", "Fortnite", "Destiny 2", "Portal", "Portal 2", "Project 64", "osu!", "Geometry Dash", "Slime Rancher", "Left 4 Dead 2", "Transformice", "Grand Theft Auto V", "Team Fortress 2", "Overwatch", "Undertale", "Dolphin", "Ultimate Custom Night", "Minecraft Windows 10 Edition", "Terraria", "Roblox", "Paladins", "Tom Clancy's Rainbow Six Siege"]
+  var something = doing[Math.floor(Math.random()*doing.length)];
+  client.user.setActivity(something)
+  console.log("I'm playing " + something)
 });
 
 client.on('message', (msg) => {
@@ -20,9 +23,9 @@ client.on('message', (msg) => {
 })
 
 function processCommand(msg) {
-    let fullCommand = msg.content.substr(1) // Remove Ougi's name
-    let splitCommand = fullCommand.toLowerCase().split(" ") // Split the message up in to pieces for each space
-    let primaryCommand = splitCommand[1] // The first word directly after Ougi's name is the command
+    var fullCommand = msg.content.substr(1) // Remove Ougi's name
+    var splitCommand = fullCommand.toLowerCase().split(" ") // Split the message up in to pieces for each space
+    var primaryCommand = splitCommand[1] // The first word directly after Ougi's name is the command
     var arguments = splitCommand.slice(2) // All other words are arguments/parameters/options for the command
 
     console.log("Command received: " + primaryCommand)
@@ -32,6 +35,8 @@ function processCommand(msg) {
         helpCommand(arguments, msg)
     } else if (primaryCommand == "multiply") {
         multiplyCommand(arguments, msg)
+    } else if (primaryCommand == "add") {
+        additionCommand(arguments, msg)
     } else if (primaryCommand == "say") {
         sayCommand(arguments, msg)
     } else if (primaryCommand == "answer") {
@@ -40,16 +45,34 @@ function processCommand(msg) {
         nowCommand(arguments, msg)
     } else if (primaryCommand == "meme") {
         memeCommand(arguments, msg)
+    } else if (primaryCommand == "flushed") {
+        var options = [":flushed:", "<:clownflushed:630142296293376060>", "<:coolflushed:638924603107967007>", "<:cowboyflushed:638925102238400512>", "<:eggflushed:638924893907451946>"];
+        var response = options[Math.floor(Math.random()*options.length)];
+        msg.channel.send(response).then().catch(console.error);
+    } else if (primaryCommand == undefined) {
+        var options = ["I don't get it.", "What do you mean?", "Baka.", "Oh.", "Nani", "Nande"];
+        var response = options[Math.floor(Math.random()*options.length)];
+        msg.channel.send(response).then().catch(console.error);
     } else {
-        msg.channel.send("Huh~")
+        var badWord = ["nigga", "faggot", "fuck", "nigger", "baka", "stupid", "dumb", "hentai", "shit", "fucking", "idiot", "silly", "ass", "retard", "whore", "gay"]
+        for (var i = 0; i < badWord.length; i++) {
+            if (msg.content.includes(badWord[i])) {
+              var options = ["no u", "you're a bad word", "then you uhhhhh you're a fortniter", "<:nou:638908430899478540>", "<:reverse:638908430878507018>"];
+              var response = options[Math.floor(Math.random()*options.length)];
+              msg.channel.send(response).then().catch(console.error);
+              break;
+            }
+        }
     }
 }
 
 function helpCommand(arguments, msg) {
     if (arguments == 'list') {
-        msg.channel.send("As of now, I can help you with these topics: `multiply`, `say`, `answer`, `now`, `meme` and `prefix`. Still improving!")
+        msg.channel.send("As of now, I can help you with these topics: `multiply`, `add`, `say`, `answer`, `now`, `meme` and `prefix`. Still improving!")
     } else if (arguments == 'multiply') {
         msg.channel.send("I'll gladly multiply the numbers you provide me as long you input more than two values, and only if you promise me to study math: `multiply [value] [value] ...`.")
+    } else if (arguments == 'add') {
+        msg.channel.send("I'll do additions for you! Ask *me* to `add [value] [value] ...`.")
     } else if (arguments == 'say') {
         msg.channel.send("Do you want me to say something? Just ask *me* to `say [message]`.")
     } else if (arguments == 'answer') {
@@ -76,14 +99,30 @@ function helpCommand(arguments, msg) {
 
 function multiplyCommand(arguments, msg) {
     if (arguments.length < 2) {
-        msg.channel.send("It's not fair! Provide me (at least) 2 values. Try asking *me* to `multiply 9000 1 10` or `!multiply 1.5 2`")
+        msg.channel.send("It's not fair! Provide me (at least) 2 values. Try asking *me* to `multiply 9000 1 10` or `multiply 1.5 2`")
         return
     }
-    let product = 1
+    let inputValues = 1
     arguments.forEach((value) => {
-        product = product * parseFloat(value)
+        inputValues = inputValues * parseFloat(value)
     })
-    msg.channel.send("The product of " + arguments + " multiplied together is: " + product.toString())
+    var options = ["It's ", "We get ", "I think it is ", "The resulting value is "];
+    var response = options[Math.floor(Math.random()*options.length)];
+    msg.channel.send(response + inputValues.toString());
+}
+
+function additionCommand(arguments, msg) {
+    if (arguments.length < 2) {
+        msg.channel.send("It's not fair! Provide me (at least) 2 values. Try asking *me* to `add 4500 4501` or `add 1.2 2.3`")
+        return
+    }
+    let inputValues = 0
+    arguments.forEach((value) => {
+        inputValues = inputValues + parseFloat(value)
+    })
+    var options = ["It's ", "We get ", "I think it is ", "The resulting value is "];
+    var response = options[Math.floor(Math.random()*options.length)];
+    msg.channel.send(response + inputValues.toString());
 }
 
 function sayCommand(arguments, msg) {
@@ -110,7 +149,7 @@ function memeCommand(arguments, msg) {
       var number = arguments[1];
       var memelist = ["I am inevitable [ID: Inevitable]", "Impossible", "Wallace", "Yes", "Everything", "Did you do it? [ID: Didyoudoit]", "What did it cost? [ID: Whatdiditcost]", "Failure Snap [ID: Failuresnap]", "No", "Too late, 15 years too late. [ID: toolate]"];
       if (number == "2") {
-        msg.channel.send("Ougi's Meme List:\n\`\`\`" + memelist.sort().slice(9).join("\n") + "\`\`\`")
+        msg.channel.send("Ougi's Meme List (Page 2):\n\`\`\`" + memelist.sort().slice(9).join("\n") + "\`\`\`")
       }
       else {
         msg.channel.send("Ougi's Meme List (Page 1):\n\`\`\`" + memelist.sort().slice(0, 10).join("\n") + "\`\`\`")
