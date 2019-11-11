@@ -23,7 +23,7 @@ client.on('message', (msg) => {
 })
 
 function processCommand(msg) {
-    var fullCommand = msg.content.substr(1) // Remove Ougi's name
+    var fullCommand = msg.content.substr(4) // Remove Ougi's name
     var splitCommand = fullCommand.toLowerCase().split(" ") // Split the message up in to pieces for each space
     var primaryCommand = splitCommand[1] // The first word directly after Ougi's name is the command
     var arguments = splitCommand.slice(2) // All other words are arguments/parameters/options for the command
@@ -45,6 +45,8 @@ function processCommand(msg) {
         nowCommand(arguments, msg)
     } else if (primaryCommand == "meme") {
         memeCommand(arguments, msg)
+    } else if (primaryCommand == "embed") {
+        embedCommand(arguments, msg)
     } else if (primaryCommand == "flushed") {
         var options = [":flushed:", "<:clownflushed:630142296293376060>", "<:coolflushed:638924603107967007>", "<:cowboyflushed:638925102238400512>", "<:eggflushed:638924893907451946>"];
         var response = options[Math.floor(Math.random()*options.length)];
@@ -68,21 +70,22 @@ function processCommand(msg) {
 
 function helpCommand(arguments, msg) {
     if (arguments == 'list') {
-        msg.channel.send("As of now, I can help you with these topics: `multiply`, `add`, `say`, `answer`, `now`, `meme` and `prefix`. Still improving!")
+        msg.channel.send("As of now, I can help you with these topics: `multiply`, `add`, `say`, `answer`, `now`, `meme`, `embed` and `prefix`. Still improving!");
     } else if (arguments == 'multiply') {
-        msg.channel.send("I'll gladly multiply the numbers you provide me as long you input more than two values, and only if you promise me to study math: `multiply [value] [value] ...`.")
+        msg.channel.send("I'll gladly multiply the numbers you provide me as long you input more than two values, and only if you promise me to study math: `multiply [value] [value] ...`.");
     } else if (arguments == 'add') {
-        msg.channel.send("I'll do additions for you! Ask *me* to `add [value] [value] ...`.")
+        msg.channel.send("I'll do additions for you! Ask *me* to `add [value] [value] ...`.");
     } else if (arguments == 'say') {
-        msg.channel.send("Do you want me to say something? Just ask *me* to `say [message]`.")
+        msg.channel.send("Do you want me to say something? Just ask *me* to `say [message]`.");
     } else if (arguments == 'answer') {
-        msg.channel.send("Are you curious about my opinion? Ask *me* to `answer [question]`.")
+        msg.channel.send("Are you curious about my opinion? Ask *me* to `answer [question]`.");
     } else if (arguments == 'now') {
-        msg.channel.send("If you want to know how I'm feeling or what I'm doing, just tell *me* `now`")
+        msg.channel.send("If you want to know how I'm feeling or what I'm doing, just tell *me* `now`");
     } else if (arguments == 'meme'){
         const attachment = new Discord.Attachment("./images/memehelp.png");
-        msg.delete().catch(O_o=>{});
         msg.channel.send(attachment).then().catch(console.error);
+    } else if (arguments == 'embed'){
+        msg.channel.send('Do you want to make some cool embeds? Try asking *me* `embed [url] "[title]" [description]`');
     } else if (arguments == 'prefix') {
         msg.channel.send("Just call me by my name!")
     } else if (arguments.length < 1) {
@@ -143,6 +146,7 @@ function nowCommand(arguments, msg) {
     var response = options[Math.floor(Math.random()*options.length)];
     msg.channel.send(response).then().catch(console.error);
 }
+
 function memeCommand(arguments, msg) {
     var call = arguments[0];
     if (call == "list") {
@@ -161,6 +165,41 @@ function memeCommand(arguments, msg) {
         msg.channel.send(attachment).then().catch(console.error);
     }
 }
+
+function embedCommand(arguments, msg) {
+    var fullCommand = msg.content.substr(4); // Remove Ougi's name
+    var splitCommand = fullCommand.split(" "); // Split the message up in to pieces for each space
+    var primaryCommand = splitCommand[1]; // The first word directly after Ougi's name is the command
+    var arguments = splitCommand.slice(2); // All other words are arguments/parameters/options for the command
+    var newArgs = arguments.join(" ").toString();
+    var newArguments = newArgs.split('"');
+    var url = arguments[0];
+    var title = newArguments[1];
+    var description = newArguments[2];
+    var colors = ["#00AE86"];
+    var colorEmbed = colors[Math.floor(Math.random()*colors.length)];
+    if (arguments.length < 2){
+      return
+    }
+    msg.delete().catch(O_o=>{});
+    msg.channel.send({embed: {
+    color: 3447003,
+    author: {
+      name: msg.author.username,
+      icon_url: msg.author.avatarURL
+    },
+    title: title,
+    url: url,
+    description: description.toString(),
+    timestamp: new Date(),
+    footer: {
+      icon_url: client.user.avatarURL,
+      text: "SpookyEmbed by Ougi"
+    }
+  }
+}).then().catch(console.error);
+}
+
 client.on('message', msg => {
     if (msg.author == client.user) { // Prevent bot from responding to its own messages
         return
