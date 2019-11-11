@@ -9,10 +9,9 @@
     "dotenv": "^8.2.0",
     "winston": "^3.2.1"
   },
-  "devDependencies": {
-    "node-env-run": "^3.0.2"
-  },
+  "devDependencies": {},
   "scripts": {
+    "build": "Ougi build --output public",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

@@ -1,7 +1,7 @@
-require('dotenv').config();
 const Discord = require('discord.js');
 const client = new Discord.Client();
-require('http').createServer().listen(3000);
+const auth = require('./auth.json')
+require('http').createServer().listen(3000)
 
 client.on('ready', () => {
   var options = ["Ougi: hi", "Ougi: ohayou", "Ougi: baka", "Ougi: hey there!", "Ougi: ola bb", "Ougi joins the battle!", "Creeper. \nOugi: Aw man"];
@@ -227,4 +227,4 @@ client.on('message', msg => {
     }
 });
 
-client.login(process.env.TOKEN);
+client.login(auth.token);
