@@ -85,7 +85,7 @@ function helpCommand(arguments, msg) {
         const attachment = new Discord.Attachment("./images/memehelp.png");
         msg.channel.send(attachment).then().catch(console.error);
     } else if (arguments == 'embed'){
-        msg.channel.send('Do you want to make some cool embeds? Try asking *me* `embed [url] "[title]" [description]`');
+        msg.channel.send('Do you want to make some cool embeds? Try asking *me* ```embed [url] `[title]` [description]```');
     } else if (arguments == 'prefix') {
         msg.channel.send("Just call me by my name!")
     } else if (arguments.length < 1) {
@@ -161,27 +161,32 @@ function memeCommand(arguments, msg) {
     }
     else {
         const attachment = new Discord.Attachment("./images/"+ call + ".png");
-        msg.delete().catch(O_o=>{});
         msg.channel.send(attachment).then().catch(console.error);
     }
 }
 
 function embedCommand(arguments, msg) {
+    if (arguments.length == 0){
+      msg.channel.send("Do you need some help making an embed? Take a look at `help embed`.");
+      return
+    }
     var fullCommand = msg.content.substr(4); // Remove Ougi's name
     var splitCommand = fullCommand.split(" "); // Split the message up in to pieces for each space
     var primaryCommand = splitCommand[1]; // The first word directly after Ougi's name is the command
     var arguments = splitCommand.slice(2); // All other words are arguments/parameters/options for the command
     var newArgs = arguments.join(" ").toString();
-    var newArguments = newArgs.split('"');
+    var newArguments = newArgs.split('`');
     var url = arguments[0];
     var title = newArguments[1];
-    var description = newArguments[2];
+    var description = newArguments.slice(2);
     var colors = ["#00AE86"];
     var colorEmbed = colors[Math.floor(Math.random()*colors.length)];
-    if (arguments.length < 2){
+
+    if (newArguments[2] == undefined){
+      msg.channel.send("Remember to add an URL, to write your embed's title between these `` and to add a description.");
       return
     }
-    msg.delete().catch(O_o=>{});
+    
     msg.channel.send({embed: {
     color: 3447003,
     author: {
@@ -190,7 +195,7 @@ function embedCommand(arguments, msg) {
     },
     title: title,
     url: url,
-    description: description.toString(),
+    description: description.join("`").toString(),
     timestamp: new Date(),
     footer: {
       icon_url: client.user.avatarURL,
