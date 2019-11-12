@@ -130,8 +130,10 @@ function additionCommand(arguments, msg) {
 
 function sayCommand(arguments, msg) {
     const sayMessage = arguments.join(" ");
+    var checkPings = sayMessage.toString();
+    var finalMessage = checkPings.replace("@everyone", "everyone").replace("@here", "here");
     msg.delete().catch(O_o=>{});
-    msg.channel.send(sayMessage);
+    msg.channel.send(finalMessage);
 
 }
 
@@ -186,7 +188,7 @@ function embedCommand(arguments, msg) {
       msg.channel.send("Remember to add an URL, to write your embed's title between these `` and to add a description.");
       return
     }
-    
+
     msg.channel.send({embed: {
     color: 3447003,
     author: {
