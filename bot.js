@@ -5,6 +5,23 @@ const fs = require('fs');
 const cheerio = require("cheerio");
 const request = require("request");
 
+const consoleLogging = "647348129078837254";
+
+const logBackup = console.log;
+const logMessages = [];
+
+console.log = function() {
+    logMessages.push.apply(logMessages, arguments);
+    if (logMessages[0] == "\n"){
+      client.channels.get(consoleLogging).send("**<:blank:647338810107101184>  **").then().catch(console.error);
+      logMessages.pop();
+    }
+    else {
+      client.channels.get(consoleLogging).send(logMessages.pop()).then().catch(console.error);
+    }
+    logBackup.apply(console, arguments);
+};
+
 client.on('ready', () => {
   var options = ["Ougi: hi", "Ougi: ohayou", "Ougi: baka", "Ougi: hey there!", "Ougi: ola bb", "Ougi joins the battle!", "Creeper. \nOugi: Aw man"];
   var response = options[Math.floor(Math.random()*options.length)];
@@ -13,6 +30,7 @@ client.on('ready', () => {
   var something = doing[Math.floor(Math.random()*doing.length)];
   client.user.setActivity(something)
   console.log("I'm playing " + something)
+  console.log("\n")
 });
 
 client.on('message', (msg) => {
@@ -22,6 +40,10 @@ client.on('message', (msg) => {
 
     if (msg.content.toLowerCase().startsWith("ougi") && !msg.author.bot) {
         processCommand(msg);
+    }
+
+    else if (msg.content.toLowerCase().startsWith("#ougi") && !msg.author.bot) {
+        rootCommands(msg);
     }
 
     else if (msg.channel.type == "dm") {
@@ -36,10 +58,11 @@ function processCommand(msg) {
     var arguments = splitCommand.slice(2) // All other words are arguments/parameters/options for the command
 
     var event = new Date();
-    console.log("\n")
-    console.log(event.toLocaleTimeString('en-US'));
+    console.log("__**" + event.toLocaleTimeString('en-US') + "**__");
     console.log("Command received: " + primaryCommand);
     console.log("Arguments: " + arguments);
+    console.log("Executed by: `" + msg.author.tag + "`");
+    console.log("\n")
 
     if (primaryCommand == "help") {
         helpCommand(arguments, msg)
@@ -57,15 +80,8 @@ function processCommand(msg) {
         imageCommand(arguments, msg)
     } else if (primaryCommand == "embed") {
         embedCommand(arguments, msg)
-    } //else if (primaryCommand == "whisper") {
-        //spookyWhisperCommand(arguments, msg)
-    //} else if (primaryCommand == "spookify") {
-        //spookifyCommand(msg)
-    //}
-    else if (primaryCommand == "flushed") {
+    } else if (primaryCommand == "flushed") {
         flushedCommand(arguments, msg)
-    } else if (primaryCommand == "settings") {
-        settingsCommand(arguments, msg)
     } else if (primaryCommand == undefined) {
         undefinedCommand(arguments, msg)
     } else {
@@ -184,7 +200,11 @@ function imageCommand(arguments, msg) {
             return;
         }
 
-        var imageToSend = urls[Math.floor(Math.random()*urls.length)];
+        var priorityNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 10];
+
+        var selectNumbers = priorityNumbers[Math.floor(Math.random()*priorityNumbers.length)];
+
+        var imageToSend = urls[selectNumbers];
 
         const attachment = new Discord.Attachment(imageToSend);
 
@@ -233,30 +253,6 @@ function embedCommand(arguments, msg) {
 }).then().catch(console.error);
 }
 
-//function spookyWhisperCommand(arguments, msg) {
-//  var dmUsers = fs.readFileSync("./dmUsers").toString('utf-8');
-//  var dmAble = dmUsers.split("\n");
-//  var dmID = fs.readFileSync("./dmID");
-//  var spookyIDs = dmID.split("\n");
-//  var finalDestination = arguments[0].replace("@", "")
-//  if (spookyIDs.includes(msg.author.id)) {
-//    if (!dmAble.includes(finalDestination)) {
-//      msg.channel.send("Sorry but your buddy hasn't been spookified. Ask them to tell *me* `spookify`");
-//    }
-//  }
-//  else if (!spookyIDs.includes(msg.author.id)) {
-//    msg.channel.send("In order to spooky-whisper someone else through DMs, you must agree to receive those whisperings aswell. Tell *me* `spookify`");
-//  }
-//}
-
-//function spookifyCommand(msg) {
-//  var pseudoArray = fs.readFileSync('dmID.txt').toString();
-//  var proArray = pseudoArray.split(',');
-//  var callerID = msg.author.id
-//  proArray.push(callerID);
-//  console.log("Discord ID to be added: " + callerID)
-//  fs.writeFile('./dmID.txt', pseudoArray, console.error);
-//}
 
 function flushedCommand(arguments, msg) {
   var options = [":flushed:", "<:clownflushed:630142296293376060>", "<:coolflushed:638924603107967007>", "<:cowboyflushed:638925102238400512>", "<:eggflushed:638924893907451946>"];
@@ -318,52 +314,79 @@ function talkAbility(msg) {
   msg.channel.stopTyping();
 }
 
-function settingsCommand(arguments, msg) {
+function rootCommands(msg) {
   if (msg.author.id !== "265257341967007758") {
-    var options = ["Ara ara! Only David-senpai is allowed to access my settings", "N-nani? Stop it, my senpai. What are you doing?", "Nani? Nani? Nani? What's going on? Why is my senpai calling me out, using `settings` command and trying to peek at it? :flushed:"];
+    var options = ["Ara ara! Only David-senpai is allowed to access my root commands", "N-nani? Stop it, my senpai. What are you doing?", "Nani? Nani? Nani? What's going on? Why is my senpai calling me out, using my root commands prefix and trying to peek at them?"];
     var response = options[Math.floor(Math.random()*options.length)];
     msg.channel.send(response).then().catch(console.error);
     return
   }
   else if (msg.author.id == "265257341967007758") {
-    var action = arguments[0];
-    if (action == "do") {
-      var fullCommand = msg.content.substr(4); // Remove Ougi's name
-      var splitCommand = fullCommand.split(" "); // Split the message up in to pieces for each space
-      var primaryCommand = splitCommand[1]; // The first word directly after Ougi's name is the command
-      var arguments = splitCommand.slice(2); // All other words are arguments/parameters/options for the command
-      var newArgs = arguments.join(" ").toString();
-      var newArguments = newArgs.split('"');
-      var name = newArguments[1];
-      var type = newArguments[2];
-      client.user.setActivity(name, { type: type.replace(" ","") })
-      console.log("I'm " + type.replace(" ","") + " " + name)
-      msg.channel.send("Alright, switched! I'm " + type.replace(" ","") + " " + name).then().catch(console.error);
-    }
-    else if (action == "status") {
-      var status = arguments[1];
-      client.user.setStatus(status).then().catch(console.error);
-      console.log("Now I'm " + status.replace("dnd", "in Do Not Disturb mode"));
-      msg.channel.send("Now I'm " + status.replace("dnd", "in Do Not Disturb mode"));
-    }
-    else if (action == "show") {
-      var what = arguments[1];
-      if (what == "emoji") {
-        const emojiList = client.emojis.map((e, x) => (x + ' = ' + e) + ' | ' +e.name).join('\n')
-        fs.writeFile('all.emoji', emojiList, console.error);
-        msg.channel.send("I've wrote a file called all.emoji containing every single emoji I can use");
-      }
-      else if (what == "guilds") {
-        const guildsList = client.guilds.map((e, x) => (x + ' = ' + e)).join('\n')
-        fs.writeFile('all.guilds', guildsList, console.error);
-        msg.channel.send("I've wrote a file called all.guilds containing every single guild I'm in");
-      }
+    var fullCommand = msg.content.substr(4) // Remove Ougi's rootcaller name
+    var splitCommand = fullCommand.split(" ") // Split the message up in to pieces for each space
+    var primaryCommand = splitCommand[1] // The first word directly after Ougi's name is the command
+    var arguments = splitCommand.slice(2) // All other words are arguments/parameters/options for the command
+
+    var event = new Date();
+    console.log("__**" + event.toLocaleTimeString('en-US') + "**__");
+    console.log(":warning: [ROOT] Command received: " + primaryCommand);
+    console.log("Arguments: " + arguments);
+    console.log("Executed by: `" + msg.author.tag + "`");
+    console.log("\n")
+
+    if (primaryCommand == "help") {
+        helpRootCommand(arguments, msg)
+    } else if (primaryCommand == "do") {
+        doRootCommand(arguments, msg)
+    } else if (primaryCommand == "status") {
+        statusRootCommand(arguments, msg)
+    } else if (primaryCommand == "log") {
+        logRootCommand(arguments, msg)
     }
     else {
-      undefinedCommand(arguments, msg)
+        undefinedCommand(arguments, msg)
     }
   }
 }
+
+// -------------- ROOT COMMANDS BELOW -------------- //
+
+function helpRootCommand(arguments, msg) {
+  msg.channel.send("Current root commands: `help`, `do`, `status` and `log`.").then().catch(console.error);
+}
+
+function doRootCommand(arguments, msg) {
+  var newArgs = arguments.join(" ").toString();
+  var newArguments = newArgs.split('"');
+  var name = newArguments[1];
+  var type = newArguments[2];
+  client.user.setActivity(name, { type: type.replace(" ","") })
+  console.log("I'm " + type.replace(" ","") + " " + name)
+  msg.channel.send("Alright, switched! I'm " + type.replace(" ","") + " " + name).then().catch(console.error);
+}
+
+function statusRootCommand(arguments, msg) {
+  var status = arguments[0];
+  client.user.setStatus(status).then().catch(console.error);
+  console.log("Now I'm " + status.replace("dnd", "in Do Not Disturb mode"));
+  msg.channel.send("Now I'm " + status.replace("dnd", "in Do Not Disturb mode"));
+}
+
+function logRootCommand(arguments, msg) {
+  var what = arguments[0];
+  if (what == "emoji") {
+    const emojiList = client.emojis.map((e, x) => (x + ' = ' + e) + ' | ' +e.name).join('\n')
+    fs.writeFile('all.emoji', emojiList, console.error);
+    msg.channel.send("I've wrote a file called all.emoji containing every single emoji I can use");
+  }
+  else if (what == "guilds") {
+    const guildsList = client.guilds.map((e, x) => (x + ' = ' + e)).join('\n')
+    fs.writeFile('all.guilds', guildsList, console.error);
+    msg.channel.send("I've wrote a file called all.guilds containing every single guild I'm in");
+  }
+}
+
+// -------------- ROOT COMMANDS ABOVE -------------- //
 
 function sleep(milliseconds) {
   var start = new Date().getTime();
