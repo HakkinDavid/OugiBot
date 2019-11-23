@@ -80,6 +80,12 @@ function processCommand(msg) {
         imageCommand(arguments, msg)
     } else if (primaryCommand == "embed") {
         embedCommand(arguments, msg)
+    } else if (primaryCommand == "whisper") {
+        spookyWhisperCommand(arguments, msg)
+    } else if (primaryCommand == "spookify") {
+        spookifyCommand(arguments, msg)
+    } else if (primaryCommand == "despookify") {
+        despookifyCommand(arguments, msg)
     } else if (primaryCommand == "flushed") {
         flushedCommand(arguments, msg)
     } else if (primaryCommand == undefined) {
@@ -253,6 +259,79 @@ function embedCommand(arguments, msg) {
 }).then().catch(console.error);
 }
 
+function spookyWhisperCommand(arguments, msg) {
+  var dmUsers = fs.readFileSync("./dmUsers").toString('utf-8');
+  var dmAble = dmUsers.split("\n");
+  var dmID = fs.readFileSync("./dmID");
+  var spookyIDs = dmID.split("\n");
+  var finalDestination = arguments[0].replace("@", "")
+  if (spookyIDs.includes(msg.author.id)) {
+    if (!dmAble.includes(finalDestination)) {
+      msg.channel.send("Sorry but your buddy hasn't been spookified. Ask them to tell *me* `spookify`");
+    }
+  }
+  else if (!spookyIDs.includes(msg.author.id)) {
+    msg.channel.send("In order to spooky-whisper someone else through DMs, you must agree to receive those whisperings aswell. Tell *me* `spookify`");
+  }
+}
+
+function spookifyCommand(arguments, msg) {
+  var fullCommand = msg.content.substr(4) // Remove Ougi's name
+  var splitCommand = fullCommand.split(" ") // Split the message up in to pieces for each space
+  var primaryCommand = splitCommand[1] // The first word directly after Ougi's name is the command
+  var arguments = splitCommand.slice(2) // All other words are arguments/parameters/options for the command
+
+  if (arguments.length !== 1){
+    msg.channel.send("Please provide a nickname you'd like to be spokified as. Any characters (included emojis) are allowed but avoid spaces.");
+    return
+  }
+  var pseudoArray = JSON.parse(fs.readFileSync('./dmUsers', 'utf-8', console.error));
+  var callerTag = arguments[0];
+  var callerID = msg.author.id;
+
+  if (pseudoArray.hasOwnProperty(callerTag)){
+    msg.channel.send("Gomen'nasai but that nickname is already in use.");
+    return
+  }
+
+  msg.channel.send("You'll be spookified as " + callerTag)
+  console.log("Discord user to be added: " + callerTag + " with id " + callerID);
+
+  pseudoArray[callerTag] = callerID;
+  var proArray = JSON.stringify(pseudoArray);
+  fs.writeFile('./dmUsers', proArray, console.error);
+}
+
+function despookifyCommand(arguments, msg) {
+  var fullCommand = msg.content.substr(4) // Remove Ougi's name
+  var splitCommand = fullCommand.split(" ") // Split the message up in to pieces for each space
+  var primaryCommand = splitCommand[1] // The first word directly after Ougi's name is the command
+  var arguments = splitCommand.slice(2) // All other words are arguments/parameters/options for the command
+
+  if (arguments.length !== 1){
+    msg.channel.send("Please provide a nickname you'd like to delete. Any characters (included emojis) are allowed but avoid spaces.");
+    return
+  }
+  var pseudoArray = JSON.parse(fs.readFileSync('./dmUsers', 'utf-8', console.error));
+  var callerTag = arguments[0];
+  var callerID = msg.author.id;
+
+  if (!pseudoArray.hasOwnProperty(callerTag)){
+    msg.channel.send("Gomen'nasai but such spooky nickname doesn't exist.");
+    return
+  }
+  if (pseudoArray[callerTag] !== callerID) {
+    msg.channel.send("That nickname doesn't belong to you.");
+    return
+  }
+
+  msg.channel.send("Your nickname " + callerTag + " has been removed.")
+  console.log("Discord user to be deleted: " + callerTag + " with id " + callerID);
+
+  delete pseudoArray[callerTag];
+  var proArray = JSON.stringify(pseudoArray);
+  fs.writeFile('./dmUsers', proArray, console.error);
+}
 
 function flushedCommand(arguments, msg) {
   var options = [":flushed:", "<:clownflushed:630142296293376060>", "<:coolflushed:638924603107967007>", "<:cowboyflushed:638925102238400512>", "<:eggflushed:638924893907451946>"];
