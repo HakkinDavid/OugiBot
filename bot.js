@@ -23,14 +23,13 @@ console.log = function() {
 };
 
 client.on('ready', () => {
-  var options = ["Ougi: hi", "Ougi: ohayou", "Ougi: baka", "Ougi: hey there!", "Ougi: ola bb", "Ougi joins the battle!", "Creeper. \nOugi: Aw man"];
+  var options = ["hi", "ohayou", "baka", "hey there!", "ola bb", "Ougi joins the battle!", "Creeper. \nAw man"];
   var response = options[Math.floor(Math.random()*options.length)];
-  console.log(response)
   var doing = ["Minecraft", "Fortnite", "Destiny 2", "Portal", "Portal 2", "Project 64", "osu!", "Geometry Dash", "Slime Rancher", "Left 4 Dead 2", "Transformice", "Grand Theft Auto V", "Team Fortress 2", "Overwatch", "Undertale", "Dolphin", "Ultimate Custom Night", "Minecraft Windows 10 Edition", "Terraria", "Roblox", "Paladins", "Tom Clancy's Rainbow Six Siege"]
   var something = doing[Math.floor(Math.random()*doing.length)];
   client.user.setActivity(something)
-  console.log("I'm playing " + something)
-  console.log("\n")
+  console.log(response + "\nI'm playing " + something);
+  console.log("\n");
 });
 
 client.on('message', (msg) => {
@@ -58,11 +57,8 @@ function processCommand(msg) {
     var arguments = splitCommand.slice(2) // All other words are arguments/parameters/options for the command
 
     var event = new Date();
-    console.log("__**" + event.toLocaleTimeString('en-US') + "**__");
-    console.log("Command received: " + primaryCommand);
-    console.log("Arguments: " + arguments);
-    console.log("Executed by: `" + msg.author.tag + "`");
-    console.log("\n")
+    console.log("__**" + event.toLocaleTimeString('en-US') + "**__\nCommand received: " + primaryCommand + "\nArguments: " + arguments + "\nExecuted by: `" + msg.author.tag + "`");
+    console.log("\n");
 
     if (primaryCommand == "help") {
         helpCommand(arguments, msg)
@@ -394,23 +390,24 @@ function talkAbility(msg) {
 }
 
 function rootCommands(msg) {
-  if (msg.author.id !== "265257341967007758") {
+  if (msg.author.id == "504307125653078027") {
+    var options = ["Ara ara, onii-chan. You already know only David can access root commands.", "N-nani? Stop it, onii-chan, what are you doing?!", "Nani? Nani? Nani? What's going on? Why is onii-chan calling me out, using my root commands prefix and trying to peek at them?", "Aquí no, chikistrikis.", "あらあら、Gus、何度も何度も言って来ましたがそこで私に触れるのをやめる。"];
+    var response = options[Math.floor(Math.random()*options.length)];
+    msg.channel.send(response).then().catch(console.error);
+    return
+  } else if (msg.author.id !== "265257341967007758") {
     var options = ["Ara ara! Only David-senpai is allowed to access my root commands", "N-nani? Stop it, my senpai. What are you doing?", "Nani? Nani? Nani? What's going on? Why is my senpai calling me out, using my root commands prefix and trying to peek at them?"];
     var response = options[Math.floor(Math.random()*options.length)];
     msg.channel.send(response).then().catch(console.error);
     return
-  }
-  else if (msg.author.id == "265257341967007758") {
+  } else if (msg.author.id == "265257341967007758") {
     var fullCommand = msg.content.substr(4) // Remove Ougi's rootcaller name
     var splitCommand = fullCommand.split(" ") // Split the message up in to pieces for each space
     var primaryCommand = splitCommand[1] // The first word directly after Ougi's name is the command
     var arguments = splitCommand.slice(2) // All other words are arguments/parameters/options for the command
 
     var event = new Date();
-    console.log("__**" + event.toLocaleTimeString('en-US') + "**__");
-    console.log(":warning: [ROOT] Command received: " + primaryCommand);
-    console.log("Arguments: " + arguments);
-    console.log("Executed by: `" + msg.author.tag + "`");
+    console.log("__**" + event.toLocaleTimeString('en-US') + "**__\n:warning: [ROOT] Command received: " + primaryCommand + "\nArguments: " + arguments + "\nExecuted by: `" + msg.author.tag + "`");
     console.log("\n")
 
     if (primaryCommand == "help") {
@@ -421,6 +418,8 @@ function rootCommands(msg) {
         statusRootCommand(arguments, msg)
     } else if (primaryCommand == "log") {
         logRootCommand(arguments, msg)
+    } else if (primaryCommand == "haunt") {
+        hauntRootCommand(arguments, msg)
     }
     else {
         undefinedCommand(arguments, msg)
@@ -463,6 +462,13 @@ function logRootCommand(arguments, msg) {
     fs.writeFile('all.guilds', guildsList, console.error);
     msg.channel.send("I've wrote a file called all.guilds containing every single guild I'm in");
   }
+}
+
+function hauntRootCommand(arguments, msg){
+  var userID = arguments[0];
+  var hauntedContent = arguments.slice(1).join(" ");
+  client.users.get(userID).send(hauntedContent).then().catch(console.error);
+  msg.channel.send("I sent `" + client.users.get(userID).tag + "` a message containing `" + hauntedContent + "`");
 }
 
 // -------------- ROOT COMMANDS ABOVE -------------- //
