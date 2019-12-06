@@ -281,12 +281,20 @@ function spookifyCommand(arguments, msg) {
     msg.channel.send("Please provide a nickname you'd like to be spokified as. Any characters (included emojis) are allowed but avoid spaces.");
     return
   }
+
   var pseudoArray = JSON.parse(fs.readFileSync('./dmUsers', 'utf-8', console.error));
   var callerTag = arguments[0];
   var callerID = msg.author.id;
 
   if (pseudoArray.hasOwnProperty(callerTag)){
     msg.channel.send("Gomen'nasai but that nickname is already in use.");
+    return
+  }
+
+  var exists = whereIs(pseudoArray, callerID);
+
+  if (exists == callerTag){
+    msg.channel.send("Ah, hazukashī. Seems like you had been spokified before. Baka.");
     return
   }
 
@@ -464,7 +472,7 @@ function logRootCommand(arguments, msg) {
   }
 }
 
-function hauntRootCommand(arguments, msg){
+function hauntRootCommand(arguments, msg) {
   var userID = arguments[0];
   var hauntedContent = arguments.slice(1).join(" ");
   client.users.get(userID).send(hauntedContent).then().catch(console.error);
@@ -480,6 +488,10 @@ function sleep(milliseconds) {
       break;
     }
   }
+}
+
+function whereIs(my, superSuit) {
+  Object.keys(my).find(k => my[k] === superSuit);
 }
 
 client.login(process.env.TOKEN);
