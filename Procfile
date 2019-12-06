@@ -1,1 +1,1 @@
-worker: node fan.js
+worker: npm start
