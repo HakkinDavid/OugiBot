@@ -251,8 +251,9 @@ function embedCommand(arguments, msg) {
       icon_url: client.user.avatarURL,
       text: "SpookyEmbed by Ougi"
     }
-  }
-}).then().catch(console.error);
+    }
+  }).then(deleteFunction(msg) , stopThere()).catch(console.error);
+
 }
 
 function spookyWhisperCommand(arguments, msg) {
@@ -497,6 +498,14 @@ function sleep(milliseconds) {
 
 function whereIs(my, superSuit) {
   Object.keys(my).find(k => my[k] === superSuit);
+}
+
+function deleteFunction(msg) {
+  msg.delete().catch(O_o=>{});
+}
+
+function stopThere() {
+  return
 }
 
 client.login(process.env.TOKEN);
