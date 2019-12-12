@@ -84,6 +84,8 @@ function processCommand(msg) {
         despookifyCommand(arguments, msg)
     } else if (primaryCommand == "flushed") {
         flushedCommand(arguments, msg)
+    } else if (primaryCommand == "info") {
+        whoIsMe(arguments, msg)
     } else if (primaryCommand == undefined) {
         undefinedCommand(arguments, msg)
     } else {
@@ -93,7 +95,7 @@ function processCommand(msg) {
 
 function helpCommand(arguments, msg) {
     if (arguments == 'list') {
-        msg.channel.send("As of now, I can help you with these topics: `multiply`, `add`, `say`, `answer`, `now`, `image`, `embed` and `prefix`. Still improving!");
+        msg.channel.send("As of now, I can help you with these topics: `multiply`, `add`, `say`, `answer`, `now`, `image`, `embed`, `prefix` and `info`. Still improving!");
     } else if (arguments == 'multiply') {
         msg.channel.send("I'll gladly multiply the numbers you provide me as long you input more than two values, and only if you promise me to study math: `multiply [value] [value] ...`.");
     } else if (arguments == 'add') {
@@ -111,6 +113,8 @@ function helpCommand(arguments, msg) {
         msg.channel.send('Do you want to make some cool embeds? Try asking *me* ```embed [url] `[title]` [description]```');
     } else if (arguments == 'prefix') {
         msg.channel.send("Just call me by my name!");
+    } else if (arguments == 'info') {
+        whoIsMe(arguments, msg)
     } else if (arguments.length < 1) {
         var options = ["Could you be more specific? Try asking *me* for `help [topic]`. A good start would be `help list`.", "Do you need help? Try asking *me* for `help [topic]`. As an example, use `help list`.", "Is there anything I could help you with? Ask *me* for `help [topic]`. You could try `help list`."];
         var response = options[Math.floor(Math.random()*options.length)];
@@ -237,6 +241,20 @@ function embedCommand(arguments, msg) {
       return
     }
 
+    if (!url.includes(".")) {
+      msg.channel.send("That doesn't seem to be a site, so I can't create an embed for it. Make sure you add a Top Level Domain (e.g. \".com\", \".net\", \".boo\").")
+      return
+    }
+
+    if (url.startsWith("http:")) {
+      msg.channel.send("Sorry, but I won't make an embed for such an insecure site. Make sure it is \"https\", if it is then there's no need to add it, I'll do it for you.");
+      return
+    }
+
+    if (!url.startsWith("https://")) {
+      var url = "https://" + arguments[0];
+    }
+
     msg.channel.send({embed: {
     color: 3447003,
     author: {
@@ -252,7 +270,8 @@ function embedCommand(arguments, msg) {
       text: "SpookyEmbed by Ougi"
     }
     }
-  }).then(deleteFunction(msg) , stopThere()).catch(console.error);
+  }).then().catch(console.error);
+  msg.delete().catch(O_o=>{});
 
 }
 
@@ -363,6 +382,28 @@ function checkBadWords(arguments, msg) {
   }
 }
 
+function whoIsMe(arguments, msg) {
+  var embed = new Discord.RichEmbed()
+  .setTitle("by " + client.users.get("265257341967007758").tag)
+  .setAuthor("Ougi [BOT]", client.user.avatarURL)
+  .setColor("#000000")
+  .setDescription("A simple chat bot with an undefined personality: If you had to describe it on the shortest phrase, it would be \"Oshino Ougi is Oshino Ougi\", even a whole encyclopedia about Ougi would just require that sentence.")
+  .setFooter("HauntedEmbed by Ougi", client.user.avatarURL)
+  .setImage()
+  .setThumbnail(client.users.get("265257341967007758").avatarURL)
+  .setURL("https://discordapp.com/users/265257341967007758")
+  .addField("Who's Ougi?", "Ougi.")
+  .addField("What's Ougi's prefix?", "`ougi`")
+  .addField("What does Ougi do?", "Ask Ougi.")
+  .addField("What does Ougi know?", "Ougi doesn't know anything, it is you who knows.")
+  .addField("What does Ougi log in it's console?", "Ougi only logs commands containing it's prefix with their respective arguments, plus any erors that might be useful for further debugging.")
+  .addField("Can I invite Ougi to my server?", "Of course! Here's Ougi's page link \nhttps://top.gg/bot/629837958123356172")
+  .addField("Does Ougi have a GitHub repository?", "Yes, it does. \nGitHub: https://github.com/HakkinDavid/OugiBot")
+  .addField("Do you have any feedback?", "David, the developer of Ougi, is always glad to receive it. Feel free to DM him, just click that huge hypermarked blue text from the top (or you could also type his Discord tag).");
+
+  msg.channel.send({embed}).catch(console.error);
+}
+
 function talkAbility(msg) {
   msg.channel.startTyping();
   sleep(500);
@@ -392,8 +433,14 @@ function talkAbility(msg) {
     var response = options[Math.floor(Math.random()*options.length)];
     msg.channel.send(response).then().catch(console.error);
   }
-  else if (spookyDM.includes("i'm happy") || spookyDM.includes("i'm fine")) {
+  else if (spookyDM.includes("happy") || spookyDM.includes("fine")) {
     var options = ["That's great.", "wowie", "Good to hear that.", ":D"];
+    var response = options[Math.floor(Math.random()*options.length)];
+    msg.channel.send(response).then().catch(console.error);
+  }
+  else if (spookyDM.includes("vibe check")){
+    if (msg.author.id == "504307125653078027" ) { var options = ["B O O !", "NANI? NANI? NANI? O-ONII~ ONII-CHAN, I'M HERE, D-DO WITH ME WH-WHATEVER YOU PLEASE!", "Ara ara, onii-chan! Next time I'm gonna vibe check you **S O   H A R D**.", "Do you think it's okay to vibe check people hiding behind a screen? Come here and vibe check me really hard, onii-chan."]; }
+    else { var options = ["BOO!", "NANI? NANI? NANI? I'm online.", "Next time I'm gonna vibe check you back.", "ah shit, here we go again"]; }
     var response = options[Math.floor(Math.random()*options.length)];
     msg.channel.send(response).then().catch(console.error);
   }
