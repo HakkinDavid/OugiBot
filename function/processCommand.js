@@ -7,7 +7,7 @@ function processCommand(msg) {
     var arguments = splitCommand.slice(2) // All other words are arguments/parameters/options for the command
 
     var event = new Date();
-    console.log("__**" + event.toLocaleTimeString('en-US') + "**__\nCommand received: " + primaryCommand + "\nArguments: " + arguments + "\nExecuted by: `" + msg.author.tag + "`");
+    console.log("__**" + event.toLocaleTimeString('en-US') + "**__\nCommand received: " + primaryCommand + "\nArguments: " + arguments + "\nExecuted by: `" + msg.author.tag + "` with ID: `" + msg.author.id + "`");
     console.log("\n");
 
     if (primaryCommand == "help") {
