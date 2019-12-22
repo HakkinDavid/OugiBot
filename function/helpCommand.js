@@ -21,7 +21,7 @@ function helpCommand(arguments, msg) {
     } else if (arguments == 'prefix') {
         msg.channel.send("Just call me by my name!");
     } else if (arguments == 'info') {
-        whoIsMe(arguments, msg)
+        ougi.whoIsMe(arguments, msg)
     } else if (arguments.length < 1) {
         var options = ["Could you be more specific? Try asking *me* for `help [topic]`. A good start would be `help list`.", "Do you need help? Try asking *me* for `help [topic]`. As an example, use `help list`.", "Is there anything I could help you with? Ask *me* for `help [topic]`. You could try `help list`."];
         var response = options[Math.floor(Math.random()*options.length)];
