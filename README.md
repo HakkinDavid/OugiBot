@@ -1,2 +1,2 @@
 # Ougi Bot
-Oshino Ougi
+Oshino Ougi is spooky
