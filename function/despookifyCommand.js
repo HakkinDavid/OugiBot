@@ -10,7 +10,7 @@ function despookifyCommand(arguments, msg) {
     msg.channel.send("Please provide a nickname you'd like to delete. Any characters (included emojis) are allowed but avoid spaces.");
     return
   }
-  var pseudoArray = JSON.parse(fs.readFileSync('./dmUsers', 'utf-8', console.error));
+  var pseudoArray = JSON.parse(fs.readFileSync('../dmUsers', 'utf-8', console.error));
   var callerTag = arguments[0];
   var callerID = msg.author.id;
 

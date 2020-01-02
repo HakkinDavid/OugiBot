@@ -11,7 +11,7 @@ function spookifyCommand(arguments, msg) {
     return
   }
 
-  var pseudoArray = JSON.parse(fs.readFileSync('./dmUsers', 'utf-8', console.error));
+  var pseudoArray = JSON.parse(fs.readFileSync('../dmUsers', 'utf-8', console.error));
   var callerTag = arguments[0];
   var callerID = msg.author.id;
 
