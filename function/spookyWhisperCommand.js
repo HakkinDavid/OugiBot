@@ -1,9 +1,9 @@
 module.exports =
 
 function spookyWhisperCommand(arguments, msg) {
-  var dmUsers = fs.readFileSync('../dmUsers").toString('utf-8');
+  var dmUsers = fs.readFileSync('../dmUsers').toString('utf-8');
   var dmAble = dmUsers.split("\n");
-  var dmID = fs.readFileSync('../dmID");
+  var dmID = fs.readFileSync('../dmID');
   var spookyIDs = dmID.split("\n");
   var finalDestination = arguments[0].replace("@", "")
   if (spookyIDs.includes(msg.author.id)) {
