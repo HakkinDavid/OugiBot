@@ -20,7 +20,12 @@ function vibeCheckReallyHard(arguments, msg) {
     console.log(response + "\nI'm playing " + something);
     console.log("\n");
   }
+  else if (strength == "knockout") {
+    var bai = "Hasta la vista, baby~"
+    msg.channel.send(bai);
+    client.destroy();
+  }
   else {
-    msg.channel.send("Ara ara. If you're gonna vibe check me, vibe check me hard enough, with the strength of either an `ougi onee-san` or an `ougi-chan`");
+    msg.channel.send("Ara ara. If you're gonna vibe check me, vibe check me hard enough, with the strength of either an `onee-san` or an `ougi-chan` or `knockout`");
   }
 }
