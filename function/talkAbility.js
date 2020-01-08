@@ -1,9 +1,19 @@
 module.exports =
 
 function talkAbility(msg) {
+  var pseudoArray = JSON.parse(fs.readFileSync('./responses', 'utf-8', console.error));
+  var notSpookyDM = msg.content.toLowerCase();
   msg.channel.startTyping();
   ougi.sleep(500);
-  var spookyDM = msg.content.toLowerCase();
+  if (pseudoArray.hasOwnProperty(notSpookyDM)){
+    var options = pseudoArray[notSpookyDM];
+    var response = options[Math.floor(Math.random()*options.length)];
+    msg.channel.send(response).then().catch(console.error);
+  }
+  else {
+    ougi.undefinedCommand(arguments, msg);
+  }
+  /*
   if (spookyDM.includes("hi") || spookyDM.includes("hello") || spookyDM.includes("hey") || spookyDM.includes("goodmorning") || spookyDM.includes("good morning") || spookyDM.includes("gm")) {
     var options = ["Hello", "Hi", "Hey!", ":flushed:", "<:clownflushed:630142296293376060>", "ola bb"];
   }
@@ -31,7 +41,6 @@ function talkAbility(msg) {
     msg.channel.stopTyping();
     return
   }
-  var response = options[Math.floor(Math.random()*options.length)];
-  msg.channel.send(response).then().catch(console.error);
+  */
   msg.channel.stopTyping();
 }

@@ -11,7 +11,7 @@ function spookifyCommand(arguments, msg) {
     return
   }
 
-  var pseudoArray = JSON.parse(fs.readFileSync('../dmUsers', 'utf-8', console.error));
+  var pseudoArray = JSON.parse(fs.readFileSync('./dmUsers', 'utf-8', console.error));
   var callerTag = arguments[0];
   var callerID = msg.author.id;
 
@@ -20,7 +20,7 @@ function spookifyCommand(arguments, msg) {
     return
   }
 
-  var exists = whereIs(pseudoArray, callerID);
+  var exists = ougi.whereIs(pseudoArray, callerID);
 
   if (exists == callerTag){
     msg.channel.send("Ah, hazukashī. Seems like you had been spokified before. Baka.");
