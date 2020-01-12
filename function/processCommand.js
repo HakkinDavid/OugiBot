@@ -12,33 +12,65 @@ function processCommand(msg) {
 
     if (primaryCommand == "help") {
         ougi.helpCommand(arguments, msg)
-    } else if (primaryCommand == "multiply") {
+    }
+
+    else if (primaryCommand == "multiply") {
         ougi.multiplyCommand(arguments, msg)
-    } else if (primaryCommand == "add") {
+    }
+
+    else if (primaryCommand == "add") {
         ougi.additionCommand(arguments, msg)
-    } else if (primaryCommand == "say") {
+    }
+
+    else if (primaryCommand == "say") {
         ougi.sayCommand(arguments, msg)
-    } else if (primaryCommand == "answer") {
+    }
+
+    else if (primaryCommand == "answer") {
         ougi.answerCommand(arguments, msg)
-    } else if (primaryCommand == "now"){
+    }
+
+    else if (primaryCommand == "now"){
         ougi.nowCommand(msg)
-    } else if (primaryCommand == "image") {
+    }
+
+    else if (primaryCommand == "image") {
         ougi.imageCommand(arguments, msg)
-    } else if (primaryCommand == "embed") {
+    }
+
+    else if (primaryCommand == "embed") {
         ougi.embedCommand(arguments, msg)
-    } else if (primaryCommand == "whisper") {
+    }
+
+    else if (primaryCommand == "whisper") {
         ougi.spookyWhisperCommand(arguments, msg)
-    } else if (primaryCommand == "spookify") {
+    }
+
+    else if (primaryCommand == "spookify") {
         ougi.spookifyCommand(arguments, msg)
-    } else if (primaryCommand == "despookify") {
+    }
+
+    else if (primaryCommand == "despookify") {
         ougi.despookifyCommand(arguments, msg)
-    } else if (primaryCommand == "flushed") {
+    }
+
+    else if (primaryCommand == "flushed") {
         ougi.flushedCommand(arguments, msg)
-    } else if (primaryCommand == "info") {
+    }
+
+    else if (primaryCommand == "info") {
         ougi.whoIsMe(arguments, msg)
-    } else if (primaryCommand == undefined) {
+    }
+/*--------------Localizations-------------------*/
+    else if (primaryCommand == "responde") {
+        ougi.respondeComando(arguments, msg)
+    }
+/*---------------------------------------------*/
+    else if (primaryCommand == undefined) {
         ougi.undefinedCommand(arguments, msg)
-    } else {
+    }
+
+    else {
         ougi.checkBadWords(arguments, msg)
     }
 }

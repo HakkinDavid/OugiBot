@@ -8,6 +8,17 @@ function checkBadWords(arguments, msg) {
         var response = options[Math.floor(Math.random()*options.length)];
         msg.channel.send(response).then().catch(console.error);
         break;
+        return;
+      }
+  }
+  var insultos = ["joto", "puto", "estúpido", "verga", "pendejo", "pendeja", "idiota", "mierda", "tonto", "retrasado", "chupa", "pito", "chinga"]
+  for (var i = 0; i < insultos.length; i++) {
+      if (msg.content.includes(insultos[i])) {
+        var options = ["la tuya por si acaso", "tu existencia es un insulto a la humanidad", "entonces no eres un verdadero fortniter", "<:nou:638908430899478540>", "<:reverse:638908430878507018>"];
+        var response = options[Math.floor(Math.random()*options.length)];
+        msg.channel.send(response).then().catch(console.error);
+        break;
+        return;
       }
   }
 }
