@@ -1,7 +1,7 @@
 module.exports =
 
 function checkBadWords(arguments, msg) {
-  var badWord = ["nigga", "faggot", "fuck", "nigger", "baka", "stupid", "dumb", "hentai", "shit", "fucking", "silly", "ass", "retard", "whore", "gay"]
+  var badWord = ["nigga", "faggot", "fuck", "nigger", "baka", "stupid", "dumb", "idiot", "hentai", "shit", "fucking", "silly", "ass", "retard", "whore", "gay"]
   for (var i = 0; i < badWord.length; i++) {
       if (msg.content.includes(badWord[i])) {
         var options = ["no u", "you're a bad word", "then you uhhhhh you're a fortniter", "<:nou:638908430899478540>", "<:reverse:638908430878507018>"];
