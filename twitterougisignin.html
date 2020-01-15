@@ -26,18 +26,18 @@
       -webkit-text-stroke-color: white;
     }
     body {
-      background-image: url("./images/ougiblack.png");
+      background-image: url("./images/ha.png");
       background-repeat: no-repeat;
       background-size: cover;
     }
     p {
       font-family: "DIN";
       color: white;
-      text-align: justify;
+      text-align: center;
     }
     .invite {
       font-family: "Burbank";
-      background-color: black;
+      background-color: #00DCFF;
       border-radius: 25px;
       border: 2px solid white;
       padding: 15px 25px;
@@ -49,24 +49,41 @@
   </style>
   <head>
     <meta charset="utf-8">
-    <title>Ougi Bot</title>
+    <title>Ougi Twitter Bot</title>
   </head>
   <header>
     <center>
-      <h1>Ougi Bot
+      <h1>Ougi Twitter Bot
       <img src="./images/spookyougi.png" alt="Completely not spooky" width="10%"></h1>
       <h2>Does spooky stuff.</h2>
     </center>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdn.rawgit.com/oauth-io/oauth-js/c5af4519/dist/oauth.js"></script>
   </header>
   <body>
     <p>
-      <b>A simple chat bot with an undefined personality</b>: If you had to describe it on the shortest phrase, it would be <i>"Oshino Ougi is Oshino Ougi"</i>. It's designed to respond messages, send memes, do maths (kinda, still studying), say your nonsense, answer questions (boolean-type responses for now) and improving <i>almost</i> everyday! This project is a hobby I enjoy developing on my free time, (even though I doubt anyone would be looking forward for progress), please be patient. As of now, get started by asking Ougi for help, using <i>"ougi help"</i>, I'm sure it'll gladly answer.
+      <b>A simple Twitter bot with an undefined personality</b>: If you had to describe it on the shortest phrase, it would be <i>"Oshino Ougi is Oshino Ougi"</i>.
       <br>
       <center>
-        <a href="https://discordapp.com/oauth2/authorize?client_id=629837958123356172&scope=bot&permissions=1611131968" target="_blank">
-          <button type="submit" value="Invite Ougi to your Discord server" class="invite">INVITE OUGI</button>
+        <a id="twitter-button" class="btn btn-block btn-social btn-twitter">
+          <button type="submit" value="Sign In with Ougi to Twitter" class="invite">SIGN IN WITH OUGI</button>
         </a>
       </center>
     </p>
+    <script>
+    $('#twitter-button').on('click', function() {
+      OAuth.initialize('mIsYIO46UO8NC9dl8tmgSyU4I7g');
+      OAuth.popup('twitter').then(twitter => {
+        console.log('twitter:', twitter);
+        twitter.me().then(data => {
+          console.log('data:', data);
+          alert('Twitter says your email is:' + data.email + ".\nView browser 'Console Log' for more details");
+        });
+        twitter.get('/1.1/account/verify_credentials.json?include_email=true').then(data => {
+          console.log('self data:', data);
+        })
+      });
+    })
+    </script>
   </body>
 </html>
