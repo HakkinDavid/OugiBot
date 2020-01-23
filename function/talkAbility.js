@@ -11,6 +11,7 @@ function talkAbility(msg) {
       var options = personalizedArray[notSpookyDM];
       var response = options[Math.floor(Math.random()*options.length)];
       msg.channel.send(response).then().catch(console.error);
+      msg.channel.stopTyping();
       return
     }
   }
