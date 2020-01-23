@@ -5,6 +5,15 @@ function talkAbility(msg) {
   var notSpookyDM = msg.content.toLowerCase();
   msg.channel.startTyping();
   ougi.sleep(500);
+  if (msg.author.id == "504307125653078027"){
+    var personalizedArray = JSON.parse(fs.readFileSync('./gusresponses', 'utf-8', console.error));
+    if (personalizedArray.hasOwnProperty(notSpookyDM)){
+      var options = personalizedArray[notSpookyDM];
+      var response = options[Math.floor(Math.random()*options.length)];
+      msg.channel.send(response).then().catch(console.error);
+      return
+    }
+  }
   if (pseudoArray.hasOwnProperty(notSpookyDM)){
     var options = pseudoArray[notSpookyDM];
     var response = options[Math.floor(Math.random()*options.length)];
