@@ -46,6 +46,10 @@ function processCommand(msg) {
         ougi.spookyWhisperCommand(arguments, msg)
     }
 
+    else if (primaryCommand == "learn") {
+        ougi.talkLearn(arguments, msg)
+    }
+
     else if (primaryCommand == "spookify") {
         ougi.spookifyCommand(arguments, msg)
     }

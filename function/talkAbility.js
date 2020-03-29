@@ -15,10 +15,11 @@ function talkAbility(msg) {
       return
     }
   }
-  if (pseudoArray.some(word => notSpookyDM.includes(word))){
+  if (pseudoArray.hasOwnProperty(notSpookyDM)){
     var options = pseudoArray[notSpookyDM];
     var response = options[Math.floor(Math.random()*options.length)];
     msg.channel.send(response).then().catch(console.error);
+    msg.channel.stopTyping();
   }
   else {
     ougi.undefinedCommand(arguments, msg);

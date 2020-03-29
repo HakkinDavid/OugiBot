@@ -6,5 +6,4 @@ function sayCommand(arguments, msg) {
     var finalMessage = checkPings.replace("@everyone", "everyone").replace("@here", "here");
     msg.delete().catch(O_o=>{});
     msg.channel.send(finalMessage);
-
 }
