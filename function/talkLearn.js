@@ -49,6 +49,7 @@ function talkLearn(arguments, msg) {
     "Of course I already knew I should say `" + response + "` when anyone says `" + trigger + "`, I was just making sure you knew too-",
   ];
   var answer = afterOptions[Math.floor(Math.random()*afterOptions.length)];
+  var myResponse = "./responses";
 
   if (pseudoArray.hasOwnProperty(trigger)){
     var existent = pseudoArray[trigger];
@@ -64,6 +65,8 @@ function talkLearn(arguments, msg) {
     pseudoArray[trigger] = existent;
     var proArray = JSON.stringify(pseudoArray);
     fs.writeFile('./responses', proArray, console.error);
+    
+    ougi.backup(myResponse);
     return
   }
 
@@ -77,6 +80,5 @@ function talkLearn(arguments, msg) {
   var proArray = JSON.stringify(pseudoArray);
   fs.writeFile('./responses', proArray, console.error);
 
-  var myResponse = "./responses";
   ougi.backup(myResponse);
 }

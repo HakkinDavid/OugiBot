@@ -6,10 +6,12 @@ global.fs = require('fs');
 global.cheerio = require('cheerio');
 global.request = require('request');
 global.requireAll = require('require-all');
+global.download = require('download-file')
 
 /* Kansuumonogatari */
 
 global.ougi = require('require-all')(__dirname + '/function');
+global.backupChannel = "693733162408345670";
 
 /* Rogumonogatari */
 global.consoleLogging = "647348129078837254";
@@ -30,6 +32,8 @@ console.log = function() {
 
 /* Chuuimonogatari */
 client.on('ready', () => {
+  var whereToFetch = client.channels.get(backupChannel).fetchMessages({ limit: 1 }).then(messages => { var lastMessage = messages.first(); download(lastMessage.attachments.first().url); })
+
   var options = ["hi", "ohayou", "baka", "hey there!", "ola bb", "Ougi joins the battle!", "Creeper. \nAw man"];
   var response = options[Math.floor(Math.random()*options.length)];
   var doing = ["Minecraft", "Fortnite", "Destiny 2", "Portal", "Portal 2", "Project 64", "osu!", "Geometry Dash", "Slime Rancher", "Left 4 Dead 2", "Transformice", "Grand Theft Auto V", "Team Fortress 2", "Overwatch", "Undertale", "Dolphin", "Ultimate Custom Night", "Minecraft Windows 10 Edition", "Terraria", "Roblox", "Paladins", "Tom Clancy's Rainbow Six Siege"]
