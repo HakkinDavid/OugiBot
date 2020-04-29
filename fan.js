@@ -12,7 +12,6 @@ global.lastTweet = require('last-tweet')
 
 /* Tsuittamonogatari */
 
-
 global.T = new Twit({
   consumer_key:         process.env.CKEY,
   consumer_secret:      process.env.CSECRET,
@@ -65,7 +64,7 @@ client.on('ready', () => {
 
 client.on('message', (msg) => {
     ougi.asyncTweet().catch(console.error);
-    
+
     if (msg.author == client.user) { // Prevent bot from responding to its own messages
         return
     }
