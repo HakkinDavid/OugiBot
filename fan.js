@@ -56,7 +56,7 @@ client.on('ready', () => {
   var ougiStart = response + "\nI'm playing " + something;
   console.log(ougiStart);
   console.log("\n");
-  ougi.aTweet().catch(console.error);
+  ougi.aTweet();
 });
 
 client.on('message', (msg) => {
