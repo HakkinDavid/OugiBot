@@ -6,7 +6,7 @@ async function asyncTweet(){
     return
   }
   else if (spookySchedule.endsWith('h')) {
-    var spookyTime = 12;
+    var spookyTime = 6;
     var inHours = spookySchedule.replace(' h', '') * 1;
   }
   if (inHours <= spookyTime) {

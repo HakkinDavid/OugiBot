@@ -56,10 +56,6 @@ client.on('ready', () => {
   var ougiStart = response + "\nI'm playing " + something;
   console.log(ougiStart);
   console.log("\n");
-
-  T.post('statuses/update', { status: ougiStart }, function(err, data, response) {
-    console.log("Tweeted my status into Twitter")
-  })
 });
 
 client.on('message', (msg) => {
