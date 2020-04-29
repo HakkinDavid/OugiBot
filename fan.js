@@ -56,12 +56,11 @@ client.on('ready', () => {
   var ougiStart = response + "\nI'm playing " + something;
   console.log(ougiStart);
   console.log("\n");
+  ougi.asyncTweet().catch(console.error);
 });
 
 client.on('message', (msg) => {
-    ougi.asyncTweet().catch(console.error);
-
-    if (msg.author == client.user) { // Prevent bot from responding to its own messages
+    if (msg.author == client.user) {
         return
     }
 
