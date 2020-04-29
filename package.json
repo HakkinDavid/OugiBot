@@ -10,8 +10,10 @@
     "dotenv": "^8.2.0",
     "download-file": "^0.1.5",
     "fs": "0.0.1-security",
+    "last-tweet": "0.0.2",
     "request": "^2.88.0",
     "require-all": "^3.0.0",
+    "twit": "^2.2.11",
     "winston": "^3.2.1"
   },
   "devDependencies": {
