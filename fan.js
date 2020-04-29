@@ -18,7 +18,7 @@ global.T = new Twit({
   access_token:         process.env.ACCTOKEN,
   access_token_secret:  process.env.ACCTOKENSECRET,
   timeout_ms:           60*1000,  // optional HTTP request timeout to apply to all requests.
-  strictSSL:            true,     // optional - requires SSL certificates to be valid.
+  strictSSL:            false,     // optional - requires SSL certificates to be valid.
 })
 
 /* Kansuumonogatari */
