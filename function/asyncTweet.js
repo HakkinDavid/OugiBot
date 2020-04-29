@@ -1,7 +1,5 @@
 module.exports =
-async function asyncTweet(){
-  var getTweet = await lastTweet('OugiBotto'); //Get the spookiest rarity's latest tweet
-  var spookySchedule = getTweet.time
+function asyncTweet(getTweet, spookySchedule){
   if (spookySchedule.endsWith('min') || spookySchedule.endsWith('s')) {
     return
   }
