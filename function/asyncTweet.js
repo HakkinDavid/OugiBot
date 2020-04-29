@@ -29,5 +29,4 @@ async function asyncTweet(){
     });
 
   }
-  return
 }
