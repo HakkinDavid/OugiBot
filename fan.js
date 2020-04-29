@@ -56,10 +56,7 @@ client.on('ready', () => {
   var ougiStart = response + "\nI'm playing " + something;
   console.log(ougiStart);
   console.log("\n");
-  var getTweet = lastTweet('OugiBotto'); //Get the spookiest rarity's latest tweet
-  ougi.sleep(5000);
-  var spookySchedule = getTweet.time
-  asyncTweet(getTweet, spookySchedule).catch(console.error);
+  ougi.aTweet().catch(console.error);
 });
 
 client.on('message', (msg) => {
