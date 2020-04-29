@@ -57,7 +57,7 @@ client.on('ready', () => {
   console.log(ougiStart);
   console.log("\n");
   var getTweet = lastTweet('OugiBotto'); //Get the spookiest rarity's latest tweet
-  sleep(5000);
+  ougi.sleep(5000);
   var spookySchedule = getTweet.time
   asyncTweet(getTweet, spookySchedule).catch(console.error);
 });
