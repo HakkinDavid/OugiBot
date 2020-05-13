@@ -36,7 +36,9 @@ function imageCommand(arguments, msg) {
 
         var imageToSend = urls[selectNumbers];
 
-        const attachment = new Discord.Attachment(imageToSend);
+        var predefinedName = "spookyImage";
+
+        const attachment = new Discord.Attachment(imageToSend, predefinedName);
 
         msg.channel.send(attachment).then().catch(console.error);
         console.log("Sent image: " + imageToSend);
