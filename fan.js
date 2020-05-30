@@ -53,19 +53,20 @@ console.log = function() {
 client.on('ready', () => {
   var whereToFetch = client.channels.get(backupChannel).fetchMessages({ limit: 1 }).then(messages => { var lastMessage = messages.first(); download(lastMessage.attachments.first().url); })
 
-  var options = ["hi", "ohayou", "baka", "hey there!", "ola bb", "Ougi joins the battle!", "Creeper. \nAw man"];
-  var response = options[Math.floor(Math.random()*options.length)];
-  var doing = ["Minecraft", "Fortnite", "Destiny 2", "Portal", "Portal 2", "Project 64", "osu!", "Geometry Dash", "Slime Rancher", "Left 4 Dead 2", "Transformice", "Grand Theft Auto V", "Team Fortress 2", "Overwatch", "Undertale", "Dolphin", "Ultimate Custom Night", "Minecraft Windows 10 Edition", "Terraria", "ROBLOX", "Paladins", "Tom Clancy's Rainbow Six Siege"]
-  var something = doing[Math.floor(Math.random()*doing.length)];
-  client.user.setActivity(something)
-  var ougiStart = response + "\nI'm playing " + something;
-  console.log(ougiStart);
-  console.log("\n");
   if(process.env.DEV == 0){
+    var options = ["hi", "ohayou", "baka", "hey there!", "ola bb", "Ougi joins the battle!", "Creeper. \nAw man"];
+    var response = options[Math.floor(Math.random()*options.length)];
+    var doing = ["Minecraft", "Fortnite", "Destiny 2", "Portal", "Portal 2", "Project 64", "osu!", "Geometry Dash", "Slime Rancher", "Left 4 Dead 2", "Transformice", "Grand Theft Auto V", "Team Fortress 2", "Overwatch", "Undertale", "Dolphin", "Ultimate Custom Night", "Minecraft Windows 10 Edition", "Terraria", "ROBLOX", "Paladins", "Tom Clancy's Rainbow Six Siege"]
+    var something = doing[Math.floor(Math.random()*doing.length)];
+    client.user.setActivity(something)
+    var ougiStart = response + "\nI'm playing " + something;
+    console.log(ougiStart);
+    console.log("\n");
     ougi.aTweet();
   }
   else {
-    client.user.setActivity("to update myself!")
+    client.user.setActivity("to update myself!");
+    console.log("I'm in UPDATE/DEV MODE");
   }
 });
 
@@ -75,6 +76,10 @@ client.on('message', (msg) => {
     }
 
     if (msg.content.toLowerCase().startsWith("ougi") && !msg.author.bot) {
+        ougi.processCommand(msg);
+    }
+
+    else if (msg.content.toLowerCase().startsWith("<@!629837958123356172>") && !msg.author.bot) {
         ougi.processCommand(msg);
     }
 

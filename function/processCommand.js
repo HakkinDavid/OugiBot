@@ -75,6 +75,6 @@ function processCommand(msg) {
     }
 
     else {
-        ougi.talkAbility(arguments, msg)
+        ougi.talkAbility(msg)
     }
 }

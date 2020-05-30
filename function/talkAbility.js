@@ -3,8 +3,9 @@ module.exports =
 function talkAbility(msg) {
   var pseudoArray = JSON.parse(fs.readFileSync('./responses', 'utf-8', console.error));
   var notSpookyDM = msg.content.toLowerCase();
+  notSpookyDM = notSpookyDM.replace('<@!629837958123356172>', 'ougi')
   while (notSpookyDM.startsWith("ougi")) {
-    notSpookyDM = notSpookyDM.substring(3, notSpookyDM.length)
+    notSpookyDM = notSpookyDM.substring(4, notSpookyDM.length)
   }
   while (notSpookyDM.startsWith(" ")) {
     notSpookyDM = notSpookyDM.substring(1, notSpookyDM.length)

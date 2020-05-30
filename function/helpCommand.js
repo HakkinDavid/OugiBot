@@ -2,7 +2,7 @@ module.exports =
 
 function helpCommand(arguments, msg) {
     if (arguments == 'list') {
-        msg.channel.send("As of now, I can help you with these topics: `multiply`, `add`, `say`, `answer`, `now`, `image`, `embed`, `prefix` and `info`. Still improving!");
+        msg.channel.send("As of now, I can help you with these topics: `multiply`, `add`, `say`, `answer`, `now`, `image`, `embed`, `learn`, `prefix` and `info`. Still improving!");
     } else if (arguments == 'multiply') {
         msg.channel.send("I'll gladly multiply the numbers you provide me as long you input more than two values, and only if you promise me to study math: `multiply [value] [value] ...`.");
     } else if (arguments == 'add') {
@@ -13,11 +13,13 @@ function helpCommand(arguments, msg) {
         msg.channel.send("Are you curious about my opinion? Ask *me* to `answer [question]`.");
     } else if (arguments == 'now') {
         msg.channel.send("If you want to know how I'm feeling or what I'm doing, just tell *me* `now`");
-    } else if (arguments == 'image'){
+    } else if (arguments == 'image') {
         const attachment = new Discord.Attachment("./images/imagehelp.png");
         msg.channel.send(attachment).then().catch(console.error);
-    } else if (arguments == 'embed'){
+    } else if (arguments == 'embed') {
         msg.channel.send('Do you want to make some cool embeds? Try asking *me* ```embed [url] `[title]` [description]```');
+    } else if (arguments == 'learn') {
+        msg.channel.send("Any cool ideas for commands or responses? Just provide a trigger phrase and a response, separated by two slashes `//`\n**Example:**\n```ougi learn what's up? // the sky```\nAfterwards use it with my prefix (like `ougi what's up?`), or DM me (using my prefix for custom responses in DMs is optional).");
     } else if (arguments == 'prefix') {
         msg.channel.send("Just call me by my name!");
     } else if (arguments == 'info') {

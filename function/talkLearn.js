@@ -2,17 +2,28 @@ module.exports =
 
 function talkLearn(arguments, msg) {
   var thisMessage = arguments.join(" ");
+
+  if (msg.content.includes("@everyone") || msg.content.includes("@here")) {
+    msg.channel.send("Ora ora ora ora! Remove that massive ping.");
+    return
+  }
+
+  if (thisMessage.includes("@")) {
+    msg.channel.send("Avoid using \@ please. I don't want to learn something that could potentially ping someone.");
+    return
+  }
+
   var breakChocolate = thisMessage.split("//");
-  var niceCharacterAmount = 5;
+  var niceCharacterAmount = 3;
   var maxCharacterAmount = 164;
 
-  if (msg.startsWith("#ougi") && msg.author.id == "265257341967007758") {
+  if (msg.content.startsWith("#ougi") && msg.author.id == "265257341967007758") {
     var niceCharacterAmount = 1;
     var maxCharacterAmount = 2000;
   }
 
   if (breakChocolate.length !== 2){
-    msg.channel.send("Please provide a trigger phrase and a response, separated by two slashes `//`\n**Example:**\n```ougi learn what's up? // the sky```");
+    msg.channel.send("Any cool ideas for commands or responses? Just provide a trigger phrase and a response, separated by two slashes `//`\n**Example:**\n```ougi learn what's up? // the sky```\nAfterwards use it with my prefix (like `ougi what's up?`), or DM me (using my prefix for custom responses in DMs is optional).");
     return
   }
 
@@ -20,7 +31,15 @@ function talkLearn(arguments, msg) {
   var response = breakChocolate[1].toString();
 
   while (trigger.startsWith("ougi")){
-    trigger = trigger.substring(3, trigger.length)
+    trigger = trigger.substring(4, trigger.length)
+  }
+
+  while (trigger.startsWith("#ougi")){
+    trigger = trigger.substring(5, trigger.length)
+  }
+
+  while (trigger.startsWith("@ougi")){
+    trigger = trigger.substring(5, trigger.length)
   }
 
   while (trigger.endsWith(" ")){
