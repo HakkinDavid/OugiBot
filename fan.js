@@ -10,6 +10,11 @@ global.download = require('download-file')
 global.Twit = require('twit')
 global.lastTweet = require('last-tweet')
 
+if(process.env.OFFLINE == 1) {
+  client.destroy();
+  process.exit();
+}
+
 /* Tsuittamonogatari */
 
 global.T = new Twit({
