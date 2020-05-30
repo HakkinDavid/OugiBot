@@ -56,7 +56,12 @@ client.on('ready', () => {
   var ougiStart = response + "\nI'm playing " + something;
   console.log(ougiStart);
   console.log("\n");
-  ougi.aTweet();
+  if(process.env.DEV == 0){
+    ougi.aTweet();
+  }
+  else {
+    client.user.setActivity("to update myself!")
+  }
 });
 
 client.on('message', (msg) => {
