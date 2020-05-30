@@ -75,6 +75,6 @@ function processCommand(msg) {
     }
 
     else {
-        ougi.checkBadWords(arguments, msg)
+        ougi.talkAbility(arguments, msg)
     }
 }

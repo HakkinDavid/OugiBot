@@ -3,6 +3,12 @@ module.exports =
 function talkAbility(msg) {
   var pseudoArray = JSON.parse(fs.readFileSync('./responses', 'utf-8', console.error));
   var notSpookyDM = msg.content.toLowerCase();
+  while (notSpookyDM.startsWith("ougi")) {
+    notSpookyDM = notSpookyDM.substring(3, notSpookyDM.length)
+  }
+  while (notSpookyDM.startsWith(" ")) {
+    notSpookyDM = notSpookyDM.substring(1, notSpookyDM.length)
+  }
   msg.channel.startTyping();
   ougi.sleep(500);
   if (msg.author.id == "504307125653078027"){
@@ -21,7 +27,7 @@ function talkAbility(msg) {
     msg.channel.send(response).then().catch(console.error);
   }
   else {
-    ougi.undefinedCommand(arguments, msg);
+    ougi.checkBadWords(arguments, msg);
   }
   msg.channel.stopTyping();
 }

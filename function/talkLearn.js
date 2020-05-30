@@ -6,6 +6,11 @@ function talkLearn(arguments, msg) {
   var niceCharacterAmount = 5;
   var maxCharacterAmount = 164;
 
+  if (msg.startsWith("#ougi") && msg.author.id == "265257341967007758") {
+    var niceCharacterAmount = 1;
+    var maxCharacterAmount = 2000;
+  }
+
   if (breakChocolate.length !== 2){
     msg.channel.send("Please provide a trigger phrase and a response, separated by two slashes `//`\n**Example:**\n```ougi learn what's up? // the sky```");
     return
@@ -14,8 +19,20 @@ function talkLearn(arguments, msg) {
   var trigger = breakChocolate[0].toString();
   var response = breakChocolate[1].toString();
 
+  while (trigger.startsWith("ougi")){
+    trigger = trigger.substring(3, trigger.length)
+  }
+
   while (trigger.endsWith(" ")){
     trigger = trigger.substring(0, trigger.length-1)
+  }
+
+  while (response.endsWith(" ")){
+    response = response.substring(0, response.length-1)
+  }
+
+  while (trigger.startsWith(" ")){
+    trigger = trigger.substring(1, trigger.length)
   }
 
   while (response.startsWith(" ")){
@@ -65,7 +82,7 @@ function talkLearn(arguments, msg) {
     pseudoArray[trigger] = existent;
     var proArray = JSON.stringify(pseudoArray);
     fs.writeFile('./responses', proArray, console.error);
-    
+
     ougi.backup(myResponse);
     return
   }

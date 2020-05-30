@@ -12,10 +12,10 @@ function rootCommands(msg) {
     msg.channel.send(response).then().catch(console.error);
     return
   } else if (msg.author.id == "265257341967007758") {
-    var fullCommand = msg.content.substr(4) // Remove Ougi's rootcaller name
-    var splitCommand = fullCommand.split(" ") // Split the message up in to pieces for each space
-    var primaryCommand = splitCommand[1] // The first word directly after Ougi's name is the command
-    var arguments = splitCommand.slice(2) // All other words are arguments/parameters/options for the command
+    var fullCommand = msg.content.substr(4)
+    var splitCommand = fullCommand.split(" ")
+    var primaryCommand = splitCommand[1]
+    var arguments = splitCommand.slice(2)
 
     var event = new Date();
     console.log("__**" + event.toLocaleTimeString('en-US') + "**__\n:warning: [ROOT] Command received: " + primaryCommand + "\nArguments: " + arguments + "\nExecuted by: `" + msg.author.tag + "`");
@@ -33,6 +33,8 @@ function rootCommands(msg) {
         ougi.vibeCheckReallyHard(arguments, msg)
     } else if (primaryCommand == "haunt") {
         ougi.hauntRootCommand(arguments, msg)
+    } else if (primaryCommand == "learn") {
+        ougi.talkLearn(arguments, msg)
     }
     else {
         ougi.undefinedCommand(arguments, msg)
