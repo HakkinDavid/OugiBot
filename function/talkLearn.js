@@ -8,8 +8,8 @@ function talkLearn(arguments, msg) {
     return
   }
 
-  if (thisMessage.includes("@")) {
-    msg.channel.send("Avoid using \@ please. I don't want to learn something that could potentially ping someone.");
+  if (thisMessage.includes("<@") || thisMessage.includes(">")) {
+    msg.channel.send("Avoid mentions please. I don't want to learn something that could potentially ping someone. What? Isn't that a mention? Well, then don't include '\<\@' and '>' in a same message.");
     return
   }
 
@@ -23,7 +23,7 @@ function talkLearn(arguments, msg) {
   }
 
   if (breakChocolate.length !== 2){
-    msg.channel.send("Any cool ideas for commands or responses? Just provide a trigger phrase and a response, separated by two slashes `//`\n**Example:**\n```ougi learn what's up? // the sky```\nAfterwards use it with my prefix (like `ougi what's up?`), or DM me (using my prefix for custom responses in DMs is optional).");
+    msg.channel.send("Do you want to teach me something? Looks like you're doing it wrong. Use the following command for some help.\n> ougi help learn");
     return
   }
 

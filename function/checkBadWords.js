@@ -8,6 +8,7 @@ function checkBadWords(arguments, msg) {
         var options = ["no u", "you're a bad word", "then you uhhhhh you're a fortniter", "<:nou:638908430899478540>", "<:reverse:638908430878507018>"];
         var response = options[Math.floor(Math.random()*options.length)];
         msg.channel.send(response).then().catch(console.error);
+        console.log("**Replied**\n> " + response);
         var insutedBack = 1;
         break;
       }
@@ -15,6 +16,7 @@ function checkBadWords(arguments, msg) {
         var options = ["la tuya por si acaso", "tu existencia es un insulto a la humanidad", "entonces no eres un verdadero fortniter", "<:nou:638908430899478540>", "<:reverse:638908430878507018>"];
         var response = options[Math.floor(Math.random()*options.length)];
         msg.channel.send(response).then().catch(console.error);
+        console.log("**Replied**\n> " + response);
         var insutedBack = 1;
         break;
       }

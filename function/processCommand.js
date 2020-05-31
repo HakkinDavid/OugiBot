@@ -1,14 +1,17 @@
 module.exports =
 
 function processCommand(msg) {
-    var fullCommand = msg.content.substr(4) // Remove Ougi's name
-    var splitCommand = fullCommand.toLowerCase().split(" ") // Split the message up in to pieces for each space
-    var primaryCommand = splitCommand[1] // The first word directly after Ougi's name is the command
-    var arguments = splitCommand.slice(2) // All other words are arguments/parameters/options for the command
+    while (msg.content.includes('  ')) {
+      msg.content = msg.content.replace('  ', ' ')
+    }
+    msg.content = msg.content.replace("<@629837958123356172>", "ougi");
+    var fullCommand = msg.content.substr(4); // Remove Ougi's name
+    var splitCommand = fullCommand.toLowerCase().split(" "); // Split the message up in to pieces for each space
+    var primaryCommand = splitCommand[1]; // The first word directly after Ougi's name is the command
+    var arguments = splitCommand.slice(2); // All other words are arguments/parameters/options for the command
 
     var event = new Date();
     console.log("__**" + event.toLocaleTimeString('en-US') + "**__\nCommand received: " + primaryCommand + "\nArguments: " + arguments + "\nExecuted by: `" + msg.author.tag + "` with ID: `" + msg.author.id + "`");
-    console.log("\n");
 
     if (primaryCommand == "help") {
         ougi.helpCommand(arguments, msg)
@@ -30,7 +33,7 @@ function processCommand(msg) {
         ougi.answerCommand(arguments, msg)
     }
 
-    else if (primaryCommand == "now"){
+    else if (primaryCommand == "now") {
         ougi.nowCommand(msg)
     }
 

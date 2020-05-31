@@ -79,7 +79,7 @@ client.on('message', (msg) => {
         ougi.processCommand(msg);
     }
 
-    else if (msg.content.toLowerCase().startsWith("<@!629837958123356172>") && !msg.author.bot) {
+    else if (msg.content.toLowerCase().startsWith("<@629837958123356172>") && !msg.author.bot) {
         ougi.processCommand(msg);
     }
 
@@ -88,6 +88,8 @@ client.on('message', (msg) => {
     }
 
     else if (msg.channel.type == "dm") {
+        var event = new Date();
+        console.log("__**" + event.toLocaleTimeString('en-US') + "**__\nDM received: " + msg.content + "\nSent by: `" + msg.author.tag + "` with ID: `" + msg.author.id + "`");
         ougi.talkAbility(msg);
     }
 })

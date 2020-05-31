@@ -12,6 +12,9 @@ function rootCommands(msg) {
     msg.channel.send(response).then().catch(console.error);
     return
   } else if (msg.author.id == "265257341967007758") {
+    while (msg.content.includes('  ')) {
+      msg.content = msg.content.replace('  ', ' ')
+    }
     var fullCommand = msg.content.substr(4)
     var splitCommand = fullCommand.split(" ")
     var primaryCommand = splitCommand[1]
@@ -35,8 +38,9 @@ function rootCommands(msg) {
         ougi.hauntRootCommand(arguments, msg)
     } else if (primaryCommand == "learn") {
         ougi.talkLearn(arguments, msg)
-    }
-    else {
+    } else if (primaryCommand == "plsTweet") {
+        ougi.plsTweet(arguments, msg)
+    } else {
         ougi.undefinedCommand(arguments, msg)
     }
   }
