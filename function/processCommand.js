@@ -68,10 +68,6 @@ function processCommand(msg) {
     else if (primaryCommand == "info") {
         ougi.whoIsMe(arguments, msg)
     }
-
-    else if (primaryCommand == "play") {
-        ougi.voiceCall(arguments, msg)
-    }
 /*--------------Localizations-------------------*/
     else if (primaryCommand == "responde") {
         ougi.respondeComando(arguments, msg)

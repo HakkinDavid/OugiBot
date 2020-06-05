@@ -3,21 +3,13 @@ module.exports =
 function logRootCommand(arguments, msg) {
   var what = arguments[0];
   if (what == "emoji") {
-    var emojiList = client.emojis.map((e, x) => (x + ' = ' + e) + ' | ' +e.name).join('\n');
-    var logFileName = "allEmoji.txt";
-    fs.writeFile(logFileName, emojiList, console.error);
-    const attachment = new Discord.Attachment(logFileName);
-
-    client.channels.get(fileSpace).send(attachment).then().catch(console.error);
-    msg.channel.send("I've written a file containing every single emoji I can use.");
+    const emojiList = client.emojis.map((e, x) => (x + ' = ' + e) + ' | ' +e.name).join('\n')
+    fs.writeFile('all.emoji', emojiList, console.error);
+    msg.channel.send("I've wrote a file called all.emoji containing every single emoji I can use");
   }
   else if (what == "guilds") {
-    var guildsList = client.guilds.map((e, x) => (x + ' = ' + e)).join('\n');
-    var logFileName = "allGuilds.txt";
-    fs.writeFile(logFileName, guildsList, console.error);
-    const attachment = new Discord.Attachment(logFileName);
-
-    client.channels.get(fileSpace).send(attachment).then().catch(console.error);
-    msg.channel.send("I've written a file containing every single guild I'm in.");
+    const guildsList = client.guilds.map((e, x) => (x + ' = ' + e)).join('\n')
+    fs.writeFile('all.guilds', guildsList, console.error);
+    msg.channel.send("I've wrote a file called all.guilds containing every single guild I'm in");
   }
 }

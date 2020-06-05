@@ -31,7 +31,6 @@ global.T = new Twit({
 global.ougi = require('require-all')(__dirname + '/function');
 global.backupChannel = "693733162408345670";
 global.wordsChannel = "704954561294761984";
-global.fileSpace = "629885571917152256";
 
 /* Rogumonogatari */
 global.consoleLogging = "647348129078837254";
