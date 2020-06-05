@@ -1,6 +1,5 @@
 .env
-/node_modules/ffmpeg-binaries/
-/node_modules/ffmpeg-static/
+node_modules
 allGuilds.txt
 allEmoji.txt
 responses
