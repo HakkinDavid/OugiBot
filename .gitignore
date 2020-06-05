@@ -1,4 +1,4 @@
 .env
 responses
-./node_modules/ffmpeg-binaries/
-./node_modules/ffmpeg-static/
+/node_modules/ffmpeg-binaries/
+/node_modules/ffmpeg-static/
