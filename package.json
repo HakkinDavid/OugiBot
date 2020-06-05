@@ -9,6 +9,7 @@
     "discord.js": "^11.5.1",
     "dotenv": "^8.2.0",
     "download-file": "^0.1.5",
+    "ffmpeg-binaries": "^3.2.2-3",
     "fs": "0.0.1-security",
     "last-tweet": "0.0.2",
     "request": "^2.88.0",
@@ -20,9 +21,9 @@
     "node-env-run": "^3.0.2"
   },
   "scripts": {
-    "start": "node fan.js"
+    "start": "npm i ffmpeg-binaries@3.2.2-3 && node fan.js"
   },
   "keywords": [],
-  "author": "PlatinumDavid",
+  "author": "HakkinDavid",
   "license": "ISC"
 }
