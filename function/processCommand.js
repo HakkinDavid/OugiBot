@@ -69,7 +69,7 @@ function processCommand(msg) {
         ougi.whoIsMe(arguments, msg)
     }
 
-    else if (primaryCommand == "play") {
+    else if (primaryCommand == "vc") {
         ougi.voiceCall(arguments, msg)
     }
 /*--------------Localizations-------------------*/

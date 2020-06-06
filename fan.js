@@ -6,9 +6,9 @@ global.fs = require('fs');
 global.cheerio = require('cheerio');
 global.request = require('request');
 global.requireAll = require('require-all');
-global.download = require('download-file')
-global.Twit = require('twit')
-global.lastTweet = require('last-tweet')
+global.download = require('download-file');
+global.Twit = require('twit');
+global.lastTweet = require('last-tweet');
 
 if(process.env.OFFLINE == 1) {
   client.destroy();
