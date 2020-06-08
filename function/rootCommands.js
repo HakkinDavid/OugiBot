@@ -6,12 +6,7 @@ function rootCommands(msg) {
     var response = options[Math.floor(Math.random()*options.length)];
     msg.channel.send(response).then().catch(console.error);
     return
-  } else if (msg.author.id !== "265257341967007758") {
-    var options = ["Ara ara! Only David-senpai is allowed to access my root commands", "N-nani? Stop it, my senpai. What are you doing?", "Nani? Nani? Nani? What's going on? Why is my senpai calling me out, using my root commands prefix and trying to peek at them?"];
-    var response = options[Math.floor(Math.random()*options.length)];
-    msg.channel.send(response).then().catch(console.error);
-    return
-  } else if (msg.author.id == "265257341967007758") {
+  } else if (msg.author.id == "265257341967007758" || msg.author.id == "310462974114529283") {
     while (msg.content.includes('  ')) {
       msg.content = msg.content.replace('  ', ' ')
     }
@@ -43,5 +38,11 @@ function rootCommands(msg) {
     } else {
         ougi.undefinedCommand(arguments, msg)
     }
+  }
+  else {
+    var options = ["Ara ara! Only David-senpai is allowed to access my root commands", "N-nani? Stop it, my senpai. What are you doing?", "Nani? Nani? Nani? What's going on? Why is my senpai calling me out, using my root commands prefix and trying to peek at them?"];
+    var response = options[Math.floor(Math.random()*options.length)];
+    msg.channel.send(response).then().catch(console.error);
+    return
   }
 }
