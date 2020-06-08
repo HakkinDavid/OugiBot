@@ -29,12 +29,12 @@ global.T = new Twit({
 /* Kansuumonogatari */
 
 global.ougi = require('require-all')(__dirname + '/function');
-global.backupChannel = "693733162408345670";
-global.wordsChannel = "704954561294761984";
-global.fileSpace = "629885571917152256";
+global.backupChannel = "719639811157131375";
+global.wordsChannel = "719640023544103012";
+global.fileSpace = "719639409808637982";
 
 /* Rogumonogatari */
-global.consoleLogging = "647348129078837254";
+global.consoleLogging = "719641437267951616";
 global.logBackup = console.log;
 global.logMessages = [];
 
