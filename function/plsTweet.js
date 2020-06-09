@@ -1,4 +1,5 @@
 module.exports =
+
 function plsTweet(arguments, msg) {
     var plsTweetThis = arguments.join(' ');
     while (plsTweetThis.includes('  ')) {

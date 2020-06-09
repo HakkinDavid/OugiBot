@@ -1,4 +1,5 @@
 module.exports =
+
 function aTweet() {
   var iSaid = client.channels.get(wordsChannel).fetchMessages({ limit: 1 }).then(messages => {
     var store = messages.first();

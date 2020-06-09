@@ -32,6 +32,7 @@ global.ougi = require('require-all')(__dirname + '/function');
 global.backupChannel = "719639811157131375";
 global.wordsChannel = "719640023544103012";
 global.fileSpace = "719639409808637982";
+global.remindersChannel = "719855319110647868";
 
 /* Rogumonogatari */
 global.consoleLogging = "719641437267951616";

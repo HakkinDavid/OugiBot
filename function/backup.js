@@ -1,9 +1,9 @@
 module.exports =
 
-function backup(filename){
+function backup(filename, where){
   var event = new Date();
 
-  client.channels.get(backupChannel).send("backup of __**" + event.toLocaleTimeString('en-US') + "**__", {
+  client.channels.get(where).send("backup of __**" + event.toLocaleTimeString('en-US') + "**__", {
     files: [{
       attachment: filename,
       name: filename

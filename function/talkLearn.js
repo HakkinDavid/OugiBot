@@ -116,5 +116,5 @@ function talkLearn(arguments, msg) {
   var proArray = JSON.stringify(pseudoArray);
   fs.writeFile('./responses', proArray, console.error);
 
-  ougi.backup(myResponse);
+  ougi.backup(myResponse, backupChannel);
 }

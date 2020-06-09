@@ -72,6 +72,10 @@ function processCommand(msg) {
     else if (spookyCommand == "vc") {
         ougi.voiceCall(arguments, msg)
     }
+
+    else if (spookyCommand == "reminder" || spookyCommand == "timer") {
+        ougi.spookyReminder(arguments, msg)
+    }
 /*--------------Localizations-------------------*/
     else if (spookyCommand == "responde") {
         ougi.respondeComando(arguments, msg)
