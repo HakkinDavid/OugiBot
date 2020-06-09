@@ -82,7 +82,7 @@ function spookyReminder(arguments, msg) {
     return
   }
 
-  if (isEmbed !== 'yes' || isEmbed !== 'no') {
+  if (isEmbed !== 'yes' && isEmbed !== 'no') {
     msg.channel.send("You must specify if the reminder will be an embed: `yes` or `no`.")
     return
   }
