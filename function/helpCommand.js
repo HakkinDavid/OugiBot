@@ -52,7 +52,22 @@ function helpCommand(arguments, msg) {
             msg.channel.send("I'll get you a nice image based on whatever you want me to search in Google. Here's an example:\n> ougi image " + search, attachment).then().catch(console.error);
           });
     } else if (arguments == 'embed') {
-        msg.channel.send('Do you want to make some cool embeds? Try something like\n> ougi embed youtube.com/watch?v=dQw4w9WgXcQ `A nice idea for a marriage proposal` Check it out.');
+        msg.channel.send('Do you want to make some cool embeds? Try something like\n> ougi embed youtube.com/watch?v=dQw4w9WgXcQ \`A nice idea for a marriage proposal\` Check it out.' {embed: {
+        color: 0000000,
+        author: {
+          name: msg.author.username,
+          icon_url: msg.author.avatarURL
+        },
+        title: 'A nice idea for a marriage proposal',
+        url: 'youtube.com/watch?v=dQw4w9WgXcQ',
+        description: 'Check it out.',
+        timestamp: new Date(),
+        footer: {
+          icon_url: client.user.avatarURL,
+          text: "AstleyEmbed by Ougi"
+        }
+        }
+      });
     } else if (arguments == 'learn') {
         msg.channel.send("Any cool ideas for commands or responses? Just provide a trigger phrase and a response, separated by two slashes `//`\n**Example:**\n> ougi learn what's up? // the sky\nAfterwards use it with my prefix (like `ougi what's up?`), or DM me (using my prefix for custom responses in DMs is optional).");
     } else if (arguments == 'prefix') {

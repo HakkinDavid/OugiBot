@@ -5,10 +5,10 @@ function embedCommand(arguments, msg) {
       msg.channel.send("Do you need some help making an embed? Take a look at `help embed`.");
       return
     }
-    var fullCommand = msg.content.substr(4); // Remove Ougi's name
-    var splitCommand = fullCommand.split(" "); // Split the message up in to pieces for each space
-    var primaryCommand = splitCommand[1]; // The first word directly after Ougi's name is the command
-    var arguments = splitCommand.slice(2); // All other words are arguments/parameters/options for the command
+    var fullCommand = msg.content.substr(4);
+    var splitCommand = fullCommand.split(" ");
+    var primaryCommand = splitCommand[1];
+    var arguments = splitCommand.slice(2);
     var newArgs = arguments.join(" ").toString();
     var newArguments = newArgs.split('`');
     var url = arguments[0];
@@ -18,7 +18,7 @@ function embedCommand(arguments, msg) {
     var colorEmbed = colors[Math.floor(Math.random()*colors.length)];
 
     if (newArguments[2] == undefined){
-      msg.channel.send("Remember to add an URL, to write your embed's title between these `` and to add a description.");
+      msg.channel.send("Remember to add an URL, to write your embed's title between these \`\` and to add a description.");
       return
     }
 
