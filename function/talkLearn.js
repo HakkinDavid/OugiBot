@@ -17,7 +17,7 @@ function talkLearn(arguments, msg) {
   var niceCharacterAmount = 3;
   var maxCharacterAmount = 164;
 
-  if (msg.content.startsWith("#ougi") && msg.author.id == "265257341967007758") {
+  if (msg.author.id == "310462974114529283" || msg.author.id == "265257341967007758") {
     var niceCharacterAmount = 1;
     var maxCharacterAmount = 2000;
   }

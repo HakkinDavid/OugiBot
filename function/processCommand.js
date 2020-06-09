@@ -4,80 +4,80 @@ function processCommand(msg) {
     while (msg.content.includes('  ')) {
       msg.content = msg.content.replace('  ', ' ')
     }
-    msg.content = msg.content.replace("<@629837958123356172>", "ougi");
-    var fullCommand = msg.content.substr(4); // Remove Ougi's name
-    var splitCommand = fullCommand.toLowerCase().split(" "); // Split the message up in to pieces for each space
-    var primaryCommand = splitCommand[1]; // The first word directly after Ougi's name is the command
-    var arguments = splitCommand.slice(2); // All other words are arguments/parameters/options for the command
+    msg.content = msg.content.replace("<@629837958123356172>", "ougi").replace("扇", "ougi");
+    var spookyCake = msg.content.substr(4);
+    var spookySlices = spookyCake.toLowerCase().split(" ");
+    var spookyCommand = spookySlices[1];
+    var arguments = spookySlices.slice(2);
 
     var event = new Date();
-    console.log("__**" + event.toLocaleTimeString('en-US') + "**__\nCommand received: " + primaryCommand + "\nArguments: " + arguments + "\nExecuted by: `" + msg.author.tag + "` with ID: `" + msg.author.id + "`");
+    console.log("__**" + event.toLocaleTimeString('en-US') + "**__\nCommand received: " + spookyCommand + "\nArguments: " + arguments + "\nExecuted by: `" + msg.author.tag + "` with ID: `" + msg.author.id + "`");
 
-    if (primaryCommand == "help") {
+    if (spookyCommand == "help") {
         ougi.helpCommand(arguments, msg)
     }
 
-    else if (primaryCommand == "multiply") {
+    else if (spookyCommand == "multiply") {
         ougi.multiplyCommand(arguments, msg)
     }
 
-    else if (primaryCommand == "add") {
+    else if (spookyCommand == "add") {
         ougi.additionCommand(arguments, msg)
     }
 
-    else if (primaryCommand == "say") {
+    else if (spookyCommand == "say") {
         ougi.sayCommand(arguments, msg)
     }
 
-    else if (primaryCommand == "answer") {
+    else if (spookyCommand == "answer") {
         ougi.answerCommand(arguments, msg)
     }
 
-    else if (primaryCommand == "now") {
+    else if (spookyCommand == "now") {
         ougi.nowCommand(msg)
     }
 
-    else if (primaryCommand == "image") {
+    else if (spookyCommand == "image") {
         ougi.imageCommand(arguments, msg)
     }
 
-    else if (primaryCommand == "embed") {
+    else if (spookyCommand == "embed") {
         ougi.embedCommand(arguments, msg)
     }
 
-    else if (primaryCommand == "whisper") {
+    else if (spookyCommand == "whisper") {
         ougi.spookyWhisperCommand(arguments, msg)
     }
 
-    else if (primaryCommand == "learn") {
+    else if (spookyCommand == "learn") {
         ougi.talkLearn(arguments, msg)
     }
 
-    else if (primaryCommand == "spookify") {
+    else if (spookyCommand == "spookify") {
         ougi.spookifyCommand(arguments, msg)
     }
 
-    else if (primaryCommand == "despookify") {
+    else if (spookyCommand == "despookify") {
         ougi.despookifyCommand(arguments, msg)
     }
 
-    else if (primaryCommand == "flushed") {
+    else if (spookyCommand == "flushed") {
         ougi.flushedCommand(arguments, msg)
     }
 
-    else if (primaryCommand == "info") {
+    else if (spookyCommand == "info") {
         ougi.whoIsMe(arguments, msg)
     }
 
-    else if (primaryCommand == "vc") {
+    else if (spookyCommand == "vc") {
         ougi.voiceCall(arguments, msg)
     }
 /*--------------Localizations-------------------*/
-    else if (primaryCommand == "responde") {
+    else if (spookyCommand == "responde") {
         ougi.respondeComando(arguments, msg)
     }
 /*---------------------------------------------*/
-    else if (primaryCommand == undefined) {
+    else if (spookyCommand == undefined) {
         ougi.undefinedCommand(arguments, msg)
     }
 

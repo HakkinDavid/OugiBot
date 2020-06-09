@@ -80,6 +80,10 @@ client.on('message', (msg) => {
         ougi.processCommand(msg);
     }
 
+    else if (msg.content.startsWith("扇")) {
+        ougi.processCommand(msg);
+    }
+
     else if (msg.content.toLowerCase().startsWith("<@629837958123356172>") && !msg.author.bot) {
         ougi.processCommand(msg);
     }
