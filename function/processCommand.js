@@ -49,7 +49,7 @@ function processCommand(msg) {
         ougi.spookyWhisperCommand(arguments, msg)
     }
 
-    else if (spookyCommand == "learn") {
+    else if (spookyCommand == "learn" || spookyCommand == "teach") {
         ougi.talkLearn(arguments, msg)
     }
 
