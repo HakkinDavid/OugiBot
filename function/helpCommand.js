@@ -52,14 +52,14 @@ function helpCommand(arguments, msg) {
             msg.channel.send("I'll get you a nice image based on whatever you want me to search in Google. Here's an example:\n> ougi image " + search, attachment).then().catch(console.error);
           });
     } else if (arguments == 'embed') {
-        msg.channel.send('Do you want to make some cool embeds? Try something like\n> ougi embed youtube.com/watch?v=dQw4w9WgXcQ \`A nice idea for a marriage proposal\` Check it out.' {embed: {
+        msg.channel.send('Do you want to make some cool embeds? Try something like\n> ougi embed youtube.com/watch?v=dQw4w9WgXcQ `A nice idea for a marriage proposal` Check it out.', {embed: {
         color: 0000000,
         author: {
           name: msg.author.username,
           icon_url: msg.author.avatarURL
         },
         title: 'A nice idea for a marriage proposal',
-        url: 'youtube.com/watch?v=dQw4w9WgXcQ',
+        url: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
         description: 'Check it out.',
         timestamp: new Date(),
         footer: {
