@@ -5,7 +5,7 @@ function talkAbility(msg) {
     msg.content = msg.content.replace('  ', ' ')
   }
   console.log('**Input for talkAbility received through ' + msg.channel.type + ' channel**\n> ' + msg.content + '\n');
-  var pseudoArray = JSON.parse(fs.readFileSync('./responses', 'utf-8', console.error));
+  var pseudoArray = JSON.parse(fs.readFileSync('./responses.txt', 'utf-8', console.error));
   var notSpookyDM = msg.content.toLowerCase();
   notSpookyDM = notSpookyDM.replace('<@629837958123356172>', 'ougi').replace('扇', 'ougi');
   while (notSpookyDM.startsWith("ougi")) {

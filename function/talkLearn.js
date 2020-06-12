@@ -78,14 +78,14 @@ function talkLearn(arguments, msg) {
     return
   }
 
-  var pseudoArray = JSON.parse(fs.readFileSync('./responses', 'utf-8', console.error));
+  var pseudoArray = JSON.parse(fs.readFileSync('./responses.txt', 'utf-8', console.error));
 
   var afterOptions = [
     "I'll start replying `" + response + "` when anyone says `" + trigger + "`",
     "Of course I already knew I should say `" + response + "` when anyone says `" + trigger + "`, I was just making sure you knew too-",
   ];
   var answer = afterOptions[Math.floor(Math.random()*afterOptions.length)];
-  var myResponse = "./responses";
+  var myResponse = "./responses.txt";
 
   if (pseudoArray.hasOwnProperty(trigger)){
     var existent = pseudoArray[trigger];
@@ -100,9 +100,9 @@ function talkLearn(arguments, msg) {
     console.log("Response to be added: `" + response + "` with trigger `" + trigger + "`");
     pseudoArray[trigger] = existent;
     var proArray = JSON.stringify(pseudoArray);
-    fs.writeFile('./responses', proArray, console.error);
+    fs.writeFile('./responses.txt', proArray, console.error);
 
-    ougi.backup(myResponse);
+    ougi.backup(myResponse, backupChannel);
     return
   }
 
@@ -114,7 +114,7 @@ function talkLearn(arguments, msg) {
   arrayMaker.push(response);
   pseudoArray[trigger] = arrayMaker;
   var proArray = JSON.stringify(pseudoArray);
-  fs.writeFile('./responses', proArray, console.error);
+  fs.writeFile('./responses.txt', proArray, console.error);
 
   ougi.backup(myResponse, backupChannel);
 }
