@@ -42,7 +42,7 @@ global.logMessages = [];
 console.log = function() {
     logMessages.push.apply(logMessages, arguments);
     if (logMessages[0] == "\n"){
-      client.channels.get(consoleLogging).send("**<:blank:720802695908163604>**").then().catch(console.error);
+      client.channels.get(consoleLogging).send("**<:blank:720802695908163604> **").then().catch(console.error);
       logMessages.pop();
     }
     else {
