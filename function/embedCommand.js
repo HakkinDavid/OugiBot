@@ -5,10 +5,10 @@ function embedCommand(arguments, msg) {
       msg.channel.send("Do you need some help making an embed? Take a look at `help embed`.");
       return
     }
-    var fullCommand = msg.content.substr(4);
-    var splitCommand = fullCommand.split(" ");
-    var primaryCommand = splitCommand[1];
-    var arguments = splitCommand.slice(2);
+    var spookyCake = msg.content;
+    var spookySlices = spookyCake.split(" ");
+    var spookyCommand = spookySlices[1];
+    var arguments = spookySlices.slice(2);
     var newArgs = arguments.join(" ").toString();
     var newArguments = newArgs.split('`');
     var url = arguments[0];

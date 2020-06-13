@@ -4,8 +4,7 @@ function processCommand(msg) {
     while (msg.content.includes('  ')) {
       msg.content = msg.content.replace('  ', ' ')
     }
-    msg.content = msg.content.replace("<@629837958123356172>", "ougi").replace("扇", "ougi");
-    var spookyCake = msg.content.substr(4);
+    var spookyCake = msg.content;
     var spookySlices = spookyCake.toLowerCase().split(" ");
     var spookyCommand = spookySlices[1];
     var arguments = spookySlices.slice(2);
@@ -13,7 +12,11 @@ function processCommand(msg) {
     var event = new Date();
     console.log("__**" + event.toLocaleTimeString('en-US') + "**__\nCommand received: " + spookyCommand + "\nArguments: " + arguments + "\nExecuted by: `" + msg.author.tag + "` with ID: `" + msg.author.id + "`");
 
-    if (spookyCommand == "help") {
+    if (spookyCommand == undefined) {
+        ougi.undefinedCommand(arguments, msg)
+    }
+
+    else if (spookyCommand == "help") {
         ougi.helpCommand(arguments, msg)
     }
 
@@ -76,15 +79,20 @@ function processCommand(msg) {
     else if (spookyCommand == "reminder" || spookyCommand == "timer") {
         ougi.spookyReminder(arguments, msg)
     }
+
+    else if (spookyCommand == "translate") {
+        ougi.translateCommand(msg)
+    }
+
+    else if (spookyCommand.startsWith("translate-")) {
+        var method = 1;
+        ougi.translateCommand(msg, method)
+    }
 /*--------------Localizations-------------------*/
     else if (spookyCommand == "responde") {
         ougi.respondeComando(arguments, msg)
     }
 /*---------------------------------------------*/
-    else if (spookyCommand == undefined) {
-        ougi.undefinedCommand(arguments, msg)
-    }
-
     else {
         ougi.talkAbility(msg)
     }

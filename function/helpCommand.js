@@ -2,7 +2,7 @@ module.exports =
 
 function helpCommand(arguments, msg) {
     if (arguments == 'list' || arguments <= 0) {
-        msg.channel.send("As of now, I can help you with these topics: `multiply`, `add`, `say`, `answer`, `now`, `image`, `embed`, `learn`, `prefix` and `info`. Still improving! Try something like\n> ougi help info");
+        msg.channel.send("As of now, I can help you with these topics: `multiply`, `add`, `say`, `answer`, `now`, `image`, `embed`, `learn`, `translate`, `prefix` and `info`. Still improving! Try something like\n> ougi help info");
     } else if (arguments == 'multiply') {
         msg.channel.send("I'll gladly multiply the numbers you provide me as long you input more than two values, and only if you promise me to study math.\n> ougi multiply [value] [value] ...");
     } else if (arguments == 'add') {
@@ -70,6 +70,28 @@ function helpCommand(arguments, msg) {
       });
     } else if (arguments == 'learn') {
         msg.channel.send("Any cool ideas for commands or responses? Just provide a trigger phrase and a response, separated by two slashes `//`\n**Example:**\n> ougi learn what's up? // the sky\nAfterwards use it with my prefix (like `ougi what's up?`), or DM me (using my prefix for custom responses in DMs is optional).");
+    } else if (arguments == 'translate') {
+        var potentialPhrase = ["Hola, mi nombre es Ougi.", "こんにちわ、僕の名前はOugiだ。", "Yo no hablo español, sólo finjo hacerlo.", "No eres un Fortniter.", "¿Eres tonto o masticas agua?", "您好，我是Ougi。", "Hallo, ich heiße Ougi."];
+        var phrase = potentialPhrase[Math.floor(Math.random()*potentialPhrase.length)];
+        var langNames = {
+          'ja': 'Japanese',
+          'es': 'Spanish',
+          'zh-CN': 'Chinese (Simplified)',
+          'zh-TW': 'Chinese (Traditional)',
+          'de': 'German'
+        }
+        translate(phrase, {to: "English"}).then(res => {
+          var embed = new Discord.RichEmbed()
+          .setTitle("Ougi Translate")
+          .setColor("#6254E7")
+          .addField("Input in " + langNames[res.from.language.iso], phrase)
+          .addField("Translation to English", res.text)
+          .setFooter("Translated by Ougi", client.user.avatarURL)
+          .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/ougitranslate.png?raw=true");
+          msg.channel.send("Is there anything I can translate for you? If so, just provide me a destination language (it can be the language's name or ISO code), followed by whatever you want me to translate.\n**Examples:** *(All of these have the same output.)*\n> ougi translate english " + phrase + "\n> ougi translate-english " + phrase + "\n> ougi translate en " + phrase + "\n> ougi translate-en " + phrase, {embed})
+        }).catch(err => {
+            console.error(err);
+        });
     } else if (arguments == 'prefix') {
         msg.channel.send("Just call me by my name!\n> ougi");
     } else if (arguments == 'info') {

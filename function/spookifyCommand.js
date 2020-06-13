@@ -1,10 +1,10 @@
 module.exports =
 
 function spookifyCommand(arguments, msg) {
-  var fullCommand = msg.content.substr(4) // Remove Ougi's name
-  var splitCommand = fullCommand.split(" ") // Split the message up in to pieces for each space
-  var primaryCommand = splitCommand[1] // The first word directly after Ougi's name is the command
-  var arguments = splitCommand.slice(2) // All other words are arguments/parameters/options for the command
+  var spookyCake = msg.content;
+  var spookySlices = spookyCake.split(" ");
+  var spookyCommand = spookySlices[1];
+  var arguments = spookySlices.slice(2);
 
   if (arguments.length !== 1){
     msg.channel.send("Please provide a nickname you'd like to be spokified as. Any characters (included emojis) are allowed but avoid spaces.");

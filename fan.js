@@ -9,6 +9,7 @@ global.requireAll = require('require-all');
 global.download = require('download-file');
 global.Twit = require('twit');
 global.lastTweet = require('last-tweet');
+global.translate = require('@vitalets/google-translate-api');
 
 if(process.env.OFFLINE == 1) {
   client.destroy();

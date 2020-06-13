@@ -10,9 +10,9 @@ function rootCommands(msg) {
     while (msg.content.includes('  ')) {
       msg.content = msg.content.replace('  ', ' ')
     }
-    var spookyCake = msg.content.substr(4);
-    var spookySlices = spookyCake.split(" ");
-    var hauntedCommand = spookySlices[1];
+    var spookyCake = msg.content;
+    var spookySlices = spookyCake.toLowerCase().split(" ");
+    var spookyCommand = spookySlices[1];
     var arguments = spookySlices.slice(2);
 
     var event = new Date();
