@@ -10,9 +10,15 @@ function rootCommands(msg) {
     while (msg.content.includes('  ')) {
       msg.content = msg.content.replace('  ', ' ')
     }
+    while (msg.content.includes('\n\n')) {
+      msg.content = msg.content.replace('\n\n', '\n')
+    }
+    while (msg.content.includes('\n')) {
+      msg.content = msg.content.replace('\n', ' ')
+    }
     var spookyCake = msg.content;
-    var spookySlices = spookyCake.toLowerCase().replace("\n", " ").split(" ");
-    var spookyCommand = spookySlices[1];
+    var spookySlices = spookyCake.toLowerCase().split(" ");
+    var hauntedCommand = spookySlices[1];
     var arguments = spookySlices.slice(2);
 
     var event = new Date();
