@@ -10,7 +10,14 @@ function processCommand(msg) {
     var arguments = spookySlices.slice(2);
 
     var event = new Date();
-    console.log("__**" + event.toLocaleTimeString('en-US') + "**__\nCommand received: " + spookyCommand.replace("@everyone", "{everyone}").replace("@here", "{here}") + "\nArguments: " + arguments.join(",").replace("@everyone", "{everyone}").replace("@here", "{here}") + "\nExecuted by: `" + msg.author.tag + "` with ID: `" + msg.author.id + "`");
+
+    if (arguments == undefined) {
+      var consoleArguments = " "
+    }
+    else {
+      var consoleArguments = arguments
+    }
+    console.log("__**" + event.toLocaleTimeString('en-US') + "**__\nCommand received: " + spookyCommand.replace("@everyone", "{everyone}").replace("@here", "{here}") + "\nArguments: " + consoleArguments.join(",").replace("@everyone", "{everyone}").replace("@here", "{here}") + "\nExecuted by: `" + msg.author.tag + "` with ID: `" + msg.author.id + "`");
 
     if (spookyCommand == undefined) {
         ougi.undefinedCommand(arguments, msg)
