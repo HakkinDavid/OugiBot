@@ -97,6 +97,10 @@ function processCommand(msg) {
         var method = 1;
         ougi.translateCommand(msg, method)
     }
+
+    else if (spookyCommand == "emoji") {
+        ougi.customEmoji(arguments, msg)
+    }
 /*--------------Localizations-------------------*/
     else if (spookyCommand == "responde") {
         ougi.respondeComando(arguments, msg)
