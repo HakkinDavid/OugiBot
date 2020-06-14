@@ -4,7 +4,7 @@ function talkAbility(msg) {
   while (msg.content.includes('  ')) {
     msg.content = msg.content.replace('  ', ' ')
   }
-  console.log('**Input for talkAbility received through ' + msg.channel.type + ' channel**\n> ' + msg.content + '\n');
+  console.log('**Input for talkAbility received through ' + msg.channel.type + ' channel**\n> ' + msg.content.replace("@everyone", "{everyone}").replace("@here", "{here}") + '\n');
   var pseudoArray = JSON.parse(fs.readFileSync('./responses.txt', 'utf-8', console.error));
   var notSpookyDM = msg.content.toLowerCase();
   notSpookyDM = notSpookyDM.replace('<@629837958123356172>', 'ougi').replace('扇', 'ougi');
@@ -30,6 +30,16 @@ function talkAbility(msg) {
   if (pseudoArray.hasOwnProperty(notSpookyDM)){
     var options = pseudoArray[notSpookyDM];
     var response = options[Math.floor(Math.random()*options.length)];
+    if (msg.channel.type != "dm") {
+      response = response
+      .replace("nigga", "unwhite")
+      .replace("nigger", "unwhiter")
+      .replace("gay", "unstraight")
+      .replace("cock", "coke")
+      .replace("penis", "coke")
+      .replace("n word", "word starting with n")
+      .replace("fuck", "f word")
+    }
     msg.channel.send(response).then().catch(console.error);
     console.log("**Replied**\n> " + response);
   }

@@ -22,6 +22,6 @@ function checkBadWords(arguments, msg) {
       }
   }
   if (!insutedBack) {
-    ougi.undefinedCommand(arguments, msg);
+    ougi.mimicAbility(msg);
   }
 }

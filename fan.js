@@ -10,6 +10,7 @@ global.download = require('download-file');
 global.Twit = require('twit');
 global.lastTweet = require('last-tweet');
 global.translate = require('@vitalets/google-translate-api');
+global.randomCase = require('random-case');
 
 if(process.env.OFFLINE == 1) {
   client.destroy();
@@ -96,7 +97,7 @@ client.on('message', (msg) => {
 
     else if (msg.channel.type == "dm") {
         var event = new Date();
-        console.log("__**" + event.toLocaleTimeString('en-US') + "**__\nDM received: " + msg.content + "\nSent by: `" + msg.author.tag + "` with ID: `" + msg.author.id + "`");
+        console.log("__**" + event.toLocaleTimeString('en-US') + "**__\nDM received: " + msg.content.replace("@everyone", "{everyone}").replace("@here", "{here}") + "\nSent by: `" + msg.author.tag + "` with ID: `" + msg.author.id + "`");
         ougi.talkAbility(msg);
     }
 })

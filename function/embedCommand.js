@@ -6,7 +6,7 @@ function embedCommand(arguments, msg) {
       return
     }
     var spookyCake = msg.content;
-    var spookySlices = spookyCake.split(" ");
+    var spookySlices = spookyCake.replace("\n", " ").split(" ");
     var spookyCommand = spookySlices[1];
     var arguments = spookySlices.slice(2);
     var newArgs = arguments.join(" ").toString();

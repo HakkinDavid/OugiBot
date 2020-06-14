@@ -11,7 +11,7 @@ function rootCommands(msg) {
       msg.content = msg.content.replace('  ', ' ')
     }
     var spookyCake = msg.content;
-    var spookySlices = spookyCake.toLowerCase().split(" ");
+    var spookySlices = spookyCake.toLowerCase().replace("\n", " ").split(" ");
     var spookyCommand = spookySlices[1];
     var arguments = spookySlices.slice(2);
 

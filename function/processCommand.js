@@ -5,12 +5,12 @@ function processCommand(msg) {
       msg.content = msg.content.replace('  ', ' ')
     }
     var spookyCake = msg.content;
-    var spookySlices = spookyCake.toLowerCase().split(" ");
+    var spookySlices = spookyCake.toLowerCase().replace("\n", " ").split(" ");
     var spookyCommand = spookySlices[1];
     var arguments = spookySlices.slice(2);
 
     var event = new Date();
-    console.log("__**" + event.toLocaleTimeString('en-US') + "**__\nCommand received: " + spookyCommand + "\nArguments: " + arguments + "\nExecuted by: `" + msg.author.tag + "` with ID: `" + msg.author.id + "`");
+    console.log("__**" + event.toLocaleTimeString('en-US') + "**__\nCommand received: " + spookyCommand.replace("@everyone", "{everyone}").replace("@here", "{here}") + "\nArguments: " + arguments.join(",").replace("@everyone", "{everyone}").replace("@here", "{here}") + "\nExecuted by: `" + msg.author.tag + "` with ID: `" + msg.author.id + "`");
 
     if (spookyCommand == undefined) {
         ougi.undefinedCommand(arguments, msg)

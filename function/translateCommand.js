@@ -2,7 +2,7 @@ module.exports =
 
 function translateCommand(msg, method) {
   var spookyCake = msg.content;
-  var spookySlices = spookyCake.split(" ");
+  var spookySlices = spookyCake.replace("\n", " ").split(" ");
   var spookyCommand = spookySlices[1];
   var arguments = spookySlices.slice(2);
   if (method == 1) {
