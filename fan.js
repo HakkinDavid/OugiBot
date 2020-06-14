@@ -97,7 +97,8 @@ client.on('message', (msg) => {
 
     else if (msg.channel.type == "dm") {
         var event = new Date();
-        console.log("__**" + event.toLocaleTimeString('en-US') + "**__\nDM received: " + msg.content.replace("@everyone", "{everyone}").replace("@here", "{here}") + "\nSent by: `" + msg.author.tag + "` with ID: `" + msg.author.id + "`");
+        var spookyLog = "__**" + event.toLocaleTimeString('en-US') + "**__\nDM received: " + msg.content + "\nSent by: `" + msg.author.tag + "` with ID: `" + msg.author.id + "`";
+        console.log(spookyLog.replace("@everyone", "@.everyone").replace("@here", "@.here"));
         ougi.talkAbility(msg);
     }
 })

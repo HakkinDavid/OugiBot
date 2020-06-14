@@ -4,7 +4,16 @@ function talkAbility(msg) {
   while (msg.content.includes('  ')) {
     msg.content = msg.content.replace('  ', ' ')
   }
-  console.log('**Input for talkAbility received through ' + msg.channel.type + ' channel**\n> ' + msg.content.replace("@everyone", "{everyone}").replace("@here", "{here}") + '\n');
+  while (msg.content.includes('\n\n')) {
+    msg.content = msg.content.replace('\n\n', '\n')
+  }
+  while (msg.content.includes('\n')) {
+    msg.content = msg.content.replace('\n', ' ')
+  }
+  var spookyLog = '**Input for talkAbility received through ' + msg.channel.type + ' channel**\n> ' + msg.content + '\n';
+
+  console.log(spookyLog.replace("@everyone", "@.everyone").replace("@here", "@.here"));
+
   var pseudoArray = JSON.parse(fs.readFileSync('./responses.txt', 'utf-8', console.error));
   var notSpookyDM = msg.content.toLowerCase();
   notSpookyDM = notSpookyDM.replace('<@629837958123356172>', 'ougi').replace('扇', 'ougi');

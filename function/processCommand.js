@@ -4,20 +4,22 @@ function processCommand(msg) {
     while (msg.content.includes('  ')) {
       msg.content = msg.content.replace('  ', ' ')
     }
+    while (msg.content.includes('\n\n')) {
+      msg.content = msg.content.replace('\n\n', '\n')
+    }
+    while (msg.content.includes('\n')) {
+      msg.content = msg.content.replace('\n', ' ')
+    }
     var spookyCake = msg.content;
-    var spookySlices = spookyCake.toLowerCase().replace("\n", " ").split(" ");
+    var spookySlices = spookyCake.toLowerCase().split(" ");
     var spookyCommand = spookySlices[1];
     var arguments = spookySlices.slice(2);
 
     var event = new Date();
 
-    if (arguments == undefined) {
-      var consoleArguments = " "
-    }
-    else {
-      var consoleArguments = arguments
-    }
-    console.log("__**" + event.toLocaleTimeString('en-US') + "**__\nCommand received: " + spookyCommand.replace("@everyone", "{everyone}").replace("@here", "{here}") + "\nArguments: " + consoleArguments.join(",").replace("@everyone", "{everyone}").replace("@here", "{here}") + "\nExecuted by: `" + msg.author.tag + "` with ID: `" + msg.author.id + "`");
+    var spookyLog = "__**" + event.toLocaleTimeString('en-US') + "**__\nCommand received: " + spookyCommand + "\nArguments: " + arguments + "\nExecuted by: `" + msg.author.tag + "` with ID: `" + msg.author.id + "`";
+
+    console.log(spookyLog.replace("@everyone", "@.everyone").replace("@here", "@.here"));
 
     if (spookyCommand == undefined) {
         ougi.undefinedCommand(arguments, msg)
