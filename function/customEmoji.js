@@ -17,5 +17,7 @@ function customEmoji(arguments, msg) {
 
   var spookyEmoji = proArrayID[positionEmoji];
 
+  msg.delete().catch(O_o=>{});
+  
   msg.channel.send(spookyEmoji).catch(console.error);
 }
