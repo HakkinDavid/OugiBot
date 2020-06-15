@@ -2,7 +2,7 @@ module.exports =
 
 function helpCommand(arguments, msg) {
     if (arguments == 'list' || arguments <= 0) {
-        msg.channel.send("As of now, I can help you with these topics: `multiply`, `add`, `say`, `answer`, `now`, `image`, `embed`, `learn`, `translate`, `prefix` and `info`. Still improving! Try something like\n> ougi help info");
+        msg.channel.send("As of now, I can help you with these topics: `multiply`, `add`, `say`, `answer`, `now`, `image`, `embed`, `learn`, `translate`, `emoji`, `emoji-list`, `prefix` and `info`. Still improving! Try something like\n> ougi help info");
     } else if (arguments == 'multiply') {
         msg.channel.send("I'll gladly multiply the numbers you provide me as long you input more than two values, and only if you promise me to study math.\n> ougi multiply [value] [value] ...");
     } else if (arguments == 'add') {
@@ -92,71 +92,10 @@ function helpCommand(arguments, msg) {
         }).catch(err => {
             console.error(err);
         });
-    } else if (arguments.join(" ") == 'emoji list' || arguments.join(" ") == 'emoji list 1') {
-        var emojiIDList = client.emojis.map((e) => e.toString());
-        var field1 = emojiIDList.slice(0, 23).join(" ");
-        var field2 = emojiIDList.slice(23, 46).join(" ");
-        var field3 = emojiIDList.slice(46, 69).join(" ");
-        var field4 = emojiIDList.slice(69, 92).join(" ");
-        var field5 = emojiIDList.slice(92, 115).join(" ");
-        var field6 = emojiIDList.slice(115, 138).join(" ");
-        var field7 = emojiIDList.slice(138, 161).join(" ");
-        var embed = new Discord.RichEmbed()
-        .setTitle("SpookyEmoji List")
-        .setColor("#C93A57")
-        .addField("Emoji Set 1", field1)
-        .addField("Emoji Set 2", field2)
-        .addField("Emoji Set 3", field3)
-        .addField("Emoji Set 4", field4)
-        .addField("Emoji Set 5", field5)
-        .addField("Emoji Set 6", field6)
-        .addField("Emoji Set 7", field7)
-        .setFooter("SpookyEmoji List by Ougi [Page 1]", client.user.avatarURL);
-        msg.channel.send("These are the emoji I can currently use.\nYou can also browse by page. **Example:**\n> ougi emoji list 1", {embed});
-    } else if (arguments.join(" ") == 'emoji list 2') {
-        var emojiIDList = client.emojis.map((e) => e.toString());
-        var field8 = emojiIDList.slice(161, 184).join(" ");
-        var field9 = emojiIDList.slice(184, 207).join(" ");
-        var field10 = emojiIDList.slice(207, 230).join(" ");
-        var field11 = emojiIDList.slice(230, 253).join(" ");
-        var field12 = emojiIDList.slice(253, 276).join(" ");
-        var field13 = emojiIDList.slice(276, 299).join(" ");
-        var field14 = emojiIDList.slice(299, 322).join(" ");
-        var embed = new Discord.RichEmbed()
-        .setTitle("SpookyEmoji List")
-        .setColor("#933AC9")
-        .addField("Emoji Set 8", field8)
-        .addField("Emoji Set 9", field9)
-        .addField("Emoji Set 10", field10)
-        .addField("Emoji Set 11", field11)
-        .addField("Emoji Set 12", field12)
-        .addField("Emoji Set 13", field13)
-        .addField("Emoji Set 14", field14)
-        .setFooter("SpookyEmoji List by Ougi [Page 2]", client.user.avatarURL);
-        msg.channel.send("These are the emoji I can currently use.\nYou can also browse by page. **Example:**\n> ougi emoji list 2", {embed});
-    } else if (arguments.join(" ") == 'emoji list 3') {
-        var emojiIDList = client.emojis.map((e) => e.toString());
-        var field15 = emojiIDList.slice(322, 345).join(" ");
-        var field16 = emojiIDList.slice(345, 368).join(" ");
-        var field17 = emojiIDList.slice(368, 391).join(" ");
-        var field18 = emojiIDList.slice(391, 410).join(" ");
-        var field19 = emojiIDList.slice(410, 430).join(" ");
-        var field20 = emojiIDList.slice(430, 453).join(" ");
-        var field21 = emojiIDList.slice(453, 476).join(" ");
-        var embed = new Discord.RichEmbed()
-        .setTitle("SpookyEmoji List")
-        .setColor("#4AB5AA")
-        .addField("Emoji Set 15", field15)
-        .addField("Emoji Set 16", field16)
-        .addField("Emoji Set 17", field17)
-        .addField("Emoji Set 18", field18)
-        .addField("Emoji Set 19", field19)
-        .addField("Emoji Set 20", field20)
-        .addField("Emoji Set 21", field21)
-        .setFooter("SpookyEmoji List by Ougi [Page 3]", client.user.avatarURL);
-        msg.channel.send("These are the emoji I can currently use.\nYou can also browse by page. **Example:**\n> ougi emoji list 3", {embed});
+    } else if (arguments == 'emoji-list') {
+        msg.channel.send("Are you interested in knowing what emoji I can use? Use the following command to take a look.\n> ougi emoji-list\nYou can also specify a page number. Here's an example.\n> ougi emoji-list 2")
     } else if (arguments == 'emoji') {
-        msg.channel.send("Oh yeah, I can send some cool custom emoji I was granted access to in the servers I'm in.\n**Example:**\n> ougi emoji nou\n<:nou:721293082716274719>\n**Peek at my list of emoji:**\n> ougi help emoji list");
+        msg.channel.send("Oh yeah, I can send some cool custom emoji I was granted access to in the servers I'm in.\n**Example:**\n> ougi emoji nou\n<:nou:721293082716274719>\n**Peek at my list of emoji:**\n> ougi emoji-list");
     } else if (arguments == 'prefix') {
         msg.channel.send("Just call me by my name!\n> ougi");
     } else if (arguments == 'info') {
