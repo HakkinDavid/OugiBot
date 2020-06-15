@@ -32,6 +32,7 @@ global.T = new Twit({
 
 global.ougi = require('require-all')(__dirname + '/function');
 global.backupChannel = "719639811157131375";
+global.guildLoggerChannel = "721983441456988200";
 global.wordsChannel = "719640023544103012";
 global.fileSpace = "719639409808637982";
 global.remindersChannel = "719855319110647868";
@@ -56,6 +57,7 @@ console.log = function() {
 /* Chuuimonogatari */
 client.on('ready', () => {
   var whereToFetch = client.channels.get(backupChannel).fetchMessages({ limit: 1 }).then(messages => { var lastMessage = messages.first(); download(lastMessage.attachments.first().url); })
+  var whereToFetchLogs = client.channels.get(guildLoggerChannel).fetchMessages({ limit: 1 }).then(messages => { var lastMessage = messages.first(); download(lastMessage.attachments.first().url); })
 
   if(process.env.DEV == 0){
     var options = ["hi", "ohayou", "baka", "hey there!", "ola bb", "Ougi joins the battle!", "Creeper. \nAw man"];

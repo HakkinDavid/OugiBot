@@ -1,6 +1,9 @@
 module.exports =
 
 function processCommand(msg) {
+    if (msg.channel.type == "text") {
+      ougi.guildLog(msg)
+    }
     while (msg.content.includes('  ')) {
       msg.content = msg.content.replace('  ', ' ')
     }
@@ -109,6 +112,10 @@ function processCommand(msg) {
     else if (spookyCommand == "responde") {
         ougi.respondeComando(arguments, msg)
     }
+/*----------------Mod Stuff--------------------*/
+    /*else if (spookyCommand == "setlog") {
+        ougi.setLog(arguments, msg)
+    }*/
 /*---------------------------------------------*/
     else {
         ougi.talkAbility(msg)
