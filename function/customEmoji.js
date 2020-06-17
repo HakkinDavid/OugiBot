@@ -11,13 +11,13 @@ function customEmoji(arguments, msg) {
   var positionEmoji = proArrayName.indexOf(searchFor);
 
   if (positionEmoji == -1) {
-    msg.channel.send("That's not a name for any emoji I have access to. Run the following command to see the nice emojis I can use:\n> ougi help emoji list");
+    msg.channel.send("That's not a name for any emoji I have access to. Run the following command to see the nice emojis I can use:\n> ougi emoji-list");
     return
   }
 
   var spookyEmoji = proArrayID[positionEmoji];
 
   msg.delete().catch(O_o=>{});
-  
+
   msg.channel.send(spookyEmoji).catch(console.error);
 }
