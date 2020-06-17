@@ -82,7 +82,7 @@ function talkLearn(arguments, msg) {
 
   var afterOptions = [
     "I'll start replying `" + response + "` when anyone says `" + trigger + "`",
-    "Of course I already knew I should say `" + response + "` when anyone says `" + trigger + "`, I was just making sure you knew too-",
+    "Of course I already knew I should say `" + response + "` when anyone says `" + trigger + "`, I was just making sure you knew too~",
   ];
   var answer = afterOptions[Math.floor(Math.random()*afterOptions.length)];
   var myResponse = "./responses.txt";
