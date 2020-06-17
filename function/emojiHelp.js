@@ -4,8 +4,8 @@ function emojiHelp(msg) {
   var emoji = ["reverse", "nou", "dorime"];
   var searchFor = emoji[Math.floor(Math.random()*emoji.length)];;
 
-  var emojiIDList = client.emojis.map((e) => e.toString()).join("\n");
-  var emojiNameList = client.emojis.map((e) => e.name.toLowerCase()).join("\n");
+  var emojiIDList = client.emojis.filter(emoji => emoji.available).map((e) => e.toString()).join("\n");
+  var emojiNameList = client.emojis.filter(emoji => emoji.available).map((e) => e.name.toLowerCase()).join("\n");
   var proArrayID = emojiIDList.split("\n");
   var proArrayName = emojiNameList.split("\n");
 
