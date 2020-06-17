@@ -10,3 +10,4 @@ node_modules/.bin/ffmpeg.ps1
 node_modules/.bin/ffprobe
 node_modules/.bin/ffprobe.cmd
 node_modules/.bin/ffprobe.ps1
+node_modules/ffmpeg-binaries
