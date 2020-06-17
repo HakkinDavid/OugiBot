@@ -1,7 +1,7 @@
 .env
-node_modules
 allGuilds.txt
 allEmoji.txt
 responses
 responses.txt
 guildLogs.txt
+node_modules
