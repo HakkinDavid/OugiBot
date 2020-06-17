@@ -4,3 +4,9 @@ allEmoji.txt
 responses
 responses.txt
 guildLogs.txt
+node_modules/.bin/ffmpeg
+node_modules/.bin/ffmpeg.cmd
+node_modules/.bin/ffmpeg.ps1
+node_modules/.bin/ffprobe
+node_modules/.bin/ffprobe.cmd
+node_modules/.bin/ffprobe.ps1
