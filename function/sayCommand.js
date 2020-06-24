@@ -26,14 +26,15 @@ function sayCommand(arguments, msg) {
 
     var finalMessage = sayMessage.toString();
     if (msg.channel.type != "dm") {
-      finalMessage = finalMessage
-      .replace("nigga", "unwhite")
-      .replace("nigger", "unwhiter")
-      .replace("gay", "unstraight")
-      .replace("cock", "coke")
-      .replace("penis", "coke")
-      .replace("n word", "word starting with n")
-      .replace("fuck", "f word")
+      while(msg.content.includes("nigga") || msg.content.includes("nigger") || msg.content.includes("gay") || msg.content.includes("cock") || msg.content.includes("penis") || msg.content.includes("n word")){
+        finalMessage = finalMessage
+        .replace("nigga", "unwhite")
+        .replace("nigger", "unwhiter")
+        .replace("gay", "unstraight")
+        .replace("cock", "coke")
+        .replace("penis", "coke")
+        .replace("n word", "word starting with n")
+      }
     }
     msg.delete().catch(O_o=>{});
     msg.channel.send(finalMessage).catch(console.error);
