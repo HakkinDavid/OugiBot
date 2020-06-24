@@ -26,7 +26,7 @@ function sayCommand(arguments, msg) {
 
     var finalMessage = sayMessage.toString();
     if (msg.channel.type != "dm") {
-      while(msg.content.includes("nigga") || msg.content.includes("nigger") || msg.content.includes("gay") || msg.content.includes("cock") || msg.content.includes("penis") || msg.content.includes("n word")){
+      while(finalMessage.includes("nigga") || finalMessage.includes("nigger") || finalMessage.includes("gay") || finalMessage.includes("cock") || finalMessage.includes("penis") || finalMessage.includes("n word")){
         finalMessage = finalMessage
         .replace("nigga", "unwhite")
         .replace("nigger", "unwhiter")
