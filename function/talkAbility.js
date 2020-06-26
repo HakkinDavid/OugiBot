@@ -40,8 +40,8 @@ function talkAbility(msg) {
     var options = pseudoArray[notSpookyDM];
     var response = options[Math.floor(Math.random()*options.length)];
     if (msg.channel.type != "dm") {
-      while(finalMessage.includes("nigga") || finalMessage.includes("nigger") || finalMessage.includes("gay") || finalMessage.includes("cock") || finalMessage.includes("penis") || finalMessage.includes("n word")){
-        finalMessage = finalMessage
+      while(response.includes("nigga") || response.includes("nigger") || response.includes("gay") || response.includes("cock") || response.includes("penis") || response.includes("n word")){
+        response = response
         .replace("nigga", "unwhite")
         .replace("nigger", "unwhiter")
         .replace("gay", "unstraight")
