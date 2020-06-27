@@ -2,7 +2,7 @@ module.exports =
 
 function embedCommand(arguments, msg) {
     if (arguments.length == 0){
-      msg.channel.send("Do you need some help making an embed? Take a look at `help embed`.");
+      msg.channel.send("Do you need some help making an embed? Take a look at `help embed`.").then().catch(console.error);
       return
     }
     var spookyCake = msg.content;
@@ -18,17 +18,17 @@ function embedCommand(arguments, msg) {
     var colorEmbed = colors[Math.floor(Math.random()*colors.length)];
 
     if (newArguments[2] == undefined){
-      msg.channel.send("Remember to add an URL, to write your embed's title between these \`\` and to add a description.");
+      msg.channel.send("Remember to add an URL, to write your embed's title between these \`\` and to add a description.").then().catch(console.error);
       return
     }
 
     if (!url.includes(".")) {
-      msg.channel.send("That doesn't seem to be a site, so I can't create an embed for it. Make sure you add a Top Level Domain (e.g. \".com\", \".net\", \".boo\").")
+      msg.channel.send("That doesn't seem to be a site, so I can't create an embed for it. Make sure you add a Top Level Domain (e.g. \".com\", \".net\", \".boo\").").then().catch(console.error);
       return
     }
 
     if (url.startsWith("http:")) {
-      msg.channel.send("Sorry, but I won't make an embed for such an insecure site. Make sure it is \"https\", if it is then there's no need to add it, I'll do it for you.");
+      msg.channel.send("Sorry, but I won't make an embed for such an insecure site. Make sure it is \"https\", if it is then there's no need to add it, I'll do it for you.").then().catch(console.error);
       return
     }
 

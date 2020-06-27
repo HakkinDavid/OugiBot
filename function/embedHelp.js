@@ -16,5 +16,5 @@ function embedHelp(msg) {
     text: "AstleyEmbed by Ougi"
   }
   }
-});
+}).then().catch(console.error);
 }

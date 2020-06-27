@@ -2,7 +2,7 @@ module.exports =
 
 function imageCommand(arguments, msg) {
     if (arguments.length < 1) {
-      msg.channel.send("I need at least one keyword to search.")
+      msg.channel.send("I need at least one keyword to search.").then().catch(console.error);
       return;
     }
     var search = arguments.join(" ");
@@ -26,7 +26,7 @@ function imageCommand(arguments, msg) {
         var urls = new Array(links.length).fill(0).map((v, i) => links.eq(i).attr("href"));
 
         if (!urls.length) {
-            msg.channel.send("There aren't any results.")
+            msg.channel.send("There aren't any results.").then().catch(console.error);
             return;
         }
 

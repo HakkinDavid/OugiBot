@@ -9,7 +9,7 @@ function talkLearn(arguments, msg) {
   }
 
   if (thisMessage.includes("<@") || thisMessage.includes(">")) {
-    msg.channel.send("Avoid mentions please. I don't want to learn something that could potentially ping someone. What? Isn't that a mention? Well, then don't include '\<\@' and '>' in a same message.");
+    msg.channel.send("Avoid mentions or custom emoji please. I wouldn't want to learn something that can either potentially ping someone or look plain odd if, for instance, that emoji becomes unavailable. What? Isn't that a mention or a custom emoji? Well, then don't include '\<\@' and '>' in a same message.").then().catch(console.error);
     return
   }
 
@@ -23,7 +23,7 @@ function talkLearn(arguments, msg) {
   }
 
   if (breakChocolate.length !== 2){
-    msg.channel.send("Do you want to teach me something? Looks like you're doing it wrong. Use the following command for some help.\n> ougi help learn");
+    msg.channel.send("Do you want to teach me something? Looks like you're doing it wrong. Use the following command for some help.\n> ougi help learn").then().catch(console.error);
     return
   }
 
@@ -59,22 +59,22 @@ function talkLearn(arguments, msg) {
   }
 
   if (trigger.length < niceCharacterAmount){
-    msg.channel.send("Please provide a trigger phrase of at least " + niceCharacterAmount.toString() + " characters long.")
+    msg.channel.send("Please provide a trigger phrase of at least " + niceCharacterAmount.toString() + " characters long.").then().catch(console.error);
     return
   }
 
   if (response.length < niceCharacterAmount){
-    msg.channel.send("Please provide a response phrase of at least " + niceCharacterAmount.toString() + " characters long.")
+    msg.channel.send("Please provide a response phrase of at least " + niceCharacterAmount.toString() + " characters long.").then().catch(console.error);
     return
   }
 
   if (trigger.length > maxCharacterAmount){
-    msg.channel.send("Please provide a trigger phrase of " + maxCharacterAmount.toString() + " or less characters long.")
+    msg.channel.send("Please provide a trigger phrase of " + maxCharacterAmount.toString() + " or less characters long.").then().catch(console.error);
     return
   }
 
   if (response.length > maxCharacterAmount){
-    msg.channel.send("Please provide a response phrase of " + maxCharacterAmount.toString() + " or less characters long.")
+    msg.channel.send("Please provide a response phrase of " + maxCharacterAmount.toString() + " or less characters long.").then().catch(console.error);
     return
   }
 
@@ -91,7 +91,7 @@ function talkLearn(arguments, msg) {
     var existent = pseudoArray[trigger];
     for(var i = 0; i < existent.length; i++) {
       if(existent[i].toLowerCase() === response) {
-        msg.channel.send("Sorry but that response for this trigger already exists.");
+        msg.channel.send("Sorry but that response for this trigger already exists.").then().catch(console.error);
         return
       }
     }

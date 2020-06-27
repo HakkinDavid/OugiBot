@@ -23,7 +23,7 @@ function imageHelp(msg) {
       var urls = new Array(links.length).fill(0).map((v, i) => links.eq(i).attr("href"));
 
       if (!urls.length) {
-          msg.channel.send("There aren't any results.")
+          msg.channel.send("There aren't any results.").then().catch(console.error);
           return;
       }
 

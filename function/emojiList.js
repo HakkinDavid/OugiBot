@@ -1,14 +1,14 @@
 module.exports =
 
 function emojiList(arguments, msg) {
-  var emojiIDList = client.emojis.filter(emoji => emoji.available).map((e) => e.toString());
-  var emojiNameList = client.emojis.filter(emoji => emoji.available).map((e) => e.name);
+  var emojiIDList = client.emojis.filter(emoji => emoji.available).map((e) => e.toString()).then().catch(console.error);
+  var emojiNameList = client.emojis.filter(emoji => emoji.available).map((e) => e.name).then().catch(console.error);
   var howMany = emojiIDList.length;
   var pageMax = Math.ceil(howMany / 14);
   var page = arguments * 1 - 1;
 
   if (isNaN(page)) {
-    msg.channel.send("Uh, please provide a page number.");
+    msg.channel.send("Uh, please provide a page number.").then().catch(console.error).then().catch(console.error);
     return
   }
 
@@ -18,7 +18,7 @@ function emojiList(arguments, msg) {
 
   var displayPage = page + 1;
   if (displayPage > pageMax) {
-    msg.channel.send("That's not a page yet.");
+    msg.channel.send("That's not a page yet.").then().catch(console.error);
     return
   }
 
@@ -38,5 +38,5 @@ function emojiList(arguments, msg) {
       embed.addField(willShow[i] + " `" + willShowN[i] + "`", willShow[i+1] + " `" + willShowN[i+1] + "`")
     };
 
-  msg.channel.send({embed});
+  msg.channel.send({embed}).then().catch(console.error);
 }

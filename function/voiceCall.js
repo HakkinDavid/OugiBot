@@ -2,7 +2,7 @@ module.exports =
 
 async function voiceCall(arguments, msg) {
   if (!msg.guild) { //prevent anything unintended
-    msg.channel.send("Huh?! This is not a Discord server. Take me into one!");
+    msg.channel.send("Huh?! This is not a Discord server. Take me into one!").then().catch(console.error);
     return
   }
 
@@ -18,18 +18,18 @@ async function voiceCall(arguments, msg) {
   }
 
   if (vcChannel.full) {
-    msg.channel.send("That voice channel is full, so I can't join.");
+    msg.channel.send("That voice channel is full, so I can't join.").then().catch(console.error);
     return
   }
 
   if (vcChannel.joinable) {
     const leave = await vcChannel.leave();
     const connection = await vcChannel.join();
-    msg.channel.send("Alright, I've joined your voice channel.");
+    msg.channel.send("Alright, I've joined your voice channel.").then().catch(console.error);
   }
 
   else {
-    msg.channel.send("Looks like you're not in a voice channel I can join, please get into one.")
+    msg.channel.send("Looks like you're not in a voice channel I can join, please get into one.").then().catch(console.error);
     return
   }
 }

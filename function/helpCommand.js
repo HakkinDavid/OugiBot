@@ -4,9 +4,9 @@ function helpCommand(arguments, msg) {
     if (arguments == 'list' || arguments <= 0) {
         ougi.helpEmbed(msg)
     } else if (arguments == 'multiply') {
-        msg.channel.send("I'll gladly multiply the numbers you provide me as long you input more than two values, and only if you promise me to study math.\n> ougi multiply [value] [value] ...");
+        msg.channel.send("I'll gladly multiply the numbers you provide me as long you input more than two values, and only if you promise me to study math.\n> ougi multiply [value] [value] ...").then().catch(console.error);
     } else if (arguments == 'add') {
-        msg.channel.send("I'll do additions for you! Try\n> ougi add [value] [value] ...");
+        msg.channel.send("I'll do additions for you! Try\n> ougi add [value] [value] ...").then().catch(console.error);
     } else if (arguments == 'say') {
         ougi.sayHelp(msg)
     } else if (arguments == 'answer') {
