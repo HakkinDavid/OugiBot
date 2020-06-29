@@ -76,16 +76,12 @@ function processCommand(msg) {
         ougi.despookifyCommand(arguments, msg)
     }
 
-    else if (spookyCommand == "flushed") {
-        ougi.flushedCommand(arguments, msg)
-    }
-
     else if (spookyCommand == "info") {
         ougi.whoIsMe(arguments, msg)
     }
 
     else if (spookyCommand == "vc") {
-        ougi.voiceCall(arguments, msg)
+        ougi.voiceCall(arguments, msg).then().catch(console.error)
     }
 
     else if (spookyCommand == "reminder" || spookyCommand == "timer") {

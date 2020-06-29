@@ -31,21 +31,20 @@ global.T = new Twit({
 /* Kansuumonogatari */
 
 global.ougi = require('require-all')(__dirname + '/function');
-global.backupChannel = "719639811157131375";
-global.guildLoggerChannel = "721983441456988200";
-global.wordsChannel = "719640023544103012";
-global.fileSpace = "719639409808637982";
-global.remindersChannel = "719855319110647868";
+global.backupChannel = "726927738094485534";
+global.guildLoggerChannel = "726929433398738954";
+global.wordsChannel = "726928050310217760";
+global.fileSpace = "726929586339840072";
+global.remindersChannel = "726929651573981225";
 
 /* Rogumonogatari */
-global.consoleLogging = "719641437267951616";
+global.consoleLogging = "726927838724489226";
 global.logBackup = console.log;
 global.logMessages = [];
 
 console.log = function() {
     logMessages.push.apply(logMessages, arguments);
     if (logMessages[0] == "\n"){
-      client.channels.get(consoleLogging).send("**<:blank:720802695908163604> **").then().catch(console.error);
       logMessages.pop();
     }
     else {

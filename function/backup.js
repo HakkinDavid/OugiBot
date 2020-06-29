@@ -9,6 +9,6 @@ function backup(filename, where){
       name: filename
     }]
   })
-  .then(console.log)
+  .then()
   .catch(console.error);
 }

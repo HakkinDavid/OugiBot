@@ -11,7 +11,7 @@ function emojiHelp(msg) {
 
   var positionEmoji = proArrayName.indexOf(searchFor);
   var spookyEmoji = proArrayID[positionEmoji];
-  var phrases = ["<:dorime:721686180709531740>", "<:nou:721293082716274719>", "<:reverse:721293982134698004>"];
+  var phrases = ["<:dorime:726944323660152892>", "<:nou:726944701348970496>", "<:reverse:726944329754476614>"];
   var say = phrases[Math.floor(Math.random()*phrases.length)];
   var embed = new Discord.RichEmbed()
   .setTitle("Ougi's `emoji` command")

@@ -41,6 +41,6 @@ function imageCommand(arguments, msg) {
         const attachment = new Discord.Attachment(imageToSend, predefinedName);
 
         msg.channel.send(attachment).then().catch(console.error);
-        console.log("Sent image: " + imageToSend);
+        client.channels.get(consoleLogging).send("**Image sent**", attachment);
     });
 }
