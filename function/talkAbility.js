@@ -16,7 +16,7 @@ function talkAbility(msg) {
 
   var pseudoArray = JSON.parse(fs.readFileSync('./responses.txt', 'utf-8', console.error));
   var notSpookyDM = msg.content.toLowerCase();
-  notSpookyDM = notSpookyDM.replace('<@629837958123356172>', 'ougi').replace('扇', 'ougi');
+  notSpookyDM = notSpookyDM.replace('<@629837958123356172>', 'ougi').replace('扇', 'ougi').replace('<@!629837958123356172>', 'ougi');
   while (notSpookyDM.startsWith("ougi")) {
     notSpookyDM = notSpookyDM.substring(4, notSpookyDM.length)
   }
