@@ -11,4 +11,4 @@ node_modules/.bin/ffprobe
 node_modules/.bin/ffprobe.cmd
 node_modules/.bin/ffprobe.ps1
 node_modules/ffmpeg-binaries
-aimAssist.txt
+*.txt
