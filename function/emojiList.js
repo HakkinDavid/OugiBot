@@ -1,8 +1,8 @@
 module.exports =
 
 function emojiList(arguments, msg) {
-  var emojiIDList = client.emojis.filter(emoji => emoji.available).map((e) => e.toString()).then().catch(console.error);
-  var emojiNameList = client.emojis.filter(emoji => emoji.available).map((e) => e.name).then().catch(console.error);
+  var emojiIDList = client.emojis.filter(emoji => emoji.available).map((e) => e.toString());
+  var emojiNameList = client.emojis.filter(emoji => emoji.available).map((e) => e.name);
   var howMany = emojiIDList.length;
   var pageMax = Math.ceil(howMany / 14);
   var page = arguments * 1 - 1;

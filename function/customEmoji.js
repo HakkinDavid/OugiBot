@@ -3,8 +3,8 @@ module.exports =
 function customEmoji(arguments, msg) {
   var searchFor = arguments[0];
 
-  var emojiIDList = client.emojis.filter(emoji => emoji.available).map((e) => e.toString()).join("\n").then().catch(console.error);
-  var emojiNameList = client.emojis.filter(emoji => emoji.available).map((e) => e.name.toLowerCase()).join("\n").then().catch(console.error);
+  var emojiIDList = client.emojis.filter(emoji => emoji.available).map((e) => e.toString()).join("\n");
+  var emojiNameList = client.emojis.filter(emoji => emoji.available).map((e) => e.name.toLowerCase()).join("\n");
   var proArrayID = emojiIDList.split("\n");
   var proArrayName = emojiNameList.split("\n");
 
