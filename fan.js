@@ -11,6 +11,7 @@ global.Twit = require('twit');
 global.lastTweet = require('last-tweet');
 global.translate = require('@vitalets/google-translate-api');
 global.randomCase = require('random-case');
+global.findRemoveSync = require('find-remove');
 
 if(process.env.OFFLINE == 1) {
   client.destroy();
@@ -55,8 +56,10 @@ console.log = function() {
 
 /* Chuuimonogatari */
 client.on('ready', () => {
+  var cleanCache = findRemoveSync('./', {extensions: ['.txt']});
   var whereToFetch = client.channels.get(backupChannel).fetchMessages({ limit: 1 }).then(messages => { var lastMessage = messages.first(); download(lastMessage.attachments.first().url); });
   var whereToFetchLogs = client.channels.get(guildLoggerChannel).fetchMessages({ limit: 1 }).then(messages => { var lastMessage = messages.first(); download(lastMessage.attachments.first().url); });
+
   fs.writeFile('./aimAssist.txt', "[]", console.error);
 
   if(process.env.DEV == 0){
@@ -81,19 +84,15 @@ client.on('message', (msg) => {
         return
     }
 
-    if (msg.content.toLowerCase().startsWith("ougi") && !msg.author.bot) {
+    if (msg.author.bot) {
+      return
+    }
+
+    if (msg.content.toLowerCase().startsWith("ougi") || msg.content.startsWith("扇") || msg.content.startsWith("<@629837958123356172>") || msg.content.startsWith("<@!629837958123356172>")) {
         ougi.processCommand(msg);
     }
 
-    else if (msg.content.startsWith("扇") && !msg.author.bot) {
-        ougi.processCommand(msg);
-    }
-
-    else if (msg.content.toLowerCase().startsWith("<@629837958123356172>") && !msg.author.bot) {
-        ougi.processCommand(msg);
-    }
-
-    else if (msg.content.toLowerCase().startsWith("#ougi") && !msg.author.bot) {
+    else if (msg.content.toLowerCase().startsWith("#ougi")) {
         ougi.rootCommands(msg);
     }
 

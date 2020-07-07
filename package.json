@@ -12,6 +12,7 @@
     "dotenv": "^8.2.0",
     "download-file": "^0.1.5",
     "ffmpeg-binaries": "^3.2.2-3",
+    "find-remove": "^2.0.1",
     "fs": "0.0.1-security",
     "got": "^11.3.0",
     "last-tweet": "0.0.2",
