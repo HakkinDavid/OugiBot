@@ -12,6 +12,7 @@ global.lastTweet = require('last-tweet');
 global.translate = require('@vitalets/google-translate-api');
 global.randomCase = require('random-case');
 global.findRemoveSync = require('find-remove');
+global.domColor = require('dominant-color');
 
 if(process.env.OFFLINE == 1) {
   client.destroy();
@@ -105,7 +106,10 @@ client.on('message', (msg) => {
 })
 
 client.on('messageDelete', (msg) => {
-    if (msg.content.toLowerCase().startsWith("ougi") || msg.author.bot || msg.content.startsWith("扇") || msg.content.toLowerCase().startsWith("#ougi")) {
+    if (msg.author == client.user) {
+        return
+    }
+    if (msg.content.toLowerCase().startsWith("ougi") || msg.author.bot || msg.content.startsWith("扇") || msg.content.toLowerCase().startsWith("#ougi") || msg.content.startsWith("<@629837958123356172>") || msg.content.startsWith("<@!629837958123356172>")) {
         return
     }
     ougi.loadSniper(msg);

@@ -8,7 +8,7 @@ function emojiList(arguments, msg) {
   var page = arguments * 1 - 1;
 
   if (isNaN(page)) {
-    msg.channel.send("Uh, please provide a page number.").then().catch(console.error).then().catch(console.error);
+    msg.channel.send("Uh, please provide a page number.").then().catch(console.error);
     return
   }
 

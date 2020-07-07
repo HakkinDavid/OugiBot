@@ -104,6 +104,10 @@ function processCommand(msg) {
     else if (spookyCommand == "emoji-list") {
         ougi.emojiList(arguments, msg)
     }
+
+    else if (spookyCommand == "snipe" || spookyCommand == "shoot") {
+        ougi.shootSniper(arguments, msg)
+    }
 /*--------------Localizations-------------------*/
     else if (spookyCommand == "responde") {
         ougi.respondeComando(arguments, msg)
