@@ -104,5 +104,12 @@ client.on('message', (msg) => {
     }
 })
 
+client.on('messageDelete', (msg) => {
+    if (msg.content.toLowerCase().startsWith("ougi") || msg.author.bot || msg.content.startsWith("扇") || msg.content.toLowerCase().startsWith("#ougi")) {
+        return
+    }
+    ougi.loadSniper(msg);
+});
+
 /* Kaishimonogatari */
 client.login(process.env.TOKEN);
