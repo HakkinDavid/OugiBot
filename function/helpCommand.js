@@ -1,7 +1,7 @@
 module.exports =
 
 function helpCommand(arguments, msg) {
-    if (arguments == 'list' || arguments <= 0) {
+    if (arguments == 'list' || arguments.length <= 0) {
         ougi.helpEmbed(msg)
     } else if (arguments == 'multiply') {
         msg.channel.send("I'll gladly multiply the numbers you provide me as long you input more than two values, and only if you promise me to study math.\n> ougi multiply [value] [value] ...").then().catch(console.error);
@@ -11,6 +11,8 @@ function helpCommand(arguments, msg) {
         ougi.sayHelp(msg)
     } else if (arguments == 'answer') {
         ougi.answerHelp(msg)
+    } else if (arguments == 'snipe') {
+        ougi.snipeHelp(msg)
     } else if (arguments == 'now') {
         ougi.nowHelp(msg)
     } else if (arguments == 'image') {

@@ -12,7 +12,6 @@ global.lastTweet = require('last-tweet');
 global.translate = require('@vitalets/google-translate-api');
 global.randomCase = require('random-case');
 global.findRemoveSync = require('find-remove');
-global.domColor = require('dominant-color');
 
 if(process.env.OFFLINE == 1) {
   client.destroy();
@@ -61,7 +60,7 @@ client.on('ready', () => {
   var whereToFetch = client.channels.get(backupChannel).fetchMessages({ limit: 1 }).then(messages => { var lastMessage = messages.first(); download(lastMessage.attachments.first().url); });
   var whereToFetchLogs = client.channels.get(guildLoggerChannel).fetchMessages({ limit: 1 }).then(messages => { var lastMessage = messages.first(); download(lastMessage.attachments.first().url); });
 
-  fs.writeFile('./aimAssist.txt', "[]", console.error);
+  fs.writeFileSync('./aimAssist.txt', "[]", console.error);
 
   if(process.env.DEV == 0){
     var options = ["hi", "ohayou", "baka", "hey there!", "ola bb", "Ougi joins the battle!", "Creeper. \nAw man"];

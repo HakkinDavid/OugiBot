@@ -32,9 +32,12 @@ function shootSniper(arguments, msg) {
   var bullet = myAmmo[index];
 
   var distance = Math.floor(Math.random()*300);
-  var options = ["has been sniped by", "was eliminated by", "got shot by", "received a headshot from", "couldn't build a shelter to protect themselves from"];
+  var options = ["has sniped", "eliminated", "shot", "blew", "caused fall damage to"];
   var action = options[Math.floor(Math.random()*options.length)];
-  var embedColor = domColor(bullet.pfp, function(err, color){return color});
+  var snipers = ["a Bolt-Action Sniper Rifle", "a Semi-Automatic Sniper Rifle", "a Hunting Rifle", "a Heavy Sniper Rifle", "an Automatic Sniper Rifle", "a Storm Scout Sniper Rifle"];
+  var snipedWith = snipers[Math.floor(Math.random()*snipers.length)];
+  var kindOfRare = ["Common", "Uncommon", "Rare", "Epic", "Legendary"]
+  var rarity = kindOfRare[Math.floor(Math.random()*kindOfRare.length)];
 
   if (msg.guild == null) {
     var footerLogo = client.user.avatarURL;
@@ -43,12 +46,19 @@ function shootSniper(arguments, msg) {
     var footerLogo = msg.guild.iconURL;
   }
 
-  var embed = new Discord.RichEmbed()
-  .setAuthor(bullet.author + " " + action + " Ougi (" + distance + " m)", bullet.pfp)
-  .setColor(embedColor)
-  .setFooter("Originally sent at " + bullet.sent, footerLogo)
+  const embed = new Discord.RichEmbed()
+  .setColor("#7F0037")
+  .setAuthor("Ougi [BOT]", client.user.avatarURL)
+  .setThumbnail(bullet.pfp)
+  .setFooter("Ougi " + action + " " + bullet.author + " (" + distance + " m)" + " with " + snipedWith + " (" + rarity + ") at " + bullet.sent + ". This channel has " + maxIndex + " snipeable messages.", footerLogo);
   if (bullet.text != "") {
-    embed.addField("<:quote:730061725755375667>", bullet.text);
+    if (bullet.text.length < 1024) {
+      embed.addField(bullet.author + " said <:quote:730061725755375667>", bullet.text)
+    }
+    else {
+      embed.addField(bullet.author + " said <:quote:730061725755375667>", bullet.text.slice(0, 1024))
+      embed.addField("\u200B", bullet.text.slice(1024))
+    }
   }
   else {
     embed.addField("Oop-", "This message had no text. Support for media is coming soon!")

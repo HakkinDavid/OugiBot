@@ -9,7 +9,6 @@
     "configstore": "^5.0.1",
     "discord.io": "^2.5.3",
     "discord.js": "^11.6.4",
-    "dominant-color": "0.0.1",
     "dotenv": "^8.2.0",
     "download-file": "^0.1.5",
     "ffmpeg-binaries": "^3.2.2-3",
