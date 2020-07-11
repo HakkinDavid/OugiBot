@@ -44,8 +44,9 @@ function rm(arguments, msg) {
     return
   }
 
-  if (trigger == "help" || trigger == "remove" || trigger == "setlog" || trigger == "allow") {
-    msg.channel.send("This command can't be blacklisted.")
+  if (trigger.startsWith("help") || trigger.startsWith("remove") || trigger.startsWith("setlog") || trigger.startsWith("allow") || trigger.startsWith("ougi")) {
+    msg.channel.send("This command can't be blacklisted.");
+    return
   }
 
   var pseudoArray = JSON.parse(fs.readFileSync('./blacklist.txt', 'utf-8', console.error));
