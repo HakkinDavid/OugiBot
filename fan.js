@@ -37,6 +37,7 @@ global.guildLoggerChannel = "726929433398738954";
 global.wordsChannel = "726928050310217760";
 global.fileSpace = "726929586339840072";
 global.remindersChannel = "726929651573981225";
+global.blacklistChannel = "731423847194296410";
 
 /* Rogumonogatari */
 global.consoleLogging = "726927838724489226";
@@ -59,6 +60,7 @@ client.on('ready', () => {
   var cleanCache = findRemoveSync('./', {extensions: ['.txt']});
   var whereToFetch = client.channels.get(backupChannel).fetchMessages({ limit: 1 }).then(messages => { var lastMessage = messages.first(); download(lastMessage.attachments.first().url); });
   var whereToFetchLogs = client.channels.get(guildLoggerChannel).fetchMessages({ limit: 1 }).then(messages => { var lastMessage = messages.first(); download(lastMessage.attachments.first().url); });
+  var whereToFetchBlacklist = client.channels.get(blacklistChannel).fetchMessages({ limit: 1 }).then(messages => { var lastMessage = messages.first(); download(lastMessage.attachments.first().url); });
 
   fs.writeFileSync('./aimAssist.txt', "[]", console.error);
 
@@ -112,6 +114,10 @@ client.on('messageDelete', (msg) => {
         return
     }
     ougi.loadSniper(msg);
+});
+
+client.on("channelDelete", (channel) => {
+    ougi.autoRMChannel(channel)
 });
 
 /* Kaishimonogatari */

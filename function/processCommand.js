@@ -24,6 +24,22 @@ function processCommand(msg) {
 
     console.log(spookyLog.replace("@everyone", "@.everyone").replace("@here", "@.here"));
 
+    /*Ignore if in blacklist*/
+    var guildID = msg.guild.id;
+
+    var blacklistCheck = JSON.parse(fs.readFileSync('./blacklist.txt', 'utf-8', console.error));
+
+    if (blacklistCheck.hasOwnProperty(guildID)){
+      var existent = blacklistCheck[guildID];
+      for(var i = 0; i < existent.length; i++) {
+        if(existent[i].toLowerCase() === spookySlices.slice(1).join(" ")) {
+          msg.channel.send("Sorry, that's blacklisted in " + msg.guild.toString() + ".").then().catch(console.error);
+          return
+        }
+      }
+    }
+    /*---------------------*/
+
     if (spookyCommand == undefined) {
         ougi.undefinedCommand(arguments, msg)
     }
@@ -113,9 +129,13 @@ function processCommand(msg) {
         ougi.respondeComando(arguments, msg)
     }
 /*----------------Mod Stuff--------------------*/
-    /*else if (spookyCommand == "setlog") {
+    else if (spookyCommand == "setlog") {
         ougi.setLog(arguments, msg)
-    }*/
+    }
+
+    else if (spookyCommand == "remove") {
+        ougi.rm(arguments, msg)
+    }
 /*---------------------------------------------*/
     else {
         ougi.talkAbility(msg)

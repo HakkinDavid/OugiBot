@@ -21,8 +21,7 @@ function setLog(arguments, msg) {
 
   if (arguments[0] == "disable") {
     if (pseudoArray.hasOwnProperty(guildID)){
-      var toRM = pseudoArray.indexOf(guildID);
-      pseudoArray.splice(toRM, 1);
+      delete pseudoArray[guildID];
       msg.channel.send("Logging channel successfully disabled.");
       var proArray = JSON.stringify(pseudoArray);
       fs.writeFile('./guildLogs.txt', proArray, console.error);
@@ -36,12 +35,9 @@ function setLog(arguments, msg) {
     }
   }
 
-  msg.channel.send("I'll start sending this server's command log into this channel.");
+  msg.channel.send("I'll start sending this server's commands log into this channel.");
 
-  pseudoArray[guildID] = [];
-  var arrayMaker = pseudoArray[guildID];
-  arrayMaker.push(guildLogger);
-  pseudoArray[guildID] = arrayMaker;
+  pseudoArray[guildID] = guildLogger;
   var proArray = JSON.stringify(pseudoArray);
   fs.writeFile('./guildLogs.txt', proArray, console.error);
   var myLogger = './guildLogs.txt';

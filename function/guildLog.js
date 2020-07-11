@@ -15,14 +15,14 @@ function guildLog(msg) {
       msg.content = msg.content.replace('\n', ' ')
     }
 
-    var spookyCake = msg.content;
+    var spookyCake = msg.cleanContent;
     var spookySlices = spookyCake.toLowerCase().split(" ");
     var spookyCommand = spookySlices[1];
     var arguments = spookySlices.slice(2);
 
     var event = new Date();
 
-    var spookyLog = "__**" + event.toLocaleTimeString('en-US') + "**__\nCommand received: " + spookyCommand + "\nArguments: " + arguments + "\nExecuted by: `" + msg.author.tag + "` with ID: `" + msg.author.id + "` in channel: `" + msg.channel.toString() + "`";
+    var spookyLog = "__**" + event.toLocaleTimeString('en-US') + "**__\nCommand received: " + spookyCommand + "\nArguments: " + arguments + "\nExecuted by: `" + msg.author.tag + "` with ID: `" + msg.author.id + "` in channel: " + msg.channel.toString();
 
     client.channels.get(guildLogger).send(spookyLog.replace("@everyone", "@.everyone").replace("@here", "@.here")).catch(console.error);
   }

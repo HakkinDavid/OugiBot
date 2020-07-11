@@ -91,7 +91,7 @@ function talkLearn(arguments, msg) {
     var existent = pseudoArray[trigger];
     for(var i = 0; i < existent.length; i++) {
       if(existent[i].toLowerCase() === response) {
-        msg.channel.send("Sorry but that response for this trigger already exists.").then().catch(console.error);
+        msg.channel.send("Sorry; that response for this trigger already exists.").then().catch(console.error);
         return
       }
     }
