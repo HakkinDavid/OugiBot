@@ -10,7 +10,7 @@ function talkAbility(msg) {
   while (msg.content.includes('\n')) {
     msg.content = msg.content.replace('\n', ' ')
   }
-  var spookyLog = '**Input for talkAbility received through ' + msg.channel.type + ' channel**\n> ' + msg.content + '\n';
+  var spookyLog = '**Input for talkAbility received through ' + msg.channel.type + ' channel**\n> ' + msg.cleanContent + '\n';
 
   console.log(spookyLog.replace("@everyone", "@.everyone").replace("@here", "@.here"));
 

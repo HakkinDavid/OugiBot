@@ -18,11 +18,7 @@ function processCommand(msg) {
     var spookyCommand = spookySlices[1];
     var arguments = spookySlices.slice(2);
 
-    var event = new Date();
-
-    var spookyLog = "__**" + event.toLocaleTimeString('en-US') + "**__\nCommand received: " + spookyCommand + "\nArguments: " + arguments + "\nExecuted by: `" + msg.author.tag + "` with ID: `" + msg.author.id + "`";
-
-    console.log(spookyLog.replace("@everyone", "@.everyone").replace("@here", "@.here"));
+    ougi.globalLog(msg);
 
     /*Ignore if in blacklist*/
     if (msg.channel.type == "text") {
@@ -137,6 +133,10 @@ function processCommand(msg) {
 
     else if (spookyCommand == "remove") {
         ougi.rm(arguments, msg)
+    }
+
+    else if (spookyCommand == "allow") {
+        ougi.allowCommand(arguments, msg)
     }
 /*---------------------------------------------*/
     else {

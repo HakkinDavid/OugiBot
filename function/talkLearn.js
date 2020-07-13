@@ -8,8 +8,8 @@ function talkLearn(arguments, msg) {
     return
   }
 
-  if (thisMessage.includes("<@") || thisMessage.includes(">")) {
-    msg.channel.send("Avoid mentions or custom emoji please. I wouldn't want to learn something that can either potentially ping someone or look plain odd if, for instance, that emoji becomes unavailable. What? Isn't that a mention or a custom emoji? Well, then don't include '\<\@' and '>' in a same message.").then().catch(console.error);
+  if (thisMessage.includes("<@") && thisMessage.includes(">")) {
+    msg.channel.send("Avoid mentions or custom emoji please. What? Isn't that a mention or a custom emoji? Well, then don't include '\<\@' and '>' in the same message.").then().catch(console.error);
     return
   }
 

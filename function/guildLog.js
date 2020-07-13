@@ -5,14 +5,14 @@ function guildLog(msg) {
   var pseudoArray = JSON.parse(fs.readFileSync('./guildLogs.txt', 'utf-8', console.error));
   if (pseudoArray.hasOwnProperty(guildID)){
     var guildLogger = pseudoArray[guildID];
-    while (msg.content.includes('  ')) {
-      msg.content = msg.content.replace('  ', ' ')
+    while (msg.cleanContent.includes('  ')) {
+      msg.cleanContent = msg.cleanContent.replace('  ', ' ')
     }
-    while (msg.content.includes('\n\n')) {
-      msg.content = msg.content.replace('\n\n', '\n')
+    while (msg.cleanContent.includes('\n\n')) {
+      msg.cleanContent = msg.cleanContent.replace('\n\n', '\n')
     }
-    while (msg.content.includes('\n')) {
-      msg.content = msg.content.replace('\n', ' ')
+    while (msg.cleanContent.includes('\n')) {
+      msg.cleanContent = msg.cleanContent.replace('\n', ' ')
     }
 
     var spookyCake = msg.cleanContent;

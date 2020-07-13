@@ -113,6 +113,18 @@ client.on('messageDelete', (msg) => {
     if (msg.content.toLowerCase().startsWith("ougi") || msg.author.bot || msg.content.startsWith("扇") || msg.content.toLowerCase().startsWith("#ougi") || msg.content.startsWith("<@629837958123356172>") || msg.content.startsWith("<@!629837958123356172>")) {
         return
     }
+    if (msg.channel.type == "text") {
+      var guildID = msg.guild.id;
+      var unsniper = JSON.parse(fs.readFileSync('./blacklist.txt', 'utf-8', console.error));
+      if (unsniper.hasOwnProperty(guildID)){
+        var existent = unsniper[guildID];
+        for(var i = 0; i < existent.length; i++) {
+          if(existent[i].toLowerCase() === "snipe") {
+            return
+          }
+        }
+      }
+    }
     ougi.loadSniper(msg);
 });
 

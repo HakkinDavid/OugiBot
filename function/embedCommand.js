@@ -2,7 +2,7 @@ module.exports =
 
 function embedCommand(arguments, msg) {
     if (arguments.length == 0){
-      msg.channel.send("Do you need some help making an embed? Take a look at `help embed`.").then().catch(console.error);
+      msg.channel.send("Do you need some help making an embed? Take a look at\n> ougi help embed").then().catch(console.error);
       return
     }
     var spookyCake = msg.content;

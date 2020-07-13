@@ -1,23 +1,33 @@
 module.exports =
 
 function customEmoji(arguments, msg) {
-  var searchFor = arguments[0];
-
+  var emojiArray = [];
   var emojiIDList = client.emojis.filter(emoji => emoji.available).map((e) => e.toString()).join("\n");
   var emojiNameList = client.emojis.filter(emoji => emoji.available).map((e) => e.name.toLowerCase()).join("\n");
-  var proArrayID = emojiIDList.split("\n");
-  var proArrayName = emojiNameList.split("\n");
+  for (i=0; i < arguments.length; i++) {
+    var searchFor = arguments[i];
+    var proArrayID = emojiIDList.split("\n");
+    var proArrayName = emojiNameList.split("\n");
 
-  var positionEmoji = proArrayName.indexOf(searchFor);
+    var positionEmoji = proArrayName.indexOf(searchFor);
 
-  if (positionEmoji == -1) {
-    msg.channel.send("That's not a name for any emoji I have access to. Run the following command to see the nice emojis I can use:\n> ougi emoji-list").then().catch(console.error);
-    return
+    if (positionEmoji == -1) {
+      var spookyEmoji = "<:unknown_emoji:731996283790950420>"
+    }
+    else {
+      var spookyEmoji = proArrayID[positionEmoji];
+    }
+    emojiArray.push(spookyEmoji)
   }
+  if (emojiArray.length >= 1) {
+    msg.delete().catch(O_o=>{});
 
-  var spookyEmoji = proArrayID[positionEmoji];
-
-  msg.delete().catch(O_o=>{});
-
-  msg.channel.send(spookyEmoji).catch(console.error);
+    msg.channel.send(emojiArray.join("")).catch(console.error);
+    if (emojiArray.includes("<:unknown_emoji:731996283790950420>")) {
+      msg.channel.send("I couldn't find one or more of the emoji you asked me for. Execute the following command to see my emoji list:\n> ougi emoji-list").catch(console.error);
+    }
+  }
+  else {
+    msg.channel.send("Please provide at least one emoji name. Execute the following command to see my emoji list:\n> ougi emoji-list").catch(console.error);
+  }
 }

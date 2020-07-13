@@ -6,16 +6,16 @@ function rm(arguments, msg) {
     return
   }
 
-  if (arguments.length <= 0) {
-    msg.channel.send("Ara ara, provide a phrase or a command that is at least one character long in order to blacklist it.");
-    return
-  }
-
   var guildID = msg.guild.id;
   var elAdmin = msg.guild.ownerID;
 
   if (elAdmin != msg.author.id) {
     msg.channel.send("You must be the server's owner to run this command.");
+    return
+  }
+
+  if (arguments.length <= 0) {
+    msg.channel.send("Ara ara, provide a phrase or a command that is at least one character long in order to blacklist it.");
     return
   }
 
@@ -26,7 +26,7 @@ function rm(arguments, msg) {
     return
   }
 
-  if (trigger.includes("<@") || trigger.includes(">")) {
+  if (trigger.includes("<@") && trigger.includes(">")) {
     msg.channel.send("Avoid mentions or custom emoji please. What? Isn't that a mention or a custom emoji? Well, then don't include '\<\@' and '>' in the same message.").then().catch(console.error);
     return
   }
