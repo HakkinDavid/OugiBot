@@ -140,6 +140,6 @@ function processCommand(msg) {
     }
 /*---------------------------------------------*/
     else {
-        ougi.talkAbility(msg)
+        ougi.judgementAbility(msg)
     }
 }

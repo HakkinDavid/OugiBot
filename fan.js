@@ -12,6 +12,9 @@ global.lastTweet = require('last-tweet');
 global.translate = require('@vitalets/google-translate-api');
 global.randomCase = require('random-case');
 global.findRemoveSync = require('find-remove');
+global.stringSimilarity = require('string-similarity');
+global.levenary = require('levenary');
+global.leven = require('leven');
 
 if(process.env.OFFLINE == 1) {
   client.destroy();
@@ -102,7 +105,7 @@ client.on('message', (msg) => {
         var event = new Date();
         var spookyLog = "__**" + event.toLocaleTimeString('en-US') + "**__\nDM received: " + msg.content + "\nSent by: `" + msg.author.tag + "` with ID: `" + msg.author.id + "`";
         console.log(spookyLog.replace("@everyone", "@.everyone").replace("@here", "@.here"));
-        ougi.talkAbility(msg);
+        ougi.judgementAbility(msg);
     }
 })
 

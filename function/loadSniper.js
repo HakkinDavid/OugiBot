@@ -4,7 +4,11 @@ function loadSniper(msg) {
   var channelID = msg.channel.id;
   var pseudoArray = JSON.parse(fs.readFileSync('./aimAssist.txt', 'utf-8', console.error));
   if (pseudoArray.includes(channelID)){
-    var newArray = JSON.parse(fs.readFileSync('./ammo/' + channelID + '.txt', 'utf-8', console.error));
+    var aimingAt = fs.readFileSync('./ammo/' + channelID + '.txt', 'utf-8', console.error);
+    if (aimingAt == null) {
+      aimingAt = [];
+    }
+    var newArray = JSON.parse(aimingAt);
   }
   else {
     var newArray = [];
