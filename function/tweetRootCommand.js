@@ -8,4 +8,5 @@ function tweetRootCommand(msg) {
     T.post('statuses/update', { status: plsTweetThis }, function(err, data, response) {
       console.log("Tweeted: " + plsTweetThis)
     })
+    msg.channel.send("**Tweeted:** " + plsTweetThis)
 }
