@@ -37,8 +37,8 @@ function rootCommands(msg) {
         ougi.vibeCheckReallyHard(arguments, msg)
     } else if (hauntedCommand == "haunt") {
         ougi.hauntRootCommand(arguments, msg)
-    } else if (hauntedCommand == "plsTweet") {
-        ougi.plsTweet(arguments, msg)
+    } else if (hauntedCommand == "tweet") {
+        ougi.tweetRootCommand(msg)
     } else {
         ougi.undefinedCommand(arguments, msg)
     }

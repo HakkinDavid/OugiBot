@@ -31,7 +31,7 @@ function talkAbility(msg) {
   var myLevU = leven(notSpookyDM, levenaryIdea);
   multipleLog.push("**Levenshtein matching trigger found with " + myLevU + " Levenshtein distance units.**\n> " + levenaryIdea);
   var judgeThis = stringSimilarity.findBestMatch(notSpookyDM, stringsArray);
-  var minSimilarity = 0.2;
+  var minSimilarity = 0.33;
   var similarity = judgeThis.bestMatch.rating;
   var comparisonThreshold = 0.8;
   var diceString = judgeThis.bestMatch.target;
