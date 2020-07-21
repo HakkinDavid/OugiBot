@@ -80,8 +80,10 @@ client.on('ready', () => {
   }
   else {
     client.user.setActivity("to update myself!");
-    console.log("I'm in UPDATE/DEV MODE");
+    client.user.setStatus("dnd").then().catch(console.error);
+    console.log("Running development instance.");
   }
+  var ougiReady = true;
 });
 
 client.on('message', (msg) => {
@@ -116,7 +118,7 @@ client.on('messageDelete', (msg) => {
     if (msg.content.toLowerCase().startsWith("ougi") || msg.author.bot || msg.content.startsWith("扇") || msg.content.toLowerCase().startsWith("#ougi") || msg.content.startsWith("<@629837958123356172>") || msg.content.startsWith("<@!629837958123356172>")) {
         return
     }
-    if (msg.channel.type == "text") {
+    if (msg.channel.type == "text" && ougiReady == true) {
       var guildID = msg.guild.id;
       var unsniper = JSON.parse(fs.readFileSync('./blacklist.txt', 'utf-8', console.error));
       if (unsniper.hasOwnProperty(guildID)){
