@@ -83,61 +83,58 @@ client.on('ready', () => {
     client.user.setStatus("dnd").then().catch(console.error);
     console.log("Running development instance.");
   }
-  var ougiReady = true;
 });
 
-if (ougiReady == true) {
-  client.on('message', (msg) => {
-      if (msg.author == client.user) {
-          return
-      }
-
-      if (msg.author.bot) {
+client.on('message', (msg) => {
+    if (msg.author == client.user) {
         return
-      }
+    }
 
-      if (msg.content.toLowerCase().startsWith("ougi") || msg.content.startsWith("扇") || msg.content.startsWith("<@629837958123356172>") || msg.content.startsWith("<@!629837958123356172>")) {
-          ougi.processCommand(msg);
-      }
+    if (msg.author.bot) {
+      return
+    }
 
-      else if (msg.content.toLowerCase().startsWith("#ougi")) {
-          ougi.rootCommands(msg);
-      }
+    if (msg.content.toLowerCase().startsWith("ougi") || msg.content.startsWith("扇") || msg.content.startsWith("<@629837958123356172>") || msg.content.startsWith("<@!629837958123356172>")) {
+        ougi.processCommand(msg);
+    }
 
-      else if (msg.channel.type == "dm") {
-          var event = new Date();
-          var spookyLog = "__**" + event.toLocaleTimeString('en-US') + "**__\nDM received: " + msg.content + "\nSent by: `" + msg.author.tag + "` with ID: `" + msg.author.id + "`";
-          console.log(spookyLog.replace("@everyone", "@.everyone").replace("@here", "@.here"));
-          ougi.judgementAbility(msg);
-      }
-  })
+    else if (msg.content.toLowerCase().startsWith("#ougi")) {
+        ougi.rootCommands(msg);
+    }
 
-  client.on('messageDelete', (msg) => {
-      if (msg.author == client.user) {
-          return
-      }
-      if (msg.content.toLowerCase().startsWith("ougi") || msg.author.bot || msg.content.startsWith("扇") || msg.content.toLowerCase().startsWith("#ougi") || msg.content.startsWith("<@629837958123356172>") || msg.content.startsWith("<@!629837958123356172>")) {
-          return
-      }
-      if (msg.channel.type == "text") {
-        var guildID = msg.guild.id;
-        var unsniper = JSON.parse(fs.readFileSync('./blacklist.txt', 'utf-8', console.error));
-        if (unsniper.hasOwnProperty(guildID)){
-          var existent = unsniper[guildID];
-          for(var i = 0; i < existent.length; i++) {
-            if(existent[i].toLowerCase() === "snipe") {
-              return
-            }
+    else if (msg.channel.type == "dm") {
+        var event = new Date();
+        var spookyLog = "__**" + event.toLocaleTimeString('en-US') + "**__\nDM received: " + msg.content + "\nSent by: `" + msg.author.tag + "` with ID: `" + msg.author.id + "`";
+        console.log(spookyLog.replace("@everyone", "@.everyone").replace("@here", "@.here"));
+        ougi.judgementAbility(msg);
+    }
+})
+
+client.on('messageDelete', (msg) => {
+    if (msg.author == client.user) {
+        return
+    }
+    if (msg.content.toLowerCase().startsWith("ougi") || msg.author.bot || msg.content.startsWith("扇") || msg.content.toLowerCase().startsWith("#ougi") || msg.content.startsWith("<@629837958123356172>") || msg.content.startsWith("<@!629837958123356172>")) {
+        return
+    }
+    if (msg.channel.type == "text") {
+      var guildID = msg.guild.id;
+      var unsniper = JSON.parse(fs.readFileSync('./blacklist.txt', 'utf-8', console.error));
+      if (unsniper.hasOwnProperty(guildID)){
+        var existent = unsniper[guildID];
+        for(var i = 0; i < existent.length; i++) {
+          if(existent[i].toLowerCase() === "snipe") {
+            return
           }
         }
       }
-      ougi.loadSniper(msg);
-  });
+    }
+    ougi.loadSniper(msg);
+});
 
-  client.on("channelDelete", (channel) => {
-      ougi.autoRMChannel(channel)
-  });
-}
+client.on("channelDelete", (channel) => {
+    ougi.autoRMChannel(channel)
+});
 
 /* Kaishimonogatari */
 client.login(process.env.TOKEN);
