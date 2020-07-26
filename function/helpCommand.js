@@ -13,8 +13,6 @@ function helpCommand(arguments, msg) {
         ougi.answerHelp(msg)
     } else if (arguments == 'snipe') {
         ougi.snipeHelp(msg)
-    } else if (arguments == 'now') {
-        ougi.nowHelp(msg)
     } else if (arguments == 'image') {
         ougi.imageHelp(msg)
     } else if (arguments == 'embed') {

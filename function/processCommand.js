@@ -62,10 +62,6 @@ function processCommand(msg) {
         ougi.answerCommand(arguments, msg)
     }
 
-    else if (spookyCommand == "now") {
-        ougi.nowCommand(msg)
-    }
-
     else if (spookyCommand == "image") {
         ougi.imageCommand(arguments, msg)
     }
