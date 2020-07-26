@@ -21,6 +21,9 @@ function mimicAbility(msg) {
   if (uSaid == iSaid) {
     iSaid = randomCase(iSaid);
   }
+  if (iSaid == "") {
+    return
+  }
   msg.channel.send(iSaid);
   multipleLog.push("**Replied**\n> " + iSaid.replace('<@!265257341967007758>', client.users.get('265257341967007758').tag).replace('<@265257341967007758>', client.users.get('265257341967007758').tag));
   console.log(multipleLog.join("\n"));

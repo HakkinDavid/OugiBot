@@ -16,17 +16,16 @@ function loadSniper(msg) {
     var updateArray = JSON.stringify(pseudoArray);
     fs.writeFile('./aimAssist.txt', updateArray, console.error);
   }
+  var thisArray = {
+    text: msg.content,
+    pfp: msg.author.avatarURL,
+    author: msg.author.username,
+    sent: msg.createdAt.toLocaleTimeString(msg.author.locale),
+    files: msg.attachments.map((files) => files.proxyUrl).join(" ")
+  };
 
-    var thisArray = {
-      text: msg.content,
-      pfp: msg.author.avatarURL,
-      author: msg.author.username,
-      sent: msg.createdAt.toLocaleTimeString(msg.author.locale),
-      files: msg.attachments.map((files) => files.proxyUrl).join(" ")
-    };
+  newArray.push(thisArray);
 
-    newArray.push(thisArray);
-
-    var proArray = JSON.stringify(newArray);
-    fs.writeFile('./ammo/' + channelID + '.txt', proArray, console.error);
+  var proArray = JSON.stringify(newArray);
+  fs.writeFile('./ammo/' + channelID + '.txt', proArray, console.error);
 }

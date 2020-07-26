@@ -12,3 +12,4 @@ node_modules/.bin/ffprobe.cmd
 node_modules/.bin/ffprobe.ps1
 node_modules/ffmpeg-binaries
 *.txt
+mediaCache/

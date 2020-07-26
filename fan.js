@@ -67,22 +67,7 @@ client.on('ready', () => {
 
   fs.writeFileSync('./aimAssist.txt', "[]", console.error);
 
-  if(process.env.DEV == 0){
-    var options = ["hi", "ohayou", "baka", "hey there!", "ola bb", "Ougi joins the battle!", "Creeper. \nAw man"];
-    var response = options[Math.floor(Math.random()*options.length)];
-    var doing = ["Minecraft", "Fortnite", "Destiny 2", "Portal", "Portal 2", "Project 64", "osu!", "Geometry Dash", "Slime Rancher", "Left 4 Dead 2", "Transformice", "Grand Theft Auto V", "Team Fortress 2", "Overwatch", "Undertale", "Dolphin", "Ultimate Custom Night", "Minecraft Windows 10 Edition", "Terraria", "ROBLOX", "Paladins", "Tom Clancy's Rainbow Six Siege"]
-    var something = doing[Math.floor(Math.random()*doing.length)];
-    client.user.setActivity(something)
-    var ougiStart = response + "\nI'm playing " + something;
-    console.log(ougiStart);
-    console.log("\n");
-    ougi.aTweet();
-  }
-  else {
-    client.user.setActivity("to update myself!");
-    client.user.setStatus("dnd").then().catch(console.error);
-    console.log("Running development instance.");
-  }
+  ougi.startup();
 });
 
 client.on('message', (msg) => {
