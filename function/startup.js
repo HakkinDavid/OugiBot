@@ -24,7 +24,7 @@ function aTweet() {
 
     if(process.env.DEV == 0){
       T.post('statuses/update', { status: contentToSay }, function(err, data, response) {
-        console.log("Tweeted: " + contentToSay)
+        client.channels.get(consoleLogging).send("Tweeted: " + contentToSay)
       })
       store.channel.send(willSay + 1);
       client.user.setActivity("you | " + contentToSay.replace("\n", ", ") + ".", {type: 'WATCHING'}).then().catch(console.error);

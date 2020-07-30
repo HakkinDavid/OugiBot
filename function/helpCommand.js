@@ -25,6 +25,12 @@ function helpCommand(arguments, msg) {
         ougi.emojiListHelp(msg)
     } else if (arguments == 'emoji') {
         ougi.emojiHelp(msg)
+    } else if (arguments == 'remove') {
+        ougi.removeHelp(msg)
+    } else if (arguments == 'allow') {
+        ougi.allowHelp(msg)
+    } else if (arguments == 'setlog') {
+        ougi.setlogHelp(msg)
     } else if (arguments == 'prefix') {
         ougi.prefixHelp(msg)
     } else if (arguments == 'info') {

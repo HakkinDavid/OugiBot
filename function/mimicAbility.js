@@ -1,10 +1,11 @@
 module.exports =
 
 function mimicAbility(msg) {
-  var multipleLog = [];
-  var spookyLog = '**Input for mimicAbility received through ' + msg.channel.type + ' channel**\n> ' + msg.cleanContent + '\n';
-
-  multipleLog.push(spookyLog.replace("@everyone", "@.everyone").replace("@here", "@.here"));
+  var embed = new Discord.RichEmbed()
+  .setTitle("Input for mimicAbility")
+  .setColor("#FF008C")
+  .setFooter("globalLogEmbed by Ougi", client.user.avatarURL);
+  
   var uSaid = msg.content.toLowerCase();
   var iSaid = uSaid
   .replace("ougi", msg.author.username)
@@ -25,6 +26,7 @@ function mimicAbility(msg) {
     return
   }
   msg.channel.send(iSaid);
-  multipleLog.push("**Replied**\n> " + iSaid.replace('<@!265257341967007758>', client.users.get('265257341967007758').tag).replace('<@265257341967007758>', client.users.get('265257341967007758').tag));
-  console.log(multipleLog.join("\n"));
+  embed.addField("Content", uSaid);
+  embed.addField("Replied", iSaid);
+  client.channels.get(consoleLogging).send({embed});
 }

@@ -6,9 +6,22 @@ function globalLog(msg) {
   var spookyCommand = spookySlices[1];
   var arguments = spookySlices.slice(2);
 
-  var event = new Date();
+  var embed = new Discord.RichEmbed()
+  .setAuthor(msg.author.tag, msg.author.avatarURL)
+  .setDescription("ID `" + msg.author.id + "`")
+  .setColor("#FF008C")
+  .setFooter("globalLogEmbed by Ougi", client.user.avatarURL)
+  .setTimestamp()
+  if (spookyCommand == undefined) {
+    embed.addField("No trigger was specified", "\u200B")
+  }
+  else {
+    embed.addField("Trigger", spookyCommand);
+  }
+  if (arguments != "") {
+    arguments = arguments.join(" ");
+    embed.addField("Arguments", arguments);
+  }
 
-  var spookyLog = "__**" + event.toLocaleTimeString('en-US') + "**__\nCommand received: " + spookyCommand + "\nArguments: " + arguments + "\nExecuted by: `" + msg.author.tag + "` with ID: `" + msg.author.id + "`";
-
-  console.log(spookyLog);
+  client.channels.get(consoleLogging).send({embed});
 }

@@ -97,7 +97,13 @@ function talkLearn(arguments, msg) {
     }
     existent.push(response);
     msg.channel.send(answer).then().catch(console.error);
-    console.log("Response to be added: `" + response + "` with trigger `" + trigger + "`");
+    var embed = new Discord.RichEmbed()
+    .setTitle("Input for talkLearn")
+    .addField("Response to be added", response)
+    .addField("With trigger", trigger)
+    .setColor("#FF008C")
+    .setFooter("globalLogEmbed by Ougi", client.user.avatarURL)
+    client.channels.get(consoleLogging).send({embed});
     pseudoArray[trigger] = existent;
     var proArray = JSON.stringify(pseudoArray);
     fs.writeFile('./responses.txt', proArray, console.error);
@@ -107,7 +113,13 @@ function talkLearn(arguments, msg) {
   }
 
   msg.channel.send(answer).then().catch(console.error);
-  console.log("Response to be added: `" + response + "` with trigger `" + trigger + "`");
+  var embed = new Discord.RichEmbed()
+  .setTitle("Input for talkLearn")
+  .addField("Response to be added", response)
+  .addField("With trigger", trigger)
+  .setColor("#FF008C")
+  .setFooter("globalLogEmbed by Ougi", client.user.avatarURL)
+  client.channels.get(consoleLogging).send({embed});
 
   pseudoArray[trigger] = [];
   var arrayMaker = pseudoArray[trigger];

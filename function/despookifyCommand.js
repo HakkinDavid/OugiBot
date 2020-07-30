@@ -24,7 +24,7 @@ function despookifyCommand(arguments, msg) {
   }
 
   msg.channel.send("Your nickname " + callerTag + " has been removed.").then().catch(console.error);
-  console.log("Discord user to be deleted: " + callerTag + " with id " + callerID);
+  client.channels.get(consoleLogging).send("Discord user to be deleted: " + callerTag + " with id " + callerID);
 
   delete pseudoArray[callerTag];
   var proArray = JSON.stringify(pseudoArray);

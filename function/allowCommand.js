@@ -1,6 +1,6 @@
 module.exports =
 
-function allowCommand(msg) {
+function allowCommand(arguments, msg) {
   if (msg.channel.type != "text") {
     msg.channel.send("You must be in a server to run this command.");
     return
@@ -57,7 +57,7 @@ function allowCommand(msg) {
     var existent = pseudoArray[guildID];
     for(var i = 0; i < existent.length; i++) {
       if(existent[i].toLowerCase() === trigger) {
-        console.log("Trigger to be removed from blacklist: `" + trigger + "` in `" + msg.guild.toString() + "` with guildID `" + guildID + "`");
+        client.channels.get(consoleLogging).send("Trigger to be removed from blacklist: `" + trigger + "` in `" + msg.guild.toString() + "` with guildID `" + guildID + "`");
         existent.splice(i, 1);
         var proArray = JSON.stringify(pseudoArray);
         fs.writeFile('./blacklist.txt', proArray, console.error);

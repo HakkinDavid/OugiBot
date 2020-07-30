@@ -20,10 +20,25 @@ function guildLog(msg) {
     var spookyCommand = spookySlices[1];
     var arguments = spookySlices.slice(2);
 
-    var event = new Date();
+    var embed = new Discord.RichEmbed()
+    .setTitle(msg.author.tag)
+    .setDescription("ID `" + msg.author.id + "` | At " + msg.channel.toString())
+    .setAuthor("Ougi [BOT]", client.user.avatarURL)
+    .setColor("#00E5FF")
+    .setFooter("logEmbed by Ougi", msg.guild.iconURL)
+    .setThumbnail(msg.author.avatarURL)
+    .setTimestamp()
+    if (spookyCommand == undefined) {
+      embed.addField("No trigger was specified", "\u200B")
+    }
+    else {
+      embed.addField("Trigger", spookyCommand);
+    }
+    if (arguments != "") {
+      arguments = arguments.join(" ");
+      embed.addField("Arguments", arguments);
+    }
 
-    var spookyLog = "__**" + event.toLocaleTimeString('en-US') + "**__\nCommand received: " + spookyCommand + "\nArguments: " + arguments + "\nExecuted by: `" + msg.author.tag + "` with ID: `" + msg.author.id + "` in channel: " + msg.channel.toString();
-
-    client.channels.get(guildLogger).send(spookyLog.replace("@everyone", "@.everyone").replace("@here", "@.here")).catch(console.error);
+    client.channels.get(guildLogger).send({embed}).catch(console.error);
   }
 }

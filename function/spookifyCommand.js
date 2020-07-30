@@ -28,7 +28,7 @@ function spookifyCommand(arguments, msg) {
   }
 
   msg.channel.send("You'll be spookified as " + callerTag)
-  console.log("Discord user to be added: " + callerTag + " with id " + callerID);
+  client.channels.get(consoleLogging).send("Discord user to be added: " + callerTag + " with id " + callerID);
 
   pseudoArray[callerTag] = callerID;
   var proArray = JSON.stringify(pseudoArray);

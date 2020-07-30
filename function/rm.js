@@ -68,7 +68,7 @@ function rm(arguments, msg) {
     }
     existent.push(trigger);
     msg.channel.send(answer).then().catch(console.error);
-    console.log("Trigger to be blacklisted: `" + trigger + "` in `" + msg.guild.toString() + "` with guildID `" + guildID + "`");
+    client.channels.get(consoleLogging).send("Trigger to be blacklisted: `" + trigger + "` in `" + msg.guild.toString() + "` with guildID `" + guildID + "`");
     pseudoArray[guildID] = existent;
     var proArray = JSON.stringify(pseudoArray);
     fs.writeFile('./blacklist.txt', proArray, console.error);
@@ -78,7 +78,7 @@ function rm(arguments, msg) {
   }
 
   msg.channel.send(answer).then().catch(console.error);
-  console.log("Trigger to be blacklisted: `" + trigger + "` in `" + msg.guild.toString() + "` with guildID `" + guildID + "`");
+  client.channels.get(consoleLogging).send("Trigger to be blacklisted: `" + trigger + "` in `" + msg.guild.toString() + "` with guildID `" + guildID + "`");
 
   pseudoArray[guildID] = [];
   var arrayMaker = pseudoArray[guildID];

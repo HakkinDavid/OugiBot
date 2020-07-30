@@ -88,9 +88,6 @@ client.on('message', (msg) => {
     }
 
     else if (msg.channel.type == "dm") {
-        var event = new Date();
-        var spookyLog = "__**" + event.toLocaleTimeString('en-US') + "**__\nDM received: " + msg.content + "\nSent by: `" + msg.author.tag + "` with ID: `" + msg.author.id + "`";
-        console.log(spookyLog.replace("@everyone", "@.everyone").replace("@here", "@.here"));
         ougi.judgementAbility(msg);
     }
 })

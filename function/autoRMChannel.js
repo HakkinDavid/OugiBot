@@ -8,7 +8,7 @@ function autoRMChannel(channel) {
 
   if (pseudoArray.hasOwnProperty(guildID)){
     delete pseudoArray[guildID];
-    console.log("Logging channel for " + channel.guild.toString() + " successfully auto-disabled on deletion.");
+    client.channels.get(consoleLogging).send("Logging channel for " + channel.guild.toString() + " successfully auto-disabled on deletion.");
     var proArray = JSON.stringify(pseudoArray);
     fs.writeFile('./guildLogs.txt', proArray, console.error);
     var myLogger = './guildLogs.txt';

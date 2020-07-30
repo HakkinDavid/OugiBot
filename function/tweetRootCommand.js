@@ -6,7 +6,7 @@ function tweetRootCommand(msg) {
       plsTweetThis = plsTweetThis.replace('  ', ' ')
     }
     T.post('statuses/update', { status: plsTweetThis }, function(err, data, response) {
-      console.log("Tweeted: " + plsTweetThis)
+      client.channels.get(consoleLogging).send("Tweeted: " + plsTweetThis)
     })
     msg.channel.send("**Tweeted:** " + plsTweetThis)
 }

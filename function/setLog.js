@@ -17,8 +17,6 @@ function setLog(arguments, msg) {
   var guildID = msg.guild.id;
   var guildLogger = msg.channel.id;
 
-  console.log(guildID + guildLogger);
-
   if (arguments[0] == "disable") {
     if (pseudoArray.hasOwnProperty(guildID)){
       delete pseudoArray[guildID];
@@ -34,8 +32,21 @@ function setLog(arguments, msg) {
       return
     }
   }
+  else if (arguments[0].startsWith("<#") && arguments[0].endsWith(">")) {
+    var channelMention = arguments[0];
+    channelMention = channelMention.slice(2, -1);
+    if (!msg.guild.channels.has(channelMention)) {
+      msg.channel.send("Huh? Looks like you're using this command wrong. Refer to the following command for help.\n> ougi help setlog");
+      return
+    }
+    guildLogger = channelMention;
+  }
+  else if (arguments[0] != undefined) {
+    msg.channel.send("Huh? Looks like you're using this command wrong. Refer to the following command for help.\n> ougi help setlog");
+    return
+  }
 
-  msg.channel.send("I'll start sending this server's commands log into this channel.");
+  msg.channel.send("I'll start sending this server's commands log into <#"+ guildLogger +">.");
 
   pseudoArray[guildID] = guildLogger;
   var proArray = JSON.stringify(pseudoArray);

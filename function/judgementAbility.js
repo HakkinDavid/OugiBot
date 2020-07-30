@@ -1,7 +1,6 @@
 module.exports =
 
 function talkAbility(msg) {
-  var multipleLog = [];
   while (msg.content.includes('  ')) {
     msg.content = msg.content.replace('  ', ' ')
   }
@@ -11,9 +10,11 @@ function talkAbility(msg) {
   while (msg.content.includes('\n')) {
     msg.content = msg.content.replace('\n', ' ')
   }
-  var spookyLog = '**Input for judgementAbility received through ' + msg.channel.type + ' channel**\n> ' + msg.cleanContent + '\n';
-
-  multipleLog.push(spookyLog.replace("@everyone", "@.everyone").replace("@here", "@.here"));
+  var embed = new Discord.RichEmbed()
+  .setTitle("Input for judgementAbility (" + msg.channel.type.replace("dm", "DM").replace("text", "Text") + " channel)")
+  .setAuthor(msg.author.tag, msg.author.avatarURL)
+  .setColor("#FF008C")
+  .setFooter("globalLogEmbed by Ougi", client.user.avatarURL);
 
   var pseudoArray = JSON.parse(fs.readFileSync('./responses.txt', 'utf-8', console.error));
   var stringsArray = Object.keys(pseudoArray);
@@ -25,20 +26,21 @@ function talkAbility(msg) {
   while (notSpookyDM.startsWith(" ")) {
     notSpookyDM = notSpookyDM.substring(1, notSpookyDM.length)
   }
+  embed.addField("Content", notSpookyDM.slice(0, 1024))
   msg.channel.startTyping();
   ougi.sleep(500);
   var levenaryIdea = levenary(notSpookyDM, stringsArray);
   var myLevU = leven(notSpookyDM, levenaryIdea);
-  multipleLog.push("**Levenshtein matching trigger found with " + myLevU + " Levenshtein distance units.**\n> " + levenaryIdea);
+  embed.addField("Levenshtein matching trigger found with " + myLevU + " Levenshtein distance units.", levenaryIdea)
   var judgeThis = stringSimilarity.findBestMatch(notSpookyDM, stringsArray);
   var minSimilarity = 0.33;
   var similarity = judgeThis.bestMatch.rating;
   var comparisonThreshold = 0.8;
   var diceString = judgeThis.bestMatch.target;
-  multipleLog.push("**Dice's Coefficient matching trigger found with " + similarity*100 + "% of similarity.**\n> " + diceString);
+  embed.addField("Dice's Coefficient matching trigger found with " + similarity*100 + "% of similarity.", diceString);
   var compareLevDice = stringSimilarity.compareTwoStrings(levenaryIdea, diceString);
   var compareDiceLev = leven(levenaryIdea, diceString);
-  multipleLog.push("`Levenshtein matching trigger and Dice's Coefficient matching trigger share " + compareDiceLev + " Levenshtein distance units and " + compareLevDice*100 + "% similarity according to Dice's Coefficient.`");
+  embed.addField("Levenshtein matching trigger and Dice's Coefficient matching trigger share", "► `" + compareDiceLev + "` Levenshtein distance units\n► `" + compareLevDice*100 + "%` similarity according to Dice's Coefficient.");
   if (compareLevDice < comparisonThreshold) {
     var tellLevAboutDice = leven(notSpookyDM, diceString);
     if (tellLevAboutDice >= notSpookyDM.length/2) {
@@ -53,8 +55,8 @@ function talkAbility(msg) {
   }
   var finalSimilarity = stringSimilarity.compareTwoStrings(notSpookyDM, thisString);
   var finalLevU = leven(notSpookyDM, thisString);
-  multipleLog.push("**Ougi's judgementAbility has determined the following trigger is the best available option, with " + finalSimilarity*100 + "% of similarity (current minimum is " + minSimilarity*100 + "%) and " + finalLevU + " Levenshtein distance units.**\n> " + thisString);
-
+  embed.addField("Ougi's judgementAbility chose the following trigger", thisString);
+  embed.addField("This trigger has", "► `" + finalSimilarity*100 + "%` of similarity\n► Current minimum is `" + minSimilarity*100 + "%`\n► `" + finalLevU + "` Levenshtein distance units.")
   if (finalSimilarity >= minSimilarity){
     var options = pseudoArray[thisString];
     var response = options[Math.floor(Math.random()*options.length)];
@@ -70,12 +72,12 @@ function talkAbility(msg) {
       }
     }
     msg.channel.send(response).then().catch(console.error);
-    multipleLog.push("**Replied**\n> " + response);
-    console.log(multipleLog.join("\n"));
+    embed.addField("Replied", response);
+    client.channels.get(consoleLogging).send({embed});
   }
   else {
-    multipleLog.push("*The trigger above doesn't satisfy the minimum similarity percent. I'll proceed to checkBadWords.*");
-    console.log(multipleLog.join("\n"));
+    embed.addField("Unsatisfied similarity minimum percentage", "Falling back to checkBadWords.");
+    client.channels.get(consoleLogging).send({embed});
     ougi.checkBadWords(msg);
   }
   msg.channel.stopTyping();

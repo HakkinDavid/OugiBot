@@ -12,5 +12,5 @@ function additionCommand(arguments, msg) {
     var options = ["It's ", "We get ", "I think it is ", "The resulting value is "];
     var response = options[Math.floor(Math.random()*options.length)];
     msg.channel.send(response + inputValues.toString()).then().catch(console.error);
-    console.log("**Replied**\n> " + response + inputValues.toString());
+    client.channels.get(consoleLogging).send("**Replied**\n> " + response + inputValues.toString());
 }

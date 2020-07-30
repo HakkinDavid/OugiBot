@@ -28,8 +28,12 @@ function processCommand(msg) {
 
       if (blacklistCheck.hasOwnProperty(guildID)){
         var existent = blacklistCheck[guildID];
-        for(var i = 0; i < existent.length; i++) {
-          if(existent[i].toLowerCase() === spookySlices.slice(1).join(" ")) {
+        for (var i = 0; i < existent.length; i++) {
+          if (existent[i].toLowerCase() === spookySlices.slice(1).join(" ")) {
+            msg.channel.send("Sorry, that's blacklisted in " + msg.guild.toString() + ".").then().catch(console.error);
+            return
+          }
+          else if (existent[i].toLowerCase() === spookyCommand) {
             msg.channel.send("Sorry, that's blacklisted in " + msg.guild.toString() + ".").then().catch(console.error);
             return
           }
