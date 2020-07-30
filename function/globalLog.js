@@ -16,11 +16,11 @@ function globalLog(msg) {
     embed.addField("No trigger was specified", "\u200B")
   }
   else {
-    embed.addField("Trigger", spookyCommand);
+    embed.addField("Command", spookyCommand);
   }
   if (arguments != "") {
     arguments = arguments.join(" ");
-    embed.addField("Arguments", arguments);
+    embed.addField("Arguments", arguments.slice(0, 1024));
   }
 
   client.channels.get(consoleLogging).send({embed});

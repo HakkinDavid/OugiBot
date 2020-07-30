@@ -36,7 +36,7 @@ function guildLog(msg) {
     }
     if (arguments != "") {
       arguments = arguments.join(" ");
-      embed.addField("Arguments", arguments);
+      embed.addField("Arguments", arguments.slice(0, 1024));
     }
 
     client.channels.get(guildLogger).send({embed}).catch(console.error);

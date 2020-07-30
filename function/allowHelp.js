@@ -23,7 +23,7 @@ function allowHelp(msg) {
   .setTitle("Ougi's `allow` command")
   .setAuthor("Ougi [BOT]", client.user.avatarURL)
   .setColor("#230347")
-  .setDescription("Use this command to whitelist a trigger that was blacklisted in this Discord server, Ougi will start processing that input.")
+  .setDescription("Use this command to whitelist a trigger that is currently blacklisted in this Discord server, Ougi will start processing that input.")
   .addField("Special permission required", ":warning: You must be the owner of whatever Discord server you run this command in.")
   .setFooter("helpEmbed by Ougi", client.user.avatarURL)
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true")
