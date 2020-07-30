@@ -1,7 +1,7 @@
 module.exports =
 
 function globalLog(msg) {
-  var spookyCake = msg.cleanContent;
+  var spookyCake = msg.content;
   var spookySlices = spookyCake.toLowerCase().split(" ");
   var spookyCommand = spookySlices[1];
   var arguments = spookySlices.slice(2);

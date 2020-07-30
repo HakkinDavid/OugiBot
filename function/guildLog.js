@@ -5,16 +5,6 @@ function guildLog(msg) {
   var pseudoArray = JSON.parse(fs.readFileSync('./guildLogs.txt', 'utf-8', console.error));
   if (pseudoArray.hasOwnProperty(guildID)){
     var guildLogger = pseudoArray[guildID];
-    while (msg.content.includes('  ')) {
-      msg.content = msg.content.replace('  ', ' ')
-    }
-    while (msg.content.includes('\n\n')) {
-      msg.content = msg.content.replace('\n\n', '\n')
-    }
-    while (msg.content.includes('\n')) {
-      msg.content = msg.content.replace('\n', ' ')
-    }
-
     var spookyCake = msg.content;
     var spookySlices = spookyCake.toLowerCase().split(" ");
     var spookyCommand = spookySlices[1];
