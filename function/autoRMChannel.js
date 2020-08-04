@@ -15,4 +15,15 @@ function autoRMChannel(channel) {
     ougi.backup(myLogger, guildLoggerChannel);
     return
   }
+
+  var handyArray = JSON.parse(fs.readFileSync('./guildNews.txt', 'utf-8', console.error));
+  if (pseudoArray.hasOwnProperty(guildID)){
+    delete handyArray[guildID];
+    client.channels.get(consoleLogging).send("News channel for " + channel.guild.toString() + " successfully auto-disabled on deletion.");
+    var epicArray = JSON.stringify(handyArray);
+    fs.writeFile('./guildNews.txt', epicArray, console.error);
+    var myNewspaper = './guildNews.txt';
+    ougi.backup(myNewspaper, guildNewsChannel);
+    return
+  }
 }

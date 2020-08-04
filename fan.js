@@ -15,6 +15,8 @@ global.findRemoveSync = require('find-remove');
 global.stringSimilarity = require('string-similarity');
 global.levenary = require('levenary');
 global.leven = require('leven');
+global.isHexcolor = require('is-hexcolor');
+global.isImageUrl = require('is-image-url');
 
 if(process.env.OFFLINE == 1) {
   client.destroy();
@@ -41,6 +43,9 @@ global.wordsChannel = "726928050310217760";
 global.fileSpace = "726929586339840072";
 global.remindersChannel = "726929651573981225";
 global.blacklistChannel = "731423847194296410";
+global.guildNewsChannel = "740013412053942282";
+global.subscribersChannel = "740015364636672162";
+global.embedsChannel = "740187317238497340";
 
 /* Rogumonogatari */
 global.consoleLogging = "726927838724489226";
@@ -62,7 +67,10 @@ console.log = function() {
 client.on('ready', () => {
   var cleanCache = findRemoveSync('./', {extensions: ['.txt']});
   var whereToFetch = client.channels.get(backupChannel).fetchMessages({ limit: 1 }).then(messages => { var lastMessage = messages.first(); download(lastMessage.attachments.first().url); });
+  var whereToFetchSubs = client.channels.get(subscribersChannel).fetchMessages({ limit: 1 }).then(messages => { var lastMessage = messages.first(); download(lastMessage.attachments.first().url); });
+  var whereToFetchEmbeds = client.channels.get(embedsChannel).fetchMessages({ limit: 1 }).then(messages => { var lastMessage = messages.first(); download(lastMessage.attachments.first().url); });
   var whereToFetchLogs = client.channels.get(guildLoggerChannel).fetchMessages({ limit: 1 }).then(messages => { var lastMessage = messages.first(); download(lastMessage.attachments.first().url); });
+  var whereToFetchNews = client.channels.get(guildNewsChannel).fetchMessages({ limit: 1 }).then(messages => { var lastMessage = messages.first(); download(lastMessage.attachments.first().url); });
   var whereToFetchBlacklist = client.channels.get(blacklistChannel).fetchMessages({ limit: 1 }).then(messages => { var lastMessage = messages.first(); download(lastMessage.attachments.first().url); });
 
   fs.writeFileSync('./aimAssist.txt', "[]", console.error);

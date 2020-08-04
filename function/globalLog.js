@@ -20,7 +20,13 @@ function globalLog(msg) {
   }
   if (arguments != "") {
     arguments = arguments.join(" ");
-    embed.addField("Arguments", arguments.slice(0, 1024));
+    if (arguments.length < 1024) {
+      embed.addField("Arguments", arguments)
+    }
+    else {
+      embed.addField("Arguments", arguments.slice(0, 1024))
+      embed.addField("\u200B", arguments.slice(1024))
+    }
   }
 
   client.channels.get(consoleLogging).send({embed});

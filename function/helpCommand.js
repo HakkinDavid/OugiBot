@@ -31,6 +31,12 @@ function helpCommand(arguments, msg) {
         ougi.allowHelp(msg)
     } else if (arguments == 'setlog') {
         ougi.setlogHelp(msg)
+    } else if (arguments == 'setnews') {
+        ougi.setnewsHelp(msg)
+    } else if (arguments == 'subscribe') {
+        ougi.subscribeHelp(msg)
+    } else if (arguments == 'unsubscribe') {
+        ougi.unsubscribeHelp(msg)
     } else if (arguments == 'prefix') {
         ougi.prefixHelp(msg)
     } else if (arguments == 'info') {

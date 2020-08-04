@@ -71,7 +71,7 @@ function processCommand(msg) {
     }
 
     else if (spookyCommand == "embed") {
-        ougi.embedCommand(arguments, msg)
+        ougi.spookyEmbed(msg)
     }
 
     else if (spookyCommand == "whisper") {
@@ -122,6 +122,14 @@ function processCommand(msg) {
     else if (spookyCommand == "snipe") {
         ougi.shootSniper(arguments, msg)
     }
+
+    else if (spookyCommand == "subscribe" && arguments.length == 0) {
+        ougi.subscribeCommand(msg)
+    }
+
+    else if (spookyCommand == "unsubscribe" && arguments.length == 0) {
+        ougi.unsubscribeCommand(msg)
+    }
 /*--------------Localizations-------------------*/
     else if (spookyCommand == "responde") {
         ougi.respondeComando(arguments, msg)
@@ -129,6 +137,10 @@ function processCommand(msg) {
 /*----------------Mod Stuff--------------------*/
     else if (spookyCommand == "setlog") {
         ougi.setLog(arguments, msg)
+    }
+
+    else if (spookyCommand == "setnews") {
+        ougi.setNews(arguments, msg)
     }
 
     else if (spookyCommand == "remove") {
