@@ -95,7 +95,7 @@ client.on('message', (msg) => {
         ougi.rootCommands(msg);
     }
 
-    else if (msg.channel.type == "dm") {
+    else if (msg.channel.type == "dm" && msg.content.length > 0) {
         ougi.judgementAbility(msg);
     }
 })

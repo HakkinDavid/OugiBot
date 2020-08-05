@@ -28,6 +28,9 @@ function spookyEmbed(msg) {
   var footerArray = [];
   var authorArray = [];
   var presetName = "";
+  var attachmentsForEmbed = [];
+
+  msg.attachments.map((files) => attachmentsForEmbed.push(files.url));
 
   if (msg.guild == null) {
     var serverIcon = client.user.avatarURL;
@@ -48,6 +51,10 @@ function spookyEmbed(msg) {
         msg.channel.send("Fields must be between 1 and 1024 characters long.");
         return
       }
+      if (fieldsArray.length == 25) {
+        msg.channel.send("Maximum number of fields is 25.");
+        return
+      }
       fieldsArray.push(material);
     }
     else if (material.startsWith("field ")) {
@@ -56,12 +63,20 @@ function spookyEmbed(msg) {
         msg.channel.send("Fields must be between 1 and 1024 characters long.");
         return
       }
+      if (fieldsArray.length == 25) {
+        msg.channel.send("Maximum number of fields is 25.");
+        return
+      }
       fieldsArray.push(material);
     }
     else if (material.startsWith("subtitle ")) {
       material = material.substring(9);
       if (material.length < 1 || material.length > 256) {
         msg.channel.send("Subtitles must be between 1 and 256 characters long.");
+        return
+      }
+      if (fieldsTitles.length == 25) {
+        msg.channel.send("Maximum number of subtitles is 25.");
         return
       }
       fieldsTitles.push(material);
@@ -100,6 +115,23 @@ function spookyEmbed(msg) {
         authorArray[0] = material;
       }
     }
+    else if (material.startsWith("authorurl ")) {
+      material = material.substring(10);
+      if (!material.includes(".")) {
+        msg.channel.send("Author URL must be valid. Make sure you add a Top Level Domain (e.g. `.com`, `.net`, `.boo`).").then().catch(console.error);
+        return
+      }
+
+      if (material.startsWith("http:")) {
+        msg.channel.send("Make sure the provided author URL uses Hyper Text Transfer Protocol Secure (`https`).").then().catch(console.error);
+        return
+      }
+
+      if (!material.startsWith("https://")) {
+        material = "https://" + material;
+      }
+      authorArray[2] = material;
+    }
     else if (material.startsWith("description ")) {
       material = material.substring(12);
       if (material.length < 1 || material.length > 2048) {
@@ -129,14 +161,44 @@ function spookyEmbed(msg) {
       if (material.startsWith("<@") && material.endsWith(">")) {
         let mentionedUser = material.slice(2, material.length-1).replace("!", "");
         if (!client.users.has(mentionedUser)) {
-          msg.channel.send("Footer icon must be a valid image URL or an user mention. Else, you may specify `guild`, `myself` or `ougi` as icons.");
+          msg.channel.send("Footer icon must be an attached image, image URL or an user mention. Else, you may specify `guild`, `myself` or `ougi` as icons.");
           return
         }
         footerArray[1] = client.users.get(mentionedUser).avatarURL;
       }
+      else if (material.startsWith("file")) {
+        if (attachmentsForEmbed.length < 1) {
+          msg.channel.send("You didn't attach any files.");
+          return
+        }
+        material = material.substring(4);
+        if (material.startsWith(" ")) {
+          material = material.substring(1);
+        }
+        if (material.length < 1) {
+          material = 1;
+        }
+        if (isNaN(material)) {
+          msg.channel.send("Please specify which attached file to use as footer icon (index number) or don't specify any index to use the first one.");
+          return
+        }
+        if (material < 1) {
+          material = 1;
+        }
+        material--;
+        if (material > attachmentsForEmbed.length) {
+          msg.channel.send("That's not a valid file index (your message had " + attachmentsForEmbed.length + "), you may not specify any index to use the first one.");
+          return
+        }
+        if (!isImageUrl(attachmentsForEmbed[material])) {
+          msg.channel.send("Footer icon must be a valid image.");
+          return
+        }
+        footerArray[1] = attachmentsForEmbed[material];
+      }
       else {
         if (!isImageUrl(material)) {
-          msg.channel.send("Footer icon must be a valid image URL or an user mention. Else, you may specify `guild`, `myself` or `ougi` as icons.");
+          msg.channel.send("Footer icon must be an attached image, image URL or an user mention. Else, you may specify `guild`, `myself` or `ougi` as icons.");
           return
         }
         footerArray[1] = material;
@@ -147,14 +209,44 @@ function spookyEmbed(msg) {
       if (material.startsWith("<@") && material.endsWith(">")) {
         let mentionedUser = material.slice(2, material.length-1).replace("!", "");
         if (!client.users.has(mentionedUser)) {
-          msg.channel.send("Author icon must be a valid image URL or an user mention. Else, you may specify `guild`, `myself` or `ougi` as icons.");
+          msg.channel.send("Author avatar must be an attached image, image URL or an user mention. Else, you may specify `guild`, `myself` or `ougi` as avatar.");
           return
         }
         authorArray[1] = client.users.get(mentionedUser).avatarURL;
       }
+      else if (material.startsWith("file")) {
+        if (attachmentsForEmbed.length < 1) {
+          msg.channel.send("You didn't attach any files.");
+          return
+        }
+        material = material.substring(4);
+        if (material.startsWith(" ")) {
+          material = material.substring(1);
+        }
+        if (material.length < 1) {
+          material = 1;
+        }
+        if (isNaN(material)) {
+          msg.channel.send("Please specify which attached file to use as author avatar (index number) or don't specify any index to use the first one.");
+          return
+        }
+        if (material < 1) {
+          material = 1;
+        }
+        material--;
+        if (material > attachmentsForEmbed.length) {
+          msg.channel.send("That's not a valid file index (your message had " + attachmentsForEmbed.length + "), you may not specify any index to use the first one.");
+          return
+        }
+        if (!isImageUrl(attachmentsForEmbed[material])) {
+          msg.channel.send("Author avatar must be a valid image.");
+          return
+        }
+        authorArray[1] = attachmentsForEmbed[material];
+      }
       else {
         if (!isImageUrl(material)) {
-          msg.channel.send("Author icon must be a valid image URL or an user mention. Else, you may specify `guild`, `myself` or `ougi` as icons.");
+          msg.channel.send("Author avatar must be an attached image, image URL or an user mention. Else, you may specify `guild`, `myself` or `ougi` as avatar.");
           return
         }
         authorArray[1] = material;
@@ -165,14 +257,44 @@ function spookyEmbed(msg) {
       if (material.startsWith("<@") && material.endsWith(">")) {
         let mentionedUser = material.slice(2, material.length-1).replace("!", "");
         if (!client.users.has(mentionedUser)) {
-          msg.channel.send("Thumbnail must be a valid image URL or an user mention. Else, you may specify `guild`, `myself` or `ougi` as icons.");
+          msg.channel.send("Thumbnail must be an attached image, image URL or an user mention. Else, you may specify `guild`, `myself` or `ougi` as thumbnail.");
           return
         }
         spookyConstructor.setThumbnail(client.users.get(mentionedUser).avatarURL);
       }
+      else if (material.startsWith("file")) {
+        if (attachmentsForEmbed.length < 1) {
+          msg.channel.send("You didn't attach any files.");
+          return
+        }
+        material = material.substring(4);
+        if (material.startsWith(" ")) {
+          material = material.substring(1);
+        }
+        if (material.length < 1) {
+          material = 1;
+        }
+        if (isNaN(material)) {
+          msg.channel.send("Please specify which attached file to use as thumbnail (index number) or don't specify any index to use the first one.");
+          return
+        }
+        if (material < 1) {
+          material = 1;
+        }
+        material--;
+        if (material > attachmentsForEmbed.length) {
+          msg.channel.send("That's not a valid file index (your message had " + attachmentsForEmbed.length + "), you may not specify any index to use the first one.");
+          return
+        }
+        if (!isImageUrl(attachmentsForEmbed[material])) {
+          msg.channel.send("Thumbnail must be a valid image.");
+          return
+        }
+        spookyConstructor.setThumbnail(attachmentsForEmbed[material]);
+      }
       else {
         if (!isImageUrl(material)) {
-          msg.channel.send("Thumbnail must be a valid image URL or an user mention. Else, you may specify `guild`, `myself` or `ougi` as icons.");
+          msg.channel.send("Thumbnail must be an attached image, image URL or an user mention. Else, you may specify `guild`, `myself` or `ougi` as thumbnail.");
           return
         }
         spookyConstructor.setThumbnail(material);
@@ -183,14 +305,44 @@ function spookyEmbed(msg) {
       if (material.startsWith("<@") && material.endsWith(">")) {
         let mentionedUser = material.slice(2, material.length-1).replace("!", "");
         if (!client.users.has(mentionedUser)) {
-          msg.channel.send("Image must be a valid image URL or an user mention. Else, you may specify `guild`, `myself` or `ougi` as icons.");
+          msg.channel.send("Image must be an attached image, image URL or an user mention. Else, you may specify `guild`, `myself` or `ougi` as image.");
           return
         }
         spookyConstructor.setImage(client.users.get(mentionedUser).avatarURL);
       }
+      else if (material.startsWith("file")) {
+        if (attachmentsForEmbed.length < 1) {
+          msg.channel.send("You didn't attach any files.");
+          return
+        }
+        material = material.substring(4);
+        if (material.startsWith(" ")) {
+          material = material.substring(1);
+        }
+        if (material.length < 1) {
+          material = 1;
+        }
+        if (isNaN(material)) {
+          msg.channel.send("Please specify which attached file to use as image (index number) or don't specify any index to use the first one.");
+          return
+        }
+        if (material < 1) {
+          material = 1;
+        }
+        material--;
+        if (material > attachmentsForEmbed.length) {
+          msg.channel.send("That's not a valid file index (your message had " + attachmentsForEmbed.length + "), you may not specify any index to use the first one.");
+          return
+        }
+        if (!isImageUrl(attachmentsForEmbed[material])) {
+          msg.channel.send("Specified file must be a valid image.");
+          return
+        }
+        spookyConstructor.setImage(attachmentsForEmbed[material]);
+      }
       else {
         if (!isImageUrl(material)) {
-          msg.channel.send("Image must be a valid image URL or an user mention. Else, you may specify `guild`, `myself` or `ougi` as icons.");
+          msg.channel.send("Image must be an attached image, image URL or an user mention. Else, you may specify `guild`, `myself` or `ougi` as image.");
           return
         }
         spookyConstructor.setImage(material);
@@ -202,7 +354,6 @@ function spookyEmbed(msg) {
         msg.channel.send("That doesn't look like an URL. Make sure you add a Top Level Domain (e.g. `.com`, `.net`, `.boo`).").then().catch(console.error);
         return
       }
-
       if (material.startsWith("http:")) {
         msg.channel.send("Make sure the provided URL uses Hyper Text Transfer Protocol Secure (`https`).").then().catch(console.error);
         return
@@ -214,16 +365,7 @@ function spookyEmbed(msg) {
       spookyConstructor.setURL(material)
     }
     else if (material.startsWith("timestamp")) {
-      material = material.substring(9);
-      if (material.startsWith(" ")) {
-        material = material.substring(1);
-      }
-      if (material == "no" || material == "disable") {
-        //do NOTHING but don't return yet
-      }
-      else {
-        spookyConstructor.setTimestamp();
-      }
+      spookyConstructor.setTimestamp();
     }
     else if (material.startsWith("color ")) {
       let pseudoColor = "";
@@ -286,17 +428,26 @@ function spookyEmbed(msg) {
     spookyConstructor.setFooter(footerArray[0], footerArray[1])
   }
 
-  if (authorArray[0] != undefined && authorArray[1] == undefined) {
+  if (authorArray[0] != undefined && authorArray[1] == undefined && authorArray[2] == undefined) {
     spookyConstructor.setAuthor(authorArray[0])
   }
-  else if (authorArray[0] == undefined && authorArray[1] != undefined) {
+  else if (authorArray[0] == undefined && authorArray[1] != undefined && authorArray[2] == undefined) {
     spookyConstructor.setAuthor("\u200b", authorArray[1])
   }
-  else if (authorArray[0] != undefined && authorArray[1] != undefined) {
+  else if (authorArray[0] != undefined && authorArray[1] != undefined && authorArray[2] == undefined) {
     spookyConstructor.setAuthor(authorArray[0], authorArray[1])
   }
+  else if (authorArray[0] != undefined && authorArray[1] == undefined && authorArray[2] != undefined) {
+    spookyConstructor.setAuthor(authorArray[0], undefined, authorArray[2])
+  }
+  else if (authorArray[0] == undefined && authorArray[1] != undefined && authorArray[2] != undefined) {
+    spookyConstructor.setAuthor("\u200b", authorArray[1], authorArray[2])
+  }
+  else if (authorArray[0] != undefined && authorArray[1] != undefined && authorArray[2] != undefined) {
+    spookyConstructor.setAuthor(authorArray[0], authorArray[1], authorArray[2])
+  }
 
-  for (i=0; fieldsArray.length > i || fieldsTitles.length > i && i <= 25; i++) {
+  for (i=0; fieldsArray.length > i || fieldsTitles.length > i; i++) {
     if (fieldsArray[i] != undefined && fieldsTitles[i] != undefined) {
       spookyConstructor.addField(fieldsTitles[i], fieldsArray[i])
     }
