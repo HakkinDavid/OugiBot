@@ -5,7 +5,7 @@ function embedHelp(msg) {
   .setTitle("Ougi's `embed` command")
   .setAuthor("Ougi [BOT]", client.user.avatarURL)
   .setColor("#230347")
-  .setDescription("Use this command to create your very own custom embed. Just include, after `ougi embed`, any of the following command options with their respective content. Keep in mind, **all of these command options are command optional** and there's no specific order.")
+  .setDescription("Use this command to create your very own custom embed. Just include, after `ougi embed`, any of the following command options with their respective content. Keep in mind, **all of these command options are optional** and there's no specific order.")
   .setFooter("helpEmbed by Ougi", client.user.avatarURL)
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true")
   .addField("::author", "An embed's author name, which appears in the top. It can be plain text or an user mention.\n__Examples:__\n`::author Rick Astley`\n`::author `" + msg.author.toString() + "` `")
@@ -23,7 +23,7 @@ function embedHelp(msg) {
   .addField("::icon", "Small icon to include in the bottom left corner.\n__Examples:__\n`::icon `" + msg.author.toString() + "` `\n`::icon https://www.kissfm.es/wp-content/uploads/2020/02/rickastley.jpg`\n`::icon file 3`\n`::icon guild`\n`::icon myself`\n`::icon ougi`")
   .addField("::timestamp", "If included, a timestamp will be added to the footer.\n__Example:__\n`::timestamp`")
   .addField("How to use command options that require images", "After the command option, specify an image. It can be an user mention (to use their avatar), an image URL, an attached image (see the section `How to use attached images` below for more information), `guild`\n`myself` or `ougi`.")
-  .addField("How to use attached images", "If you attach any images to your message when executing this command, you can use them with any command option that requires images, just add `file` and command optionally, if you attach more than one image, the index (position of attachment, default is first).\n__Examples:__\n`::avatar file`\n`::thumbnail file 2`\n`::image file 3`\n`::icon file 4`")
+  .addField("How to use attached images", "If you attach any images to your message when executing this command, you can use them with any command option that requires images, just add `file` and optionally, if you attach more than one image, the index (position of attachment, default is first).\n__Examples:__\n`::avatar file`\n`::thumbnail file 2`\n`::image file 3`\n`::icon file 4`")
   .addField("\u200b", "\u200b")
   .addField("Example of everything above", "*Don't worry, if this is too complex for your needs, remember you can leave some command options out.*")
   .setImage("https://github.com/HakkinDavid/OugiBot/blob/master/images/embed%20example.png?raw=true");
