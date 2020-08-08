@@ -1,6 +1,6 @@
 module.exports =
 
-async function voiceCall(arguments, msg) {
+async function (arguments, msg) {
   if (!msg.guild) { //prevent anything unintended
     msg.channel.send("Huh?! This is not a Discord server. Take me into one!").then().catch(console.error);
     return

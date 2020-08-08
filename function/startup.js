@@ -1,6 +1,6 @@
 module.exports =
 
-function aTweet() {
+function () {
   var iSaid = client.channels.get(wordsChannel).fetchMessages({ limit: 1 }).then(messages => {
     var store = messages.first();
     var willSay = store * 1;

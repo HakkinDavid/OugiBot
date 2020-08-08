@@ -1,6 +1,6 @@
 module.exports =
 
-function whoIsMe(arguments, msg) {
+function (arguments, msg) {
   var embed = new Discord.RichEmbed()
   .setTitle("by " + client.users.get("265257341967007758").tag)
   .setAuthor("Ougi [BOT]", client.user.avatarURL)

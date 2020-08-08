@@ -1,6 +1,6 @@
 module.exports =
 
-function setnewsHelp(msg) {
+function (msg) {
   if (msg.channel.type != "text") {
     var embed = new Discord.RichEmbed()
     .setTitle("Ougi's `setnews` command")

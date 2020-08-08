@@ -1,6 +1,6 @@
 module.exports =
 
-function customEmoji(arguments, msg) {
+function (arguments, msg) {
   var emojiArray = [];
   var emojiIDList = client.emojis.filter(emoji => emoji.available).map((e) => e.toString()).join("\n");
   var emojiNameList = client.emojis.filter(emoji => emoji.available).map((e) => e.name.toLowerCase()).join("\n");

@@ -1,6 +1,6 @@
 module.exports =
 
-function sayHelp(msg) {
+function (msg) {
   var phrases = ["sike", "boo", "never gonna give you up"];
   var say = phrases[Math.floor(Math.random()*phrases.length)];
   var embed = new Discord.RichEmbed()

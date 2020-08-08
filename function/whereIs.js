@@ -1,5 +1,5 @@
 module.exports =
 
-function whereIs(my, superSuit) {
+function (my, superSuit) {
   return Object.keys(my).find(k => my[k] === superSuit);
 }

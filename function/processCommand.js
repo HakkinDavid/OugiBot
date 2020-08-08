@@ -1,6 +1,6 @@
 module.exports =
 
-function processCommand(msg) {
+function (msg) {
     if (msg.channel.type == "text") {
       ougi.guildLog(msg)
     }

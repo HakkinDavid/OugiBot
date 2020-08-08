@@ -1,6 +1,6 @@
 module.exports =
 
-function sayCommand(arguments, msg) {
+function (arguments, msg) {
     if (msg.content.includes("@everyone") || msg.content.includes("@here")) {
       msg.channel.send("Ora ora ora ora! Remove that massive ping.").then().catch(console.error);
       return

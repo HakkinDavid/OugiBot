@@ -1,6 +1,6 @@
 module.exports =
 
-function vibeCheckReallyHard(arguments, msg) {
+function (arguments, msg) {
   var strength = arguments;
   if (strength == "onee-san") {
     var bai = "Hasta la vista, baby~"

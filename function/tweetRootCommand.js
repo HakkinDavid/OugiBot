@@ -1,6 +1,6 @@
 module.exports =
 
-function tweetRootCommand(msg) {
+function (msg) {
     var plsTweetThis = msg.content.slice(11);
     while (plsTweetThis.includes('  ')) {
       plsTweetThis = plsTweetThis.replace('  ', ' ')

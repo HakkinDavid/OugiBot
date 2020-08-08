@@ -1,6 +1,6 @@
 module.exports =
 
-function autoRMChannel(channel) {
+function (channel) {
 
   var guildID = channel.guild.id;
 

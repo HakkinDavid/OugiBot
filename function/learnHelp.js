@@ -1,6 +1,6 @@
 module.exports =
 
-function learnHelp(msg) {
+function (msg) {
   var phrases = ["johnny", "foo", "never gonna give, never gonna give"];
   var matchingreply = ["test", "bar", "(give you up)"];
   var trigger = phrases[Math.floor(Math.random()*phrases.length)];

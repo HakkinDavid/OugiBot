@@ -1,6 +1,6 @@
 module.exports =
 
-function allowCommand(arguments, msg) {
+function (arguments, msg) {
   if (msg.channel.type != "text") {
     msg.channel.send("You must be in a server to run this command.");
     return

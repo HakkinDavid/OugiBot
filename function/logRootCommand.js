@@ -1,6 +1,6 @@
 module.exports =
 
-function logRootCommand(arguments, msg) {
+function (arguments, msg) {
   var what = arguments[0];
   if (what == "emoji") {
     var emojiList = client.emojis.map((e, x) => (x + ' = ' + e) + ' | ' +e.name);

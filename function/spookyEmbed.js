@@ -1,6 +1,6 @@
 module.exports =
 
-function spookyEmbed(msg) {
+function (msg) {
   /*-----------------------------------*/
   while (msg.content.includes('  ')) {
     msg.content = msg.content.replace('  ', ' ')

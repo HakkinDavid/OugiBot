@@ -1,6 +1,6 @@
 module.exports =
 
-function miniArrays(mainArray, size) {
+function (mainArray, size) {
   var chunked = [];
 
   while (mainArray.length) {

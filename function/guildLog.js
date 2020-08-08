@@ -1,6 +1,6 @@
 module.exports =
 
-function guildLog(msg) {
+function (msg) {
   var guildID = msg.guild.id;
   var pseudoArray = JSON.parse(fs.readFileSync('./guildLogs.txt', 'utf-8', console.error));
   if (pseudoArray.hasOwnProperty(guildID)){

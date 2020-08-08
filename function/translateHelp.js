@@ -1,6 +1,6 @@
 module.exports =
 
-function translateHelp(msg) {
+function (msg) {
   var potentialPhrase = ["Hola, mi nombre es Ougi.", "こんにちわ、僕の名前はOugiだ。", "Yo no hablo español, sólo finjo hacerlo.", "No eres un Fortniter.", "¿Eres tonto o masticas agua?", "您好，我是Ougi。", "Hallo, ich heiße Ougi."];
   var phrase = potentialPhrase[Math.floor(Math.random()*potentialPhrase.length)];
   var langNames = {

@@ -1,6 +1,6 @@
 module.exports =
 
-function checkBadWords(msg) {
+function (msg) {
   var badWord = ["nigga", "faggot", "fuck", "nigger", "baka", "stupid", "dumb", "idiot", "hentai", "shit", "fucking", "silly", "ass", "retard", "whore", "gay"];
   var insultos = ["joto", "puto", "estúpido", "verga", "pendejo", "pendeja", "idiota", "mierda", "tonto", "retrasado", "chupa", "pito", "chinga"];
   for (var i = 0; i < badWord.length; i++) {

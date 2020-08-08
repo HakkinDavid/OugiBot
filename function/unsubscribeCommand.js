@@ -1,6 +1,6 @@
 module.exports =
 
-function unsubscribeCommand(msg) {
+function (msg) {
   var pseudoArray = JSON.parse(fs.readFileSync('./subscribers.txt', 'utf-8', console.error));
   var callerID = msg.author.id;
   if (!pseudoArray.includes(callerID)) {

@@ -1,6 +1,6 @@
 module.exports =
 
-function prefixHelp(msg) {
+function (msg) {
   var options = ["I don't get it.", "What do you mean?", "Baka.", "Oh.", "Nani", "Nande"];
   var response = options[Math.floor(Math.random()*options.length)];
   var embed = new Discord.RichEmbed()

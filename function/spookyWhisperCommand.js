@@ -1,6 +1,6 @@
 module.exports =
 
-function spookyWhisperCommand(arguments, msg) {
+function (arguments, msg) {
   var dmUsers = fs.readFileSync('../dmUsers').toString('utf-8');
   var dmAble = dmUsers.split("\n");
   var dmID = fs.readFileSync('../dmID');

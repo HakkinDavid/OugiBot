@@ -1,6 +1,6 @@
 module.exports =
 
-function emojiHelp(msg) {
+function (msg) {
   var emoji = ["reverse", "nou", "dorime"];
   var searchFor = emoji[Math.floor(Math.random()*emoji.length)];;
 

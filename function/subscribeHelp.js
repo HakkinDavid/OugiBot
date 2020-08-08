@@ -1,6 +1,6 @@
 module.exports =
 
-function subscribeHelp(msg) {
+function (msg) {
   var embed = new Discord.RichEmbed()
   .setTitle("Ougi's `subscribe` command")
   .setAuthor("Ougi [BOT]", client.user.avatarURL)

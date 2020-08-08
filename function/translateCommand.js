@@ -1,6 +1,6 @@
 module.exports =
 
-function translateCommand(msg, method) {
+function (msg, method) {
   var spookyCake = msg.content;
   var spookySlices = spookyCake.replace("\n", " ").split(" ");
   var spookyCommand = spookySlices[1];

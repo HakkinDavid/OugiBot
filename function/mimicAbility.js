@@ -1,11 +1,11 @@
 module.exports =
 
-function mimicAbility(msg) {
+function (msg) {
   var embed = new Discord.RichEmbed()
   .setTitle("Input for mimicAbility")
   .setColor("#FF008C")
   .setFooter("globalLogEmbed by Ougi", client.user.avatarURL);
-  
+
   var uSaid = msg.content.toLowerCase();
   var iSaid = uSaid
   .replace("ougi", msg.author.username)

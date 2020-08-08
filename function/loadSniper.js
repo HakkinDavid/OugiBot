@@ -1,6 +1,6 @@
 module.exports =
 
-function loadSniper(msg) {
+function (msg) {
   var channelID = msg.channel.id;
   var pseudoArray = JSON.parse(fs.readFileSync('./aimAssist.txt', 'utf-8', console.error));
   if (pseudoArray.includes(channelID)){

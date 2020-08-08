@@ -1,6 +1,6 @@
 module.exports =
 
-function despookifyCommand(arguments, msg) {
+function (arguments, msg) {
   var spookyCake = msg.content;
   var spookySlices = spookyCake.replace("\n", " ").split(" ");
   var spookyCommand = spookySlices[1];

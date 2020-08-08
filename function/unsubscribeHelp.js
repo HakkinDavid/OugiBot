@@ -1,6 +1,6 @@
 module.exports =
 
-function unsubscribeHelp(msg) {
+function (msg) {
   var embed = new Discord.RichEmbed()
   .setTitle("Ougi's `unsubscribe` command")
   .setAuthor("Ougi [BOT]", client.user.avatarURL)

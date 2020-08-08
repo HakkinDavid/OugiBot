@@ -1,6 +1,6 @@
 module.exports =
 
-function doRootCommand(arguments, msg) {
+function (arguments, msg) {
   var newArgs = arguments.join(" ").toString();
   var newArguments = newArgs.split('"');
   var name = newArguments[1];

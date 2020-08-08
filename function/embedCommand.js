@@ -1,6 +1,6 @@
 module.exports =
 
-function embedCommand(arguments, msg) {
+function (arguments, msg) {
     if (arguments.length == 0){
       msg.channel.send("Do you need some help making an embed? Take a look at\n> ougi help embed").then().catch(console.error);
       return

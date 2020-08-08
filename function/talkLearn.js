@@ -1,6 +1,6 @@
 module.exports =
 
-function talkLearn(arguments, msg) {
+function (arguments, msg) {
   var thisMessage = arguments.join(" ");
 
   if (msg.content.includes("@everyone") || msg.content.includes("@here")) {

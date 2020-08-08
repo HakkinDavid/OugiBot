@@ -1,6 +1,6 @@
 module.exports =
 
-function talkAbility(msg) {
+function (msg) {
   while (msg.content.includes('  ')) {
     msg.content = msg.content.replace('  ', ' ')
   }
