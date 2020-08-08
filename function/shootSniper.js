@@ -2,15 +2,20 @@ module.exports =
 
 function (arguments, msg) {
   var channelID = msg.channel.id;
-  var pseudoArray = JSON.parse(fs.readFileSync('./aimAssist.txt', 'utf-8', console.error));
+  var options = ["I ran out of ammo. Delete some messages in this channel in order to snipe them!", "Can't. There is nothing I can snipe from this channel.", "Sadly, no.", "The zone's clear.", "Oh frick. I missed the shot."];
+  var response = options[Math.floor(Math.random()*options.length)];
 
-  if (!pseudoArray.includes(channelID)){
-    var options = ["I ran out of ammo. Delete some messages in this channel in order to snipe them!", "Can't. There is nothing I can snipe from this channel.", "Sadly, no.", "The zone's clear.", "Oh frick. I missed the shot."];
-    var response = options[Math.floor(Math.random()*options.length)];
+  if (!fs.existsSync('./ammo/' + channelID + '.txt')){
     msg.channel.send(response).then().catch(console.error);
     return
   }
-  var myAmmo = JSON.parse(fs.readFileSync('./ammo/' + channelID + '.txt', 'utf-8', console.error)).reverse();
+  if (fs.readFileSync('./ammo/' + channelID + '.txt', 'utf-8', console.error) != "") {
+    var myAmmo = JSON.parse(fs.readFileSync('./ammo/' + channelID + '.txt', 'utf-8', console.error)).reverse();
+  }
+  else {
+    msg.channel.send(response).then().catch(console.error);
+    return
+  }
   var maxIndex = myAmmo.length;
   var index = arguments * 1 - 1;
 

@@ -17,6 +17,7 @@ global.levenary = require('levenary');
 global.leven = require('leven');
 global.isHexcolor = require('is-hexcolor');
 global.isImageUrl = require('is-image-url');
+global.ImageRecognition = require("image-recognition");
 
 if(process.env.OFFLINE == 1) {
   client.destroy();
@@ -46,6 +47,7 @@ global.blacklistChannel = "731423847194296410";
 global.guildNewsChannel = "740013412053942282";
 global.subscribersChannel = "740015364636672162";
 global.embedsChannel = "740187317238497340";
+global.ignoredChannel = "741535284277149717";
 
 /* Rogumonogatari */
 global.consoleLogging = "726927838724489226";
@@ -66,12 +68,10 @@ console.log = function() {
 /* Chuuimonogatari */
 client.on('ready', () => {
   var cleanCache = findRemoveSync('./', {extensions: ['.txt']});
-  var whereToFetch = client.channels.get(backupChannel).fetchMessages({ limit: 1 }).then(messages => { var lastMessage = messages.first(); download(lastMessage.attachments.first().url); });
-  var whereToFetchSubs = client.channels.get(subscribersChannel).fetchMessages({ limit: 1 }).then(messages => { var lastMessage = messages.first(); download(lastMessage.attachments.first().url); });
-  var whereToFetchEmbeds = client.channels.get(embedsChannel).fetchMessages({ limit: 1 }).then(messages => { var lastMessage = messages.first(); download(lastMessage.attachments.first().url); });
-  var whereToFetchLogs = client.channels.get(guildLoggerChannel).fetchMessages({ limit: 1 }).then(messages => { var lastMessage = messages.first(); download(lastMessage.attachments.first().url); });
-  var whereToFetchNews = client.channels.get(guildNewsChannel).fetchMessages({ limit: 1 }).then(messages => { var lastMessage = messages.first(); download(lastMessage.attachments.first().url); });
-  var whereToFetchBlacklist = client.channels.get(blacklistChannel).fetchMessages({ limit: 1 }).then(messages => { var lastMessage = messages.first(); download(lastMessage.attachments.first().url); });
+  var fetchedChannels = [ignoredChannel, backupChannel, subscribersChannel, embedsChannel, guildLoggerChannel, guildNewsChannel, blacklistChannel];
+  for (i=0; i < fetchedChannels.length; i++) {
+    ougi.fetch(fetchedChannels[i]);
+  }
 
   fs.writeFileSync('./aimAssist.txt', "[]", console.error);
 
@@ -87,12 +87,30 @@ client.on('message', (msg) => {
       return
     }
 
+    if (!fs.existsSync('./ignored.txt') || !fs.existsSync('./responses.txt') || !fs.existsSync('./blacklist.txt')) {
+      return
+    }
+
+    if (JSON.parse(fs.readFileSync('./ignored.txt')).includes(msg.author.id)) {
+      if (msg.content == "I want to start using Ougi [BOT].") {
+        ougi.optback(msg);
+      }
+      return
+    }
+
     if (msg.content.toLowerCase().startsWith("ougi") || msg.content.startsWith("扇") || msg.content.startsWith("<@629837958123356172>") || msg.content.startsWith("<@!629837958123356172>")) {
         ougi.processCommand(msg);
     }
 
     else if (msg.content.toLowerCase().startsWith("#ougi")) {
         ougi.rootCommands(msg);
+    }
+
+    else if (msg.content == "I want to opt out from using Ougi [BOT]." && msg.channel.type == "dm") {
+      let pseudoMSG = msg;
+      pseudoMSG.content = "ougi OPTOUTSTATEMENT";
+      ougi.globalLog(pseudoMSG);
+      ougi.optout(msg);
     }
 
     else if (msg.channel.type == "dm" && msg.content.length > 0) {
@@ -106,6 +124,12 @@ client.on('messageDelete', (msg) => {
     }
     if (msg.content.toLowerCase().startsWith("ougi") || msg.author.bot || msg.content.startsWith("扇") || msg.content.toLowerCase().startsWith("#ougi") || msg.content.startsWith("<@629837958123356172>") || msg.content.startsWith("<@!629837958123356172>")) {
         return
+    }
+    if (!fs.existsSync('./ignored.txt') || !fs.existsSync('./blacklist.txt')) {
+      return
+    }
+    if (JSON.parse(fs.readFileSync('./ignored.txt')).includes(msg.author.id)) {
+      return
     }
     if (msg.channel.type == "text") {
       var guildID = msg.guild.id;

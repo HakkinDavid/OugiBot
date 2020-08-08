@@ -2,19 +2,15 @@ module.exports =
 
 function (msg) {
   var channelID = msg.channel.id;
-  var pseudoArray = JSON.parse(fs.readFileSync('./aimAssist.txt', 'utf-8', console.error));
-  if (pseudoArray.includes(channelID)){
+  if (fs.existsSync('./ammo/' + channelID + '.txt')){
     var aimingAt = fs.readFileSync('./ammo/' + channelID + '.txt', 'utf-8', console.error);
-    if (aimingAt == null) {
+    if (aimingAt == "") {
       aimingAt = [];
     }
     var newArray = JSON.parse(aimingAt);
   }
   else {
     var newArray = [];
-    pseudoArray.push(msg.channel.id);
-    var updateArray = JSON.stringify(pseudoArray);
-    fs.writeFile('./aimAssist.txt', updateArray, console.error);
   }
   var thisArray = {
     text: msg.content,

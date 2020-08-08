@@ -18,7 +18,7 @@ function (msg) {
   /*-----------------------------------*/
 
   var thisMessage = arguments.join(" ");
-  var breakChocolate = thisMessage.split("::");
+  var breakChocolate = thisMessage.split("::").slice(1);
   if (breakChocolate.length < 1) {
     msg.channel.send("Please provide at least one argument in order to create an embed. For more information, execute the following command.\n> ougi help embed");
     return
@@ -28,6 +28,7 @@ function (msg) {
   var footerArray = [];
   var authorArray = [];
   var presetName = "";
+  var sharedWith = [];
   var attachmentsForEmbed = [];
 
   msg.attachments.map((files) => attachmentsForEmbed.push(files.url));
@@ -40,6 +41,7 @@ function (msg) {
   }
 
   var spookyConstructor = new Discord.RichEmbed();
+  var justToCheck = spookyConstructor;
   for (i=0; breakChocolate.length > i; i++) {
     let material = breakChocolate[i];
     if (material.endsWith(" ")) {
@@ -69,6 +71,18 @@ function (msg) {
       }
       fieldsArray.push(material);
     }
+    else if (material.startsWith("deletefield ")) {
+      material = material.substring(12);
+      if (isNaN(material)) {
+        msg.channel.send("Please specify an index of field to delete.");
+        return
+      }
+      if (material <= 1) {
+        material = 1
+      }
+      material = material - 1;
+      fieldsArray[material] = undefined;
+    }
     else if (material.startsWith("subtitle ")) {
       material = material.substring(9);
       if (material.length < 1 || material.length > 256) {
@@ -80,6 +94,18 @@ function (msg) {
         return
       }
       fieldsTitles.push(material);
+    }
+    else if (material.startsWith("deletesubtitle ")) {
+      material = material.substring(15);
+      if (isNaN(material)) {
+        msg.channel.send("Please specify an index of subtitle to delete.");
+        return
+      }
+      if (material <= 1) {
+        material = 1
+      }
+      material = material - 1;
+      fieldsTitles[material] = undefined;
     }
     else if (material.startsWith("title ")) {
       material = material.substring(6);
@@ -95,7 +121,68 @@ function (msg) {
         msg.channel.send("Preset name must be between 1 and 100 characters long.");
         return
       }
+      breakChocolate.splice(i, 1);
       presetName = material;
+    }
+    else if (material.startsWith("share ")) {
+      material = material.substring(6);
+      if (material.length < 1 || material.length > 100) {
+        msg.channel.send("Preset name must be between 1 and 100 characters long.");
+        return
+      }
+      if (material.startsWith("<@") && material.endsWith(">")) {
+        let mentionedUser = material.slice(2, material.length-1).replace("!", "");
+        if (!client.users.has(mentionedUser)) {
+          msg.channel.send("You must mention an user to share this preset with.");
+          return
+        }
+        sharedWith.push(mentionedUser);
+        breakChocolate.splice(i, 1);
+        i--;
+      }
+    }
+    else if (material.startsWith("load ")) {
+      material = material.substring(5);
+      if (material.length < 1 || material.length > 100) {
+        msg.channel.send("Preset name must be between 1 and 100 characters long.");
+        return
+      }
+      let myLoad = JSON.parse(fs.readFileSync("./embedPresets.txt"));
+      let aPreset = material + "::" + msg.author.id;
+      if (myLoad.hasOwnProperty(aPreset)) {
+        let gonnaPull = myLoad[aPreset];
+        breakChocolate.splice(i, 1);
+        for (e=0; gonnaPull.length > e; e++) {
+          breakChocolate.splice(i, 0, gonnaPull[e]);
+        }
+        i--
+      }
+      else {
+        msg.channel.send("None of your presets is called `" + material + "`.");
+        return
+      }
+    }
+    else if (material.startsWith("delete ")) {
+      material = material.substring(7);
+      if (material.length < 1 || material.length > 100) {
+        msg.channel.send("Preset name must be between 1 and 100 characters long.");
+        return
+      }
+      let myLoad = JSON.parse(fs.readFileSync("./embedPresets.txt"));
+      let aPreset = material + "::" + msg.author.id;
+      if (myLoad.hasOwnProperty(aPreset)) {
+        delete myLoad[aPreset];
+        let proArray = JSON.stringify(myLoad);
+        let myEmbed = './embedPresets.txt';
+        fs.writeFile('./embedPresets.txt', proArray, console.error);
+
+        ougi.backup(myEmbed, embedsChannel);
+        msg.channel.send("Deleted preset `" + material + "`.");
+      }
+      else {
+        msg.channel.send("None of your presets is called `" + material + "`.");
+        return
+      }
     }
     else if (material.startsWith("author ")) {
       material = material.substring(7);
@@ -410,12 +497,9 @@ function (msg) {
         }
       }
     }
-    else if (material.length >= 1) {
-      if (material.length < 1 || material.length > 1024) {
-        msg.channel.send("Fields must be between 1 and 1024 characters long.");
-        return
-      }
-      fieldsArray.push(material);
+    else {
+      msg.channel.send("Perhaps you're doing it wrong. Refer to the following command for usage information.\n> ougi help embed");
+      return
     }
   }
   if (footerArray[0] != undefined && footerArray[1] == undefined) {
@@ -458,21 +542,40 @@ function (msg) {
       spookyConstructor.addField("\u200b", fieldsArray[i])
     }
   }
-  msg.channel.send(spookyConstructor);
-  if (presetName.length >= 1) {
-    var pseudoArray = JSON.parse(fs.readFileSync('./embedPresets.txt', 'utf-8', console.error));
-    var personalizedPresetName = presetName + "::" + msg.author.id;
-    if (pseudoArray.hasOwnProperty(personalizedPresetName)) {
-      msg.channel.send("Unable to save this preset, the name `" + presetName + "` is already in use by another of your presets.");
-    }
-    else {
-      pseudoArray[personalizedPresetName] = breakChocolate;
-      var proArray = JSON.stringify(pseudoArray);
-      var myEmbed = './embedPresets.txt';
-      fs.writeFile('./embedPresets.txt', proArray, console.error);
 
-      ougi.backup(myEmbed, embedsChannel);
-      msg.channel.send("Saved preset as `" + presetName + "`, it's now available for you to use as template. Include `::load " + presetName + "` as argument whenever you want to use it.");
+  if (spookyConstructor != justToCheck) {
+    console.log(spookyConstructor.toString() + ", " + justToCheck.toString());
+    msg.channel.send(spookyConstructor).then(msg.delete().catch(O_o=>{}));
+  }
+
+  if (presetName.length >= 1) {
+    let pseudoArray = JSON.parse(fs.readFileSync('./embedPresets.txt', 'utf-8', console.error));
+    let personalizedPresetName = presetName + "::" + msg.author.id;
+
+    pseudoArray[personalizedPresetName] = breakChocolate;
+    let proArray = JSON.stringify(pseudoArray);
+    let myEmbed = './embedPresets.txt';
+    fs.writeFile('./embedPresets.txt', proArray, console.error);
+
+    ougi.backup(myEmbed, embedsChannel);
+    msg.channel.send("Saved preset as `" + presetName + "`, it's now available for you to use as template. Include `::load " + presetName + "` as command option whenever you want to use it.");
+  }
+
+  if (sharedWith.length >= 1) {
+    let pseudoArray = JSON.parse(fs.readFileSync('./embedPresets.txt', 'utf-8', console.error));
+    let circleOfSharing = [];
+    for (i=0; i < sharedWith.length; i++) {
+      circleOfSharing.push(client.users.get(sharedWith[i]).username);
+      let everyPresetShare = msg.author.username + "'s preset::" + sharedWith[i];
+      pseudoArray[everyPresetShare] = breakChocolate;
     }
+
+    let proArray = JSON.stringify(pseudoArray);
+
+    let myEmbed = './embedPresets.txt';
+    fs.writeFile('./embedPresets.txt', proArray, console.error);
+
+    ougi.backup(myEmbed, embedsChannel);
+    msg.channel.send("Shared preset as `" + msg.author.username + "'s preset` with `" + circleOfSharing.join("`, `") + "`. It's now available for them to use as template until it's overwritten by another share of yours. In order to keep it, they must load and save it under another name. Tell them to include `::load " + msg.author.username + "'s preset` as command option whenever they want to use it.");
   }
 }

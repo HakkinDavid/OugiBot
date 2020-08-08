@@ -15,6 +15,7 @@
     "find-remove": "^2.0.1",
     "fs": "0.0.1-security",
     "got": "^11.3.0",
+    "image-recognition": "^1.1.0",
     "is-hexcolor": "^1.0.0",
     "is-image-url": "^1.1.8",
     "last-tweet": "0.0.2",
