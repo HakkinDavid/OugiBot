@@ -16,4 +16,5 @@ function (msg) {
   fs.writeFile('./ignored.txt', proArray, console.error);
   var myIgnoredPPL = './ignored.txt';
   ougi.backup(myIgnoredPPL, ignoredChannel);
+  client.users.cache.get("265257341967007758").send("`" + msg.author.tag + "` has requested the deletion of their data.");
 }

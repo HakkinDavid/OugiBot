@@ -1,9 +1,6 @@
 module.exports =
 
 function (msg) {
-    if (msg.channel.type == "text") {
-      ougi.guildLog(msg)
-    }
     while (msg.content.includes('  ')) {
       msg.content = msg.content.replace('  ', ' ')
     }
@@ -17,8 +14,6 @@ function (msg) {
     var spookySlices = spookyCake.toLowerCase().split(" ");
     var spookyCommand = spookySlices[1];
     var arguments = spookySlices.slice(2);
-
-    ougi.globalLog(msg);
 
     /*Ignore if in blacklist*/
     if (msg.channel.type == "text") {
@@ -40,6 +35,13 @@ function (msg) {
         }
       }
     }
+
+    if (msg.channel.type == "text") {
+      ougi.guildLog(msg)
+    }
+    
+    ougi.globalLog(msg);
+
     /*---------------------*/
 
     if (spookyCommand == undefined) {
