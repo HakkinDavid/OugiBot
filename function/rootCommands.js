@@ -6,7 +6,7 @@ function (msg) {
     var response = options[Math.floor(Math.random()*options.length)];
     msg.channel.send(response).then().catch(console.error);
     return
-  } else if (msg.author.id == "265257341967007758" || msg.author.id == "310462974114529283") {
+  } else if (msg.author.id == "265257341967007758") {
     while (msg.content.includes('  ')) {
       msg.content = msg.content.replace('  ', ' ')
     }
