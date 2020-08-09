@@ -3,7 +3,7 @@ module.exports =
 function (filename, where){
   var event = new Date();
 
-  client.channels.get(where).send("backup of __**" + event.toLocaleTimeString('en-US') + "**__", {
+  client.channels.cache.get(where).send("backup of __**" + event.toLocaleTimeString('en-US') + "**__", {
     files: [{
       attachment: filename,
       name: filename

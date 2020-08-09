@@ -10,13 +10,13 @@ function (msg) {
     var spookyCommand = spookySlices[1];
     var arguments = spookySlices.slice(2);
 
-    var embed = new Discord.RichEmbed()
+    var embed = new Discord.MessageEmbed()
     .setTitle(msg.author.tag)
     .setDescription("ID `" + msg.author.id + "` | At " + msg.channel.toString())
-    .setAuthor("Ougi [BOT]", client.user.avatarURL)
+    .setAuthor("Ougi [BOT]", client.user.avatarURL())
     .setColor("#00E5FF")
-    .setFooter("logEmbed by Ougi", msg.guild.iconURL)
-    .setThumbnail(msg.author.avatarURL)
+    .setFooter("logEmbed by Ougi", msg.guild.iconURL())
+    .setThumbnail(msg.author.avatarURL())
     .setTimestamp()
     if (spookyCommand == undefined) {
       embed.addField("No trigger was specified", "\u200B")
@@ -35,6 +35,6 @@ function (msg) {
       }
     }
 
-    client.channels.get(guildLogger).send({embed}).catch(console.error);
+    client.channels.cache.get(guildLogger).send({embed}).catch(console.error);
   }
 }

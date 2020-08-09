@@ -19,8 +19,8 @@ function (msg) {
     var arguments = spookySlices.slice(2);
 
     var event = new Date();
-    client.channels.get(consoleLogging).send("__**" + event.toLocaleTimeString('en-US') + "**__\n:warning: [ROOT] Command received: " + hauntedCommand + "\nArguments: " + arguments + "\nExecuted by: `" + msg.author.tag + "`");
-    client.channels.get(consoleLogging).send("\n")
+    client.channels.cache.get(consoleLogging).send("__**" + event.toLocaleTimeString('en-US') + "**__\n:warning: [ROOT] Command received: " + hauntedCommand + "\nArguments: " + arguments + "\nExecuted by: `" + msg.author.tag + "`");
+    client.channels.cache.get(consoleLogging).send("\n")
 
     if (hauntedCommand == "help") {
         ougi.helpRootCommand(arguments, msg)

@@ -35,7 +35,7 @@ function (msg) {
 
       var predefinedName = "spookyImage.jpg";
 
-      const attachment = new Discord.Attachment(imageToSend, predefinedName);
+      const attachment = new Discord.MessageAttachment(imageToSend, predefinedName);
       msg.channel.send("I'll get you a nice image based on whatever you want me to search in Google. Here's an example:\n> ougi image " + search, attachment).then().catch(console.error);
     });
 }

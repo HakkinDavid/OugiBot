@@ -10,12 +10,12 @@ function (msg) {
     "Of course I already knew I should say `" + response + "` when anyone says `" + trigger + "`, I was just making sure you knew too~"
   ];
   var answer = afterOptions[Math.floor(Math.random()*afterOptions.length)];
-  var embed = new Discord.RichEmbed()
+  var embed = new Discord.MessageEmbed()
   .setTitle("Ougi's `learn` command")
-  .setAuthor("Ougi [BOT]", client.user.avatarURL)
+  .setAuthor("Ougi [BOT]", client.user.avatarURL())
   .setColor("#230347")
   .setDescription("Make Ougi learn something new! You just gotta provide a trigger phrase and the desired response, separated by two slashes.")
-  .setFooter("helpEmbed by Ougi", client.user.avatarURL)
+  .setFooter("helpEmbed by Ougi", client.user.avatarURL())
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true")
   .addField("Example", "`ougi learn " + trigger + " // " + response + "`")
   .addField("Output", answer)

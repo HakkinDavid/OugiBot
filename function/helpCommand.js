@@ -39,6 +39,8 @@ function (arguments, msg) {
         ougi.unsubscribeHelp(msg)
     } else if (arguments == 'prefix') {
         ougi.prefixHelp(msg)
+    } else if (arguments == 'acknowledgement') {
+        ougi.tos(msg)
     } else if (arguments == 'info') {
         ougi.whoIsMe(arguments, msg)
     } else {

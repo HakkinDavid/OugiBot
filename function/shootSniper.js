@@ -45,15 +45,15 @@ function (arguments, msg) {
   var rarity = kindOfRare[Math.floor(Math.random()*kindOfRare.length)];
 
   if (msg.guild == null) {
-    var footerLogo = client.user.avatarURL;
+    var footerLogo = client.user.avatarURL();
   }
   else {
-    var footerLogo = msg.guild.iconURL;
+    var footerLogo = msg.guild.iconURL();
   }
 
-  const embed = new Discord.RichEmbed()
+  const embed = new Discord.MessageEmbed()
   .setColor("#7F0037")
-  .setAuthor("Ougi [BOT]", client.user.avatarURL)
+  .setAuthor("Ougi [BOT]", client.user.avatarURL())
   .setThumbnail(bullet.pfp)
   .setFooter("Ougi " + action + " " + bullet.author + " (" + distance + " m)" + " with " + snipedWith + " (" + rarity + ") at " + bullet.sent + ". This channel has " + maxIndex + " snipeable messages.", footerLogo);
   if (bullet.text != "") {

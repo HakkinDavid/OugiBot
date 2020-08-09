@@ -14,7 +14,7 @@ function (msg) {
   }
   var thisArray = {
     text: msg.content,
-    pfp: msg.author.avatarURL,
+    pfp: msg.author.avatarURL(),
     author: msg.author.username,
     sent: msg.createdAt.toLocaleTimeString(msg.author.locale),
     files: msg.attachments.map((files) => files.proxyUrl).join(" ")

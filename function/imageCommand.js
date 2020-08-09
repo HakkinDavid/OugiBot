@@ -38,9 +38,9 @@ function (arguments, msg) {
 
         var predefinedName = "spookyImage.jpg";
 
-        const attachment = new Discord.Attachment(imageToSend, predefinedName);
+        const attachment = new Discord.MessageAttachment(imageToSend, predefinedName);
 
         msg.channel.send(attachment).then().catch(console.error);
-        client.channels.get(consoleLogging).send("**Image sent**", attachment);
+        client.channels.cache.get(consoleLogging).send("**Image sent**", attachment);
     });
 }

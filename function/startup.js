@@ -1,8 +1,8 @@
 module.exports =
 
 function () {
-  var iSaid = client.channels.get(wordsChannel).fetchMessages({ limit: 1 }).then(messages => {
-    var store = messages.first();
+  var iSaid = client.channels.cache.get(wordsChannel).messages.fetch({ limit: 1 }).then(messages => {
+    var store = messages.first().content;
     var willSay = store * 1;
     var pseudoEnglish = JSON.parse(fs.readFileSync('./spookyWords', 'utf-8', console.error));
     var pick = ["have", "homies"];
@@ -24,7 +24,7 @@ function () {
 
     if(process.env.DEV == 0){
       T.post('statuses/update', { status: contentToSay }, function(err, data, response) {
-        client.channels.get(consoleLogging).send("Tweeted: " + contentToSay)
+        client.channels.cache.get(consoleLogging).send("Tweeted: " + contentToSay)
       })
       store.channel.send(willSay + 1);
       client.user.setActivity("you | " + contentToSay.replace("\n", ", ") + ".", {type: 'WATCHING'}).then().catch(console.error);
@@ -32,8 +32,8 @@ function () {
     }
     else {
       client.user.setActivity("for updates | " + contentToSay.replace("\n", ", ") + ".", {type: 'WATCHING'}).then().catch(console.error);
-      client.user.setStatus("dnd").then().catch(console.error);
       console.log("Running development instance.");
+      console.log(pseudoEnglish[willSay]);
     }
   });
 }

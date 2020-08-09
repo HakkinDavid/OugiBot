@@ -17,8 +17,8 @@ function (arguments, msg) {
     var doing = ["Minecraft", "Fortnite", "Destiny 2", "Portal", "Portal 2", "Project 64", "osu!", "Geometry Dash", "Slime Rancher", "Left 4 Dead 2", "Transformice", "Grand Theft Auto V", "Team Fortress 2", "Overwatch", "Undertale", "Dolphin", "Ultimate Custom Night", "Minecraft Windows 10 Edition", "Terraria", "Roblox", "Paladins", "Tom Clancy's Rainbow Six Siege"]
     var something = doing[Math.floor(Math.random()*doing.length)];
     client.user.setActivity(something)
-    client.channels.get(consoleLogging).send(response + "\nI'm playing " + something);
-    client.channels.get(consoleLogging).send("\n");
+    client.channels.cache.get(consoleLogging).send(response + "\nI'm playing " + something);
+    client.channels.cache.get(consoleLogging).send("\n");
   }
   else if (strength == "knockout") {
     var bai = "Hasta la vista, baby~"

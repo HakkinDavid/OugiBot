@@ -1,10 +1,10 @@
 module.exports =
 
 function (msg) {
-  var embed = new Discord.RichEmbed()
+  var embed = new Discord.MessageEmbed()
   .setTitle("Input for mimicAbility")
   .setColor("#FF008C")
-  .setFooter("globalLogEmbed by Ougi", client.user.avatarURL);
+  .setFooter("globalLogEmbed by Ougi", client.user.avatarURL());
 
   var uSaid = msg.content.toLowerCase();
   var iSaid = uSaid
@@ -28,5 +28,5 @@ function (msg) {
   msg.channel.send(iSaid);
   embed.addField("Content", uSaid);
   embed.addField("Replied", iSaid);
-  client.channels.get(consoleLogging).send({embed});
+  client.channels.cache.get(consoleLogging).send({embed});
 }

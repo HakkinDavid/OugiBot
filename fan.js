@@ -51,19 +51,6 @@ global.ignoredChannel = "741535284277149717";
 
 /* Rogumonogatari */
 global.consoleLogging = "726927838724489226";
-global.logBackup = console.log;
-global.logMessages = [];
-
-console.log = function() {
-    logMessages.push.apply(logMessages, arguments);
-    if (logMessages[0] == "\n"){
-      logMessages.pop();
-    }
-    else {
-      client.channels.get(consoleLogging).send(logMessages.pop()).then().catch(console.error);
-    }
-    logBackup.apply(console, arguments);
-};
 
 /* Chuuimonogatari */
 client.on('ready', () => {

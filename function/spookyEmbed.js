@@ -30,40 +30,34 @@ function (msg) {
   var presetName = "";
   var sharedWith = [];
   var attachmentsForEmbed = [];
+  var listOfPresets = [];
 
   msg.attachments.map((files) => attachmentsForEmbed.push(files.url));
 
   if (msg.guild == null) {
-    var serverIcon = client.user.avatarURL;
+    var serverIcon = client.user.avatarURL();
   }
   else {
-    var serverIcon = msg.guild.iconURL;
+    var serverIcon = msg.guild.iconURL();
   }
 
-  var spookyConstructor = new Discord.RichEmbed();
-  var justToCheck = spookyConstructor;
+  var spookyConstructor = new Discord.MessageEmbed();
   for (i=0; breakChocolate.length > i; i++) {
     let material = breakChocolate[i];
     if (material.endsWith(" ")) {
       material = material.slice(0, material.length-1)
     }
-    if (material.startsWith(" ")) {
-      material = material.substring(1);
-      if (material.length < 1 || material.length > 1024) {
-        msg.channel.send("Fields must be between 1 and 1024 characters long.");
+    if (material.startsWith("field")) {
+      material = material.substring(5);
+      if (material.startsWith(" ")) {
+        material = material.slice(1)
+      }
+      if (material.length > 1024) {
+        msg.channel.send("Fields must not exceed 1024 characters long.");
         return
       }
-      if (fieldsArray.length == 25) {
-        msg.channel.send("Maximum number of fields is 25.");
-        return
-      }
-      fieldsArray.push(material);
-    }
-    else if (material.startsWith("field ")) {
-      material = material.substring(6);
-      if (material.length < 1 || material.length > 1024) {
-        msg.channel.send("Fields must be between 1 and 1024 characters long.");
-        return
+      if (material.length < 1) {
+        material = "\u200b";
       }
       if (fieldsArray.length == 25) {
         msg.channel.send("Maximum number of fields is 25.");
@@ -81,13 +75,19 @@ function (msg) {
         material = 1
       }
       material = material - 1;
-      fieldsArray[material] = undefined;
+      fieldsArray[material] = "/DELETE/";
     }
-    else if (material.startsWith("subtitle ")) {
-      material = material.substring(9);
-      if (material.length < 1 || material.length > 256) {
-        msg.channel.send("Subtitles must be between 1 and 256 characters long.");
+    else if (material.startsWith("subtitle")) {
+      material = material.substring(8);
+      if (material.startsWith(" ")) {
+        material = material.slice(1)
+      }
+      if (material.length > 1024) {
+        msg.channel.send("Subtitles must not exceed 1024 characters long.");
         return
+      }
+      if (material.length < 1) {
+        material = "\u200b";
       }
       if (fieldsTitles.length == 25) {
         msg.channel.send("Maximum number of subtitles is 25.");
@@ -123,22 +123,23 @@ function (msg) {
       }
       breakChocolate.splice(i, 1);
       presetName = material;
+      i--;
     }
     else if (material.startsWith("share ")) {
       material = material.substring(6);
-      if (material.length < 1 || material.length > 100) {
-        msg.channel.send("Preset name must be between 1 and 100 characters long.");
-        return
-      }
       if (material.startsWith("<@") && material.endsWith(">")) {
         let mentionedUser = material.slice(2, material.length-1).replace("!", "");
-        if (!client.users.has(mentionedUser)) {
+        if (!client.users.cache.has(mentionedUser)) {
           msg.channel.send("You must mention an user to share this preset with.");
           return
         }
         sharedWith.push(mentionedUser);
         breakChocolate.splice(i, 1);
         i--;
+      }
+      else {
+        msg.channel.send("You must mention an user to share this preset with.");
+        return
       }
     }
     else if (material.startsWith("load ")) {
@@ -150,7 +151,7 @@ function (msg) {
       let myLoad = JSON.parse(fs.readFileSync("./embedPresets.txt"));
       let aPreset = material + "::" + msg.author.id;
       if (myLoad.hasOwnProperty(aPreset)) {
-        let gonnaPull = myLoad[aPreset];
+        let gonnaPull = myLoad[aPreset].reverse();
         breakChocolate.splice(i, 1);
         for (e=0; gonnaPull.length > e; e++) {
           breakChocolate.splice(i, 0, gonnaPull[e]);
@@ -162,6 +163,22 @@ function (msg) {
         return
       }
     }
+    else if (material.startsWith("list")) {
+      let myLoad = JSON.parse(fs.readFileSync("./embedPresets.txt"));
+      let aPreset = "::" + msg.author.id;
+      let allPresets = Object.keys(myLoad);
+      for (e=0; allPresets.length > e; e++) {
+        if (allPresets[e].endsWith(aPreset) && !listOfPresets.includes(allPresets[e])) {
+          listOfPresets.push(allPresets[e].replace(aPreset, ""));
+        }
+      }
+      if (listOfPresets.length < 1) {
+        msg.channel.send("You haven't saved any preset.");
+        return
+      }
+      breakChocolate.splice(i, 1);
+      i--;
+    }
     else if (material.startsWith("delete ")) {
       material = material.substring(7);
       if (material.length < 1 || material.length > 100) {
@@ -171,6 +188,7 @@ function (msg) {
       let myLoad = JSON.parse(fs.readFileSync("./embedPresets.txt"));
       let aPreset = material + "::" + msg.author.id;
       if (myLoad.hasOwnProperty(aPreset)) {
+        breakChocolate.splice(i, 1);
         delete myLoad[aPreset];
         let proArray = JSON.stringify(myLoad);
         let myEmbed = './embedPresets.txt';
@@ -178,6 +196,7 @@ function (msg) {
 
         ougi.backup(myEmbed, embedsChannel);
         msg.channel.send("Deleted preset `" + material + "`.");
+        i--;
       }
       else {
         msg.channel.send("None of your presets is called `" + material + "`.");
@@ -192,11 +211,11 @@ function (msg) {
       }
       if (material.startsWith("<@") && material.endsWith(">")) {
         let mentionedUser = material.slice(2, material.length-1).replace("!", "");
-        if (!client.users.has(mentionedUser)) {
+        if (!client.users.cache.has(mentionedUser)) {
           msg.channel.send("Author name must be either a valid user mention or plain text.");
           return
         }
-        authorArray[0] = client.users.get(mentionedUser).username;
+        authorArray[0] = client.users.cache.get(mentionedUser).username;
       }
       else {
         authorArray[0] = material;
@@ -244,14 +263,14 @@ function (msg) {
       footerArray[0] = material + " | spookyEmbed by " + msg.author.username;
     }
     else if (material.startsWith("icon ")) {
-      material = material.substring(5).replace("guild", serverIcon).replace("ougi", client.user.avatarURL).replace("myself", msg.author.avatarURL);
+      material = material.substring(5).replace("guild", serverIcon).replace("ougi", client.user.avatarURL()).replace("myself", msg.author.avatarURL());
       if (material.startsWith("<@") && material.endsWith(">")) {
         let mentionedUser = material.slice(2, material.length-1).replace("!", "");
-        if (!client.users.has(mentionedUser)) {
+        if (!client.users.cache.has(mentionedUser)) {
           msg.channel.send("Footer icon must be an attached image, image URL or an user mention. Else, you may specify `guild`, `myself` or `ougi` as icons.");
           return
         }
-        footerArray[1] = client.users.get(mentionedUser).avatarURL;
+        footerArray[1] = client.users.cache.get(mentionedUser).avatarURL();
       }
       else if (material.startsWith("file")) {
         if (attachmentsForEmbed.length < 1) {
@@ -292,14 +311,14 @@ function (msg) {
       }
     }
     else if (material.startsWith("avatar ")) {
-      material = material.substring(7).replace("guild", serverIcon).replace("ougi", client.user.avatarURL).replace("myself", msg.author.avatarURL);
+      material = material.substring(7).replace("guild", serverIcon).replace("ougi", client.user.avatarURL()).replace("myself", msg.author.avatarURL());
       if (material.startsWith("<@") && material.endsWith(">")) {
         let mentionedUser = material.slice(2, material.length-1).replace("!", "");
-        if (!client.users.has(mentionedUser)) {
+        if (!client.users.cache.has(mentionedUser)) {
           msg.channel.send("Author avatar must be an attached image, image URL or an user mention. Else, you may specify `guild`, `myself` or `ougi` as avatar.");
           return
         }
-        authorArray[1] = client.users.get(mentionedUser).avatarURL;
+        authorArray[1] = client.users.cache.get(mentionedUser).avatarURL();
       }
       else if (material.startsWith("file")) {
         if (attachmentsForEmbed.length < 1) {
@@ -340,14 +359,14 @@ function (msg) {
       }
     }
     else if (material.startsWith("thumbnail ")) {
-      material = material.substring(10).replace("guild", serverIcon).replace("ougi", client.user.avatarURL).replace("myself", msg.author.avatarURL);
+      material = material.substring(10).replace("guild", serverIcon).replace("ougi", client.user.avatarURL()).replace("myself", msg.author.avatarURL());
       if (material.startsWith("<@") && material.endsWith(">")) {
         let mentionedUser = material.slice(2, material.length-1).replace("!", "");
-        if (!client.users.has(mentionedUser)) {
+        if (!client.users.cache.has(mentionedUser)) {
           msg.channel.send("Thumbnail must be an attached image, image URL or an user mention. Else, you may specify `guild`, `myself` or `ougi` as thumbnail.");
           return
         }
-        spookyConstructor.setThumbnail(client.users.get(mentionedUser).avatarURL);
+        spookyConstructor.setThumbnail(client.users.cache.get(mentionedUser).avatarURL());
       }
       else if (material.startsWith("file")) {
         if (attachmentsForEmbed.length < 1) {
@@ -388,14 +407,14 @@ function (msg) {
       }
     }
     else if (material.startsWith("image ")) {
-      material = material.substring(6).replace("guild", serverIcon).replace("ougi", client.user.avatarURL).replace("myself", msg.author.avatarURL);
+      material = material.substring(6).replace("guild", serverIcon).replace("ougi", client.user.avatarURL()).replace("myself", msg.author.avatarURL());
       if (material.startsWith("<@") && material.endsWith(">")) {
         let mentionedUser = material.slice(2, material.length-1).replace("!", "");
-        if (!client.users.has(mentionedUser)) {
+        if (!client.users.cache.has(mentionedUser)) {
           msg.channel.send("Image must be an attached image, image URL or an user mention. Else, you may specify `guild`, `myself` or `ougi` as image.");
           return
         }
-        spookyConstructor.setImage(client.users.get(mentionedUser).avatarURL);
+        spookyConstructor.setImage(client.users.cache.get(mentionedUser).avatarURL());
       }
       else if (material.startsWith("file")) {
         if (attachmentsForEmbed.length < 1) {
@@ -532,6 +551,22 @@ function (msg) {
   }
 
   for (i=0; fieldsArray.length > i || fieldsTitles.length > i; i++) {
+    if (fieldsArray[i] == "/DELETE/" && fieldsTitles[i] != "/DELETE/") {
+      fieldsArray.splice(i, 1)
+      i--;
+    }
+    else if (fieldsTitles[i] == "/DELETE/" && fieldsArray[i] != "/DELETE/") {
+      fieldsTitles.splice(i, 1)
+      i--;
+    }
+    else if (fieldsTitles[i] == "/DELETE/" && fieldsArray[i] == "/DELETE/") {
+      fieldsArray.splice(i, 1)
+      fieldsTitles.splice(i, 1)
+      i--;
+    }
+  }
+
+  for (i=0; fieldsArray.length > i || fieldsTitles.length > i; i++) {
     if (fieldsArray[i] != undefined && fieldsTitles[i] != undefined) {
       spookyConstructor.addField(fieldsTitles[i], fieldsArray[i])
     }
@@ -543,12 +578,15 @@ function (msg) {
     }
   }
 
-  if (spookyConstructor != justToCheck) {
-    console.log(spookyConstructor.toString() + ", " + justToCheck.toString());
+  if (breakChocolate.length >= 1) {
     msg.channel.send(spookyConstructor).then(msg.delete().catch(O_o=>{}));
   }
 
   if (presetName.length >= 1) {
+    if (breakChocolate.length < 1) {
+      msg.channel.send("Your embed must not be empty.");
+      return
+    }
     let pseudoArray = JSON.parse(fs.readFileSync('./embedPresets.txt', 'utf-8', console.error));
     let personalizedPresetName = presetName + "::" + msg.author.id;
 
@@ -562,10 +600,14 @@ function (msg) {
   }
 
   if (sharedWith.length >= 1) {
+    if (breakChocolate.length < 1) {
+      msg.channel.send("Your embed must not be empty.");
+      return
+    }
     let pseudoArray = JSON.parse(fs.readFileSync('./embedPresets.txt', 'utf-8', console.error));
     let circleOfSharing = [];
     for (i=0; i < sharedWith.length; i++) {
-      circleOfSharing.push(client.users.get(sharedWith[i]).username);
+      circleOfSharing.push(client.users.cache.get(sharedWith[i]).username);
       let everyPresetShare = msg.author.username + "'s preset::" + sharedWith[i];
       pseudoArray[everyPresetShare] = breakChocolate;
     }
@@ -577,5 +619,8 @@ function (msg) {
 
     ougi.backup(myEmbed, embedsChannel);
     msg.channel.send("Shared preset as `" + msg.author.username + "'s preset` with `" + circleOfSharing.join("`, `") + "`. It's now available for them to use as template until it's overwritten by another share of yours. In order to keep it, they must load and save it under another name. Tell them to include `::load " + msg.author.username + "'s preset` as command option whenever they want to use it.");
+  }
+  if (listOfPresets.length >= 1) {
+    msg.channel.send("List of " + msg.author.username + "'s embed presets:\n`" + listOfPresets.join("`, `") + "`");
   }
 }

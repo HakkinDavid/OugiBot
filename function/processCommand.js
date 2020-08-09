@@ -94,6 +94,10 @@ function (msg) {
         ougi.whoIsMe(arguments, msg)
     }
 
+    else if (spookyCommand == "acknowledgement") {
+        ougi.tos(msg)
+    }
+
     else if (spookyCommand == "vc") {
         ougi.voiceCall(arguments, msg).then().catch(console.error)
     }

@@ -10,11 +10,11 @@ function (msg) {
   while (msg.content.includes('\n')) {
     msg.content = msg.content.replace('\n', ' ')
   }
-  var embed = new Discord.RichEmbed()
+  var embed = new Discord.MessageEmbed()
   .setTitle("Input for judgementAbility (" + msg.channel.type.replace("dm", "DM").replace("text", "Text") + " channel)")
-  .setAuthor(msg.author.tag, msg.author.avatarURL)
+  .setAuthor(msg.author.tag, msg.author.avatarURL())
   .setColor("#FF008C")
-  .setFooter("globalLogEmbed by Ougi", client.user.avatarURL);
+  .setFooter("globalLogEmbed by Ougi", client.user.avatarURL());
 
   var pseudoArray = JSON.parse(fs.readFileSync('./responses.txt', 'utf-8', console.error));
   var stringsArray = Object.keys(pseudoArray);
@@ -73,11 +73,11 @@ function (msg) {
     }
     msg.channel.send(response).then().catch(console.error);
     embed.addField("Replied", response);
-    client.channels.get(consoleLogging).send({embed});
+    client.channels.cache.get(consoleLogging).send({embed});
   }
   else {
     embed.addField("Unsatisfied similarity minimum percentage", "Falling back to checkBadWords.");
-    client.channels.get(consoleLogging).send({embed});
+    client.channels.cache.get(consoleLogging).send({embed});
     ougi.checkBadWords(msg);
   }
   msg.channel.stopTyping();

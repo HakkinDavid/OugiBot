@@ -91,19 +91,19 @@ function (arguments, msg) {
     var existent = pseudoArray[trigger];
     for(var i = 0; i < existent.length; i++) {
       if(existent[i].toLowerCase() === response) {
-        msg.channel.send("Sorry; that response for this trigger already exists.").then().catch(console.error);
+        msg.channel.send("Sorry, that response for this trigger already exists.").then().catch(console.error);
         return
       }
     }
     existent.push(response);
     msg.channel.send(answer).then().catch(console.error);
-    var embed = new Discord.RichEmbed()
+    var embed = new Discord.MessageEmbed()
     .setTitle("Input for talkLearn")
     .addField("Response to be added", response)
     .addField("With trigger", trigger)
     .setColor("#FF008C")
-    .setFooter("globalLogEmbed by Ougi", client.user.avatarURL)
-    client.channels.get(consoleLogging).send({embed});
+    .setFooter("globalLogEmbed by Ougi", client.user.avatarURL())
+    client.channels.cache.get(consoleLogging).send({embed});
     pseudoArray[trigger] = existent;
     var proArray = JSON.stringify(pseudoArray);
     fs.writeFile('./responses.txt', proArray, console.error);
@@ -113,13 +113,13 @@ function (arguments, msg) {
   }
 
   msg.channel.send(answer).then().catch(console.error);
-  var embed = new Discord.RichEmbed()
+  var embed = new Discord.MessageEmbed()
   .setTitle("Input for talkLearn")
   .addField("Response to be added", response)
   .addField("With trigger", trigger)
   .setColor("#FF008C")
-  .setFooter("globalLogEmbed by Ougi", client.user.avatarURL)
-  client.channels.get(consoleLogging).send({embed});
+  .setFooter("globalLogEmbed by Ougi", client.user.avatarURL())
+  client.channels.cache.get(consoleLogging).send({embed});
 
   pseudoArray[trigger] = [];
   var arrayMaker = pseudoArray[trigger];

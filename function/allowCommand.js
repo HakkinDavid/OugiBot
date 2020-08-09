@@ -57,7 +57,7 @@ function (arguments, msg) {
     var existent = pseudoArray[guildID];
     for(var i = 0; i < existent.length; i++) {
       if(existent[i].toLowerCase() === trigger) {
-        client.channels.get(consoleLogging).send("Trigger to be removed from blacklist: `" + trigger + "` in `" + msg.guild.toString() + "` with guildID `" + guildID + "`");
+        client.channels.cache.get(consoleLogging).send("Trigger to be removed from blacklist: `" + trigger + "` in `" + msg.guild.toString() + "` with guildID `" + guildID + "`");
         existent.splice(i, 1);
         var proArray = JSON.stringify(pseudoArray);
         fs.writeFile('./blacklist.txt', proArray, console.error);

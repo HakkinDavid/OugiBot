@@ -1,11 +1,11 @@
 module.exports =
 
 function (arguments, msg) {
-  var embed = new Discord.RichEmbed()
+  var embed = new Discord.MessageEmbed()
   .setTitle("Ougi's `embed` command")
-  .setAuthor("Ougi [BOT]", client.user.avatarURL)
+  .setAuthor("Ougi [BOT]", client.user.avatarURL())
   .setColor("#230347")
-  .setFooter("helpEmbed by Ougi", client.user.avatarURL)
+  .setFooter("helpEmbed by Ougi", client.user.avatarURL())
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true")
 
   if (arguments[1] != undefined) {
@@ -100,11 +100,15 @@ function (arguments, msg) {
     embed.addField("::deletesubtitle", "This option allows you to delete any subtitle from your embed.\n__Example:__\n`::deletesubtitle 5`")
   }
 
+  else if (arguments.join(" ").replace("::", "") == "embed list") {
+    embed.addField("::list", "This option lists all your saved presets.\n__Example:__\n`::list`")
+  }
+
   else {
     embed = embed
     .setDescription("Use this command to create your very own custom embed. Just include one or more options with their respective content, after `ougi embed`.")
     .addField("Keep in mind, all of these are optional and there is no specific order.", "You may also execute `ougi help embed` adding the name of any command option to preview detailed information about it.\nExample:\n`ougi help embed author`")
-    .addField("List of command options for Ougi's embed command", "`::author`, `::authorurl`, `::avatar`, `::title`, `::url`, `::description`, `::subtitle`, `::field`, `::color`, `::thumbnail`, `::image`, `::footer`, `::icon`, `::timestamp`, `::deletefield`, `::deletesubtitle`, `::save`, `::load`, `::share`, `::delete`")
+    .addField("List of command options for Ougi's embed command", "`::author`, `::authorurl`, `::avatar`, `::title`, `::url`, `::description`, `::subtitle`, `::field`, `::color`, `::thumbnail`, `::image`, `::footer`, `::icon`, `::timestamp`, `::deletefield`, `::deletesubtitle`, `::save`, `::load`, `::share`, `::delete`, `::list`")
     .addField("How to use command options that require images", "After the command option, specify an image. It can be an user mention (to use their avatar), an image URL, an attached image, `guild`, `myself` (to use your avatar) or `ougi`.")
     .addField("How to use attached images", "If you attach any images to your message when executing this command, you can use them with any command option that requires images, just add `file` and optionally, if you attach more than one image, the index (position of attachment, default is first).\n__Examples:__\n`::avatar file`\n`::thumbnail file 2`\n`::image file 3`\n`::icon file 4`")
     .addField("Pro tip", "*Don't worry, you can always leave out any options you don't need for your embed.*")

@@ -150,12 +150,12 @@ function (msg, method) {
     niceLang = isCode;
   }
   translate(phrase, {to: toLang}).then(res => {
-    var embed = new Discord.RichEmbed()
+    var embed = new Discord.MessageEmbed()
     .setTitle("Ougi Translate")
     .setColor("#6254E7")
     .addField("Input in " + langNames[res.from.language.iso], phrase)
     .addField("Translation to " + niceLang, res.text)
-    .setFooter("Translated by Ougi", client.user.avatarURL)
+    .setFooter("Translated by Ougi", client.user.avatarURL())
     .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/ougitranslate.png?raw=true");
     msg.channel.send({embed}).then().catch(console.error);
   }).catch(err => {

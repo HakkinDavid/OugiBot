@@ -2,8 +2,8 @@ module.exports =
 
 function (arguments, msg) {
   var emojiArray = [];
-  var emojiIDList = client.emojis.filter(emoji => emoji.available).map((e) => e.toString()).join("\n");
-  var emojiNameList = client.emojis.filter(emoji => emoji.available).map((e) => e.name.toLowerCase()).join("\n");
+  var emojiIDList = client.emojis.cache.filter(emoji => emoji.available).map((e) => e.toString()).join("\n");
+  var emojiNameList = client.emojis.cache.filter(emoji => emoji.available).map((e) => e.name.toLowerCase()).join("\n");
   for (i=0; i < arguments.length; i++) {
     var searchFor = arguments[i];
     var proArrayID = emojiIDList.split("\n");

@@ -98,7 +98,7 @@ function (arguments, msg) {
   existent.push(whereTho[remindMe[isEmbed]]);
 
   msg.channel.send("I set a reminder for this channel: " + remindMe).then().catch(console.error);
-  client.channels.get(consoleLogging).send("Reminder to be added: `" + remindMe + "` with nextTime `" + nextTime + "` for channel `" + whereTho + "` and isEmbed `" + isEmbed);
+  client.channels.cache.get(consoleLogging).send("Reminder to be added: `" + remindMe + "` with nextTime `" + nextTime + "` for channel `" + whereTho + "` and isEmbed `" + isEmbed);
   pseudoArray[nextTime] = existent;
   var proArray = JSON.stringify(pseudoArray);
   fs.writeFile('./reminders.txt', proArray, console.error);

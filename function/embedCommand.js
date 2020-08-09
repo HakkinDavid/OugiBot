@@ -40,14 +40,14 @@ function (arguments, msg) {
     color: 3447003,
     author: {
       name: msg.author.username,
-      icon_url: msg.author.avatarURL
+      icon_url: msg.author.avatarURL()
     },
     title: title,
     url: url,
     description: description.join("`").toString(),
     timestamp: new Date(),
     footer: {
-      icon_url: client.user.avatarURL,
+      icon_url: client.user.avatarURL(),
       text: "SpookyEmbed by Ougi"
     }
     }
