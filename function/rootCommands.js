@@ -14,8 +14,30 @@ function (msg) {
     var arguments = spookySlices.slice(2);
 
     var event = new Date();
-    client.channels.cache.get(consoleLogging).send("__**" + event.toLocaleTimeString('en-US') + "**__\n:warning: [ROOT] Command received: " + hauntedCommand + "\nArguments: " + arguments + "\nExecuted by: `" + msg.author.tag + "`");
-    client.channels.cache.get(consoleLogging).send("\n")
+
+    var embed = new Discord.MessageEmbed()
+    .setAuthor(msg.author.tag, msg.author.avatarURL())
+    .setDescription("ID `" + msg.author.id + "`")
+    .setColor("#FF008C")
+    .setFooter("globalLogEmbed by Ougi", client.user.avatarURL())
+    .setTimestamp()
+    if (hauntedCommand == undefined) {
+      embed.addField("No trigger was specified", "\u200B")
+    }
+    else {
+      embed.addField(":warning: **ROOT** command", hauntedCommand);
+    }
+    if (arguments != "") {
+      if (arguments.length < 1024) {
+        embed.addField("Arguments", arguments.join(" "))
+      }
+      else {
+        embed.addField("Arguments", arguments.join(" ").slice(0, 1024))
+        embed.addField("\u200B", arguments.join(" ").slice(1024))
+      }
+    }
+
+    client.channels.cache.get(consoleLogging).send({embed}).then().catch(console.error);
 
     if (hauntedCommand == "help") {
         ougi.helpRootCommand(arguments, msg)

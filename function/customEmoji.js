@@ -14,15 +14,33 @@ function (arguments, msg) {
     if (positionEmoji == -1) {
       var spookyEmoji = "<:unknown_emoji:731996283790950420>"
     }
+    else if (arguments[i] == "random") {
+      var spookyEmoji = "<a:random:742246590982651976>";
+    }
     else {
       var spookyEmoji = proArrayID[positionEmoji];
     }
     emojiArray.push(spookyEmoji)
+    if (emojiArray.join("").length >= 2000) {
+      emojiArray.splice(emojiArray.length, 1);
+    }
   }
   if (emojiArray.length >= 1) {
     msg.delete().catch(O_o=>{});
 
-    msg.channel.send(emojiArray.join("")).catch(console.error);
+    msg.channel.send(emojiArray.join("")).then((message) => {
+      if (emojiArray.includes("<a:random:742246590982651976>")) {
+        var lucky = client.setInterval(function () {
+          let newEmoji = emojiArray.indexOf("<a:random:742246590982651976>");
+          let thatEmoji = proArrayID[Math.floor(Math.random()*proArrayID.length)];
+          emojiArray.splice(newEmoji, 1, thatEmoji);
+          message.edit(emojiArray.join(""));
+          if (!emojiArray.includes("<a:random:742246590982651976>")) {
+            client.clearInterval(lucky);
+          }
+        }, 600, message, emojiArray, proArrayID, lucky);
+      }
+    }).catch(console.error);
     if (emojiArray.includes("<:unknown_emoji:731996283790950420>")) {
       msg.channel.send("I couldn't find one or more of the emoji you asked me for. Execute the following command to see my emoji list:\n> ougi emoji-list").catch(console.error);
     }

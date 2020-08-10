@@ -34,7 +34,6 @@ function () {
     else {
       client.user.setPresence({activity: { name: "for updates | " + contentToSay.replace("\n", ", ") + ".", type: 'WATCHING' }, status:'dnd'}).then().catch(console.error);
       console.log("Running development instance.");
-      console.log(pseudoEnglish[willSay]);
     }
   });
 }
