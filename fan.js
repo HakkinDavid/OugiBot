@@ -137,5 +137,21 @@ client.on("channelDelete", (channel) => {
     ougi.autoRMChannel(channel)
 });
 
+/*Makotomonogatari*/
+client.setInterval(
+  function () {
+    client.destroy();
+    client.login(process.env.TOKEN);
+    var cleanCache = findRemoveSync('./', {extensions: ['.txt']});
+    var fetchedChannels = [ignoredChannel, backupChannel, subscribersChannel, embedsChannel, guildLoggerChannel, guildNewsChannel, blacklistChannel];
+    for (i=0; i < fetchedChannels.length; i++) {
+      ougi.fetch(fetchedChannels[i]);
+    }
+
+    fs.writeFileSync('./aimAssist.txt', "[]", console.error);
+
+    ougi.startup();
+  }, 28800000);
+
 /* Kaishimonogatari */
 client.login(process.env.TOKEN);

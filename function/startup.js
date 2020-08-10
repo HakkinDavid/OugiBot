@@ -26,12 +26,13 @@ function () {
       T.post('statuses/update', { status: contentToSay }, function(err, data, response) {
         client.channels.cache.get(consoleLogging).send("Tweeted: " + contentToSay)
       })
-      store.channel.send(willSay + 1);
+      var gonnaSay = willSay + 1;
+      client.channels.cache.get(wordsChannel).send(gonnaSay.toString());
       client.user.setActivity("you | " + contentToSay.replace("\n", ", ") + ".", {type: 'WATCHING'}).then().catch(console.error);
       console.log("Successfully started up.");
     }
     else {
-      client.user.setActivity("for updates | " + contentToSay.replace("\n", ", ") + ".", {type: 'WATCHING'}).then().catch(console.error);
+      client.user.setPresence({activity: { name: "for updates | " + contentToSay.replace("\n", ", ") + ".", type: 'WATCHING' }, status:'dnd'}).then().catch(console.error);
       console.log("Running development instance.");
       console.log(pseudoEnglish[willSay]);
     }
