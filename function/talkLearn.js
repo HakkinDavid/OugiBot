@@ -9,7 +9,7 @@ function (arguments, msg) {
   }
 
   if (thisMessage.includes("<@") && thisMessage.includes(">")) {
-    msg.channel.send("Avoid mentions or custom emoji please. What? Isn't that a mention or a custom emoji? Well, then don't include '\<\@' and '>' in the same message.").then().catch(console.error);
+    msg.channel.send("Avoid mentions please. What? Isn't that a mention? Well, then don't include '\<\@' and '>' in the same message.").then().catch(console.error);
     return
   }
 

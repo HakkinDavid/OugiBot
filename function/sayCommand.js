@@ -20,7 +20,7 @@ function (arguments, msg) {
     }
 
     if (sayMessage.includes("<@") && msg.content.includes(">")) {
-      msg.channel.send("Avoid pings and custom emoji. What? Isn't that one of those?").then().catch(console.error);
+      msg.channel.send("Avoid pings. What? Isn't that a ping?").then().catch(console.error);
       return
     }
 

@@ -21,11 +21,11 @@ function (arguments, msg) {
       var spookyEmoji = proArrayID[positionEmoji];
     }
     emojiArray.push(spookyEmoji)
-    if (emojiArray.join("").length >= 2000) {
-      emojiArray.splice(emojiArray.length, 1);
-    }
   }
   if (emojiArray.length >= 1) {
+    while (emojiArray.join("").length >= 2000) {
+      emojiArray.splice(emojiArray.length-1, 1);
+    }
     msg.delete().catch(O_o=>{});
 
     msg.channel.send(emojiArray.join("")).then((message) => {
