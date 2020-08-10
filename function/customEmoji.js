@@ -24,7 +24,7 @@ function (arguments, msg) {
   }
   if (emojiArray.length >= 1) {
     while (emojiArray.join("").length >= 2000) {
-      emojiArray.splice(emojiArray.length-1, 1);
+      emojiArray.pop();
     }
     msg.delete().catch(O_o=>{});
 
