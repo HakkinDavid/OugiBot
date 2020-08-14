@@ -17,7 +17,6 @@ global.levenary = require('levenary');
 global.leven = require('leven');
 global.isHexcolor = require('is-hexcolor');
 global.isImageUrl = require('is-image-url');
-global.ImageRecognition = require("image-recognition");
 
 if(process.env.OFFLINE == 1) {
   client.destroy();

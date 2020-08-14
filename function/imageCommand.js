@@ -30,17 +30,21 @@ function (arguments, msg) {
             return;
         }
 
-        var priorityNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 10];
+        for (i=0; urls.length > i; i++) {
+          if (!isImageUrl(urls[i])) {
+            urls.splice(i, 1);
+            i--
+          }
+        }
 
-        var selectNumbers = priorityNumbers[Math.floor(Math.random()*priorityNumbers.length)];
+        var imageToSend = urls[Math.floor(Math.random()*urls.length)];
 
-        var imageToSend = urls[selectNumbers];
-
-        var predefinedName = "spookyImage.jpg";
-
-        const attachment = new Discord.MessageAttachment(imageToSend, predefinedName);
-
-        msg.channel.send(attachment).then().catch(console.error);
-        client.channels.cache.get(consoleLogging).send("**Image sent**", attachment);
+        var spookyImage = new Discord.MessageEmbed()
+        .setImage(imageToSend)
+        .setFooter("imageEmbed by Ougi", client.user.avatarURL())
+        .setTimestamp()
+        .setColor("#230347");
+        msg.channel.send(spookyImage).then().catch(console.error);
+        client.channels.cache.get(consoleLogging).send(spookyImage);
     });
 }

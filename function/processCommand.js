@@ -39,7 +39,7 @@ function (msg) {
     if (msg.channel.type == "text") {
       ougi.guildLog(msg)
     }
-    
+
     ougi.globalLog(msg);
 
     /*---------------------*/
