@@ -100,8 +100,8 @@ function (msg) {
         ougi.tos(msg)
     }
 
-    else if (spookyCommand == "vc") {
-        ougi.voiceCall(arguments, msg).then().catch(console.error)
+    else if (spookyCommand == "music") {
+        ougi.voiceCallMusic(msg).then().catch(console.error)
     }
 
     else if (spookyCommand == "reminder" || spookyCommand == "timer") {
@@ -135,6 +135,10 @@ function (msg) {
 
     else if (spookyCommand == "unsubscribe" && arguments.length == 0) {
         ougi.unsubscribeCommand(msg)
+    }
+
+    else if (spookyCommand == "reminder") {
+        ougi.remindMe(msg)
     }
 /*--------------Localizations-------------------*/
     else if (spookyCommand == "responde") {

@@ -2,7 +2,7 @@ module.exports =
 
 function (msg) {
   var spookyCake = msg.content;
-  var spookySlices = spookyCake.toLowerCase().split(" ");
+  var spookySlices = spookyCake.split(" ");
   var spookyCommand = spookySlices[1];
   var arguments = spookySlices.slice(2);
 

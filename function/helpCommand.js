@@ -15,6 +15,8 @@ function (arguments, msg) {
         ougi.snipeHelp(msg)
     } else if (arguments == 'image') {
         ougi.imageHelp(msg)
+    } else if (arguments == 'music') {
+        ougi.musicHelp(msg)
     } else if (arguments[0] == 'embed') {
         ougi.embedHelp(arguments, msg)
     } else if (arguments == 'learn') {

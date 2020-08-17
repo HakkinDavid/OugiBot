@@ -28,7 +28,7 @@ function () {
       })
       var gonnaSay = willSay + 1;
       client.channels.cache.get(wordsChannel).send(gonnaSay.toString());
-      client.user.setActivity("you | " + contentToSay.replace("\n", ", ") + ".", {type: 'WATCHING'}).then().catch(console.error);
+      client.user.setPresence({activity: { name: "you | " + contentToSay.replace("\n", ", ") + ".", type: 'WATCHING' }, status:'online'}).then().catch(console.error);
       console.log("Successfully started up.");
     }
     else {

@@ -41,10 +41,8 @@ function (msg) {
 
     if (hauntedCommand == "help") {
         ougi.helpRootCommand(arguments, msg)
-    } else if (hauntedCommand == "do") {
-        ougi.doRootCommand(arguments, msg)
     } else if (hauntedCommand == "status") {
-        ougi.statusRootCommand(arguments, msg)
+        ougi.statusRootCommand(msg)
     } else if (hauntedCommand == "log") {
         ougi.logRootCommand(arguments, msg)
     } else if (hauntedCommand == "vibe_check") {

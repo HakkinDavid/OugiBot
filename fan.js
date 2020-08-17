@@ -17,6 +17,8 @@ global.levenary = require('levenary');
 global.leven = require('leven');
 global.isHexcolor = require('is-hexcolor');
 global.isImageUrl = require('is-image-url');
+global.ytdl = require('ytdl-core');
+global.scrapeYt = require("scrape-yt");
 
 if(process.env.OFFLINE == 1) {
   client.destroy();
