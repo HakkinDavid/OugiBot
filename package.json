@@ -12,6 +12,7 @@
     "discord.js": "^12.2.0",
     "dotenv": "^8.2.0",
     "download-file": "^0.1.5",
+    "ffmpeg-static": "^4.2.7",
     "find-remove": "^2.0.1",
     "fs": "0.0.1-security",
     "got": "^11.5.2",
