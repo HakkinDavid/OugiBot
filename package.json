@@ -1,8 +1,10 @@
 {
   "name": "Ougi",
-  "version": "0.0.1",
   "description": "Oshino Ougi",
   "main": "fan.js",
+  "engines": {
+        "node": "13.11.0"
+  },
   "dependencies": {
     "@discordjs/opus": "^0.3.2",
     "@vitalets/google-translate-api": "^3.0.0",
