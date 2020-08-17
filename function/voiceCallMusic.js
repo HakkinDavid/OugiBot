@@ -34,7 +34,7 @@ async function (msg) {
     return
   }
 
-  if (arguments == "leave") {
+  if (arguments == "stop") {
     await vcChannel.leave();
     var response = [":pensive:", "oke, bye", "aight imma head out"];
     msg.channel.send(response[Math.floor(Math.random()*response.length)]).then().catch(console.error);
