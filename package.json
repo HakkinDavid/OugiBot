@@ -12,6 +12,7 @@
     "configstore": "^5.0.1",
     "discord.io": "^2.5.3",
     "discord.js": "^12.3.1",
+    "dot-prop": "^5.2.0",
     "dotenv": "^8.2.0",
     "download-file": "^0.1.5",
     "ffmpeg-static": "^4.2.7",
