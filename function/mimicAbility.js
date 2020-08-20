@@ -28,5 +28,5 @@ function (msg) {
   msg.channel.send(iSaid);
   embed.addField("Content", uSaid);
   embed.addField("Replied", iSaid);
-  client.channels.cache.get(consoleLogging).send({embed});
+  client.channels.cache.get(consoleLogging).send(embed);
 }
