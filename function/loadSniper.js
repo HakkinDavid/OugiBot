@@ -7,11 +7,18 @@ function (msg) {
     if (aimingAt == "") {
       aimingAt = [];
     }
+    else if (!aimingAt.startsWith("[{")) {
+      aimingAt = [];
+    }
+    else if (!aimingAt.endsWith("}]")) {
+      aimingAt = [];
+    }
     var newArray = JSON.parse(aimingAt);
   }
   else {
     var newArray = [];
   }
+
   var thisArray = {
     text: msg.content,
     pfp: msg.author.avatarURL(),
@@ -19,6 +26,12 @@ function (msg) {
     sent: msg.createdAt.toLocaleTimeString(msg.author.locale),
     files: msg.attachments.map((files) => files.proxyUrl).join(" ")
   };
+
+  for (i=newArray.length-5; newArray.length > i; i++) {
+    if (i>=0 && newArray[i].text == thisArray.text && newArray[i].author == thisArray.author && newArray[i].files == thisArray.files) {
+      return
+    }
+  }
 
   newArray.push(thisArray);
 

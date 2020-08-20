@@ -104,6 +104,11 @@ function (msg) {
         ougi.voiceCallMusic(msg).then().catch(console.error)
     }
 
+    else if (spookyCommand.toLowerCase().replace("https://", "").replace("www.", "").replace("youtu.be/", "youtube.com/watch?v=").startsWith("youtube.com/watch?v=")) {
+        msg.content = msg.content.replace("ougi", "ougi music");
+        ougi.voiceCallMusic(msg).then().catch(console.error)
+    }
+
     else if (spookyCommand == "reminder" || spookyCommand == "timer") {
         ougi.spookyReminder(arguments, msg)
     }

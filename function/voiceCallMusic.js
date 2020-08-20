@@ -83,7 +83,7 @@ async function (msg) {
           .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/ougimusic.png?raw=true")
           .setImage(videoImage)
           .setTimestamp()
-          .addField(videoTitle, "by " + videoAuthor + "\nDuration: " + durationInMinutes.join(":"));
+          .addField(videoTitle, "by " + videoAuthor + "\nDuration: " + durationInMinutes.join(":") + "\n[View in YouTube](" + anURL + " '" + videoTitle + "')");
           msg.channel.send(musicalEmbed).then().catch(console.error);
         });
       }
@@ -119,7 +119,7 @@ async function (msg) {
           .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/ougimusic.png?raw=true")
           .setImage(videoImage)
           .setTimestamp()
-          .addField(videoTitle, "by " + videoAuthor + "\nDuration: " + durationInMinutes.join(":"));
+          .addField(videoTitle, "`" + durationInMinutes.join(":") + "`\nby " + videoAuthor + "\n[View in YouTube](" + anURL + " '" + videoTitle + "')");
           msg.channel.send(musicalEmbed).then().catch(console.error);
         });
       }
