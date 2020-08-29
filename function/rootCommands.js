@@ -51,6 +51,8 @@ function (msg) {
         ougi.hauntRootCommand(arguments, msg)
     } else if (hauntedCommand == "tweet") {
         ougi.tweetRootCommand(msg)
+    } else if (hauntedCommand == "newsletter") {
+        ougi.newsletter(msg)
     } else {
         ougi.undefinedCommand(arguments, msg)
     }

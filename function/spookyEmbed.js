@@ -579,7 +579,13 @@ function (msg) {
   }
 
   if (breakChocolate.length >= 1) {
-    msg.channel.send(spookyConstructor).then(msg.delete().catch(O_o=>{}));
+    msg.channel.send(spookyConstructor).then(
+      setTimeout(
+        function () {
+          msg.delete().catch(O_o=>{})
+        }, 2000, msg
+      )
+    );
   }
 
   if (presetName.length >= 1) {
