@@ -49,6 +49,7 @@ global.guildNewsChannel = "740013412053942282";
 global.subscribersChannel = "740015364636672162";
 global.embedsChannel = "740187317238497340";
 global.ignoredChannel = "741535284277149717";
+global.newsChannel = "751697345737129994";
 
 /* Rogumonogatari */
 global.consoleLogging = "726927838724489226";
@@ -56,7 +57,7 @@ global.consoleLogging = "726927838724489226";
 /* Chuuimonogatari */
 client.on('ready', () => {
   var cleanCache = findRemoveSync('./', {extensions: ['.txt']});
-  var fetchedChannels = [ignoredChannel, backupChannel, subscribersChannel, embedsChannel, guildLoggerChannel, guildNewsChannel, blacklistChannel];
+  var fetchedChannels = [ignoredChannel, backupChannel, subscribersChannel, embedsChannel, guildLoggerChannel, guildNewsChannel, blacklistChannel, newsChannel];
   for (i=0; i < fetchedChannels.length; i++) {
     ougi.fetch(fetchedChannels[i]);
   }

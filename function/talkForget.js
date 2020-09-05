@@ -23,7 +23,7 @@ function (arguments, msg) {
   }
 
   if (breakChocolate.length !== 2){
-    msg.channel.send("Do you want to teach me something? Looks like you're doing it wrong. Use the following command for some help.\n> ougi help learn").then().catch(console.error);
+    msg.channel.send("Do you want to make me forget something? Looks like you're wearing your sunglasses wrong. Use the following command for some help.\n> ougi help forget").then().catch(console.error);
     return
   }
 
@@ -81,8 +81,8 @@ function (arguments, msg) {
   var pseudoArray = JSON.parse(fs.readFileSync('./responses.txt', 'utf-8', console.error));
 
   var afterOptions = [
-    "I'll start replying `" + response + "` when anyone says `" + trigger + "`",
-    "Of course I already knew I should say `" + response + "` when anyone says `" + trigger + "`, I was just making sure you knew too~",
+    "I'll stop replying `" + response + "` when anyone says `" + trigger + "`",
+    "Of course I already knew I shouldn't say `" + response + "` when anyone says `" + trigger + "`",
   ];
   var answer = afterOptions[Math.floor(Math.random()*afterOptions.length)];
   var myResponse = "./responses.txt";
@@ -91,42 +91,36 @@ function (arguments, msg) {
     var existent = pseudoArray[trigger];
     for(var i = 0; i < existent.length; i++) {
       if(existent[i].toLowerCase() === response) {
-        msg.channel.send("Sorry, that response for this trigger already exists.").then().catch(console.error);
+        existent.splice(i, 1);
+        msg.channel.send(answer).then().catch(console.error);
+        var embed = new Discord.MessageEmbed()
+        .setTitle("Input for talkForget")
+        .addField("Response to be deleted", response)
+        .setColor("#00FF73")
+        .setFooter("globalLogEmbed by Ougi", client.user.avatarURL())
+
+        pseudoArray[trigger] = existent;
+        if (existent.length < 1) {
+          delete pseudoArray[trigger];
+          embed.addField("Trigger to be deleted", trigger);
+        }
+        else {
+          embed.addField("From trigger", trigger)
+        }
+        
+        client.channels.cache.get(consoleLogging).send({embed});
+        var proArray = JSON.stringify(pseudoArray);
+        fs.writeFile('./responses.txt', proArray, console.error);
+
+        ougi.backup(myResponse, backupChannel);
         return
       }
     }
-    existent.push(response);
-    msg.channel.send(answer).then().catch(console.error);
-    var embed = new Discord.MessageEmbed()
-    .setTitle("Input for talkLearn")
-    .addField("Response to be added", response)
-    .addField("With trigger", trigger)
-    .setColor("#FF008C")
-    .setFooter("globalLogEmbed by Ougi", client.user.avatarURL())
-    client.channels.cache.get(consoleLogging).send({embed});
-    pseudoArray[trigger] = existent;
-    var proArray = JSON.stringify(pseudoArray);
-    fs.writeFile('./responses.txt', proArray, console.error);
-
-    ougi.backup(myResponse, backupChannel);
+    msg.channel.send("Sorry, this response doesn't match any from this trigger.").then().catch(console.error);
     return
   }
 
-  msg.channel.send(answer).then().catch(console.error);
-  var embed = new Discord.MessageEmbed()
-  .setTitle("Input for talkLearn")
-  .addField("Response to be added", response)
-  .addField("With trigger", trigger)
-  .setColor("#FF008C")
-  .setFooter("globalLogEmbed by Ougi", client.user.avatarURL())
-  client.channels.cache.get(consoleLogging).send({embed});
-
-  pseudoArray[trigger] = [];
-  var arrayMaker = pseudoArray[trigger];
-  arrayMaker.push(response);
-  pseudoArray[trigger] = arrayMaker;
-  var proArray = JSON.stringify(pseudoArray);
-  fs.writeFile('./responses.txt', proArray, console.error);
-
-  ougi.backup(myResponse, backupChannel);
+  else {
+    msg.channel.send("This trigger doesn't exist in my database.")
+  }
 }

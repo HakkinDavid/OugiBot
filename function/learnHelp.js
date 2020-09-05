@@ -14,14 +14,15 @@ function (msg) {
   .setTitle("Ougi's `learn` command")
   .setAuthor("Ougi [BOT]", client.user.avatarURL())
   .setColor("#230347")
-  .setDescription("Make Ougi learn something new! You just gotta provide a trigger phrase and the desired response, separated by two slashes.")
+  .setDescription("Make Ougi learn something new! You just gotta provide a trigger phrase and the desired response, separated by two colons (::).")
   .setFooter("helpEmbed by Ougi", client.user.avatarURL())
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true")
-  .addField("Example", "`ougi learn " + trigger + " // " + response + "`")
+  .addField("Example", "`ougi learn " + trigger + " :: " + response + "`")
   .addField("Output", answer)
   .addField("Note", "In order to use the content you taught Ougi, write a message starting with `ougi`, followed by whatever the trigger phrase was. There's also the option to DM Ougi, in which using the prefix for this matter is optional.")
   .addField("Using the trigger phrase", "`ougi " + trigger + "`")
   .addField("Ougi will reply", response)
+  .addField("Trying to make Ougi forget something? Execute the following command for more information", "`ougi help forget`")
 
   msg.channel.send({embed}).catch(console.error);
 }

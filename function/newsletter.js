@@ -32,6 +32,7 @@ function (msg) {
     }
     if (material.startsWith("type ")) {
       material = material.slice(5);
+      var embedType = material;
       if (material == "info") {
         spookyConstructor
         .setColor("#1C22C9")
@@ -61,10 +62,12 @@ function (msg) {
       material = material.slice(6);
       spookyConstructor.setTitle(material);
       var hasTitle = true;
+      var embedName = material;
     }
     else if (material.startsWith("description ")) {
       material = material.slice(12);
       spookyConstructor.setDescription(material);
+      var embedDesc = material;
       var hasDesc = true;
     }
     else {
@@ -82,5 +85,18 @@ function (msg) {
     client.users.cache.get(pseudoArray[i]).send(spookyConstructor).catch(console.error);
     names.push(client.users.cache.get(pseudoArray[i]).username);
   }
+  let newsArray = JSON.parse(fs.readFileSync('./newsChannel.txt', 'utf-8', console.error));
+  var thisArray = {
+    title: embedName,
+    desc: embedDesc,
+    type: embedType,
+    sent: new Date().toDateString()
+  };
+  newsArray.push(thisArray);
+  let proArray = JSON.stringify(newsArray);
+  let myEmbed = './newsChannel.txt';
+  fs.writeFile('./newsChannel.txt', proArray, console.error);
+
+  ougi.backup(myEmbed, newsChannel);
   msg.channel.send("Sent this newsletter to:\n" + names.join('\n'), spookyConstructor);
 }

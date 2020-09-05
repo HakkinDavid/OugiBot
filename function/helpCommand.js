@@ -21,6 +21,8 @@ function (arguments, msg) {
         ougi.embedHelp(arguments, msg)
     } else if (arguments == 'learn') {
         ougi.learnHelp(msg)
+    } else if (arguments == 'forget') {
+        ougi.forgetHelp(msg)
     } else if (arguments == 'translate') {
         ougi.translateHelp(msg)
     } else if (arguments == 'emoji-list') {
@@ -35,6 +37,8 @@ function (arguments, msg) {
         ougi.setlogHelp(msg)
     } else if (arguments == 'setnews') {
         ougi.setnewsHelp(msg)
+    } else if (arguments == 'newspaper') {
+        ougi.newspaperHelp(msg)
     } else if (arguments == 'subscribe') {
         ougi.subscribeHelp(msg)
     } else if (arguments == 'unsubscribe') {

@@ -80,8 +80,16 @@ function (msg) {
         ougi.spookyWhisperCommand(arguments, msg)
     }
 
-    else if (spookyCommand == "learn" || spookyCommand == "teach") {
+    else if (spookyCommand == "newspaper") {
+        ougi.newspaper(arguments, msg)
+    }
+
+    else if (spookyCommand == "learn") {
         ougi.talkLearn(arguments, msg)
+    }
+
+    else if (spookyCommand == "forget") {
+        ougi.talkForget(arguments, msg)
     }
 
     else if (spookyCommand == "spookify") {
