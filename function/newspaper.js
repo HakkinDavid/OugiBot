@@ -28,29 +28,25 @@ function (arguments, msg) {
   .setFooter("newspaperEmbed by Ougi | Date: " + news.sent + " | Page " + displayIndex + " of " + maxIndex)
   .setColor("#F5F2F2")
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/news.png?raw=true");
-  if (thatType.startsWith("type ")) {
-    thatType = thatType.slice(5);
-    var embedType = thatType;
-    if (thatType == "info") {
-      spookyConstructor
-      .setColor("#1C22C9")
-      .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/info.png?raw=true");
-    }
-    else if (thatType == "mail") {
-      spookyConstructor
-      .setColor("#F5F2F2")
-      .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/news.png?raw=true");
-    }
-    else if (thatType == "alert") {
-      spookyConstructor
-      .setColor("#C9A71C")
-      .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/doritoalert.png?raw=true");
-    }
-    else if (thatType == "fatal") {
-      spookyConstructor
-      .setColor("#FC0000")
-      .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/fatal.png?raw=true");
-    }
+  if (thatType == "info") {
+    spookyConstructor
+    .setColor("#1C22C9")
+    .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/info.png?raw=true");
+  }
+  else if (thatType == "mail") {
+    spookyConstructor
+    .setColor("#F5F2F2")
+    .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/news.png?raw=true");
+  }
+  else if (thatType == "alert") {
+    spookyConstructor
+    .setColor("#C9A71C")
+    .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/doritoalert.png?raw=true");
+  }
+  else if (thatType == "fatal") {
+    spookyConstructor
+    .setColor("#FC0000")
+    .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/fatal.png?raw=true");
   }
   msg.channel.send(spookyConstructor).catch(console.error)
 }
