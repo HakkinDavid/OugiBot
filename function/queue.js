@@ -73,6 +73,9 @@ async function (msg, vcChannel) {
           })
         })
         setTimeout(function () {
+          if (!fs.existsSync(listPath)) {
+            return
+          }
           let thisFile = fs.readFileSync(listPath, console.error);
           var aList = JSON.parse(thisFile);
           var thisDate = aList[0].initiated;
@@ -142,6 +145,9 @@ async function (msg, vcChannel) {
           })
         })
         setTimeout(function () {
+          if (!fs.existsSync(listPath)) {
+            return
+          }
           let thisFile = fs.readFileSync(listPath, console.error);
           var aList = JSON.parse(thisFile);
           var thisDate = aList[0].initiated;
