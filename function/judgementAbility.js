@@ -31,16 +31,16 @@ function (msg) {
   ougi.sleep(500);
   var levenaryIdea = levenary(notSpookyDM, stringsArray);
   var myLevU = leven(notSpookyDM, levenaryIdea);
-  embed.addField("Levenshtein matching trigger found with " + myLevU + " Levenshtein distance units.", levenaryIdea)
+  embed.addField("Levenshtein matching trigger found with " + myLevU + " Levenshtein distance units", levenaryIdea)
   var judgeThis = stringSimilarity.findBestMatch(notSpookyDM, stringsArray);
   var minSimilarity = 0.33;
   var similarity = judgeThis.bestMatch.rating;
   var comparisonThreshold = 0.8;
   var diceString = judgeThis.bestMatch.target;
-  embed.addField("Dice's Coefficient matching trigger found with " + similarity*100 + "% of similarity.", diceString);
+  embed.addField("Dice's Coefficient matching trigger found with " + similarity*100 + "% of similarity", diceString);
   var compareLevDice = stringSimilarity.compareTwoStrings(levenaryIdea, diceString);
   var compareDiceLev = leven(levenaryIdea, diceString);
-  embed.addField("Levenshtein matching trigger and Dice's Coefficient matching trigger share", "► `" + compareDiceLev + "` Levenshtein distance units\n► `" + compareLevDice*100 + "%` similarity according to Dice's Coefficient.");
+  embed.addField("Levenshtein matching trigger and Dice's Coefficient matching trigger share", "► `" + compareDiceLev + "` Levenshtein distance units\n► `" + compareLevDice*100 + "%` similarity according to Dice's Coefficient");
   if (compareLevDice < comparisonThreshold) {
     var tellLevAboutDice = leven(notSpookyDM, diceString);
     if (tellLevAboutDice >= notSpookyDM.length/2) {
@@ -56,7 +56,7 @@ function (msg) {
   var finalSimilarity = stringSimilarity.compareTwoStrings(notSpookyDM, thisString);
   var finalLevU = leven(notSpookyDM, thisString);
   embed.addField("Ougi's judgementAbility chose the following trigger", thisString);
-  embed.addField("This trigger has", "► `" + finalSimilarity*100 + "%` of similarity\n► Current minimum is `" + minSimilarity*100 + "%`\n► `" + finalLevU + "` Levenshtein distance units.")
+  embed.addField("This trigger has", "► `" + finalSimilarity*100 + "%` of similarity\n► Current minimum is `" + minSimilarity*100 + "%`\n► `" + finalLevU + "` Levenshtein distance units")
   if (finalSimilarity >= minSimilarity){
     var options = pseudoArray[thisString];
     var response = options[Math.floor(Math.random()*options.length)];

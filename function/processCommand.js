@@ -108,7 +108,7 @@ function (msg) {
         ougi.tos(msg)
     }
 
-    else if (spookyCommand == "music") {
+    else if (spookyCommand == "music" || spookyCommand == "play" || spookyCommand == "p") {
         ougi.voiceCallMusic(msg).then().catch(console.error)
     }
 
