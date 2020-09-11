@@ -6134,3 +6134,16 @@ node_modules/@vitalets/google-translate-token/node_modules/configstore/node_modu
 node_modules/@vitalets/google-translate-token/node_modules/configstore/node_modules/dot-prop/license
 node_modules/@vitalets/google-translate-token/node_modules/configstore/node_modules/dot-prop/package.json
 node_modules/@vitalets/google-translate-token/node_modules/configstore/node_modules/dot-prop/readme.md
+node_modules/yargs-parser/browser.js
+node_modules/yargs-parser/build/index.cjs
+node_modules/yargs-parser/build/lib/common-types.js
+node_modules/yargs-parser/build/lib/index.js
+node_modules/yargs-parser/build/lib/string-utils.js
+node_modules/yargs-parser/build/lib/tokenize-arg-string.js
+node_modules/yargs-parser/build/lib/yargs-parser-types.js
+node_modules/yargs-parser/build/lib/yargs-parser.js
+node_modules/yargs/node_modules/yargs-parser/CHANGELOG.md
+node_modules/yargs/node_modules/yargs-parser/index.js
+node_modules/yargs/node_modules/yargs-parser/lib/tokenize-arg-string.js
+node_modules/yargs/node_modules/yargs-parser/package.json
+node_modules/yargs/node_modules/yargs-parser/README.md
