@@ -33,6 +33,7 @@
     "string-similarity": "^4.0.2",
     "twit": "^2.2.11",
     "winston": "^3.3.3",
+    "yargs-parser": "^20.0.0",
     "ytdl-core": "^3.2.1"
   },
   "devDependencies": {},
