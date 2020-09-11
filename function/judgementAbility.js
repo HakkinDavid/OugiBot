@@ -76,7 +76,7 @@ function (msg) {
     client.channels.cache.get(consoleLogging).send({embed});
   }
   else {
-    embed.addField("Unsatisfied similarity minimum percentage", "Falling back to checkBadWords.");
+    embed.addField("Unsatisfied similarity minimum percentage", "Falling back to checkBadWords");
     client.channels.cache.get(consoleLogging).send({embed});
     ougi.checkBadWords(msg);
   }

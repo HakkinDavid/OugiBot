@@ -44,137 +44,145 @@ function (msg) {
 
     /*---------------------*/
 
-    if (spookyCommand == undefined) {
+    switch (spookyCommand) {
+      case undefined:
         ougi.undefinedCommand(arguments, msg)
-    }
+      break;
 
-    else if (spookyCommand == "help") {
+      case "help":
         ougi.helpCommand(arguments, msg)
-    }
+      break;
 
-    else if (spookyCommand == "multiply") {
+      case "multiply":
         ougi.multiplyCommand(arguments, msg)
-    }
+      break;
 
-    else if (spookyCommand == "add") {
+      case "add":
         ougi.additionCommand(arguments, msg)
-    }
+      break;
 
-    else if (spookyCommand == "say") {
+      case "say":
         ougi.sayCommand(arguments, msg)
-    }
+      break;
 
-    else if (spookyCommand == "answer") {
+      case "answer":
         ougi.answerCommand(arguments, msg)
-    }
+      break;
 
-    else if (spookyCommand == "image") {
+      case "image":
         ougi.imageCommand(arguments, msg)
-    }
+      break;
 
-    else if (spookyCommand == "embed") {
+      case "embed":
         ougi.spookyEmbed(msg)
-    }
+      break;
 
-    else if (spookyCommand == "whisper") {
+      case "whisper":
         ougi.spookyWhisperCommand(arguments, msg)
-    }
+      break;
 
-    else if (spookyCommand == "newspaper") {
+      case "newspaper":
         ougi.newspaper(arguments, msg)
-    }
+      break;
 
-    else if (spookyCommand == "learn") {
+      case "learn":
         ougi.talkLearn(arguments, msg)
-    }
+      break;
 
-    else if (spookyCommand == "forget") {
+      case "forget":
         ougi.talkForget(arguments, msg)
-    }
+      break;
 
-    else if (spookyCommand == "spookify") {
+      case "spookify":
         ougi.spookifyCommand(arguments, msg)
-    }
+      break;
 
-    else if (spookyCommand == "despookify") {
+      case "despookify":
         ougi.despookifyCommand(arguments, msg)
-    }
+      break;
 
-    else if (spookyCommand == "info") {
+      case "info":
         ougi.whoIsMe(arguments, msg)
-    }
+      break;
 
-    else if (spookyCommand == "acknowledgement") {
+      case "acknowledgement":
         ougi.tos(msg)
-    }
+      break;
 
-    else if (spookyCommand == "music" || spookyCommand == "play" || spookyCommand == "p") {
+      case "music":
         ougi.voiceCallMusic(msg).then().catch(console.error)
-    }
+      break;
 
-    else if (spookyCommand.toLowerCase().replace("https://", "").replace("www.", "").replace("youtu.be/", "youtube.com/watch?v=").startsWith("youtube.com/watch?v=")) {
-        msg.content = msg.content.replace("ougi", "ougi music");
+      case "play":
         ougi.voiceCallMusic(msg).then().catch(console.error)
-    }
+      break;
 
-    else if (spookyCommand == "reminder" || spookyCommand == "timer") {
-        ougi.spookyReminder(arguments, msg)
-    }
+      case "p":
+        ougi.voiceCallMusic(msg).then().catch(console.error)
+      break;
 
-    else if (spookyCommand == "translate") {
+      case "translate":
         ougi.translateCommand(msg)
-    }
+      break;
 
-    else if (spookyCommand.startsWith("translate-")) {
-        var method = 1;
-        ougi.translateCommand(msg, method)
-    }
-
-    else if (spookyCommand == "emoji") {
+      case "emoji":
         ougi.customEmoji(arguments, msg)
-    }
+      break;
 
-    else if (spookyCommand == "emoji-list") {
+      case "emoji-list":
         ougi.emojiList(arguments, msg)
-    }
+      break;
 
-    else if (spookyCommand == "snipe") {
+      case "snipe":
         ougi.shootSniper(arguments, msg)
-    }
+      break;
 
-    else if (spookyCommand == "subscribe" && arguments.length == 0) {
-        ougi.subscribeCommand(msg)
-    }
-
-    else if (spookyCommand == "unsubscribe" && arguments.length == 0) {
-        ougi.unsubscribeCommand(msg)
-    }
-
-    else if (spookyCommand == "reminder") {
+      case "reminder":
         ougi.remindMe(msg)
-    }
-/*--------------Localizations-------------------*/
-    else if (spookyCommand == "responde") {
+      break;
+  /*--------------Localizations-------------------*/
+      case "responde":
         ougi.respondeComando(arguments, msg)
-    }
-/*----------------Mod Stuff--------------------*/
-    else if (spookyCommand == "setlog") {
+      break;
+  /*----------------Mod Stuff--------------------*/
+      case "setlog":
         ougi.setLog(arguments, msg)
-    }
+      break;
 
-    else if (spookyCommand == "setnews") {
+      case "setnews":
         ougi.setNews(arguments, msg)
-    }
+      break;
 
-    else if (spookyCommand == "remove") {
+      case "remove":
         ougi.rm(arguments, msg)
+      break;
+
+      case "allow":
+        ougi.allowCommand(arguments, msg)
+      break;
+  /*---------------------------------------------*/
+      default:
+        if (spookyCommand.startsWith("translate-")) {
+          let method = 1;
+          ougi.translateCommand(msg, method)
+        }
+
+        else if (spookyCommand.toLowerCase().replace("https://", "").replace("www.", "").replace("youtu.be/", "youtube.com/watch?v=").startsWith("youtube.com/watch?v=")) {
+          msg.content = msg.content.replace("ougi", "ougi music");
+          ougi.voiceCallMusic(msg).then().catch(console.error)
+        }
+
+        else if (spookyCommand == "subscribe" && arguments.length == 0) {
+          ougi.subscribeCommand(msg)
+        }
+
+        else if (spookyCommand == "unsubscribe" && arguments.length == 0) {
+          ougi.unsubscribeCommand(msg)
+        }
+
+        else {
+          ougi.judgementAbility(msg)
+        }
     }
 
-    else if (spookyCommand == "allow") {
-        ougi.allowCommand(arguments, msg)
-    }
-/*---------------------------------------------*/
-    else {
-        ougi.judgementAbility(msg)
-    }
 }
