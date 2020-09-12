@@ -100,7 +100,7 @@ async function (msg) {
       return
     }
     aList[0].loop = false;
-    aList.splice(aList.length-1, 1);
+    aList.pop();
     fs.writeFileSync(listPath, JSON.stringify(aList), console.error);
     queueEmbed.setTitle("Queue won't loop.");
     msg.channel.send(queueEmbed).then().catch(console.error);
