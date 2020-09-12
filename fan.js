@@ -142,8 +142,6 @@ client.on("channelDelete", (channel) => {
 /*Makotomonogatari*/
 client.setInterval(
   function () {
-    client.destroy();
-    client.login(process.env.TOKEN);
     var cleanCache = findRemoveSync('./', {extensions: ['.txt']});
     var fetchedChannels = [ignoredChannel, backupChannel, subscribersChannel, embedsChannel, guildLoggerChannel, guildNewsChannel, blacklistChannel];
     for (i=0; i < fetchedChannels.length; i++) {
