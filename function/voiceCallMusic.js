@@ -268,7 +268,7 @@ async function (msg) {
               durationInMinutes[i] = "0" + durationInMinutes[i].toString()
             }
           }
-          queueEmbed.addField(videoTitle, "by " + videoAuthor + "\nDuration: " + durationInMinutes.join(":") + "\n[View in YouTube](" + anURL + " '" + videoTitle + "')");
+          queueEmbed.addField(videoTitle, "`" + durationInMinutes.join(":") + "`\nby " + videoAuthor + "\n[View in YouTube](" + anURL + " '" + videoTitle + "')");
         }
 
         fs.writeFileSync(listPath, JSON.stringify(myList), console.error);
