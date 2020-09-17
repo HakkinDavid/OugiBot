@@ -3,7 +3,7 @@ module.exports =
 function (arguments, msg) {
   var what = arguments[0];
   if (what == "emoji") {
-    var emojiList = client.emojis.cache.map((e, x) => (x + ' = ' + e) + ' | ' +e.name);
+    var emojiList = client.emojis.cache.map((e, x) => (x + ' = ' + e) + ' | ' + e.name);
     var logFileName = "allEmoji.txt";
     fs.writeFileSync(logFileName, emojiList.join('\n'), console.error);
     const attachment = new Discord.MessageAttachment(logFileName);

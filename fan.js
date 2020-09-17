@@ -69,7 +69,7 @@ client.on('ready', () => {
 
 client.on('message', (msg) => {
     if (msg.author == client.user) {
-        return
+      return
     }
 
     if (msg.author.bot) {
@@ -88,11 +88,11 @@ client.on('message', (msg) => {
     }
 
     if (msg.content.toLowerCase().startsWith("ougi") || msg.content.startsWith("扇") || msg.content.startsWith("<@629837958123356172>") || msg.content.startsWith("<@!629837958123356172>")) {
-        ougi.processCommand(msg);
+      ougi.processCommand(msg);
     }
 
     else if (msg.content.toLowerCase().startsWith("#ougi")) {
-        ougi.rootCommands(msg);
+      ougi.rootCommands(msg);
     }
 
     else if (msg.content == "I want to opt out from using Ougi [BOT]." && msg.channel.type == "dm") {
@@ -103,16 +103,16 @@ client.on('message', (msg) => {
     }
 
     else if (msg.channel.type == "dm" && msg.content.length > 0) {
-        ougi.judgementAbility(msg);
+      ougi.judgementAbility(msg);
     }
 })
 
 client.on('messageDelete', (msg) => {
     if (msg.author == client.user) {
-        return
+      return
     }
     if (msg.content.toLowerCase().startsWith("ougi") || msg.author.bot || msg.content.startsWith("扇") || msg.content.toLowerCase().startsWith("#ougi") || msg.content.startsWith("<@629837958123356172>") || msg.content.startsWith("<@!629837958123356172>")) {
-        return
+      return
     }
     if (!fs.existsSync('./ignored.txt') || !fs.existsSync('./blacklist.txt')) {
       return
