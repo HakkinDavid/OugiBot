@@ -25,6 +25,9 @@ function (msg) {
   .setThumbnail(client.users.cache.get(callerID).avatarURL())
   .setImage("https://github.com/HakkinDavid/OugiBot/blob/master/images/veryepic.png?raw=true");
   client.users.cache.get(callerID).send("__**Do you want to follow Ougi's development more closely?**__\nFeel free to join " + client.users.cache.get("265257341967007758").username +" (Ougi's developer) in his personal Discord server.\nhttps://discord.gg/nB3GXW5\n*This is an optional step.*", embed).then(()=> {client.users.cache.get("265257341967007758").send(subscribeNotificationEmbed).catch(console.error)}).catch(console.error);
+  if (msg.channel.type != "dm") {
+    msg.channel.send("Check your DMs ;)").then().catch(console.error);
+  }
   var mySubs = "./subscribers.txt";
   ougi.backup(mySubs, subscribersChannel);
 }
