@@ -103,7 +103,7 @@ client.on('message', (msg) => {
         let aPrefix = prefix[guildID];
         if (msg.content.toLowerCase().startsWith(aPrefix)) {
           msg.content = msg.content.substring(aPrefix.length);
-          msg.content = 'ougi ' + msg.content;
+          msg.content = 'ougi' + msg.content;
           ougi.processCommand(msg);
         }
       }
