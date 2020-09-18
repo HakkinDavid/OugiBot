@@ -12,7 +12,7 @@ function (msg) {
     msg.channel.send(embed).catch(console.error);
     return
   }
-  .setDescription("Use this command to set a channel where to send important announcements and updates about Ougi. If no channel is mentioned, Ougi will use the channel you run the command in.")
+  embed.setDescription("Use this command to set a channel where to send important announcements and updates about Ougi. If no channel is mentioned, Ougi will use the channel you run the command in.")
   .addField("Special permission required", ":warning: You must be the owner of whatever Discord server you run this command in.")
   .addField("Example", "`ougi setnews `" + msg.channel.toString() + "` `")
   .addField("Output", "I'll start sending updates and related information into " + msg.channel.toString() + ".")

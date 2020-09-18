@@ -13,9 +13,9 @@ function (arguments, msg) {
     return
   }
 
-  let pseudoArray = JSON.parse(fs.readFileSync('./guildPrefix.txt', 'utf-8', console.error));
-  let guildID = msg.guild.id;
-  let prefix = arguments.join(" ");
+  var pseudoArray = JSON.parse(fs.readFileSync('./guildPrefix.txt', 'utf-8', console.error));
+  var guildID = msg.guild.id;
+  var prefix = arguments.join(" ");
 
   if (arguments.length < 1) {
     msg.channel.send("You must specify a new prefix for Ougi. Refer to the following command for help.\n> ougi help prefix");
@@ -24,8 +24,8 @@ function (arguments, msg) {
   msg.channel.send("Prefix for Ougi in " + msg.guild.toString() + " set as `" + prefix + "`.");
 
   pseudoArray[guildID] = prefix;
-  let proArray = JSON.stringify(pseudoArray);
-  fs.writeFile('./guildPrefix.txt', proArray, console.error);
+  var proArray = JSON.stringify(pseudoArray);
+  fs.writeFileSync('./guildPrefix.txt', proArray, console.error);
   let myPrefix = './guildPrefix.txt';
   ougi.backup(myPrefix, guildPrefixChannel);
 }

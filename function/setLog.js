@@ -13,16 +13,16 @@ function (arguments, msg) {
     return
   }
 
-  let pseudoArray = JSON.parse(fs.readFileSync('./guildLogs.txt', 'utf-8', console.error));
-  let guildID = msg.guild.id;
-  let guildLogger = msg.channel.id;
+  var pseudoArray = JSON.parse(fs.readFileSync('./guildLogs.txt', 'utf-8', console.error));
+  var guildID = msg.guild.id;
+  var guildLogger = msg.channel.id;
 
   if (arguments.length > 0) {
     if (arguments[0] == "disable") {
       if (pseudoArray.hasOwnProperty(guildID)){
         delete pseudoArray[guildID];
         msg.channel.send("Logging channel successfully disabled.");
-        let proArray = JSON.stringify(pseudoArray);
+        var proArray = JSON.stringify(pseudoArray);
         fs.writeFile('./guildLogs.txt', proArray, console.error);
         let myLogger = './guildLogs.txt';
         ougi.backup(myLogger, guildLoggerChannel);
@@ -50,7 +50,7 @@ function (arguments, msg) {
   msg.channel.send("I'll start sending this server's commands log into <#"+ guildLogger +">.");
 
   pseudoArray[guildID] = guildLogger;
-  let proArray = JSON.stringify(pseudoArray);
+  var proArray = JSON.stringify(pseudoArray);
   fs.writeFile('./guildLogs.txt', proArray, console.error);
   let myLogger = './guildLogs.txt';
   ougi.backup(myLogger, guildLoggerChannel);
