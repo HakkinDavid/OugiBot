@@ -1,17 +1,20 @@
 module.exports =
 
 function (msg) {
-  var options = ["I don't get it.", "What do you mean?", "Baka.", "Oh.", "Nani", "Nande"];
-  var response = options[Math.floor(Math.random()*options.length)];
-  var embed = new Discord.MessageEmbed()
-  .setTitle("Ougi's prefix")
+  let possiblePrefix = ["spooky", "oshino", "xXOugi_YTXx", "o!", "$p00ky"];
+  let embed = new Discord.MessageEmbed()
+  .setTitle("Ougi's `prefix` command")
   .setAuthor("Ougi [BOT]", client.user.avatarURL())
   .setColor("#230347")
-  .setDescription("It's just `ougi`.")
   .setFooter("helpEmbed by Ougi", client.user.avatarURL())
-  .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true")
-  .addField("Example", "`ougi`")
-  .addField("Output", response)
+  .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true");
+  if (msg.channel.type != "text") {
+    embed.addField("This is only available in Discord servers.", ":warning: You must be in a Discord server in order to preview information about this command.")
+    msg.channel.send(embed).catch(console.error);
+    return
+  }
+  embed.setDescription("Use this command to change Ougi's prefix inside your Discord server.")
+  .addField("Example", "`ougi prefix " + possiblePrefix[Math.floor(Math.random()*options.length)] + "`");
 
-  msg.channel.send({embed}).catch(console.error);
+  msg.channel.send(embed).catch(console.error);
 }

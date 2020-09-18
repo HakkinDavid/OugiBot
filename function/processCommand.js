@@ -145,6 +145,9 @@ function (msg) {
         ougi.respondeComando(arguments, msg)
       break;
   /*----------------Mod Stuff--------------------*/
+      case "prefix":
+        ougi.prefix(arguments, msg)
+      break;
       case "setlog":
         ougi.setLog(arguments, msg)
       break;

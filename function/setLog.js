@@ -13,18 +13,18 @@ function (arguments, msg) {
     return
   }
 
-  var pseudoArray = JSON.parse(fs.readFileSync('./guildLogs.txt', 'utf-8', console.error));
-  var guildID = msg.guild.id;
-  var guildLogger = msg.channel.id;
+  let pseudoArray = JSON.parse(fs.readFileSync('./guildLogs.txt', 'utf-8', console.error));
+  let guildID = msg.guild.id;
+  let guildLogger = msg.channel.id;
 
-  if (arguments.length < 0) {
+  if (arguments.length > 0) {
     if (arguments[0] == "disable") {
       if (pseudoArray.hasOwnProperty(guildID)){
         delete pseudoArray[guildID];
         msg.channel.send("Logging channel successfully disabled.");
-        var proArray = JSON.stringify(pseudoArray);
+        let proArray = JSON.stringify(pseudoArray);
         fs.writeFile('./guildLogs.txt', proArray, console.error);
-        var myLogger = './guildLogs.txt';
+        let myLogger = './guildLogs.txt';
         ougi.backup(myLogger, guildLoggerChannel);
         return
       }
@@ -34,7 +34,7 @@ function (arguments, msg) {
       }
     }
     else if (arguments[0].startsWith("<#") && arguments[0].endsWith(">")) {
-      var channelMention = arguments[0];
+      let channelMention = arguments[0];
       channelMention = channelMention.slice(2, -1);
       if (!msg.guild.channels.has(channelMention)) {
         msg.channel.send("Huh? Looks like you're using this command wrong. Refer to the following command for help.\n> ougi help setlog");
@@ -50,8 +50,8 @@ function (arguments, msg) {
   msg.channel.send("I'll start sending this server's commands log into <#"+ guildLogger +">.");
 
   pseudoArray[guildID] = guildLogger;
-  var proArray = JSON.stringify(pseudoArray);
+  let proArray = JSON.stringify(pseudoArray);
   fs.writeFile('./guildLogs.txt', proArray, console.error);
-  var myLogger = './guildLogs.txt';
+  let myLogger = './guildLogs.txt';
   ougi.backup(myLogger, guildLoggerChannel);
 }

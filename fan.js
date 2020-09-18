@@ -41,6 +41,7 @@ global.T = new Twit({
 global.ougi = require('require-all')(__dirname + '/function');
 global.backupChannel = "726927738094485534";
 global.guildLoggerChannel = "726929433398738954";
+global.guildPrefixChannel = "756309002479992883";
 global.wordsChannel = "726928050310217760";
 global.fileSpace = "726929586339840072";
 global.remindersChannel = "726929651573981225";
@@ -57,7 +58,7 @@ global.consoleLogging = "726927838724489226";
 /* Chuuimonogatari */
 client.on('ready', () => {
   var cleanCache = findRemoveSync('./', {extensions: ['.txt']});
-  var fetchedChannels = [ignoredChannel, backupChannel, subscribersChannel, embedsChannel, guildLoggerChannel, guildNewsChannel, blacklistChannel, newsChannel];
+  var fetchedChannels = [ignoredChannel, backupChannel, subscribersChannel, embedsChannel, guildLoggerChannel, guildNewsChannel, blacklistChannel, newsChannel, guildPrefixChannel];
   for (i=0; i < fetchedChannels.length; i++) {
     ougi.fetch(fetchedChannels[i]);
   }
@@ -95,6 +96,19 @@ client.on('message', (msg) => {
       ougi.rootCommands(msg);
     }
 
+    else if (msg.channel.type == "text" && msg.content.length > 0) {
+      let guildID = msg.guild.id;
+      let prefix = JSON.parse(fs.readFileSync('./guildPrefix.txt', 'utf-8', console.error));
+      if (prefix.hasOwnProperty(guildID)){
+        let aPrefix = prefix[guildID];
+        if (msg.content.toLowerCase().startsWith(aPrefix)) {
+          msg.content = msg.content.substring(aPrefix.length);
+          msg.content = 'ougi ' + msg.content;
+          ougi.processCommand(msg);
+        }
+      }
+    }
+
     else if (msg.content == "I want to opt out from using Ougi [BOT]." && msg.channel.type == "dm") {
       let pseudoMSG = msg;
       pseudoMSG.content = "ougi OPTOUTSTATEMENT";
@@ -121,10 +135,10 @@ client.on('messageDelete', (msg) => {
       return
     }
     if (msg.channel.type == "text") {
-      var guildID = msg.guild.id;
-      var unsniper = JSON.parse(fs.readFileSync('./blacklist.txt', 'utf-8', console.error));
+      let guildID = msg.guild.id;
+      let unsniper = JSON.parse(fs.readFileSync('./blacklist.txt', 'utf-8', console.error));
       if (unsniper.hasOwnProperty(guildID)){
-        var existent = unsniper[guildID];
+        let existent = unsniper[guildID];
         for(var i = 0; i < existent.length; i++) {
           if(existent[i].toLowerCase() === "snipe") {
             return

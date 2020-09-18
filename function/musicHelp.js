@@ -14,7 +14,7 @@ function (msg) {
   .addField("Pro tip", "If you're too lazy to type `ougi music`, you may as well just type Ougi's prefix followed up by a YouTube link.\n`ougi " + links[Math.floor(Math.random()*links.length)] + "`")
   .addField("In order to create a music queue", "Execute the command as many times as needed, Ougi will automatically add the requested videos to your queue and will play them in order, one after another.")
   .addField("Skip a song", "`ougi music skip`")
-  .addField("Remove a song from the queue by index", "`ougi music remove " + Math.floor(Math.random()*videos.length) + "`")
+  .addField("Remove a song from the queue by index", "`ougi music remove " + Math.floor(Math.random()*videos.length++) + "`")
   .addField("Preview the music queue", "`ougi music list` or `ougi music queue` or `ougi music playlist`")
   .addField("Stop the playback", "`ougi music stop`")
   .addField("Loop the queue", "`ougi music loop`")
