@@ -102,8 +102,14 @@ client.on('message', (msg) => {
       if (prefix.hasOwnProperty(guildID)){
         let aPrefix = prefix[guildID];
         if (msg.content.toLowerCase().startsWith(aPrefix)) {
-          msg.content = msg.content.substring(aPrefix.length);
-          msg.content = 'ougi' + msg.content;
+          if (msg.content.length == aPrefix.length) {
+            msg.content = 'ougi';
+          }
+          else {
+            msg.content = msg.content.substring(aPrefix.length);
+            msg.content = 'ougi ' + msg.content;
+          }
+
           ougi.processCommand(msg);
         }
       }
