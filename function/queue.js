@@ -58,6 +58,7 @@ async function (msg, vcChannel) {
       var aList = JSON.parse(thisFile);
       var thisDate = aList[1].initiated;
       if (internalDate == thisDate) {
+        connection.disconnect();
         aList.splice(1, 1);
         fs.writeFileSync(listPath, JSON.stringify(aList), console.error);
         ougi.queue(msg, vcChannel);
