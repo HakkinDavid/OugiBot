@@ -19,6 +19,8 @@ global.isHexcolor = require('is-hexcolor');
 global.isImageUrl = require('is-image-url');
 global.ytdl = require('ytdl-core');
 global.scrapeYt = require("scrape-yt");
+global.KSoftMain = require ('@ksoft/api');
+global.ksoft = new KSoftMain.KSoftClient(process.env.KSOFTTOKEN);
 
 if(process.env.OFFLINE == 1) {
   client.destroy();
@@ -57,7 +59,13 @@ global.consoleLogging = "726927838724489226";
 
 /* Chuuimonogatari */
 client.on('ready', () => {
-  var cleanCache = findRemoveSync('./', {extensions: ['.txt']});
+  if (process.env.DEV) {
+    findRemoveSync('./vc/', {extensions: ['.txt']});
+    findRemoveSync('./ammo/', {extensions: ['.txt']});
+  }
+  else {
+    findRemoveSync('./', {extensions: ['.txt']});
+  }
   var fetchedChannels = [ignoredChannel, backupChannel, subscribersChannel, embedsChannel, guildLoggerChannel, guildNewsChannel, blacklistChannel, newsChannel, guildPrefixChannel];
   for (i=0; i < fetchedChannels.length; i++) {
     ougi.fetch(fetchedChannels[i]);

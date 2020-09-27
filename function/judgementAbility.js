@@ -35,13 +35,13 @@ function (msg) {
   var judgeThis = stringSimilarity.findBestMatch(notSpookyDM, stringsArray);
   var minSimilarity = 0.33;
   var similarity = judgeThis.bestMatch.rating;
-  var comparisonThreshold = 0.8;
+  var comparisonThreshold = 0.25;
   var diceString = judgeThis.bestMatch.target;
   embed.addField("Dice's Coefficient matching trigger found with " + similarity*100 + "% of similarity", diceString);
   var compareLevDice = stringSimilarity.compareTwoStrings(levenaryIdea, diceString);
   var compareDiceLev = leven(levenaryIdea, diceString);
   embed.addField("Levenshtein matching trigger and Dice's Coefficient matching trigger share", "► `" + compareDiceLev + "` Levenshtein distance units\n► `" + compareLevDice*100 + "%` similarity according to Dice's Coefficient");
-  if (compareLevDice < comparisonThreshold) {
+  if (compareLevDice > comparisonThreshold) {
     var tellLevAboutDice = leven(notSpookyDM, diceString);
     if (tellLevAboutDice >= notSpookyDM.length/2) {
       var thisString = levenaryIdea;

@@ -1,6 +1,10 @@
 module.exports =
 
 function () {
+  if (client.channels.cache.get(wordsChannel) == undefined) {
+    console.log("Unable to execute startup sequence. Channel couldn't be fetched.");
+    return
+  }
   var iSaid = client.channels.cache.get(wordsChannel).messages.fetch({ limit: 1 }).then(messages => {
     let store = messages.first().content;
     let willSay = store * 1;
@@ -37,5 +41,5 @@ function () {
       client.user.setPresence({activity: { name: "for updates | " + contentToSay.replace("\n", ", ") + ".", type: 'WATCHING' }, status:'dnd'}).then().catch(console.error);
       console.log("Running development instance.");
     }
-  });
+  }).catch(console.error);
 }

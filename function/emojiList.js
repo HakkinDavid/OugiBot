@@ -32,8 +32,8 @@ function (arguments, msg) {
     .setFooter("spookyEmoji List by Ougi [" + howMany + " emoji in " + pageMax +" pages]", client.user.avatarURL());
     for (i = 0; i < willShow.length; i+=2) {
       if (willShow[i+1] == undefined) {
-        willShow[i+1] = "**END**";
-        willShowN[i+1] = "That's all folks.";
+        willShow[i+1] = "\u200b";
+        willShowN[i+1] = "\u200b";
       }
       embed.addField(willShow[i] + " `" + willShowN[i] + "`", willShow[i+1] + " `" + willShowN[i+1] + "`")
     };

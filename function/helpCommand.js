@@ -17,6 +17,10 @@ function (arguments, msg) {
         ougi.imageHelp(msg)
     } else if (arguments == 'music') {
         ougi.musicHelp(msg)
+    } else if (arguments == 'skip') {
+        ougi.skipHelp(msg)
+    } else if (arguments == 'lyrics') {
+        ougi.lyricsHelp(msg)
     } else if (arguments[0] == 'embed') {
         ougi.embedHelp(arguments, msg)
     } else if (arguments == 'learn') {

@@ -77,10 +77,6 @@ function (msg) {
         ougi.spookyEmbed(msg)
       break;
 
-      case "whisper":
-        ougi.spookyWhisperCommand(arguments, msg)
-      break;
-
       case "newspaper":
         ougi.newspaper(arguments, msg)
       break;
@@ -93,14 +89,6 @@ function (msg) {
         ougi.talkForget(arguments, msg)
       break;
 
-      case "spookify":
-        ougi.spookifyCommand(arguments, msg)
-      break;
-
-      case "despookify":
-        ougi.despookifyCommand(arguments, msg)
-      break;
-
       case "info":
         ougi.whoIsMe(arguments, msg)
       break;
@@ -111,6 +99,15 @@ function (msg) {
 
       case "music":
         ougi.voiceCallMusic(msg).then().catch(console.error)
+      break;
+
+      case "skip":
+        msg.content = "ougi music skip";
+        ougi.voiceCallMusic(msg).then().catch(console.error)
+      break;
+
+      case "lyrics":
+        ougi.lyrics(arguments, msg).then().catch(console.error)
       break;
 
       case "play":
