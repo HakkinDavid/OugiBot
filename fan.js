@@ -21,6 +21,7 @@ global.ytdl = require('ytdl-core');
 global.scrapeYt = require("scrape-yt");
 global.KSoftMain = require ('@ksoft/api');
 global.ksoft = new KSoftMain.KSoftClient(process.env.KSOFTTOKEN);
+global.removeWords =  require('remove-words');
 
 if(process.env.OFFLINE == 1) {
   client.destroy();
@@ -53,6 +54,7 @@ global.subscribersChannel = "740015364636672162";
 global.embedsChannel = "740187317238497340";
 global.ignoredChannel = "741535284277149717";
 global.newsChannel = "751697345737129994";
+global.neuroChannel = "759983614128947250";
 
 /* Rogumonogatari */
 global.consoleLogging = "726927838724489226";
@@ -66,7 +68,7 @@ client.on('ready', () => {
   else {
     findRemoveSync('./', {extensions: ['.txt']});
   }
-  var fetchedChannels = [ignoredChannel, backupChannel, subscribersChannel, embedsChannel, guildLoggerChannel, guildNewsChannel, blacklistChannel, newsChannel, guildPrefixChannel];
+  var fetchedChannels = [ignoredChannel, backupChannel, subscribersChannel, embedsChannel, guildLoggerChannel, guildNewsChannel, blacklistChannel, newsChannel, guildPrefixChannel, neuroChannel];
   for (i=0; i < fetchedChannels.length; i++) {
     ougi.fetch(fetchedChannels[i]);
   }
@@ -85,7 +87,7 @@ client.on('message', (msg) => {
       return
     }
 
-    if (!fs.existsSync('./ignored.txt') || !fs.existsSync('./responses.txt') || !fs.existsSync('./blacklist.txt')) {
+    if (!fs.existsSync('./ignored.txt') || !fs.existsSync('./responses.txt') || !fs.existsSync('./blacklist.txt') || !fs.existsSync('./guildPrefix.txt') || !fs.existsSync('./neuroNetworks.txt')) {
       return
     }
 

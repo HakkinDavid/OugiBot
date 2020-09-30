@@ -26,6 +26,7 @@ function (msg) {
   while (notSpookyDM.startsWith(" ")) {
     notSpookyDM = notSpookyDM.substring(1, notSpookyDM.length)
   }
+  ougi.ideaCoreProcessor(notSpookyDM);
   embed.addField("Content", notSpookyDM.slice(0, 1024))
   msg.channel.startTyping();
   ougi.sleep(500);

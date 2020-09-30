@@ -59,6 +59,10 @@ async function (arguments, msg) {
         if (laLetra[i].length < 1) {
           laLetra[i] = "\u200b";
         }
+        else if (laLetra[i].length > 1024) {
+          laLetra.splice(i, 0, laLetra[i].slice(1024));
+          laLetra[i] = laLetra[i].substring(0, 1024);
+        }
         if (i == 0) {
           lyricsEmbed.addField("by " + track.artist.name, laLetra[i]);
         }
