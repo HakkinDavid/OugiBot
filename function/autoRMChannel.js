@@ -7,6 +7,9 @@ function (channel) {
   var pseudoArray = JSON.parse(fs.readFileSync('./guildLogs.txt', 'utf-8', console.error));
 
   if (pseudoArray.hasOwnProperty(guildID)){
+    if (pseudoArray[guildID] != channel) {
+      return
+    }
     delete pseudoArray[guildID];
     client.channels.cache.get(consoleLogging).send("Logging channel for " + channel.guild.toString() + " successfully auto-disabled on deletion.");
     var proArray = JSON.stringify(pseudoArray);
