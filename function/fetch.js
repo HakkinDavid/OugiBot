@@ -3,7 +3,8 @@ module.exports =
 function (channelID) {
   if (client.channels.cache.get(channelID) == undefined) {
     console.log("Couldn't retrieve database content from " + channelID);
-    return
+    return;
+    process.exit();
   }
   client.channels.cache.get(channelID).messages.fetch({ limit: 1 }).then(
     messages => {
