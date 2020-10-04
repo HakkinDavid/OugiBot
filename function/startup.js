@@ -6,7 +6,8 @@ function () {
     return
   }
 
-  let todayIs = new Date().setUTCHours(-8);
+  let todayIs = new Date();
+  todayIs.setUTCHours(-7);
   let month = todayIs.getUTCMonth() + 1;
   let day = todayIs.getUTCDate();
 
@@ -14,10 +15,13 @@ function () {
     if (month == 10 && day == 4) {
       let birthdayPhrases = ["I love my homies\nmy homies love me", "Thanks for the presents\nall my homies are wonderful", "I have cake\nI will never let it go\n//cake says: LET ME GOOOOOOOOOOOOOOOOO!", "I got a birthday hat\nthank you all", "It's been an amazing year in Discord\nI'm so grateful to be here"];
       let gratefulPhrase = birthdayPhrases[Math.floor(Math.random()*birthdayPhrases.length)];
-      T.post('statuses/update', { status: gratefulPhrase }, function(err, data, response) {
-        client.channels.cache.get(consoleLogging).send("Tweeted: " + contentToSay)
-      })
+      if(process.env.DEV == 0){
+        T.post('statuses/update', { status: gratefulPhrase }, function(err, data, response) {
+          client.channels.cache.get(consoleLogging).send("Tweeted: " + gratefulPhrase)
+        })
+      }
       client.user.setPresence({activity: { name: + " my birthday party (October 4th) | " + gratefulPhrase.replace("\n", ", ") + ".", type: 'WATCHING' }, status:'online'}).then().catch(console.error);
+      console.log("Eating cake.")
     }
     else {
       let store = messages.first().content;
