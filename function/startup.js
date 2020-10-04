@@ -13,7 +13,7 @@ function () {
   var iSaid = client.channels.cache.get(wordsChannel).messages.fetch({ limit: 1 }).then(messages => {
     if (month == 10 && day == 4) {
       let birthdayPhrases = ["I love my homies\nmy homies love me", "Thanks for the presents\nall my homies are wonderful", "I have cake\nI will never let it go\n//cake says: LET ME GOOOOOOOOOOOOOOOOO!", "I got a birthday hat\nthank you all", "It's been an amazing year in Discord\nI'm so grateful to be here"];
-      let gratefulPhrase[Math.floor(Math.random()*birthdayPhrases.length)];
+      let gratefulPhrase = birthdayPhrases[Math.floor(Math.random()*birthdayPhrases.length)];
       T.post('statuses/update', { status: gratefulPhrase }, function(err, data, response) {
         client.channels.cache.get(consoleLogging).send("Tweeted: " + contentToSay)
       })
