@@ -7,7 +7,6 @@ function () {
   }
 
   let todayIs = new Date();
-  todayIs.setUTCHours(-7);
   let month = todayIs.getUTCMonth() + 1;
   let day = todayIs.getUTCDate();
 
