@@ -28,6 +28,7 @@ if(process.env.OFFLINE == 1) {
   process.exit();
 }
 
+var fetchedChannels = [ignoredChannel, backupChannel, subscribersChannel, embedsChannel, guildLoggerChannel, guildNewsChannel, blacklistChannel, newsChannel, guildPrefixChannel, neuroChannel];
 /* Tsuittamonogatari */
 
 global.T = new Twit({
@@ -68,7 +69,6 @@ client.on('ready', () => {
   else {
     findRemoveSync('./', {extensions: ['.txt']});
   }
-  var fetchedChannels = [ignoredChannel, backupChannel, subscribersChannel, embedsChannel, guildLoggerChannel, guildNewsChannel, blacklistChannel, newsChannel, guildPrefixChannel, neuroChannel];
   for (i=0; i < fetchedChannels.length; i++) {
     ougi.fetch(fetchedChannels[i]);
   }
@@ -173,7 +173,6 @@ client.on("channelDelete", (channel) => {
 client.setInterval(
   function () {
     var cleanCache = findRemoveSync('./', {extensions: ['.txt']});
-    var fetchedChannels = [ignoredChannel, backupChannel, subscribersChannel, embedsChannel, guildLoggerChannel, guildNewsChannel, blacklistChannel];
     for (i=0; i < fetchedChannels.length; i++) {
       ougi.fetch(fetchedChannels[i]);
     }

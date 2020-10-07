@@ -3,7 +3,6 @@ module.exports =
 function () {
   if (client.channels.cache.get(wordsChannel) == undefined) {
     console.log("Unable to execute startup sequence. Channel couldn't be fetched.");
-    process.exit();
   }
 
   let todayIs = new Date();
