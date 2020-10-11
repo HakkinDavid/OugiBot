@@ -77,6 +77,10 @@ function (msg) {
         ougi.spookyEmbed(msg)
       break;
 
+      case "tweet":
+        ougi.tweet(msg)
+      break;
+
       case "newspaper":
         ougi.newspaper(arguments, msg)
       break;

@@ -25,6 +25,8 @@ function (arguments, msg) {
         ougi.embedHelp(arguments, msg)
     } else if (arguments == 'learn') {
         ougi.learnHelp(msg)
+    } else if (arguments == 'tweet') {
+        ougi.tweetHelp(msg)
     } else if (arguments == 'forget') {
         ougi.forgetHelp(msg)
     } else if (arguments == 'translate') {
