@@ -29,5 +29,6 @@ function(msg) {
     ghostTweet.setAuthor(msg.author.username + " (@" + msg.author.username + ")", msg.author.avatarURL());
   }
   ghostTweet.setDescription(arguments.join(" ").slice(0, 2048));
+  msg.delete().catch(O_o=>{});
   msg.channel.send(ghostTweet).then().catch(console.error);
 }
