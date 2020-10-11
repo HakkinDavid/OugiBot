@@ -16,6 +16,10 @@ function(msg) {
   let ghostTweet = new Discord.MessageEmbed()
     .setColor("#00acee")
     .setFooter("Twitter", "https://github.com/HakkinDavid/OugiBot/blob/master/images/twittericon.png?raw=true");
+  if (arguments.length < 1) {
+    msg.channel.send("Tweet must not be empty.");
+    return
+  }
   if (arguments[0].startsWith("<@") && arguments[0].endsWith(">")) {
     let mentionedUser = arguments[0].slice(2, arguments[0].length-1).replace("!", "");
     if (!client.users.cache.has(mentionedUser)) {
