@@ -29,7 +29,7 @@ function (arguments, msg) {
     msg.delete().catch(O_o=>{});
 
     msg.channel.send(emojiArray.join("")).then((message) => {
-      if (emojiArray.includes("<a:random:742246590982651976>")) {
+      if (emojiArray.includes("<a:random:742246590982651976>") && emojiArray.length <= 6) {
         var lucky = client.setInterval(function () {
           let newEmoji = emojiArray.indexOf("<a:random:742246590982651976>");
           let thatEmoji = proArrayID[Math.floor(Math.random()*proArrayID.length)];
@@ -39,6 +39,13 @@ function (arguments, msg) {
             client.clearInterval(lucky);
           }
         }, 600, message, emojiArray, proArrayID, lucky);
+      }
+      else if (emojiArray.includes("<a:random:742246590982651976>") && emojiArray.length > 6) {
+        let emojiString = emojiArray.join("");
+        while (emojiString.includes('<a:random:742246590982651976>')) {
+          emojiString = emojiString.replace('<a:random:742246590982651976>', proArrayID[Math.floor(Math.random()*proArrayID.length)])
+        }
+        message.edit(emojiString);
       }
     }).catch(console.error);
     if (emojiArray.includes("<:unknown_emoji:731996283790950420>")) {
