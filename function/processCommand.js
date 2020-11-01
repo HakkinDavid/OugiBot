@@ -81,6 +81,10 @@ function (msg) {
         ougi.tweet(msg)
       break;
 
+      case "minesweeper":
+        ougi.minesweeper(msg)
+      break;
+
       case "newspaper":
         ougi.newspaper(arguments, msg)
       break;
