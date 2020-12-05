@@ -59,6 +59,27 @@ global.neuroChannel = "759983614128947250";
 /* Rogumonogatari */
 global.consoleLogging = "726927838724489226";
 global.fetchedChannels = [ignoredChannel, backupChannel, subscribersChannel, embedsChannel, guildLoggerChannel, guildNewsChannel, blacklistChannel, newsChannel, guildPrefixChannel, neuroChannel];
+global.errorBackup = console.error;
+global.logMessages = [];
+
+console.error = function() {
+    logMessages.push.apply(logMessages, arguments);
+    if (logMessages[0] == "\n" || logMessages[0] == null || logMessages[0] == undefined){
+      logMessages.pop();
+    }
+    else {
+      let criticalEmbed = new Discord.MessageEmbed()
+      .setAuthor("CONSOLE ERROR")
+      .setColor("#c20d00")
+      .setFooter("errorLogEmbed by Ougi", client.user.avatarURL())
+      .setTimestamp()
+      .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/fatal.png?raw=true")
+      .setDescription(logMessages.pop().toString());
+
+      client.channels.cache.get(consoleLogging).send(criticalEmbed).catch(console.error);
+    }
+    errorBackup.apply(console, arguments);
+};
 
 /* Chuuimonogatari */
 client.on('ready', () => {
