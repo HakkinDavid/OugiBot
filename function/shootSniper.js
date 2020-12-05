@@ -55,7 +55,7 @@ function (arguments, msg) {
   .setColor("#7F0037")
   .setAuthor("Ougi [BOT]", client.user.avatarURL())
   .setThumbnail(bullet.pfp)
-  .setFooter("Ougi " + action + " " + bullet.author + " (" + distance + " m)" + " with " + snipedWith + " (" + rarity + ") at " + bullet.sent + ". This channel has " + maxIndex + " snipeable messages.", footerLogo);
+  .setFooter("Ougi " + action + " " + bullet.author + " (" + distance + " m)" + " with " + snipedWith + " (" + rarity + "). This channel has " + maxIndex + " snipeable messages.", footerLogo);
   if (bullet.text != "") {
     if (bullet.text.length < 1024) {
       embed.addField(bullet.author + " said <:quote:730061725755375667>", bullet.text)
