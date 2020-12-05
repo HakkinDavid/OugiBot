@@ -6244,3 +6244,7 @@ node_modules/@k3rn31p4nic/google-translate-api/LICENSE
 node_modules/@k3rn31p4nic/google-translate-api/.github/FUNDING.yml
 node_modules/@k3rn31p4nic/google-translate-api/.gitattributes
 node_modules/@k3rn31p4nic/google-translate-api/.eslintrc.yml
+node_modules/lru-cache/README.md
+node_modules/lru-cache/package.json
+node_modules/lru-cache/LICENSE
+node_modules/lru-cache/index.js
