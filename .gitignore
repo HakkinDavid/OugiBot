@@ -6234,3 +6234,13 @@ node_modules/sentence-maker/index.js
 node_modules/sentence-maker/irregular-verbs.js
 node_modules/sentence-maker/package.json
 node_modules/sentence-maker/README.md
+node_modules/@k3rn31p4nic/google-translate-api/typings/index.d.ts
+node_modules/@k3rn31p4nic/google-translate-api/src/tokenGenerator.js
+node_modules/@k3rn31p4nic/google-translate-api/src/languages.js
+node_modules/@k3rn31p4nic/google-translate-api/src/index.js
+node_modules/@k3rn31p4nic/google-translate-api/README.md
+node_modules/@k3rn31p4nic/google-translate-api/package.json
+node_modules/@k3rn31p4nic/google-translate-api/LICENSE
+node_modules/@k3rn31p4nic/google-translate-api/.github/FUNDING.yml
+node_modules/@k3rn31p4nic/google-translate-api/.gitattributes
+node_modules/@k3rn31p4nic/google-translate-api/.eslintrc.yml
