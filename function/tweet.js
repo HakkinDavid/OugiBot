@@ -15,6 +15,7 @@ function(msg) {
   /*-----------------------------------*/
   let ghostTweet = new Discord.MessageEmbed()
     .setColor("#00acee")
+    .setTimestamp()
     .setFooter("Twitter", "https://github.com/HakkinDavid/OugiBot/blob/master/images/twittericon.png?raw=true");
   if (arguments.length < 1) {
     msg.channel.send("Tweet must not be empty.");

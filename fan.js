@@ -172,14 +172,20 @@ client.on("channelDelete", (channel) => {
 /*Makotomonogatari*/
 client.setInterval(
   function () {
-    findRemoveSync('./', {extensions: ['.txt']});
-    for (i=0; i < fetchedChannels.length; i++) {
-      ougi.fetch(fetchedChannels[i]);
+    if (process.env.DEV) {
+      findRemoveSync('./', {extensions: ['.txt']});
+      for (i=0; i < fetchedChannels.length; i++) {
+        ougi.fetch(fetchedChannels[i]);
+      }
+
+      fs.writeFileSync('./aimAssist.txt', "[]", console.error);
+
+      ougi.startup();
     }
-
-    fs.writeFileSync('./aimAssist.txt', "[]", console.error);
-
-    ougi.startup();
+    else {
+      client.destroy();
+      process.exit();
+    }
   }, 28800000);
 
 /* Kaishimonogatari */
