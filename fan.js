@@ -55,10 +55,11 @@ global.embedsChannel = "740187317238497340";
 global.ignoredChannel = "741535284277149717";
 global.newsChannel = "751697345737129994";
 global.neuroChannel = "759983614128947250";
+global.settingsChannel = "791151086077083688";
 
 /* Rogumonogatari */
 global.consoleLogging = "726927838724489226";
-global.fetchedChannels = [ignoredChannel, backupChannel, subscribersChannel, embedsChannel, guildLoggerChannel, guildNewsChannel, blacklistChannel, newsChannel, guildPrefixChannel, neuroChannel];
+global.fetchedChannels = [settingsChannel, ignoredChannel, backupChannel, subscribersChannel, embedsChannel, guildLoggerChannel, guildNewsChannel, blacklistChannel, newsChannel, guildPrefixChannel, neuroChannel];
 global.errorBackup = console.error;
 global.logMessages = [];
 
@@ -112,7 +113,7 @@ client.on('message', (msg) => {
       return
     }
 
-    if (JSON.parse(fs.readFileSync('./ignored.txt')).includes(msg.author.id)) {
+    if (JSON.parse(fs.readFileSync('./settings.txt')).ignored.includes(msg.author.id)) {
       if (msg.content == "I want to start using Ougi [BOT].") {
         ougi.optback(msg);
       }

@@ -1,10 +1,10 @@
 module.exports =
 
 function (msg) {
-  var pseudoArray = JSON.parse(fs.readFileSync('./ignored.txt', 'utf-8', console.error));
-  let index = pseudoArray.indexOf(msg.author.id);
+  let pseudoArray = JSON.parse(fs.readFileSync('./settings.txt', 'utf-8', console.error));
+  let index = pseudoArray.ignored.indexOf(msg.author.id);
   pseudoArray.splice(index);
-  var embed = new Discord.MessageEmbed()
+  let embed = new Discord.MessageEmbed()
   .setTitle("Opt In to Ougi")
   .setAuthor("Ougi [BOT]", client.user.avatarURL())
   .setColor("#230347")
@@ -12,8 +12,8 @@ function (msg) {
   .setFooter("optoutEmbed by Ougi", client.user.avatarURL())
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true")
   msg.channel.send({embed});
-  var proArray = JSON.stringify(pseudoArray);
-  fs.writeFile('./ignored.txt', proArray, console.error);
-  var myIgnoredPPL = './ignored.txt';
-  ougi.backup(myIgnoredPPL, ignoredChannel);
+  let proArray = JSON.stringify(pseudoArray);
+  fs.writeFile('./settings.txt', proArray, console.error);
+  let myIgnoredPPL = './settings.txt';
+  ougi.backup(myIgnoredPPL, settingsChannel);
 }

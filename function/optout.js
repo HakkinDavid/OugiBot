@@ -1,9 +1,9 @@
 module.exports =
 
 function (msg) {
-  var pseudoArray = JSON.parse(fs.readFileSync('./ignored.txt', 'utf-8', console.error));
-  pseudoArray.push(msg.author.id);
-  var embed = new Discord.MessageEmbed()
+  let pseudoArray = JSON.parse(fs.readFileSync('./settings.txt', 'utf-8', console.error));
+  pseudoArray.ignored.push(msg.author.id);
+  let embed = new Discord.MessageEmbed()
   .setTitle("Opt Out from Ougi")
   .setAuthor("Ougi [BOT]", client.user.avatarURL())
   .setColor("#230347")
@@ -12,9 +12,9 @@ function (msg) {
   .setFooter("optoutEmbed by Ougi", client.user.avatarURL())
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true")
   msg.channel.send({embed});
-  var proArray = JSON.stringify(pseudoArray);
-  fs.writeFile('./ignored.txt', proArray, console.error);
-  var myIgnoredPPL = './ignored.txt';
-  ougi.backup(myIgnoredPPL, ignoredChannel);
+  let proArray = JSON.stringify(pseudoArray);
+  fs.writeFile('./settings.txt', proArray, console.error);
+  let myIgnoredPPL = './settings.txt';
+  ougi.backup(myIgnoredPPL, settingsChannel);
   client.users.cache.get("265257341967007758").send("`" + msg.author.tag + "` has requested the deletion of their data.");
 }
