@@ -43,23 +43,17 @@ global.T = new Twit({
 
 global.ougi = require('require-all')(__dirname + '/function');
 global.backupChannel = "726927738094485534";
-global.guildLoggerChannel = "726929433398738954";
-global.guildPrefixChannel = "756309002479992883";
 global.wordsChannel = "726928050310217760";
 global.fileSpace = "726929586339840072";
 global.remindersChannel = "726929651573981225";
-global.blacklistChannel = "731423847194296410";
-global.guildNewsChannel = "740013412053942282";
-global.subscribersChannel = "740015364636672162";
 global.embedsChannel = "740187317238497340";
-global.ignoredChannel = "741535284277149717";
 global.newsChannel = "751697345737129994";
 global.neuroChannel = "759983614128947250";
 global.settingsChannel = "791151086077083688";
 
 /* Rogumonogatari */
 global.consoleLogging = "726927838724489226";
-global.fetchedChannels = [settingsChannel, ignoredChannel, backupChannel, subscribersChannel, embedsChannel, guildLoggerChannel, guildNewsChannel, blacklistChannel, newsChannel, guildPrefixChannel, neuroChannel];
+global.fetchedChannels = [settingsChannel, backupChannel, embedsChannel, newsChannel, neuroChannel];
 global.errorBackup = console.error;
 global.logMessages = [];
 
@@ -109,11 +103,13 @@ client.on('message', (msg) => {
       return
     }
 
-    if (!fs.existsSync('./ignored.txt') || !fs.existsSync('./responses.txt') || !fs.existsSync('./blacklist.txt') || !fs.existsSync('./guildPrefix.txt') || !fs.existsSync('./neuroNetworks.txt')) {
+    if (!fs.existsSync('./responses.txt') || !fs.existsSync('./settings.txt') || !fs.existsSync('./neuroNetworks.txt')) {
       return
     }
 
-    if (JSON.parse(fs.readFileSync('./settings.txt')).ignored.includes(msg.author.id)) {
+    let settings = JSON.parse(fs.readFileSync('./settings.txt'));
+
+    if (settings.ignored.includes(msg.author.id)) {
       if (msg.content == "I want to start using Ougi [BOT].") {
         ougi.optback(msg);
       }
@@ -130,9 +126,8 @@ client.on('message', (msg) => {
 
     else if (msg.channel.type == "text" && msg.content.length > 0) {
       let guildID = msg.guild.id;
-      let prefix = JSON.parse(fs.readFileSync('./guildPrefix.txt', 'utf-8', console.error));
-      if (prefix.hasOwnProperty(guildID)){
-        let aPrefix = prefix[guildID];
+      if (settings.prefix.hasOwnProperty(guildID)){
+        let aPrefix = settings.prefix[guildID];
         if (msg.content.toLowerCase().startsWith(aPrefix)) {
           if (msg.content.length == aPrefix.length) {
             msg.content = 'ougi';
@@ -166,17 +161,17 @@ client.on('messageDelete', (msg) => {
     if (msg.content.toLowerCase().startsWith("ougi") || msg.author.bot || msg.content.startsWith("扇") || msg.content.toLowerCase().startsWith("#ougi") || msg.content.startsWith("<@629837958123356172>") || msg.content.startsWith("<@!629837958123356172>")) {
       return
     }
-    if (!fs.existsSync('./ignored.txt') || !fs.existsSync('./blacklist.txt')) {
+    if (!fs.existsSync('./settings.txt')) {
       return
     }
-    if (JSON.parse(fs.readFileSync('./ignored.txt')).includes(msg.author.id)) {
+    let settings = JSON.parse(fs.readFileSync('./settings.txt'));
+    if (settings.ignored.includes(msg.author.id)) {
       return
     }
     if (msg.channel.type == "text") {
       let guildID = msg.guild.id;
-      let unsniper = JSON.parse(fs.readFileSync('./blacklist.txt', 'utf-8', console.error));
-      if (unsniper.hasOwnProperty(guildID)){
-        let existent = unsniper[guildID];
+      if (settings.blacklist.hasOwnProperty(guildID)){
+        let existent = settings.blacklist[guildID];
         for(var i = 0; i < existent.length; i++) {
           if(existent[i].toLowerCase() === "snipe") {
             return

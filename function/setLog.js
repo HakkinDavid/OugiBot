@@ -6,26 +6,26 @@ function (arguments, msg) {
     return
   }
 
-  var elAdmin = msg.guild.ownerID;
+  let elAdmin = msg.guild.ownerID;
 
   if (elAdmin != msg.author.id) {
     msg.channel.send("You must be the server's owner to run this command.");
     return
   }
 
-  var pseudoArray = JSON.parse(fs.readFileSync('./guildLogs.txt', 'utf-8', console.error));
-  var guildID = msg.guild.id;
-  var guildLogger = msg.channel.id;
+  let pseudoArray = JSON.parse(fs.readFileSync('./settings.txt', 'utf-8', console.error));
+  let guildID = msg.guild.id;
+  let guildLogger = msg.channel.id;
 
   if (arguments.length > 0) {
     if (arguments[0] == "disable") {
-      if (pseudoArray.hasOwnProperty(guildID)){
-        delete pseudoArray[guildID];
+      if (pseudoArray.logging.hasOwnProperty(guildID)){
+        delete pseudoArray.logging[guildID];
         msg.channel.send("Logging channel successfully disabled.");
-        var proArray = JSON.stringify(pseudoArray);
-        fs.writeFile('./guildLogs.txt', proArray, console.error);
-        let myLogger = './guildLogs.txt';
-        ougi.backup(myLogger, guildLoggerChannel);
+        let proArray = JSON.stringify(pseudoArray);
+        fs.writeFile('./settings.txt', proArray, console.error);
+        let myLogger = './settings.txt';
+        ougi.backup(myLogger, settingsChannel);
         return
       }
       else {
@@ -49,9 +49,9 @@ function (arguments, msg) {
   }
   msg.channel.send("I'll start sending this server's commands log into <#"+ guildLogger +">.");
 
-  pseudoArray[guildID] = guildLogger;
-  var proArray = JSON.stringify(pseudoArray);
-  fs.writeFile('./guildLogs.txt', proArray, console.error);
-  let myLogger = './guildLogs.txt';
-  ougi.backup(myLogger, guildLoggerChannel);
+  pseudoArray.logging[guildID] = guildLogger;
+  let proArray = JSON.stringify(pseudoArray);
+  fs.writeFile('./settings.txt', proArray, console.error);
+  let myLogger = './settings.txt';
+  ougi.backup(myLogger, settingsChannel);
 }

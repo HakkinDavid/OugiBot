@@ -6,8 +6,8 @@ function (arguments, msg) {
     return
   }
 
-  var guildID = msg.guild.id;
-  var elAdmin = msg.guild.ownerID;
+  let guildID = msg.guild.id;
+  let elAdmin = msg.guild.ownerID;
 
   if (elAdmin != msg.author.id) {
     msg.channel.send("You must be the server's owner to run this command.");
@@ -19,7 +19,7 @@ function (arguments, msg) {
     return
   }
 
-  var trigger = arguments.join(" ");
+  let trigger = arguments.join(" ");
 
   if (msg.content.includes("@everyone") || msg.content.includes("@here")) {
     msg.channel.send("Ora ora ora ora! Remove that massive ping.");
@@ -44,25 +44,25 @@ function (arguments, msg) {
     return
   }
 
-  var pseudoArray = JSON.parse(fs.readFileSync('./blacklist.txt', 'utf-8', console.error));
+  let pseudoArray = JSON.parse(fs.readFileSync('./settings.txt', 'utf-8', console.error));
 
-  var afterOptions = [
+  let afterOptions = [
     "I'll start reacting to `" + trigger + "` in " + msg.guild.toString() + ".",
     "Alright, I've whitelisted `" + trigger + "` in " + msg.guild.toString() + ".",
   ];
-  var answer = afterOptions[Math.floor(Math.random()*afterOptions.length)];
-  var myBlacklist = "./blacklist.txt";
+  let answer = afterOptions[Math.floor(Math.random()*afterOptions.length)];
+  let myBlacklist = "./settings.txt";
 
-  if (pseudoArray.hasOwnProperty(guildID)){
-    var existent = pseudoArray[guildID];
-    for(var i = 0; i < existent.length; i++) {
+  if (pseudoArray.blacklist.hasOwnProperty(guildID)){
+    let existent = pseudoArray.blacklist[guildID];
+    for(let i = 0; i < existent.length; i++) {
       if(existent[i].toLowerCase() === trigger) {
         client.channels.cache.get(consoleLogging).send("Trigger to be removed from blacklist: `" + trigger + "` in `" + msg.guild.toString() + "` with guildID `" + guildID + "`");
         existent.splice(i, 1);
-        var proArray = JSON.stringify(pseudoArray);
-        fs.writeFile('./blacklist.txt', proArray, console.error);
+        let proArray = JSON.stringify(pseudoArray);
+        fs.writeFile('./settings.txt', proArray, console.error);
         msg.channel.send(answer).then().catch(console.error);
-        ougi.backup(myBlacklist, blacklistChannel);
+        ougi.backup(myBlacklist, settingsChannel);
         return
       }
     }

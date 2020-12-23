@@ -1,16 +1,16 @@
 module.exports =
 
 function (msg) {
-  var guildID = msg.guild.id;
-  var pseudoArray = JSON.parse(fs.readFileSync('./guildLogs.txt', 'utf-8', console.error));
-  if (pseudoArray.hasOwnProperty(guildID)){
-    var guildLogger = pseudoArray[guildID];
-    var spookyCake = msg.content;
-    var spookySlices = spookyCake.split(" ");
-    var spookyCommand = spookySlices[1];
-    var arguments = spookySlices.slice(2);
+  let guildID = msg.guild.id;
+  let pseudoArray = JSON.parse(fs.readFileSync('./settings.txt', 'utf-8', console.error));
+  if (pseudoArray.logging.hasOwnProperty(guildID)){
+    let guildLogger = pseudoArray.logging[guildID];
+    let spookyCake = msg.content;
+    let spookySlices = spookyCake.split(" ");
+    let spookyCommand = spookySlices[1];
+    let arguments = spookySlices.slice(2);
 
-    var embed = new Discord.MessageEmbed()
+    let embed = new Discord.MessageEmbed()
     .setTitle(msg.author.tag)
     .setDescription("ID `" + msg.author.id + "` | At " + msg.channel.toString())
     .setAuthor("Ougi [BOT]", client.user.avatarURL())

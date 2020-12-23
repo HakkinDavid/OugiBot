@@ -3,7 +3,7 @@ module.exports =
 function (msg) {
   let pseudoArray = JSON.parse(fs.readFileSync('./settings.txt', 'utf-8', console.error));
   let index = pseudoArray.ignored.indexOf(msg.author.id);
-  pseudoArray.splice(index);
+  pseudoArray.ignored.splice(index);
   let embed = new Discord.MessageEmbed()
   .setTitle("Opt In to Ougi")
   .setAuthor("Ougi [BOT]", client.user.avatarURL())

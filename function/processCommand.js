@@ -10,20 +10,20 @@ function (msg) {
     while (msg.content.includes('\n')) {
       msg.content = msg.content.replace('\n', ' ')
     }
-    var spookyCake = msg.content;
-    var spookySlices = spookyCake.toLowerCase().split(" ");
-    var spookyCommand = spookySlices[1];
-    var arguments = spookySlices.slice(2);
+    let spookyCake = msg.content;
+    let spookySlices = spookyCake.toLowerCase().split(" ");
+    let spookyCommand = spookySlices[1];
+    let arguments = spookySlices.slice(2);
 
     /*Ignore if in blacklist*/
     if (msg.channel.type == "text") {
-      var guildID = msg.guild.id;
+      let guildID = msg.guild.id;
 
-      var blacklistCheck = JSON.parse(fs.readFileSync('./blacklist.txt', 'utf-8', console.error));
+      let settings = JSON.parse(fs.readFileSync('./settings.txt'));
 
-      if (blacklistCheck.hasOwnProperty(guildID)){
-        var existent = blacklistCheck[guildID];
-        for (var i = 0; i < existent.length; i++) {
+      if (settings.blacklist.hasOwnProperty(guildID)){
+        let existent = settings.blacklist[guildID];
+        for (i = 0; i < existent.length; i++) {
           if (existent[i].toLowerCase() === spookySlices.slice(1).join(" ")) {
             msg.channel.send("Sorry, that's blacklisted in " + msg.guild.toString() + ".").then().catch(console.error);
             return
@@ -114,6 +114,11 @@ function (msg) {
         ougi.voiceCallMusic(msg).then().catch(console.error)
       break;
 
+      case "remove":
+        msg.content = "ougi music remove " + arguments.join(" ");
+        ougi.voiceCallMusic(msg).then().catch(console.error)
+      break;
+
       case "lyrics":
         ougi.lyrics(arguments, msg).then().catch(console.error)
       break;
@@ -161,7 +166,7 @@ function (msg) {
         ougi.setNews(arguments, msg)
       break;
 
-      case "remove":
+      case "blacklist":
         ougi.rm(arguments, msg)
       break;
 

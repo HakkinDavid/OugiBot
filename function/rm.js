@@ -49,18 +49,18 @@ function (arguments, msg) {
     return
   }
 
-  var pseudoArray = JSON.parse(fs.readFileSync('./blacklist.txt', 'utf-8', console.error));
+  let pseudoArray = JSON.parse(fs.readFileSync('./settings.txt', 'utf-8', console.error));
 
-  var afterOptions = [
+  let afterOptions = [
     "I'll stop reacting to `" + trigger + "` in " + msg.guild.toString() + ".",
     "Alright, I've blacklisted `" + trigger + "` in " + msg.guild.toString() + ".",
   ];
-  var answer = afterOptions[Math.floor(Math.random()*afterOptions.length)];
-  var myBlacklist = "./blacklist.txt";
+  let answer = afterOptions[Math.floor(Math.random()*afterOptions.length)];
+  let myBlacklist = "./settings.txt";
 
-  if (pseudoArray.hasOwnProperty(guildID)){
-    var existent = pseudoArray[guildID];
-    for(var i = 0; i < existent.length; i++) {
+  if (pseudoArray.blacklist.hasOwnProperty(guildID)){
+    let existent = pseudoArray.blacklist[guildID];
+    for(i = 0; i < existent.length; i++) {
       if(existent[i].toLowerCase() === trigger) {
         msg.channel.send("Sorry, that trigger is already blacklisted in " + msg.guild.toString() + ".").then().catch(console.error);
         return
@@ -69,23 +69,23 @@ function (arguments, msg) {
     existent.push(trigger);
     msg.channel.send(answer).then().catch(console.error);
     client.channels.cache.get(consoleLogging).send("Trigger to be blacklisted: `" + trigger + "` in `" + msg.guild.toString() + "` with guildID `" + guildID + "`");
-    pseudoArray[guildID] = existent;
-    var proArray = JSON.stringify(pseudoArray);
-    fs.writeFile('./blacklist.txt', proArray, console.error);
+    pseudoArray.blacklist[guildID] = existent;
+    let proArray = JSON.stringify(pseudoArray);
+    fs.writeFile('./settings.txt', proArray, console.error);
 
-    ougi.backup(myBlacklist, blacklistChannel);
+    ougi.backup(myBlacklist, settingsChannel);
     return
   }
 
   msg.channel.send(answer).then().catch(console.error);
   client.channels.cache.get(consoleLogging).send("Trigger to be blacklisted: `" + trigger + "` in `" + msg.guild.toString() + "` with guildID `" + guildID + "`");
 
-  pseudoArray[guildID] = [];
-  var arrayMaker = pseudoArray[guildID];
+  pseudoArray.blacklist[guildID] = [];
+  let arrayMaker = pseudoArray.blacklist[guildID];
   arrayMaker.push(trigger);
-  pseudoArray[guildID] = arrayMaker;
-  var proArray = JSON.stringify(pseudoArray);
-  fs.writeFile('./blacklist.txt', proArray, console.error);
+  pseudoArray.blacklist[guildID] = arrayMaker;
+  let proArray = JSON.stringify(pseudoArray);
+  fs.writeFile('./settings.txt', proArray, console.error);
 
-  ougi.backup(myBlacklist, blacklistChannel);
+  ougi.backup(myBlacklist, settingsChannel);
 }

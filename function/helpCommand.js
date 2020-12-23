@@ -35,7 +35,7 @@ function (arguments, msg) {
         ougi.emojiListHelp(msg)
     } else if (arguments == 'emoji') {
         ougi.emojiHelp(msg)
-    } else if (arguments == 'remove') {
+    } else if (arguments == 'blacklist') {
         ougi.removeHelp(msg)
     } else if (arguments == 'allow') {
         ougi.allowHelp(msg)

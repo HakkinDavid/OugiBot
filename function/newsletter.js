@@ -80,10 +80,10 @@ function (msg) {
     return
   }
   let names = [];
-  var pseudoArray = JSON.parse(fs.readFileSync("./subscribers.txt"));
-  for (i=0; pseudoArray.length > i; i++) {
-    client.users.cache.get(pseudoArray[i]).send(spookyConstructor).catch(console.error);
-    names.push(client.users.cache.get(pseudoArray[i]).username);
+  var pseudoArray = JSON.parse(fs.readFileSync("./settings.txt"));
+  for (i=0; pseudoArray.subscribers.length > i; i++) {
+    client.users.cache.get(pseudoArray.subscribers[i]).send(spookyConstructor).catch(console.error);
+    names.push(client.users.cache.get(pseudoArray.subscribers[i]).username);
   }
   let newsArray = JSON.parse(fs.readFileSync('./newsChannel.txt', 'utf-8', console.error));
   var thisArray = {
