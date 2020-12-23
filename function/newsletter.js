@@ -80,13 +80,33 @@ function (msg) {
     return
   }
   let names = [];
-  var pseudoArray = JSON.parse(fs.readFileSync("./settings.txt"));
+  let pseudoArray = JSON.parse(fs.readFileSync("./settings.txt"));
+  let mod = 0;
   for (i=0; pseudoArray.subscribers.length > i; i++) {
-    client.users.cache.get(pseudoArray.subscribers[i]).send(spookyConstructor).catch(console.error);
-    names.push(client.users.cache.get(pseudoArray.subscribers[i]).username);
+    let aSub = client.users.cache.get(pseudoArray.subscribers[i]);
+    if (aSub != undefined) {
+      aSub.send(spookyConstructor).catch(console.error);
+      names.push(aSub.username);
+    }
+    else {
+      mod++
+    }
+  }
+  for (let getKey in pseudoArray.guildNews) {
+    let newsDoor = client.channels.cache.get(pseudoArray.guildNews[getKey]);
+    if (newsDoor != undefined) {
+      newsDoor.send(spookyConstructor).catch(console.error);
+      names.push(newsDoor.toString());
+    }
+    else {
+      mod++
+    }
+  }
+  if (mod > 0) {
+    console.log("Skipped " + mod + " invalid IDs.")
   }
   let newsArray = JSON.parse(fs.readFileSync('./newsChannel.txt', 'utf-8', console.error));
-  var thisArray = {
+  let thisArray = {
     title: embedName,
     desc: embedDesc,
     type: embedType,
