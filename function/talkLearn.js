@@ -1,6 +1,6 @@
 module.exports =
 
-function (arguments, msg) {
+async function (arguments, msg) {
   var thisMessage = arguments.join(" ");
 
   if (msg.content.includes("@everyone") || msg.content.includes("@here")) {
@@ -87,6 +87,34 @@ function (arguments, msg) {
   var answer = afterOptions[Math.floor(Math.random()*afterOptions.length)];
   var myResponse = "./responses.txt";
 
+  let embed = new Discord.MessageEmbed()
+  .setTitle("Input for talkLearn")
+  .addField("Response to be added", response)
+  .addField("With trigger", trigger)
+  .setColor("#FF008C")
+  .setFooter("globalLogEmbed by Ougi", client.user.avatarURL())
+
+  let langSettings = JSON.parse(fs.readFileSync('./settings.txt')).lang;
+  let langCode = undefined;
+  if (langSettings.hasOwnProperty(msg.author.id)) {
+    langCode = langSettings[msg.author.id]
+  }
+  if (msg.channel.type == "text") {
+    if (langSettings.hasOwnProperty(msg.guild.id)) {
+      langCode = langSettings[msg.guild.id];
+    }
+  }
+  if (langCode != undefined && langCode != 'en') {
+    await translate(trigger, {from: langCode, to: "en"}).then(res => {
+        if (res.from.language.iso != "en") {
+          trigger = res.text;
+          embed.addField("Translated trigger for further processing", trigger.slice(0, 1024));
+        }
+    }).catch(err => {
+        console.error(err);
+    });
+  }
+
   if (pseudoArray.hasOwnProperty(trigger)){
     var existent = pseudoArray[trigger];
     for(let i = 0; i < existent.length; i++) {
@@ -97,12 +125,7 @@ function (arguments, msg) {
     }
     existent.push(response);
     msg.channel.send(answer).then().catch(console.error);
-    var embed = new Discord.MessageEmbed()
-    .setTitle("Input for talkLearn")
-    .addField("Response to be added", response)
-    .addField("With trigger", trigger)
-    .setColor("#FF008C")
-    .setFooter("globalLogEmbed by Ougi", client.user.avatarURL())
+
     client.channels.cache.get(consoleLogging).send({embed});
     pseudoArray[trigger] = existent;
     var proArray = JSON.stringify(pseudoArray);
@@ -113,12 +136,7 @@ function (arguments, msg) {
   }
 
   msg.channel.send(answer).then().catch(console.error);
-  var embed = new Discord.MessageEmbed()
-  .setTitle("Input for talkLearn")
-  .addField("Response to be added", response)
-  .addField("With trigger", trigger)
-  .setColor("#FF008C")
-  .setFooter("globalLogEmbed by Ougi", client.user.avatarURL())
+
   client.channels.cache.get(consoleLogging).send({embed});
 
   pseudoArray[trigger] = [];

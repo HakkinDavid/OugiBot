@@ -1,6 +1,6 @@
 module.exports =
 
-function (msg) {
+async function (msg) {
   while (msg.content.includes('  ')) {
     msg.content = msg.content.replace('  ', ' ')
   }
@@ -26,8 +26,30 @@ function (msg) {
   while (notSpookyDM.startsWith(" ")) {
     notSpookyDM = notSpookyDM.substring(1, notSpookyDM.length)
   }
+  embed.addField("Content", notSpookyDM.slice(0, 1024));
+
+  let langSettings = JSON.parse(fs.readFileSync('./settings.txt')).lang;
+  let langCode = undefined;
+  if (langSettings.hasOwnProperty(msg.author.id)) {
+    langCode = langSettings[msg.author.id]
+  }
+  if (msg.channel.type == "text") {
+    if (langSettings.hasOwnProperty(msg.guild.id)) {
+      langCode = langSettings[msg.guild.id];
+    }
+  }
+  if (langCode != undefined && langCode != 'en') {
+    await translate(notSpookyDM, {from: langCode, to: "en"}).then(res => {
+        if (res.from.language.iso != "en") {
+          notSpookyDM = res.text;
+          embed.addField("Translated for processing", notSpookyDM.slice(0, 1024));
+        }
+    }).catch(err => {
+        console.error(err);
+    });
+  }
+
   ougi.ideaCoreProcessor(notSpookyDM);
-  embed.addField("Content", notSpookyDM.slice(0, 1024))
   msg.channel.startTyping();
   ougi.sleep(500);
   var levenaryIdea = levenary(notSpookyDM, stringsArray);
@@ -72,8 +94,16 @@ function (msg) {
         .replace("n word", "word starting with n")
       }
     }
+    embed.addField("Reply", response);
+    if (langCode != undefined) {
+      await translate(response, {to: langCode}).then(res => {
+          response = res.text;
+          embed.addField("Localized as", response);
+      }).catch(err => {
+          console.error(err);
+      });
+    }
     msg.channel.send(response).then().catch(console.error);
-    embed.addField("Replied", response);
     client.channels.cache.get(consoleLogging).send({embed});
   }
   else {

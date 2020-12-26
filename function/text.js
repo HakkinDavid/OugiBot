@@ -15,19 +15,17 @@ async function (msg, stringID) {
     return "[Sorry, this text field hasn't been declared]";
   }
   let returnableString = ougi.localization[stringID][langCode];
-  if (returnableString == undefined) {
-    if (ougi.localization[stringID].en != undefined) {
-      switch (langCode) {
-        case "mx":
-          langCode = "es";
-        break;
-      }
-      await translate(ougi.localization[stringID].en, {to: langCode}).then(res => {
-          returnableString = res.text;
-      }).catch(err => {
-          console.error(err);
-      });
+  if (returnableString == undefined && ougi.localization[stringID].en != undefined) {
+    switch (langCode) {
+      case "mx":
+        langCode = "es";
+      break;
     }
+    await translate(ougi.localization[stringID].en, {to: langCode}).then(res => {
+        returnableString = res.text;
+    }).catch(err => {
+        console.error(err);
+    });
   }
   return returnableString;
 }
