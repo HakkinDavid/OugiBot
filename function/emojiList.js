@@ -1,6 +1,6 @@
 module.exports =
 
-function (arguments, msg) {
+async function (arguments, msg) {
   var emojiIDList = client.emojis.cache.filter(emoji => emoji.available).map((e) => e.toString());
   var emojiNameList = client.emojis.cache.filter(emoji => emoji.available).map((e) => e.name);
   var howMany = emojiIDList.length;

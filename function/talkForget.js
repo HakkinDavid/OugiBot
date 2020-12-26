@@ -1,6 +1,6 @@
 module.exports =
 
-function (arguments, msg) {
+async function (arguments, msg) {
   var thisMessage = arguments.join(" ");
 
   if (msg.content.includes("@everyone") || msg.content.includes("@here")) {

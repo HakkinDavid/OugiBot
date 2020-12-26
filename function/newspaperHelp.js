@@ -1,6 +1,6 @@
 module.exports =
 
-function (msg) {
+async function (msg) {
   var news = ["Ougi woke up with a headache.", "Ougi likes chilaquiles.", "Ougi needs 298 yen.", "Ougi stole " + msg.author.username + "'s chocolate bar."];
   var embed = new Discord.MessageEmbed()
   .setTitle("Ougi's `newspaper` command")

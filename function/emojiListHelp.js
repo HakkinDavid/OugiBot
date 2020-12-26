@@ -1,6 +1,6 @@
 module.exports =
 
-function (msg) {
+async function (msg) {
   var number = ["1", "2", "3"];
   var page = number[Math.floor(Math.random()*number.length)];
   var embed = new Discord.MessageEmbed()

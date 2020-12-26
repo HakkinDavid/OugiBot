@@ -1,6 +1,6 @@
 module.exports =
 
-function (filename, where){
+async function (filename, where){
   var event = new Date();
 
   client.channels.cache.get(where).send("backup of __**" + event.toLocaleTimeString('en-US') + "**__", {

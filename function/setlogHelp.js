@@ -1,6 +1,6 @@
 module.exports =
 
-function (msg) {
+async function (msg) {
   let embed = new Discord.MessageEmbed()
   .setTitle("Ougi's `setlog` command")
   .setAuthor("Ougi [BOT]", client.user.avatarURL())

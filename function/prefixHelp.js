@@ -1,6 +1,6 @@
 module.exports =
 
-function (msg) {
+async function (msg) {
   let possiblePrefix = ["spooky", "oshino", "xXOugi_YTXx", "o!", "$p00ky"];
   let embed = new Discord.MessageEmbed()
   .setTitle("Ougi's `prefix` command")

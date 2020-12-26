@@ -1,6 +1,6 @@
 module.exports =
 
-function (msg) {
+async function (msg) {
   var embed = new Discord.MessageEmbed()
   .setTitle("checkBadWords")
   .setColor("#FF008C")

@@ -1,6 +1,6 @@
 module.exports =
 
-function (msg) {
+async function (msg) {
   var keywords = ["cute kitties", "cute puppies", "rick astley"];
   var search = keywords[Math.floor(Math.random()*keywords.length)];
   var options = {

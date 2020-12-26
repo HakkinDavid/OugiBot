@@ -1,6 +1,6 @@
 module.exports =
 
-function (input) {
+async function (input) {
   let neuroNetworks = './neuroNetworks.txt';
   let idea = removeWords(input);
   let identifier = idea[0];

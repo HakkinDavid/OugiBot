@@ -1,6 +1,6 @@
 module.exports =
 
-function (msg) {
+async function (msg) {
   var phrases = ["i like fortnite", "foo", "we are no strangers to love"];
   var embed = new Discord.MessageEmbed()
   .setTitle("Ougi's `tweet` command")

@@ -1,6 +1,6 @@
 module.exports =
 
-function (msg) {
+async function (msg) {
     while (msg.content.includes('  ')) {
       msg.content = msg.content.replace('  ', ' ')
     }

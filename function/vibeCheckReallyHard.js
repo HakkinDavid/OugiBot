@@ -1,6 +1,6 @@
 module.exports =
 
-function (arguments, msg) {
+async function (arguments, msg) {
   var strength = arguments;
   if (strength == "onee-san") {
     var bai = "Hasta la vista, baby~"

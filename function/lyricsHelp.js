@@ -1,6 +1,6 @@
 module.exports =
 
-function (msg) {
+async function (msg) {
   let videos = ["angels on my side", "every one of us", "never gonna give you up", "sodio", "dark cherry mistery"];
   let lyrics = ["...\nEverything will be alright\n'Cause I got angels on my side\nOh, yeah\nCan you see them?\nCan you see them?\n...",
     "...\nThere's a fire (there's a fire)\nAnd it burns so bright (burns so bright)\nIn every one of us, every one of us\nThere's a flame (there's a flame)\nIt's our guiding light (guiding light)\nIn every one of us, every one of us\nEvery one of us\n...",

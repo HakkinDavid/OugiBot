@@ -1,6 +1,6 @@
 module.exports =
 
-function (msg) {
+async function (msg) {
   if (msg.channel.type != "text") {
     let embed = new Discord.MessageEmbed()
     .setTitle("Ougi's `blacklist` command")

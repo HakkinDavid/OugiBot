@@ -1,6 +1,6 @@
 module.exports =
 
-function (msg) {
+async function (msg) {
   var phrases = ["i love dogs", "where are you bb?", "is this sending?"];
   var sniped = phrases[Math.floor(Math.random()*phrases.length)];
   var phrasesTwo = ["i love cats", "don't flirt with me, you- baka", "i hate cheese"];

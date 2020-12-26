@@ -1,6 +1,6 @@
 module.exports =
 
-function (arguments, msg) {
+async function (arguments, msg) {
   var embed = new Discord.MessageEmbed()
   .setTitle("by " + client.users.cache.get("265257341967007758").tag)
   .setAuthor("Ougi [BOT]", client.user.avatarURL())

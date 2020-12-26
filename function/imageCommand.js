@@ -1,6 +1,6 @@
 module.exports =
 
-function (arguments, msg) {
+async function (arguments, msg) {
     if (arguments.length < 1) {
       msg.channel.send("I need at least one keyword to search.").then().catch(console.error);
       return;

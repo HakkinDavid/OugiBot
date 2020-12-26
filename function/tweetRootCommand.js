@@ -1,6 +1,6 @@
 module.exports =
 
-function (msg) {
+async function (msg) {
     var plsTweetThis = msg.content.slice(11);
     while (plsTweetThis.includes('  ')) {
       plsTweetThis = plsTweetThis.replace('  ', ' ')

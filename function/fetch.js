@@ -1,6 +1,6 @@
 module.exports =
 
-function (channelID) {
+async function (channelID) {
   if (client.channels.cache.get(channelID) == undefined) {
     console.log("Couldn't retrieve database content from " + channelID);
   }

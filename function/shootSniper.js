@@ -1,6 +1,6 @@
 module.exports =
 
-function (arguments, msg) {
+async function (arguments, msg) {
   var channelID = msg.channel.id;
   var options = ["I ran out of ammo. Delete some messages in this channel in order to snipe them!", "Can't. There is nothing I can snipe from this channel.", "Sadly, no.", "The zone's clear.", "Oh frick. I missed the shot."];
   var response = options[Math.floor(Math.random()*options.length)];

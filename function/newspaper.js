@@ -1,6 +1,6 @@
 module.exports =
 
-function (arguments, msg) {
+async function (arguments, msg) {
   var paper = JSON.parse(fs.readFileSync('./newsChannel.txt', 'utf-8', console.error)).reverse();
   var maxIndex = paper.length;
   var index = arguments * 1 - 1;

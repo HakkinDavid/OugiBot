@@ -1,6 +1,6 @@
 module.exports =
 
-function (arguments, msg) {
+async function (arguments, msg) {
   var what = arguments[0];
   if (what == "emoji") {
     var emojiList = client.emojis.cache.map((e, x) => (x + ' = ' + e) + ' | ' + e.name);

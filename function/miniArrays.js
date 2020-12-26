@@ -1,6 +1,6 @@
 module.exports =
 
-function (mainArray, size) {
+async function (mainArray, size) {
   var chunked = [];
 
   while (mainArray.length) {

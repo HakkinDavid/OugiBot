@@ -1,6 +1,6 @@
 module.exports =
 
-function (msg) {
+async function (msg) {
   let pseudoArray = JSON.parse(fs.readFileSync('./settings.txt', 'utf-8', console.error));
   pseudoArray.ignored.push(msg.author.id);
   let embed = new Discord.MessageEmbed()

@@ -1,6 +1,6 @@
 module.exports =
 
-function (msg) {
+async function (msg) {
   var spookyCake = msg.content;
   var spookySlices = spookyCake.split(" ");
   var spookyCommand = spookySlices[1];

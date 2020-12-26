@@ -1,6 +1,6 @@
 module.exports =
 
-function (msg) {
+async function (msg) {
   if (msg.author.id == "265257341967007758") {
     while (msg.content.includes('  ')) {
       msg.content = msg.content.replace('  ', ' ')
