@@ -173,6 +173,14 @@ function (msg) {
       case "allow":
         ougi.allowCommand(arguments, msg)
       break;
+
+      case "language":
+        ougi.lang(arguments, msg, false)
+      break;
+
+      case "guildlanguage":
+        ougi.lang(arguments, msg, true)
+      break;
   /*---------------------------------------------*/
       default:
         if (spookyCommand.startsWith("translate-")) {

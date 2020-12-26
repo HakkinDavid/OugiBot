@@ -182,10 +182,6 @@ client.on('messageDelete', (msg) => {
     ougi.loadSniper(msg);
 });
 
-client.on("channelDelete", (channel) => {
-    ougi.autoRMChannel(channel)
-});
-
 /*Makotomonogatari*/
 client.setInterval(
   function () {

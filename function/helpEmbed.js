@@ -1,17 +1,17 @@
 module.exports =
 
-function (msg) {
+async function (msg) {
   let commandsArray = ["say", "answer", "image", "translate", "music", "snipe", "embed", "learn", "emoji", "emoji-list"];
   var embed = new Discord.MessageEmbed()
-  .setTitle("Help with Ougi")
+  .setTitle(await ougi.text(msg, "helpTitle"))
   .setAuthor("Ougi [BOT]", client.user.avatarURL())
   .setColor("#230347")
-  .setDescription("Here's some information about what Ougi can do.")
+  .setDescription(await ougi.text(msg, "helpDesc"))
   .setFooter("helpEmbed by Ougi", client.user.avatarURL())
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true")
-  .addField("Ougi's prefix", "`ougi`\nThis is what you should start your message with if you want Ougi to perform any of the following commands.")
-  .addField("Help command: `help`", "Shows this help menu. You may also use `help` and the name of another command to show detailed information about it.\n**Example:**\n`ougi help " + commandsArray[Math.floor(Math.random()*commandsArray.length)] + "`")
-  .addField("Available commands", "As of now, Ougi has these commands: `say`, `answer`, `image`, `translate`, `music`, `skip`, `lyrics`, `snipe`, `embed`, `tweet`, `learn`, `forget`, `emoji`, `emoji-list`, `newspaper`, `subscribe`, `unsubscribe`, `prefix`, `blacklist`, `allow`, `setnews`, `setlog`, `acknowledgement` and `info`. Still improving!");
+  .addField(await ougi.text(msg, "helpPrefix"), "`ougi`\n" + await ougi.text(msg, "helpPrefixExplanation"))
+  .addField(await ougi.text(msg, "helpHelpCommand") + ": `help`", await ougi.text(msg, "helpHelpExplanation") + "\n**" + await ougi.text(msg, "example") + ":**\n`ougi help " + commandsArray[Math.floor(Math.random()*commandsArray.length)] + "`")
+  .addField(await ougi.text(msg, "availableCommands"), await ougi.text(msg, "availableCommandsList") + ": `say`, `answer`, `image`, `translate`, `music`, `skip`, `lyrics`, `snipe`, `embed`, `tweet`, `learn`, `forget`, `emoji`, `emoji-list`, `language`, `guildlanguage`, `newspaper`, `subscribe`, `unsubscribe`, `prefix`, `blacklist`, `allow`, `setnews`, `setlog`, `acknowledgement`, `info`. " + await ougi.text(msg, "improving"));
 
   msg.channel.send({embed}).catch(console.error);
 }

@@ -5,6 +5,14 @@ function (msg) {
   let pseudoArray = JSON.parse(fs.readFileSync('./settings.txt', 'utf-8', console.error));
   if (pseudoArray.logging.hasOwnProperty(guildID)){
     let guildLogger = pseudoArray.logging[guildID];
+
+    let channelPointer = client.channels.cache.get(guildLogger);
+
+    if (channelPointer == undefined) {
+      console.log("Skipped invalid logging channel for " + msg.guild.toString() + ".");
+      return
+    }
+
     let spookyCake = msg.content;
     let spookySlices = spookyCake.split(" ");
     let spookyCommand = spookySlices[1];
@@ -35,6 +43,6 @@ function (msg) {
       }
     }
 
-    client.channels.cache.get(guildLogger).send({embed}).catch(console.error);
+    channelPointer.send({embed}).catch(console.error);
   }
 }
