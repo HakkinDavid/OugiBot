@@ -8,7 +8,7 @@ async function (msg) {
   .setDescription("Use this command to skip the current song from your music queue.")
   .setFooter("helpEmbed by Ougi", client.user.avatarURL())
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true")
-  .addField("Example", "`ougi skip`")
-  .addField("Output", "Skipped!");
+  .addField(await ougi.text(msg, "example"), "`ougi skip`")
+  .addField(await ougi.text(msg, "output"), "Skipped!");
   msg.channel.send({embed}).catch(console.error);
 }

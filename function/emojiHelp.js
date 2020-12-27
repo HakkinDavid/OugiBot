@@ -22,8 +22,8 @@ async function (msg) {
   .setDescription("Use this command to make Ougi send an emoji based on the provided emoji name. You can ask for more than one! You may also include `random` as emoji name to chose a random emoji from the list.")
   .setFooter("helpEmbed by Ougi", client.user.avatarURL())
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true")
-  .addField("Example", "`ougi emoji " + searchFor + " " + searchFor2 + " " + searchFor3 + "`")
-  .addField("Output", spookyEmoji + spookyEmoji2 + spookyEmoji3)
+  .addField(await ougi.text(msg, "example"), "`ougi emoji " + searchFor + " " + searchFor2 + " " + searchFor3 + "`")
+  .addField(await ougi.text(msg, "output"), spookyEmoji + spookyEmoji2 + spookyEmoji3)
   .addField("Take a look at the emoji list!", "`ougi emoji-list`")
 
   msg.channel.send({embed}).catch(console.error);

@@ -14,10 +14,10 @@ async function (msg) {
   }
   embed.setDescription("Use this command to set a channel where to send important announcements and updates about Ougi. If no channel is mentioned, Ougi will use the channel you run the command in.")
   .addField("Special permission required", ":warning: You must be the owner of whatever Discord server you run this command in.")
-  .addField("Example", "`ougi setnews `" + msg.channel.toString() + "` `")
-  .addField("Output", "I'll start sending updates and related information into " + msg.channel.toString() + ".")
+  .addField(await ougi.text(msg, "example"), "`ougi setnews `" + msg.channel.toString() + "` `")
+  .addField(await ougi.text(msg, "output"), "I'll start sending updates and related information into " + msg.channel.toString() + ".")
   .addField("You may also disable this function", "`ougi setnews disable`")
-  .addField("Output", "Newsletter channel successfully disabled.")
+  .addField(await ougi.text(msg, "output"), "Newsletter channel successfully disabled.")
 
   msg.channel.send(embed).catch(console.error);
 }

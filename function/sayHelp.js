@@ -10,8 +10,8 @@ async function (msg) {
   .setDescription("Use this command to make Ougi send a message based on your words.")
   .setFooter("helpEmbed by Ougi", client.user.avatarURL())
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true")
-  .addField("Example", "`ougi say " + say + "`")
-  .addField("Output", say)
+  .addField(await ougi.text(msg, "example"), "`ougi say " + say + "`")
+  .addField(await ougi.text(msg, "output"), say)
 
   msg.channel.send({embed}).catch(console.error);
 }

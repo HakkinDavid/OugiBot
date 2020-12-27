@@ -10,7 +10,7 @@ async function (msg) {
   .setDescription("Use this command to make Ougi join your voice channel and play a YouTube video. Provide either a link or some keywords to search for in YouTube.")
   .setFooter("helpEmbed by Ougi", client.user.avatarURL())
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true")
-  .addField("Example", "`ougi music " + videos[Math.floor(Math.random()*videos.length)] + "`")
+  .addField(await ougi.text(msg, "example"), "`ougi music " + videos[Math.floor(Math.random()*videos.length)] + "`")
   .addField("Pro tip", "If you're too lazy to type `ougi music`, you may as well just type Ougi's prefix followed up by a YouTube link.\n`ougi " + links[Math.floor(Math.random()*links.length)] + "`")
   .addField("In order to create a music queue", "Execute the command as many times as needed, Ougi will automatically add the requested videos to your queue and will play them in order, one after another.")
   .addField("Skip a song", "`ougi music skip`")

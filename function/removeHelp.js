@@ -27,10 +27,10 @@ async function (msg) {
   .addField("Special permission required", ":warning: You must be the owner of whatever Discord server you run this command in.")
   .setFooter("helpEmbed by Ougi", client.user.avatarURL())
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true")
-  .addField("Example", "`ougi blacklist " + remove + "`")
-  .addField("Output", answer)
+  .addField(await ougi.text(msg, "example"), "`ougi blacklist " + remove + "`")
+  .addField(await ougi.text(msg, "output"), answer)
   .addField("After that, if anyone executes the following", "`ougi " + remove + "`")
-  .addField("Output", "Sorry, that's blacklisted in " + msg.guild.toString() + ".")
+  .addField(await ougi.text(msg, "output"), "Sorry, that's blacklisted in " + msg.guild.toString() + ".")
 
   msg.channel.send({embed}).catch(console.error);
 }

@@ -38,8 +38,9 @@ async function (msg) {
       langCode = langSettings[msg.guild.id];
     }
   }
-  if (langCode != undefined && langCode != 'en') {
-    await translate(notSpookyDM, {from: langCode, to: "en"}).then(res => {
+  let prevSimilarity = stringSimilarity.findBestMatch(notSpookyDM, stringsArray).bestMatch.rating;
+  if (langCode != undefined && langCode != 'en' && prevSimilarity * 100 < 90) {
+    await translate(notSpookyDM, {from: langCode.replace('mx', 'es'), to: "en"}).then(res => {
         if (res.from.language.iso != "en") {
           notSpookyDM = res.text;
           embed.addField("Translated for processing", notSpookyDM.slice(0, 1024));
@@ -96,9 +97,11 @@ async function (msg) {
     }
     embed.addField("Reply", response);
     if (langCode != undefined) {
-      await translate(response, {to: langCode}).then(res => {
-          response = res.text;
-          embed.addField("Localized as", response);
+      await translate(response, {to: langCode.replace('mx', 'es')}).then(res => {
+          if (res.from.language.iso != langCode.replace('mx', 'es')) {
+            response = res.text;
+            embed.addField("Localized as", response);
+          }
       }).catch(err => {
           console.error(err);
       });

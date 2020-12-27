@@ -2,7 +2,7 @@ module.exports =
 
 async function (arguments, msg) {
     if (arguments.length < 1) {
-      msg.channel.send("I need at least one keyword to search.").then().catch(console.error);
+      msg.channel.send(await ougi.text(msg, "keywordRequired")).then().catch(console.error);
       return;
     }
     var search = arguments.join(" ");
@@ -21,9 +21,9 @@ async function (arguments, msg) {
 
         $ = cheerio.load(responseBody);
 
-        var links = $(".image a.link");
+        let links = $(".image a.link");
 
-        var urls = new Array(links.length).fill(0).map((v, i) => links.eq(i).attr("href"));
+        let urls = new Array(links.length).fill(0).map((v, i) => links.eq(i).attr("href"));
 
         if (!urls.length) {
             msg.channel.send("There aren't any results.").then().catch(console.error);
@@ -37,9 +37,9 @@ async function (arguments, msg) {
           }
         }
 
-        var imageToSend = urls[Math.floor(Math.random()*urls.length)];
+        let imageToSend = urls[Math.floor(Math.random()*urls.length)];
 
-        var spookyImage = new Discord.MessageEmbed()
+        let spookyImage = new Discord.MessageEmbed()
         .setImage(imageToSend)
         .setFooter("imageEmbed by Ougi", client.user.avatarURL())
         .setTimestamp()

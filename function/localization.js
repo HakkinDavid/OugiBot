@@ -35,6 +35,11 @@ module.exports =
     "es": "Ejemplo",
     "mx": "Ejemplo"
   },
+  "output": {
+    "en": "Output",
+    "es": "Resulta en",
+    "mx": "Resultado"
+  },
   "availableCommands": {
     "en": "Available commands",
     "es": "Mirad el pedazo de comandos que se trae Ougi",
@@ -49,5 +54,149 @@ module.exports =
     "en": "Still improving!",
     "es": "¡Echaremos caña para que algún día haya más!",
     "mx": "¡Aún trabajando por mejorar!"
+  },
+  "mustGuild": {
+    "en": "You must be in a server to run this command."
+  },
+  "mustOwn": {
+    "en": "You must be the server's owner to run this command."
+  },
+  "oneCharWhitelist": {
+    "en": "Ara ara, provide a phrase or a command that is at least one character long in order to whitelist it."
+  },
+  "massivePing": {
+    "en": "Ora ora ora ora! Remove that massive ping."
+  },
+  "avoidSpecialChar": {
+    "en": "Avoid mentions or custom emoji please. What? Isn't that a mention or a custom emoji? Well, then don't include '<@' and '>' in the same message."
+  },
+  "reactingTo": {
+    "en": "I'll start reacting to"
+  },
+  "alrightWhitelisted": {
+    "en": "Alright, I've whitelisted"
+  },
+  "in": {
+    "en": "in"
+  },
+  "notBlacklisted": {
+    "en": "Looks like this trigger wasn't blacklisted at all."
+  },
+  "validLang": {
+    "en": "Please select a valid language. Refer to the following command if you are clueless."
+  },
+  "allowHelpTitle": {
+    "en": "Ougi's `allow` command"
+  },
+  "onlyGuilds": {
+    "en": "This is only available in Discord servers."
+  },
+  "inGuildWarning": {
+    "en": "You must be in a Discord server in order to preview information about this command."
+  },
+  "keywordRequired": {
+    "en": "Please provide at least one keyword to search."
+  },
+  "allowUsage": {
+    "en": "Use this command to whitelist a trigger that is currently blacklisted in this Discord server, Ougi will start processing that input."
+  },
+  "specialPermission": {
+    "en": "Special permission required"
+  },
+  "onlyOwner": {
+    "en": "You must be the owner of whatever Discord server you run this command in."
+  },
+  "possibleDelay": {
+    "en": "Execution delay"
+  },
+  "delayWarning": {
+    "en": "Some languages aren't fully implemented so certain commands might take a few extra seconds to translate and execute."
+  },
+  "newLang": {
+    "en": "Language set to"
+  },
+  "langDesc": {
+    "en": "Ougi will use this language when talking to you."
+  },
+  "newLangGuild": {
+    "en": "Guild language set to"
+  },
+  "langGuildDesc": {
+    "en": "Ougi will use this language inside"
+  },
+  "yes": {
+    "en": "Yes"
+  },
+  "no": {
+    "en": "No"
+  },
+  "yeah": {
+    "en": "Yeah"
+  },
+  "nah": {
+    "en": "Nah"
+  },
+  "maybe": {
+    "en": "Maybe"
+  },
+  "maybeNot": {
+    "en": "Maybe not."
+  },
+  "guess": {
+    "en": "I guess."
+  },
+  "guessNot": {
+    "en": "I guess not."
+  },
+  "idk": {
+    "en": "I don't really know so I can't actually answer."
+  },
+  "notSure": {
+    "en": "I'm not sure."
+  },
+  "askSomeone": {
+    "en": "Ask someone else."
+  },
+  "negative": {
+    "en": "Negative"
+  },
+  "squareNegative": {
+    "en": "Negative multiplied by negative."
+  },
+  "pancakes": {
+    "en": "Pancakes"
+  },
+  "impossible": {
+    "en": "Impossible"
+  },
+  "notWhoKnows": {
+    "en": "I don't know the answer, but you do."
+  },
+  "skipQuestion": {
+    "en": "Do you really want me to answer that?"
+  },
+  "uh": {
+    "en": "Uh..."
+  },
+  "answerHelpTitle": {
+    "en": "Ougi's `answer` command"
+  },
+  "questionA": {
+    "en": "Do you like tacos?"
+  },
+  "questionB": {
+    "en": "Are you human?"
+  },
+  "questionC": {
+    "en": "Are you ever gonna give me up?"
+  },
+  "answerHelpDesc": {
+    "en": "Ask Ougi a yes-or-no question."
+  },
+  "seeEmoji": {
+    "en": "I couldn't find one or more of the emoji you asked me for. Execute the following command to see my emoji list"
+  },
+  "pleaseIncludeEmoji": {
+    "en": "Please provide at least one emoji name. Execute the following command to see my emoji list"
   }
 }

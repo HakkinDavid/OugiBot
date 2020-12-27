@@ -15,7 +15,7 @@ async function (msg) {
   }
   embed.setDescription("Use this command to change Ougi's prefix inside your Discord server to anything you'd like.")
   .addField("Special permission required", ":warning: You must be the owner of whatever Discord server you run this command in.")
-  .addField("Example", "`ougi prefix " + possiblePrefix[Math.floor(Math.random()*possiblePrefix.length)] + "`");
+  .addField(await ougi.text(msg, "example"), "`ougi prefix " + possiblePrefix[Math.floor(Math.random()*possiblePrefix.length)] + "`");
 
   msg.channel.send(embed).catch(console.error);
 }

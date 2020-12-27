@@ -1,6 +1,6 @@
 module.exports =
 
-async function (arguments, msg) {
+function (arguments, msg) {
     if (arguments == 'list' || arguments.length <= 0) {
         ougi.helpEmbed(msg)
     } else if (arguments == 'multiply') {

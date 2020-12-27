@@ -150,10 +150,6 @@ async function (msg) {
       case "reminder":
         ougi.remindMe(msg)
       break;
-  /*--------------Localizations-------------------*/
-      case "responde":
-        ougi.respondeComando(arguments, msg)
-      break;
   /*----------------Mod Stuff--------------------*/
       case "prefix":
         ougi.prefix(arguments, msg)

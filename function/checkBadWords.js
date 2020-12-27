@@ -28,10 +28,6 @@ async function (msg) {
       }
   }
   if (!insutedBack) {
-    if (msg.content.includes("¿")) {
-      ougi.respondeComando(arguments, msg);
-      return
-    }
     if (msg.content.includes("?")) {
       ougi.answerCommand(arguments, msg);
       return

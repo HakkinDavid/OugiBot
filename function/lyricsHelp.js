@@ -16,7 +16,7 @@ async function (msg) {
   .setDescription("Use this command to get a specified song's lyrics. You may as well not specify any song at all to get lyrics for the currently playing song from your music queue.")
   .setFooter("helpEmbed by Ougi", client.user.avatarURL())
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true")
-  .addField("Example", "`ougi lyrics " + videos[thatIndex] + "`")
-  .addField("Output", lyrics[thatIndex]);
+  .addField(await ougi.text(msg, "example"), "`ougi lyrics " + videos[thatIndex] + "`")
+  .addField(await ougi.text(msg, "output"), lyrics[thatIndex]);
   msg.channel.send({embed}).catch(console.error);
 }

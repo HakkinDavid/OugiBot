@@ -4,11 +4,11 @@ async function (arguments, msg, guildExecution) {
   let preferencesID = msg.author.id;
   if (guildExecution) {
     if (msg.channel.type != "text") {
-      msg.channel.send("You must be in a server to run this command.");
+      msg.channel.send(await ougi.text(msg, "mustGuild"));
       return
     }
     if (msg.author.id != msg.guild.ownerID) {
-      msg.channel.send("You must be the server's owner to run this command.");
+      msg.channel.send(await ougi.text(msg, "mustOwn"));
       return
     }
     preferencesID = msg.guild.id;
@@ -136,7 +136,7 @@ async function (arguments, msg, guildExecution) {
   let isLang = ougi.whereIs(langNames, niceLang);
   let isCode = langNames[toLang];
   if (isLang == undefined && isCode == undefined) {
-    msg.channel.send("Please select a valid language. Refer to the following command if you are clueless.\n> ougi help language").then().catch(console.error);
+    msg.channel.send(await ougi.text(msg, "validLang") + "\n> ougi help language").then().catch(console.error);
     return
   }
   if (isCode != undefined && isLang == undefined) {
@@ -144,10 +144,10 @@ async function (arguments, msg, guildExecution) {
   }
   let finalCode = ougi.whereIs(langNames, niceLang);
   let langEmbed = new Discord.MessageEmbed()
-  .setTitle("Language set to " + niceLang)
+  .setTitle(await ougi.text(msg, "newLang") + " " + niceLang + " (" + finalCode + ")")
   .setAuthor("Ougi [BOT]", client.user.avatarURL())
   .setColor("#32A852")
-  .setDescription("Ougi will use this language when talking to you.")
+  .setDescription(await ougi.text(msg, "langDesc"))
   .setFooter("langEmbed by Ougi", client.user.avatarURL())
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/world.png?raw=true");
   if (finalCode == 'default') {
@@ -155,13 +155,14 @@ async function (arguments, msg, guildExecution) {
     langEmbed.setDescription("Ougi will talk to you in English.");
   }
   if (guildExecution) {
-    langEmbed.setTitle("Guild language set to " + niceLang);
-    langEmbed.setDescription("Ougi will use this language inside " + msg.guild.toString() + ".");
+    langEmbed.setTitle(await ougi.text(msg, "newLangGuild") + " " + niceLang + " (" + finalCode + ")");
+    langEmbed.setDescription(await ougi.text(msg, "langGuildDesc") + " " + msg.guild.toString() + ".");
     if (finalCode == 'default') {
       langEmbed.setTitle("Guild language preferences restored to default");
       langEmbed.setDescription("Ougi will use each user's language preferences.");
     }
   }
+  langEmbed.addField(":warning: " + await ougi.text(msg, "possibleDelay"), await ougi.text(msg, "delayWarning"))
   msg.channel.send(langEmbed);
   let pseudoArray = JSON.parse(fs.readFileSync('./settings.txt'));
   pseudoArray.lang[preferencesID] = finalCode;

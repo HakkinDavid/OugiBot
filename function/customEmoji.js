@@ -49,10 +49,10 @@ async function (arguments, msg) {
       }
     }).catch(console.error);
     if (emojiArray.includes("<:unknown_emoji:731996283790950420>")) {
-      msg.channel.send("I couldn't find one or more of the emoji you asked me for. Execute the following command to see my emoji list:\n> ougi emoji-list").catch(console.error);
+      msg.channel.send(await ougi.text(msg, "seeEmoji") + "\n> ougi emoji-list").catch(console.error);
     }
   }
   else {
-    msg.channel.send("Please provide at least one emoji name. Execute the following command to see my emoji list:\n> ougi emoji-list").catch(console.error);
+    msg.channel.send(await ougi.text(msg, "pleaseIncludeEmoji") + "\n> ougi emoji-list").catch(console.error);
   }
 }

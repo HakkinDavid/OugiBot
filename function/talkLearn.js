@@ -94,27 +94,6 @@ async function (arguments, msg) {
   .setColor("#FF008C")
   .setFooter("globalLogEmbed by Ougi", client.user.avatarURL())
 
-  let langSettings = JSON.parse(fs.readFileSync('./settings.txt')).lang;
-  let langCode = undefined;
-  if (langSettings.hasOwnProperty(msg.author.id)) {
-    langCode = langSettings[msg.author.id]
-  }
-  if (msg.channel.type == "text") {
-    if (langSettings.hasOwnProperty(msg.guild.id)) {
-      langCode = langSettings[msg.guild.id];
-    }
-  }
-  if (langCode != undefined && langCode != 'en') {
-    await translate(trigger, {from: langCode, to: "en"}).then(res => {
-        if (res.from.language.iso != "en") {
-          trigger = res.text;
-          embed.addField("Translated trigger for further processing", trigger.slice(0, 1024));
-        }
-    }).catch(err => {
-        console.error(err);
-    });
-  }
-
   if (pseudoArray.hasOwnProperty(trigger)){
     var existent = pseudoArray[trigger];
     for(let i = 0; i < existent.length; i++) {

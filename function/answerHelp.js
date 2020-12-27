@@ -1,19 +1,14 @@
 module.exports =
 
 async function (msg) {
-  var options = ["Yes", "No", "Yeah", "Nah", "Maybe", "Maybe not", "I guess", "I guess not", "I don't know, so I can't actually answer.", "I'm not sure.", "Ask someone else.", "Negative", "Negative multiplied by negative.", "Pancakes", "**Impossible**", "I don't know, but you do.", "Do you really want me to answer that?", "Uhhh"]
-  var response = options[Math.floor(Math.random()*options.length)];
-  var phrases = ["do you like tacos?", "are you human?", "are you ever gonna give me up?"];
+  let options = [await ougi.text(msg, "yes"), await ougi.text(msg, "no"), await ougi.text(msg, "yeah"), await ougi.text(msg, "nah"), await ougi.text(msg, "maybe"), await ougi.text(msg, "maybeNot"), await ougi.text(msg, "guess"), await ougi.text(msg, "guessNot"), await ougi.text(msg, "idk"), await ougi.text(msg, "notSure"), await ougi.text(msg, "askSomeone"), await ougi.text(msg, "negative"), await ougi.text(msg, "squareNegative"), await ougi.text(msg, "pancakes"), "**" + await ougi.text(msg, "impossible") + "**", await ougi.text(msg, "notWhoKnows"), await ougi.text(msg, "skipQuestion"), await ougi.text(msg, "uh")];
+  let response = options[Math.floor(Math.random()*options.length)];
+  var phrases = [await ougi.text(msg, "questionA"), await ougi.text(msg, "questionB"), await ougi.text(msg, "questionC")];
   var question = phrases[Math.floor(Math.random()*phrases.length)];
-  var embed = new Discord.MessageEmbed()
-  .setTitle("Ougi's `answer` command")
-  .setAuthor("Ougi [BOT]", client.user.avatarURL())
-  .setColor("#230347")
-  .setDescription("Ask Ougi a yes-or-no question.")
-  .setFooter("helpEmbed by Ougi", client.user.avatarURL())
-  .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true")
-  .addField("Example", "`ougi answer " + question + "`")
-  .addField("Output", response)
+  let embed = await ougi.helpPreset(msg, "answer");
+  embed.setDescription(await ougi.text(msg, "answerHelpDesc"))
+  .addField(await ougi.text(msg, "example"), "`ougi answer " + question + "`")
+  .addField(await ougi.text(msg, "output"), response);
 
   msg.channel.send({embed}).catch(console.error);
 }

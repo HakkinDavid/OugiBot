@@ -2,7 +2,7 @@ module.exports =
 
 async function (arguments, msg) {
   if (msg.channel.type != "text") {
-    msg.channel.send("You must be in a server to run this command.");
+    msg.channel.send(await ougi.text(msg, "mustGuild"));
     return
   }
 
@@ -10,24 +10,24 @@ async function (arguments, msg) {
   let elAdmin = msg.guild.ownerID;
 
   if (elAdmin != msg.author.id) {
-    msg.channel.send("You must be the server's owner to run this command.");
+    msg.channel.send(await ougi.text(msg, "mustOwn"));
     return
   }
 
   if (arguments.length <= 0) {
-    msg.channel.send("Ara ara, provide a phrase or a command that is at least one character long in order to whitelist it.");
+    msg.channel.send(await ougi.text(msg, "oneCharWhitelist"));
     return
   }
 
   let trigger = arguments.join(" ");
 
   if (msg.content.includes("@everyone") || msg.content.includes("@here")) {
-    msg.channel.send("Ora ora ora ora! Remove that massive ping.");
+    msg.channel.send(await ougi.text(msg, "massivePing"));
     return
   }
 
   if (trigger.includes("<@") && trigger.includes(">")) {
-    msg.channel.send("Avoid mentions or custom emoji please. What? Isn't that a mention or a custom emoji? Well, then don't include '\<\@' and '>' in the same message.").then().catch(console.error);
+    msg.channel.send(await ougi.text(msg, "avoidSpecialChar")).then().catch(console.error);
     return
   }
 
@@ -40,15 +40,15 @@ async function (arguments, msg) {
   }
 
   if (trigger.length <= 0) {
-    msg.channel.send("Ara ara, provide a phrase or a command that is at least one character long in order to whitelist it.");
+    msg.channel.send(await ougi.text(msg, "oneCharWhitelist"));
     return
   }
 
   let pseudoArray = JSON.parse(fs.readFileSync('./settings.txt', 'utf-8', console.error));
 
   let afterOptions = [
-    "I'll start reacting to `" + trigger + "` in " + msg.guild.toString() + ".",
-    "Alright, I've whitelisted `" + trigger + "` in " + msg.guild.toString() + ".",
+    await ougi.text(msg, "reactingTo") + " `" + trigger + "` " + await ougi.text(msg, "in") + " " + msg.guild.toString() + ".",
+    await ougi.text(msg, "alrightWhitelisted") + " `" + trigger + "` " + await ougi.text(msg, "in") + " " + msg.guild.toString() + ".",
   ];
   let answer = afterOptions[Math.floor(Math.random()*afterOptions.length)];
   let myBlacklist = "./settings.txt";
@@ -67,6 +67,6 @@ async function (arguments, msg) {
       }
     }
   }
-  msg.channel.send("Looks like this trigger wasn't blacklisted at all.");
+  msg.channel.send(await ougi.text(msg, "notBlacklisted"));
   return
 }

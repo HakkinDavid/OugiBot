@@ -8,8 +8,8 @@ async function (msg) {
   .setDescription("Use this command to stop receiving updates and important announcements regarding Ougi.")
   .setFooter("helpEmbed by Ougi", client.user.avatarURL())
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true")
-  .addField("Example", "`ougi unsubscribe`")
-  .addField("Output", "You've successfully unsubscribed Ougi's announcements.")
+  .addField(await ougi.text(msg, "example"), "`ougi unsubscribe`")
+  .addField(await ougi.text(msg, "output"), "You've successfully unsubscribed Ougi's announcements.")
 
   msg.channel.send({embed}).catch(console.error);
 }

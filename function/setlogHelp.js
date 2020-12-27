@@ -14,10 +14,10 @@ async function (msg) {
   }
   embed.setDescription("Use this command to set a channel to log whatever Ougi is used for in this Discord server. If no channel is mentioned, Ougi will use the channel you run the command in.")
   .addField("Special permission required", ":warning: You must be the owner of whatever Discord server you run this command in.")
-  .addField("Example", "`ougi setlog `" + msg.channel.toString() + "` `")
-  .addField("Output", "I'll start sending this server's commands log into " + msg.channel.toString() + ".")
+  .addField(await ougi.text(msg, "example"), "`ougi setlog `" + msg.channel.toString() + "` `")
+  .addField(await ougi.text(msg, "output"), "I'll start sending this server's commands log into " + msg.channel.toString() + ".")
   .addField("You may also disable this function", "`ougi setlog disable`")
-  .addField("Output", "Logging channel successfully disabled.")
+  .addField(await ougi.text(msg, "output"), "Logging channel successfully disabled.")
 
   msg.channel.send(embed).catch(console.error);
 }

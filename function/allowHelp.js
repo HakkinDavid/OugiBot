@@ -1,34 +1,23 @@
 module.exports =
 
 async function (msg) {
+  let embed = await ougi.helpPreset(msg, "allow");
   if (msg.channel.type != "text") {
-    var embed = new Discord.MessageEmbed()
-    .setTitle("Ougi's `allow` command")
-    .setAuthor("Ougi [BOT]", client.user.avatarURL())
-    .setColor("#230347")
-    .setFooter("helpEmbed by Ougi", client.user.avatarURL())
-    .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true")
-    .addField("This is only available in Discord servers.", ":warning: You must be in a Discord server in order to preview information about this command.")
+    embed.addField(await ougi.text(msg, "onlyGuilds"), ":warning: " + await ougi.text(msg, "inGuildWarning"))
     msg.channel.send({embed}).catch(console.error);
     return
   }
-  var phrases = ["sike", "say a bad word", "snipe"];
-  var allow = phrases[Math.floor(Math.random()*phrases.length)];
-  var afterOptions = [
-    "I'll start reacting to `" + allow + "` in " + msg.guild.toString() + ".",
-    "Alright, I've whitelisted `" + allow + "` in " + msg.guild.toString() + ".",
+  let phrases = ["sike", "say a bad word", "snipe"];
+  let allow = phrases[Math.floor(Math.random()*phrases.length)];
+  let afterOptions = [
+    await ougi.text(msg, "reactingTo") + " `" + allow + "` " + await ougi.text(msg, "in") + " " + msg.guild.toString() + ".",
+    await ougi.text(msg, "alrightWhitelisted") + " `" + allow + "` " + await ougi.text(msg, "in") + " " + msg.guild.toString() + ".",
   ];
-  var answer = afterOptions[Math.floor(Math.random()*afterOptions.length)];
-  var embed = new Discord.MessageEmbed()
-  .setTitle("Ougi's `allow` command")
-  .setAuthor("Ougi [BOT]", client.user.avatarURL())
-  .setColor("#230347")
-  .setDescription("Use this command to whitelist a trigger that is currently blacklisted in this Discord server, Ougi will start processing that input.")
-  .addField("Special permission required", ":warning: You must be the owner of whatever Discord server you run this command in.")
-  .setFooter("helpEmbed by Ougi", client.user.avatarURL())
-  .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true")
-  .addField("Example", "`ougi allow " + allow + "`")
-  .addField("Output", answer)
+  let answer = afterOptions[Math.floor(Math.random()*afterOptions.length)];
+  embed.setDescription(await ougi.text(msg, "allowUsage"))
+  .addField(await ougi.text(msg, "specialPermission"), ":warning: " + await ougi.text(msg, "onlyOwner"))
+  .addField(await ougi.text(msg, "example"), "`ougi allow " + allow + "`")
+  .addField(await ougi.text(msg, "output"), answer);
 
   msg.channel.send({embed}).catch(console.error);
 }

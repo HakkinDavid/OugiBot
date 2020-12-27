@@ -17,8 +17,8 @@ async function (msg) {
   .setDescription("Make Ougi forget something, just like in Men In Black! You must provide both, the trigger phrase and the desired response to delete, separated by two colons (::), if you delete the last response available for a trigger, the trigger gets deleted too.")
   .setFooter("helpEmbed by Ougi", client.user.avatarURL())
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true")
-  .addField("Example", "`ougi forget " + trigger + " :: " + response + "`")
-  .addField("Output", answer)
+  .addField(await ougi.text(msg, "example"), "`ougi forget " + trigger + " :: " + response + "`")
+  .addField(await ougi.text(msg, "output"), answer)
 
   msg.channel.send({embed}).catch(console.error);
 }

@@ -9,8 +9,8 @@ async function (msg) {
   .setDescription("Use this command to preview past updates and important announcements regarding Ougi. You may specify an index, news are sorted from latest to oldest.")
   .setFooter("helpEmbed by Ougi", client.user.avatarURL())
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true")
-  .addField("Example", "`ougi newspaper " + Math.floor(Math.random()*news.length) + "`")
-  .addField("Output", news[Math.floor(Math.random()*news.length)])
+  .addField(await ougi.text(msg, "example"), "`ougi newspaper " + Math.floor(Math.random()*news.length) + "`")
+  .addField(await ougi.text(msg, "output"), news[Math.floor(Math.random()*news.length)])
 
   msg.channel.send({embed}).catch(console.error);
 }

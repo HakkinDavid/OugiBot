@@ -9,7 +9,7 @@ async function (msg) {
   .setDescription("Use this command to make Ougi create a fake tweet embed, optionally mentioning an user as first argument to set them as author.")
   .setFooter("helpEmbed by Ougi", client.user.avatarURL())
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true")
-  .addField("Example", "`ougi tweet `" + msg.author.toString() + "` " + phrases[Math.floor(Math.random()*phrases.length)] + "`");
+  .addField(await ougi.text(msg, "example"), "`ougi tweet `" + msg.author.toString() + "` " + phrases[Math.floor(Math.random()*phrases.length)] + "`");
 
   msg.channel.send({embed}).catch(console.error);
 }
