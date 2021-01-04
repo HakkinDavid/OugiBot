@@ -42,7 +42,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "start": "npm i ffmpeg-binaries@3.2.2-3 && node fan.js"
+    "start": "npm update && npm i ffmpeg-binaries@3.2.2-3 && node fan.js"
   },
   "keywords": [],
   "author": "HakkinDavid",
