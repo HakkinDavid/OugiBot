@@ -11,9 +11,9 @@ async function (msg) {
   while (msg.content.includes('\n')) {
     msg.content = msg.content.replace('\n', ' ')
   }
-  var spookyCake = msg.content;
-  var spookySlices = spookyCake.split(" ");
-  var spookyCommand = spookySlices[1];
+  let spookyCake = msg.content;
+  let spookySlices = spookyCake.split(" ");
+  let spookyCommand = spookySlices[1];
   var arguments = spookySlices.slice(2);
   /*-----------------------------------*/
 

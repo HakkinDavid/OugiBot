@@ -31,35 +31,42 @@ async function (msg, vcChannel) {
     myList.push(myList[1]);
     fs.writeFileSync(listPath, JSON.stringify(myList), console.error);
   }
-  await vcChannel.join().then(connection => {
-    var anURL = "https://www.youtube.com/watch?v=" + myList[1].id;
-    var videoImage = myList[1].thumbnail;
-    var videoAuthor = myList[1].channel.name;
-    var videoTitle = myList[1].title;
-    var durationInMilliseconds = myList[1].duration * 1000;
-    var durationInMinutes = [Math.floor(myList[1].duration / 60), myList[1].duration - Math.floor(myList[1].duration / 60)*60];
+  await vcChannel.join().then(async (connection) => {
+    let anURL = "https://www.youtube.com/watch?v=" + myList[1].id;
+    let videoImage = myList[1].thumbnail;
+    let videoAuthor = myList[1].channel.name;
+    let videoTitle = myList[1].title;
+    let durationInMilliseconds = myList[1].duration * 1000;
+    let durationInMinutes = [Math.floor(myList[1].duration / 60), myList[1].duration - Math.floor(myList[1].duration / 60)*60];
     for (i=0; durationInMinutes.length > i; i++) {
       if (durationInMinutes[i].toString().length < 2) {
         durationInMinutes[i] = "0" + durationInMinutes[i].toString()
       }
     }
-    connection.play(ytdl(anURL));
+    await connection.play(await ytdl(anURL, { filter: 'audioonly', quality: 'highestaudio' }), { type: 'opus' });
     connection.on("error", (error) => {
+      let queueEmbed = new Discord.MessageEmbed()
+      .setTitle("An error occured while playing this video. Seems like it's blocked for external use by YouTube.")
+      .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/ougimusic.png?raw=true")
+      .setAuthor("Ougi [BOT]", client.user.avatarURL())
+      .setColor("#230347")
+      .setFooter("queueEmbed by Ougi", client.user.avatarURL())
+      .setTimestamp();
+      msg.channel.send(queueEmbed).then().catch(console.error);
       connection.disconnect();
-      vcChannel.join().then(connection => {
-        connection.play(ytdl(anURL));
-      })
+      ougi.queue(msg, vcChannel);
     })
     setTimeout(function () {
       if (!fs.existsSync(listPath)) {
         return
       }
       let thisFile = fs.readFileSync(listPath, console.error);
-      var aList = JSON.parse(thisFile);
-      var thisDate = aList[1].initiated;
+      let aList = JSON.parse(thisFile);
+      let thisDate = aList[1].initiated;
       if (internalDate == thisDate) {
         aList.splice(1, 1);
         fs.writeFileSync(listPath, JSON.stringify(aList), console.error);
+        connection.disconnect();
         ougi.queue(msg, vcChannel);
       }
     }, durationInMilliseconds + 2000);

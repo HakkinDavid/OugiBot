@@ -1,9 +1,9 @@
 module.exports =
 
 async function (msg) {
-  var spookyCake = msg.content;
-  var spookySlices = spookyCake.split(" ");
-  var spookyCommand = spookySlices[1];
+  let spookyCake = msg.content;
+  let spookySlices = spookyCake.split(" ");
+  let spookyCommand = spookySlices[1];
   var arguments = spookySlices.slice(2);
 
   var embed = new Discord.MessageEmbed()
