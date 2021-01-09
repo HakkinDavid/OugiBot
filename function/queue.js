@@ -44,7 +44,7 @@ async function (msg, vcChannel) {
       }
     }
     await connection.play(await ytdl(anURL, { filter: 'audioonly', quality: 'highestaudio' }), { type: 'opus' });
-    connection.on("error", (error) => {
+    connection.on("error", async (error) => {
       let queueEmbed = new Discord.MessageEmbed()
       .setTitle("An error occured while playing this video. Seems like it's blocked for external use by YouTube.")
       .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/ougimusic.png?raw=true")
@@ -56,7 +56,7 @@ async function (msg, vcChannel) {
       await connection.disconnect();
       ougi.queue(msg, vcChannel);
     })
-    setTimeout(function () {
+    setTimeout(async function () {
       if (!fs.existsSync(listPath)) {
         return
       }
