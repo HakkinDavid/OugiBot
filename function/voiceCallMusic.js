@@ -27,7 +27,7 @@ async function (msg) {
     return
   }
 
-  var vcChannel = msg.member.voice.channel;
+  let vcChannel = msg.member.voice.channel;
 
   if (vcChannel == null) {
     msg.channel.send("Looks like you're not in a voice channel I can join, please get into one.").then().catch(console.error);
