@@ -1,14 +1,14 @@
 module.exports =
 
 async function (arguments, msg) {
-  let emojiIDList = await client.emojis.cache.filter(emoji => emoji.available).map((e) => e.toString());
-  let emojiNameList = await client.emojis.cache.filter(emoji => emoji.available).map((e) => e.name);
+  let emojiIDList = await client.emojis.cache.filter(emoji => emoji.available).map((e) => e.toString()).reverse();
+  let emojiNameList = await client.emojis.cache.filter(emoji => emoji.available).map((e) => e.name).reverse();
   let howMany = emojiIDList.length;
   let pageMax = Math.ceil(howMany / 14);
   let page = arguments * 1 - 1;
 
   if (isNaN(page)) {
-    msg.channel.send("Uh, please provide a page number.").then().catch(console.error);
+    msg.channel.send(await ougi.text(msg, "pleasePage")).then().catch(console.error);
     return
   }
 
@@ -18,7 +18,7 @@ async function (arguments, msg) {
 
   let displayPage = page + 1;
   if (displayPage > pageMax) {
-    msg.channel.send("That's not a page yet.").then().catch(console.error);
+    msg.channel.send(await ougi.text(msg, "notPage")).then().catch(console.error);
     return
   }
 
@@ -29,7 +29,7 @@ async function (arguments, msg) {
   let embed = new Discord.MessageEmbed()
     .setTitle("spookyEmoji List | Page " + displayPage)
     .setColor("#C93A57")
-    .setFooter("spookyEmoji List by Ougi [" + howMany + " emoji in " + pageMax +" pages]", client.user.avatarURL());
+    .setFooter((await ougi.text(msg, "emojiListFooter")).replace(/{howManyEmoji}/gi, howMany).replace(/{numberPages}/gi, pageMax), client.user.avatarURL());
     for (i = 0; i < willShow.length; i+=2) {
       if (willShow[i+1] == undefined) {
         willShow[i+1] = "\u200b";

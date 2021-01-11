@@ -1,7 +1,7 @@
 module.exports =
 
 async function (msg) {
-  var channelID = msg.channel.id;
+  let channelID = msg.channel.id;
   if (fs.existsSync('./ammo/' + channelID + '.txt')){
     var aimingAt = fs.readFileSync('./ammo/' + channelID + '.txt', 'utf-8', console.error);
     if (aimingAt == "") {

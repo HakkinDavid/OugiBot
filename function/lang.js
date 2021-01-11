@@ -144,7 +144,7 @@ async function (arguments, msg, guildExecution) {
   }
   let finalCode = ougi.whereIs(langNames, niceLang);
   let langEmbed = new Discord.MessageEmbed()
-  .setTitle(await ougi.text(msg, "newLang") + " " + niceLang + " (" + finalCode + ")")
+  .setTitle((await ougi.text(msg, "newLang")).replace(/{langName}/gi, niceLang + " (" + finalCode + ")"))
   .setAuthor("Ougi [BOT]", client.user.avatarURL())
   .setColor("#32A852")
   .setDescription(await ougi.text(msg, "langDesc"))
@@ -155,8 +155,8 @@ async function (arguments, msg, guildExecution) {
     langEmbed.setDescription("Ougi will talk to you in English.");
   }
   if (guildExecution) {
-    langEmbed.setTitle(await ougi.text(msg, "newLangGuild") + " " + niceLang + " (" + finalCode + ")");
-    langEmbed.setDescription(await ougi.text(msg, "langGuildDesc") + " " + msg.guild.toString() + ".");
+    langEmbed.setTitle((await ougi.text(msg, "newLangGuild")).replace(/{langName}/gi, niceLang + " (" + finalCode + ")"));
+    langEmbed.setDescription((await ougi.text(msg, "langGuildDesc")).replace(/{guildName}/, msg.guild.toString()));
     if (finalCode == 'default') {
       langEmbed.setTitle("Guild language preferences restored to default");
       langEmbed.setDescription("Ougi will use each user's language preferences.");

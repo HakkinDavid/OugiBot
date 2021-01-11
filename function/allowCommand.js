@@ -47,10 +47,10 @@ async function (arguments, msg) {
   let pseudoArray = JSON.parse(fs.readFileSync('./settings.txt', 'utf-8', console.error));
 
   let afterOptions = [
-    await ougi.text(msg, "reactingTo") + " `" + trigger + "` " + await ougi.text(msg, "in") + " " + msg.guild.toString() + ".",
-    await ougi.text(msg, "alrightWhitelisted") + " `" + trigger + "` " + await ougi.text(msg, "in") + " " + msg.guild.toString() + ".",
+    await ougi.text(msg, "reactingTo"),
+    await ougi.text(msg, "alrightWhitelisted"),
   ];
-  let answer = afterOptions[Math.floor(Math.random()*afterOptions.length)];
+  let answer = afterOptions[Math.floor(Math.random()*afterOptions.length)].replace(/{triggerName}/, "`" + allow + "`").replace(/{guildName}/, msg.guild.toString());
   let myBlacklist = "./settings.txt";
 
   if (pseudoArray.blacklist.hasOwnProperty(guildID)){

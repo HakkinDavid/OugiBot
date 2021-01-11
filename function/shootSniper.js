@@ -51,7 +51,7 @@ async function (arguments, msg) {
     var footerLogo = msg.guild.iconURL();
   }
 
-  const embed = new Discord.MessageEmbed()
+  let embed = new Discord.MessageEmbed()
   .setColor("#7F0037")
   .setAuthor("Ougi [BOT]", client.user.avatarURL())
   .setThumbnail(bullet.pfp)

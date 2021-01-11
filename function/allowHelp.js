@@ -10,10 +10,10 @@ async function (msg) {
   let phrases = ["sike", "say a bad word", "snipe"];
   let allow = phrases[Math.floor(Math.random()*phrases.length)];
   let afterOptions = [
-    await ougi.text(msg, "reactingTo") + " `" + allow + "` " + await ougi.text(msg, "in") + " " + msg.guild.toString() + ".",
-    await ougi.text(msg, "alrightWhitelisted") + " `" + allow + "` " + await ougi.text(msg, "in") + " " + msg.guild.toString() + ".",
+    await ougi.text(msg, "reactingTo"),
+    await ougi.text(msg, "alrightWhitelisted"),
   ];
-  let answer = afterOptions[Math.floor(Math.random()*afterOptions.length)];
+  let answer = afterOptions[Math.floor(Math.random()*afterOptions.length)].replace(/{triggerName}/, "`" + allow + "`").replace(/{guildName}/, msg.guild.toString());
   embed.setDescription(await ougi.text(msg, "allowUsage"))
   .addField(await ougi.text(msg, "specialPermission"), ":warning: " + await ougi.text(msg, "onlyOwner"))
   .addField(await ougi.text(msg, "example"), "`ougi allow " + allow + "`")
