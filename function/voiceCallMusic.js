@@ -237,52 +237,22 @@ async function (msg) {
         loop: false
       }];
     }
+    let aVideoMeta = undefined;
     if (keywords.toLowerCase().replace("https://", "").replace("www.", "").replace("youtu.be/", "youtube.com/watch?v=").startsWith("youtube.com/watch?v=")) {
       let myVideoIDLENGTH = keywords.length - keywords.toLowerCase().replace("https://", "").replace("www.", "").replace("youtu.be/", "").replace("youtube.com/watch?v=", "").length;
       let myVideoID = keywords.slice(myVideoIDLENGTH);
-      scrapeYt.getVideo(myVideoID).then(video => {
+      await scrapeYt.getVideo(myVideoID).then(video => {
         if (video.id == undefined) {
           queueEmbed.setTitle("The following video is either unavailable or non-existent");
           queueEmbed.addField("\u200b", keywords.slice(0, 1024));
           msg.channel.send(queueEmbed).then().catch(console.error);
           return
         }
-        else {
-          let pos = myList.length;
-          if (myList[0].loop) {
-            myList.splice(myList.length-1, 0, video);
-            pos--;
-          }
-          else {
-            myList.push(video);
-          }
-          queueEmbed.setTitle("Added to queue at position " + pos);
-          let anURL = "https://www.youtube.com/watch?v=" + video.id;
-          let videoImage = video.thumbnail;
-          let videoAuthor = video.channel.name;
-          let videoTitle = video.title;
-          let durationInMilliseconds = video.duration * 1000;
-          let durationInMinutes = [Math.floor(video.duration / 60), video.duration - Math.floor(video.duration / 60)*60];
-          for (i=0; durationInMinutes.length > i; i++) {
-            if (durationInMinutes[i].toString().length < 2) {
-              durationInMinutes[i] = "0" + durationInMinutes[i].toString()
-            }
-          }
-          queueEmbed.addField(videoTitle, "`" + durationInMinutes.join(":") + "`\nby " + videoAuthor + "\n[View in YouTube](" + anURL + " '" + videoTitle + "')");
-        }
-
-        fs.writeFileSync(listPath, JSON.stringify(myList), console.error);
-        if (myList.length == 2) {
-          ougi.queue(msg, vcChannel).catch(console.error)
-        }
-
-        else {
-          msg.channel.send(queueEmbed).then().catch(console.error)
-        }
+        aVideoMeta = video;
       });
     }
     else {
-      scrapeYt.search(keywords, {
+      await scrapeYt.search(keywords, {
         type: "video",
         limit: 1
       }).then(videos => {
@@ -292,39 +262,37 @@ async function (msg) {
           msg.channel.send(queueEmbed).then().catch(console.error);
           return
         }
-        else {
-          let pos = myList.length;
-          if (myList[0].loop) {
-            myList.splice(myList.length-1, 0, videos[0]);
-            pos--;
-          }
-          else {
-            myList.push(videos[0]);
-          }
-          queueEmbed.setTitle("Added to queue at position " + pos);
-          let anURL = "https://www.youtube.com/watch?v=" + videos[0].id;
-          let videoImage = videos[0].thumbnail;
-          let videoAuthor = videos[0].channel.name;
-          let videoTitle = videos[0].title;
-          let durationInMilliseconds = videos[0].duration * 1000;
-          let durationInMinutes = [Math.floor(videos[0].duration / 60), videos[0].duration - Math.floor(videos[0].duration / 60)*60];
-          for (i=0; durationInMinutes.length > i; i++) {
-            if (durationInMinutes[i].toString().length < 2) {
-              durationInMinutes[i] = "0" + durationInMinutes[i].toString()
-            }
-          }
-          queueEmbed.addField(videoTitle, "`" + durationInMinutes.join(":") + "`\nby " + videoAuthor + "\n[View in YouTube](" + anURL + " '" + videoTitle + "')");
-        }
-
-        fs.writeFileSync(listPath, JSON.stringify(myList), console.error);
-        if (myList.length == 2) {
-          ougi.queue(msg, vcChannel).catch(console.error)
-        }
-
-        else {
-          msg.channel.send(queueEmbed).then().catch(console.error)
-        }
+        aVideoMeta = video[0];
       });
+    }
+    let pos = myList.length;
+    if (myList[0].loop) {
+      myList.splice(myList.length-1, 0, aVideoMeta);
+      pos--;
+    }
+    else {
+      myList.push(aVideoMeta);
+    }
+    queueEmbed.setTitle("Added to queue at position " + pos);
+    let anURL = "https://www.youtube.com/watch?v=" + aVideoMeta.id;
+    let videoImage = aVideoMeta.thumbnail;
+    let videoAuthor = aVideoMeta.channel.name;
+    let videoTitle = aVideoMeta.title;
+    let durationInMilliseconds = aVideoMeta.duration * 1000;
+    let durationInMinutes = [Math.floor(aVideoMeta.duration / 60), aVideoMeta.duration - Math.floor(aVideoMeta.duration / 60)*60];
+    for (i=0; durationInMinutes.length > i; i++) {
+      if (durationInMinutes[i].toString().length < 2) {
+        durationInMinutes[i] = "0" + durationInMinutes[i].toString()
+      }
+    }
+    queueEmbed.addField(videoTitle, "`" + durationInMinutes.join(":") + "`\nby " + videoAuthor + "\n[View in YouTube](" + anURL + " '" + videoTitle + "')");
+
+    await fs.writeFile(listPath, JSON.stringify(myList), console.error);
+    if (myList.length == 2) {
+      ougi.queue(msg, vcChannel).catch(console.error)
+    }
+    else {
+      msg.channel.send(queueEmbed).then().catch(console.error)
     }
     return
   }

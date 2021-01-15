@@ -53,7 +53,6 @@ async function (msg, vcChannel) {
       .setFooter("queueEmbed by Ougi", client.user.avatarURL())
       .setTimestamp();
       msg.channel.send(queueEmbed).then().catch(console.error);
-      await vcChannel.leave();
       ougi.queue(msg, vcChannel);
     })
     setTimeout(async function () {
