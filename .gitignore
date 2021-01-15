@@ -6529,3 +6529,13 @@ node_modules/ytdl-core-discord/node_modules/ytdl-core/typings/index.d.ts
 node_modules/ytdl-core-discord/package.json
 node_modules/ytdl-core-discord/README.md
 node_modules/ytdl-core-discord/typings/index.d.ts
+node_modules/@types/node/ts3.4/assert.d.ts
+node_modules/@types/node/ts3.4/base.d.ts
+node_modules/@types/node/ts3.4/globals.global.d.ts
+node_modules/@types/node/ts3.4/index.d.ts
+node_modules/@types/node/ts3.6/base.d.ts
+node_modules/@types/node/ts3.6/index.d.ts
+node_modules/@types/node/wasi.d.ts
+node_modules/ytdl-core/lib/format-utils.js
+node_modules/ytdl-core/lib/url-utils.js
+node_modules/ytdl-core/lib/utils.js

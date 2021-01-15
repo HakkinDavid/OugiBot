@@ -9,6 +9,7 @@
     "@discordjs/opus": "^0.3.3",
     "@k3rn31p4nic/google-translate-api": "^1.1.1",
     "@ksoft/api": "^3.1.9",
+    "@types/node": "^14.11.2",
     "@vitalets/google-translate-api": "^4.0.0",
     "@vitalets/google-translate-token": "^1.2.0",
     "categorized-words": "^1.0.0",
@@ -40,6 +41,7 @@
     "twit": "^2.2.11",
     "winston": "^3.3.3",
     "yargs-parser": "^20.2.4",
+    "ytdl-core": "^4.4.3",
     "ytdl-core-discord": "^1.2.5"
   },
   "devDependencies": {},

@@ -287,7 +287,7 @@ async function (msg) {
     }
     queueEmbed.addField(videoTitle, "`" + durationInMinutes.join(":") + "`\nby " + videoAuthor + "\n[View in YouTube](" + anURL + " '" + videoTitle + "')");
 
-    await fs.writeFile(listPath, JSON.stringify(myList), console.error);
+    fs.writeFileSync(listPath, JSON.stringify(myList), console.error);
     if (myList.length == 2) {
       ougi.queue(msg, vcChannel).catch(console.error)
     }

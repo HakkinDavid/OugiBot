@@ -1,63 +1,87 @@
 module.exports =
 
 function (arguments, msg) {
-    if (arguments == 'list' || arguments.length <= 0) {
-        ougi.helpEmbed(msg)
-    } else if (arguments == 'multiply') {
-        msg.channel.send("I'll gladly multiply the numbers you provide me as long you input more than two values, and only if you promise me to study math.\n> ougi multiply [value] [value] ...").then().catch(console.error);
-    } else if (arguments == 'add') {
-        msg.channel.send("I'll do additions for you! Try\n> ougi add [value] [value] ...").then().catch(console.error);
-    } else if (arguments == 'say') {
+    switch (arguments[0]) {
+      case 'say':
         ougi.sayHelp(msg)
-    } else if (arguments == 'answer') {
+      break;
+      case 'answer':
         ougi.answerHelp(msg)
-    } else if (arguments == 'snipe') {
+      break;
+      case 'snipe':
         ougi.snipeHelp(msg)
-    } else if (arguments == 'image') {
+      break;
+      case 'image':
         ougi.imageHelp(msg)
-    } else if (arguments == 'music') {
+      break;
+      case 'music':
         ougi.musicHelp(msg)
-    } else if (arguments == 'skip') {
+      break;
+      case 'skip':
         ougi.skipHelp(msg)
-    } else if (arguments == 'lyrics') {
+      break;
+      case 'lyrics':
         ougi.lyricsHelp(msg)
-    } else if (arguments[0] == 'embed') {
+      break;
+      case 'language':
+        ougi.languageHelp(msg)
+      break;
+      case 'guildlanguage':
+        ougi.languageHelp(msg, 1)
+      break;
+      case 'embed':
         ougi.embedHelp(arguments, msg)
-    } else if (arguments == 'learn') {
+      break;
+      case 'learn':
         ougi.learnHelp(msg)
-    } else if (arguments == 'tweet') {
+      break;
+      case 'tweet':
         ougi.tweetHelp(msg)
-    } else if (arguments == 'forget') {
+      break;
+      case 'forget':
         ougi.forgetHelp(msg)
-    } else if (arguments == 'translate') {
+      break;
+      case 'translate':
         ougi.translateHelp(msg)
-    } else if (arguments == 'emoji-list') {
+      break;
+      case 'emoji-list':
         ougi.emojiListHelp(msg)
-    } else if (arguments == 'emoji') {
+      break;
+      case 'emoji':
         ougi.emojiHelp(msg)
-    } else if (arguments == 'blacklist') {
+      break;
+      case 'blacklist':
         ougi.removeHelp(msg)
-    } else if (arguments == 'allow') {
+      break;
+      case 'allow':
         ougi.allowHelp(msg)
-    } else if (arguments == 'setlog') {
+      break;
+      case 'setlog':
         ougi.setlogHelp(msg)
-    } else if (arguments == 'setnews') {
+      break;
+      case 'setnews':
         ougi.setnewsHelp(msg)
-    } else if (arguments == 'newspaper') {
+      break;
+      case 'newspaper':
         ougi.newspaperHelp(msg)
-    } else if (arguments == 'subscribe') {
+      break;
+      case 'subscribe':
         ougi.subscribeHelp(msg)
-    } else if (arguments == 'unsubscribe') {
+      break;
+      case 'unsubscribe':
         ougi.unsubscribeHelp(msg)
-    } else if (arguments == 'prefix') {
+      break;
+      case 'prefix':
         ougi.prefixHelp(msg)
-    } else if (arguments == 'acknowledgement') {
+      break;
+      case 'acknowledgement':
         ougi.tos(msg)
-    } else if (arguments == 'info') {
-        ougi.whoIsMe(arguments, msg)
-    } else {
-        var options = ["Be specific, please. Try asking me for help and a topic. A good start would be\n> ougi help", "Do you need help? Try\n> ougi help", "Is there anything I could help you with?\n> ougi help"];
-        var response = options[Math.floor(Math.random()*options.length)];
-        msg.channel.send(response).then().catch(console.error);
+      break;
+      case 'info':
+        ougi.whoIsMe(msg)
+      break;
+      default:
+        ougi.helpEmbed(msg)
+      break;
     }
 }

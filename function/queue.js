@@ -65,7 +65,6 @@ async function (msg, vcChannel) {
       if (internalDate == thisDate) {
         aList.splice(1, 1);
         fs.writeFileSync(listPath, JSON.stringify(aList), console.error);
-        await vcChannel.leave();
         ougi.queue(msg, vcChannel);
       }
     }, durationInMilliseconds + 2000);

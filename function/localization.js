@@ -296,9 +296,21 @@ module.exports =
     "en": "That's not a page yet."
   },
   "emojiListFooter": {
-    "en": "spookyEmoji List by Ougi [{howManyEmoji} emoji in {numberPages} pages]"
+    "en": "spookyEmoji List by Ougi [{hwmnemoji} emoji in {numpage} pages]"
   },
   "emojiListHelpDesc": {
     "en": "Take a look at all emoji that Ougi has access to. You can also browse by page."
+  },
+  "languageHelpDesc": {
+    "en": "Change the language Ougi uses when talking to you."
+  },
+  "guildLanguageHelpDesc": {
+    "en": "Change the language Ougi uses inside {guildName}."
+  },
+  "possibleLangInput": {
+    "en": "You may specify a language name or its ISO code."
+  },
+  "sameAs": {
+    "en": "It's the same as executing"
   }
 }
