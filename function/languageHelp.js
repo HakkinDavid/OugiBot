@@ -7,16 +7,18 @@ async function (msg, guild) {
   let embed;
   if (guild) {
     embed = await ougi.helpPreset(msg, "guildlanguage");
-    embed.setDescription(await ougi.text(msg, "guildLanguageHelpDesc"))
-    embed.addField(await ougi.text(msg, "onlyGuilds"))
-    embed.addField(await ougi.text(msg, "onlyOwner"))
+    embed.setDescription(await ougi.text(msg, "guildLanguageHelpDesc") + " " + await ougi.text(msg, "possibleLangInput"))
+    if (msg.channel.type != "text") {
+      embed.addField(await ougi.text(msg, "onlyGuilds"), ":warning: " + await ougi.text(msg, "inGuildWarning"))
+    }
+    embed.addField(await ougi.text(msg, "specialPermission"), ":warning: " + await ougi.text(msg, "onlyOwner"))
     .addField(await ougi.text(msg, "example"), "`ougi guildlanguage " + possibleLangs[anIndex] + "`")
     .addField(await ougi.text(msg, "sameAs"), "`ougi guildlanguage " + possibleCodes[anIndex] + "`")
     .addField(await ougi.text(msg, "output"), (await ougi.text(msg, "newLangGuild")).replace(/{langName}/gi, ougi.capitalize(possibleLangs[anIndex]) + " (" + possibleCodes[anIndex] + ")"));
   }
   else {
     embed = await ougi.helpPreset(msg, "language");
-    embed.setDescription(await ougi.text(msg, "languageHelpDesc"))
+    embed.setDescription(await ougi.text(msg, "languageHelpDesc") + " " + await ougi.text(msg, "possibleLangInput"))
     .addField(await ougi.text(msg, "example"), "`ougi language " + possibleLangs[anIndex] + "`")
     .addField(await ougi.text(msg, "sameAs"), "`ougi language " + possibleCodes[anIndex] + "`")
     .addField(await ougi.text(msg, "output"), (await ougi.text(msg, "newLang")).replace(/{langName}/gi, ougi.capitalize(possibleLangs[anIndex]) + " (" + possibleCodes[anIndex] + ")"));

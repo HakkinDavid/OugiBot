@@ -305,7 +305,7 @@ module.exports =
     "en": "Change the language Ougi uses when talking to you."
   },
   "guildLanguageHelpDesc": {
-    "en": "Change the language Ougi uses inside {guildName}."
+    "en": "Change the language Ougi uses inside a specific Discord server."
   },
   "possibleLangInput": {
     "en": "You may specify a language name or its ISO code."
