@@ -262,7 +262,7 @@ async function (msg) {
           msg.channel.send(queueEmbed).then().catch(console.error);
           return
         }
-        aVideoMeta = video[0];
+        aVideoMeta = videos[0];
       });
     }
     let pos = myList.length;
