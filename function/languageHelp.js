@@ -9,7 +9,7 @@ async function (msg, guild) {
     embed = await ougi.helpPreset(msg, "guildlanguage");
     embed.setDescription(await ougi.text(msg, "guildLanguageHelpDesc") + " " + await ougi.text(msg, "possibleLangInput"))
     if (msg.channel.type != "text") {
-      embed.addField(await ougi.text(msg, "onlyGuilds"), ":warning: " + await ougi.text(msg, "inGuildWarning"))
+      embed.addField(await ougi.text(msg, "onlyGuilds"), ":warning: " + await ougi.text(msg, "mustGuild"))
     }
     embed.addField(await ougi.text(msg, "specialPermission"), ":warning: " + await ougi.text(msg, "onlyOwner"))
     .addField(await ougi.text(msg, "example"), "`ougi guildlanguage " + possibleLangs[anIndex] + "`")
