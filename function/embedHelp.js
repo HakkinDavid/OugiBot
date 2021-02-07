@@ -114,5 +114,5 @@ async function (arguments, msg) {
     .addField(await ougi.text(msg, "embedAttachedImageTitle"), (await ougi.text(msg, "embedAttachedImage")).replace(/{fileOption}/gi, "`file`") + "\n__" + await ougi.text(msg, "example") + "__\n`::{optionName} file`\n`::{optionName} file 2`\n`::{optionName} file 3`\n`::{optionName} file 4`".replace(/{optionName}/gi, option));
   }
 
-  msg.channel.send({embed}).then().catch(console.error);
+  msg.channel.send({embed}).catch(console.error);
 }

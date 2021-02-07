@@ -25,11 +25,11 @@ async function (msg) {
         let existent = settings.blacklist[guildID];
         for (i = 0; i < existent.length; i++) {
           if (existent[i].toLowerCase() === spookySlices.slice(1).join(" ")) {
-            msg.channel.send("Sorry, that's blacklisted in " + msg.guild.toString() + ".").then().catch(console.error);
+            msg.channel.send("Sorry, that's blacklisted in " + msg.guild.toString() + ".").catch(console.error);
             return
           }
           else if (existent[i].toLowerCase() === spookyCommand) {
-            msg.channel.send("Sorry, that's blacklisted in " + msg.guild.toString() + ".").then().catch(console.error);
+            msg.channel.send("Sorry, that's blacklisted in " + msg.guild.toString() + ".").catch(console.error);
             return
           }
         }
@@ -106,29 +106,29 @@ async function (msg) {
       break;
 
       case "music":
-        ougi.voiceCallMusic(msg).then().catch(console.error)
+        ougi.voiceCallMusic(msg).catch(console.error)
       break;
 
       case "skip":
         msg.content = "ougi music skip";
-        ougi.voiceCallMusic(msg).then().catch(console.error)
+        ougi.voiceCallMusic(msg).catch(console.error)
       break;
 
       case "remove":
         msg.content = "ougi music remove " + arguments.join(" ");
-        ougi.voiceCallMusic(msg).then().catch(console.error)
+        ougi.voiceCallMusic(msg).catch(console.error)
       break;
 
       case "lyrics":
-        ougi.lyrics(arguments, msg).then().catch(console.error)
+        ougi.lyrics(arguments, msg).catch(console.error)
       break;
 
       case "play":
-        ougi.voiceCallMusic(msg).then().catch(console.error)
+        ougi.voiceCallMusic(msg).catch(console.error)
       break;
 
       case "p":
-        ougi.voiceCallMusic(msg).then().catch(console.error)
+        ougi.voiceCallMusic(msg).catch(console.error)
       break;
 
       case "translate":
@@ -145,6 +145,10 @@ async function (msg) {
 
       case "snipe":
         ougi.shootSniper(arguments, msg)
+      break;
+
+      case "speak":
+        ougi.voice(msg)
       break;
 
       case "reminder":
@@ -186,7 +190,7 @@ async function (msg) {
 
         else if (spookyCommand.toLowerCase().replace("https://", "").replace("www.", "").replace("youtu.be/", "youtube.com/watch?v=").startsWith("youtube.com/watch?v=")) {
           msg.content = msg.content.replace("ougi", "ougi music");
-          ougi.voiceCallMusic(msg).then().catch(console.error)
+          ougi.voiceCallMusic(msg).catch(console.error)
         }
 
         else if (spookyCommand == "subscribe" && arguments.length == 0) {

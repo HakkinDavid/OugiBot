@@ -23,7 +23,7 @@ async function (msg) {
       var urls = new Array(links.length).fill(0).map((v, i) => links.eq(i).attr("href"));
 
       if (!urls.length) {
-          msg.channel.send("There aren't any results.").then().catch(console.error);
+          msg.channel.send("There aren't any results.").catch(console.error);
           return;
       }
 
@@ -36,6 +36,6 @@ async function (msg) {
       var predefinedName = "spookyImage.jpg";
 
       const attachment = new Discord.MessageAttachment(imageToSend, predefinedName);
-      msg.channel.send("I'll get you a nice image based on whatever you want me to search in Google. Here's an example:\n> ougi image " + search, attachment).then().catch(console.error);
+      msg.channel.send("I'll get you a nice image based on whatever you want me to search in Google. Here's an example:\n> ougi image " + search, attachment).catch(console.error);
     });
 }

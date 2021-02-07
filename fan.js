@@ -22,8 +22,10 @@ global.scrapeYt = require("scrape-yt");
 global.KSoftMain = require ('@ksoft/api');
 global.ksoft = new KSoftMain.KSoftClient(process.env.KSOFTTOKEN);
 global.removeWords =  require('remove-words');
+global.instanceID = Date.now().toString().slice(-4);
+global.TEASEABLE = 1;
 
-if(process.env.OFFLINE == 1) {
+if (process.env.OFFLINE == 1) {
   client.destroy();
   process.exit();
 }
@@ -91,7 +93,10 @@ client.on('ready', () => {
 
   fs.writeFileSync('./aimAssist.txt', "[]", console.error);
 
+  client.channels.cache.get(consoleLogging).send("**INSTANCE ID:** " + instanceID + "\n**DEV:** " + process.env.DEV).catch(console.error);
+  console.log("Instance ID: " + instanceID);
   ougi.startup();
+
 });
 
 client.on('message', (msg) => {
@@ -101,6 +106,17 @@ client.on('message', (msg) => {
 
     if (msg.author.bot) {
       return
+    }
+
+    if (global.TEASEABLE == 0) {
+      if (msg.author.id != "265257341967007758") {
+        return
+      }
+      else {
+        if (!msg.content.toLowerCase().startsWith(instanceID + "::ougi")) {
+          return
+        }
+      }
     }
 
     if (!fs.existsSync('./responses.txt') || !fs.existsSync('./settings.txt') || !fs.existsSync('./neuroNetworks.txt')) {

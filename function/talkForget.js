@@ -9,7 +9,7 @@ async function (arguments, msg) {
   }
 
   if (thisMessage.includes("<@") && thisMessage.includes(">")) {
-    msg.channel.send("Avoid mentions please. What? Isn't that a mention? Well, then don't include '\<\@' and '>' in the same message.").then().catch(console.error);
+    msg.channel.send("Avoid mentions please. What? Isn't that a mention? Well, then don't include '\<\@' and '>' in the same message.").catch(console.error);
     return
   }
 
@@ -23,7 +23,7 @@ async function (arguments, msg) {
   }
 
   if (breakChocolate.length !== 2){
-    msg.channel.send("Do you want to make me forget something? Looks like you're wearing your sunglasses wrong. Use the following command for some help.\n> ougi help forget").then().catch(console.error);
+    msg.channel.send("Do you want to make me forget something? Looks like you're wearing your sunglasses wrong. Use the following command for some help.\n> ougi help forget").catch(console.error);
     return
   }
 
@@ -59,22 +59,22 @@ async function (arguments, msg) {
   }
 
   if (trigger.length < niceCharacterAmount){
-    msg.channel.send("Please provide a trigger phrase of at least " + niceCharacterAmount.toString() + " characters long.").then().catch(console.error);
+    msg.channel.send("Please provide a trigger phrase of at least " + niceCharacterAmount.toString() + " characters long.").catch(console.error);
     return
   }
 
   if (response.length < niceCharacterAmount){
-    msg.channel.send("Please provide a response phrase of at least " + niceCharacterAmount.toString() + " characters long.").then().catch(console.error);
+    msg.channel.send("Please provide a response phrase of at least " + niceCharacterAmount.toString() + " characters long.").catch(console.error);
     return
   }
 
   if (trigger.length > maxCharacterAmount){
-    msg.channel.send("Please provide a trigger phrase of " + maxCharacterAmount.toString() + " or less characters long.").then().catch(console.error);
+    msg.channel.send("Please provide a trigger phrase of " + maxCharacterAmount.toString() + " or less characters long.").catch(console.error);
     return
   }
 
   if (response.length > maxCharacterAmount){
-    msg.channel.send("Please provide a response phrase of " + maxCharacterAmount.toString() + " or less characters long.").then().catch(console.error);
+    msg.channel.send("Please provide a response phrase of " + maxCharacterAmount.toString() + " or less characters long.").catch(console.error);
     return
   }
 
@@ -92,7 +92,7 @@ async function (arguments, msg) {
     for(var i = 0; i < existent.length; i++) {
       if(existent[i].toLowerCase() === response) {
         existent.splice(i, 1);
-        msg.channel.send(answer).then().catch(console.error);
+        msg.channel.send(answer).catch(console.error);
         var embed = new Discord.MessageEmbed()
         .setTitle("Input for talkForget")
         .addField("Response to be deleted", response)
@@ -116,7 +116,7 @@ async function (arguments, msg) {
         return
       }
     }
-    msg.channel.send("Sorry, this response doesn't match any from this trigger.").then().catch(console.error);
+    msg.channel.send("Sorry, this response doesn't match any from this trigger.").catch(console.error);
     return
   }
 

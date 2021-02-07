@@ -10,7 +10,7 @@ async function (arguments, msg) {
 
   if (arguments.length < 1) {
     if (!msg.guild) {
-      msg.channel.send("Huh?! This is not a Discord server. Take me into one!").then().catch(console.error);
+      msg.channel.send("Huh?! This is not a Discord server. Take me into one!").catch(console.error);
       return
     }
     let listPath = './vc/' + msg.guild.id + '.txt';
@@ -43,7 +43,7 @@ async function (arguments, msg) {
           lyricsEmbed.addField("\u200b", laLetra[i]);
         }
       }
-      msg.channel.send(lyricsEmbed).then().catch(console.error);
+      msg.channel.send(lyricsEmbed).catch(console.error);
     }).catch(console.error);
   }
   else {
@@ -70,7 +70,7 @@ async function (arguments, msg) {
           lyricsEmbed.addField("\u200b", laLetra[i]);
         }
       }
-      msg.channel.send(lyricsEmbed).then().catch(console.error);
+      msg.channel.send(lyricsEmbed).catch(console.error);
     }).catch(console.error);
   }
 }

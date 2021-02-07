@@ -106,7 +106,7 @@ async function (msg) {
           console.error(err);
       });
     }
-    msg.channel.send(response).then().catch(console.error);
+    msg.channel.send(response).catch(console.error);
     client.channels.cache.get(consoleLogging).send({embed});
   }
   else {

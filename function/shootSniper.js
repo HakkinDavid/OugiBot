@@ -6,21 +6,21 @@ async function (arguments, msg) {
   var response = options[Math.floor(Math.random()*options.length)];
 
   if (!fs.existsSync('./ammo/' + channelID + '.txt')){
-    msg.channel.send(response).then().catch(console.error);
+    msg.channel.send(response).catch(console.error);
     return
   }
   if (fs.readFileSync('./ammo/' + channelID + '.txt', 'utf-8', console.error) != "") {
     var myAmmo = JSON.parse(fs.readFileSync('./ammo/' + channelID + '.txt', 'utf-8', console.error)).reverse();
   }
   else {
-    msg.channel.send(response).then().catch(console.error);
+    msg.channel.send(response).catch(console.error);
     return
   }
   var maxIndex = myAmmo.length;
   var index = arguments * 1 - 1;
 
   if (isNaN(index)) {
-    msg.channel.send("Uh, please provide a valid number (deleted messages are sorted from last to first) or leave it blank for fetching the last deleted message.").then().catch(console.error);
+    msg.channel.send("Uh, please provide a valid number (deleted messages are sorted from last to first) or leave it blank for fetching the last deleted message.").catch(console.error);
     return
   }
 
@@ -30,7 +30,7 @@ async function (arguments, msg) {
 
   var displayIndex = index + 1;
   if (displayIndex > maxIndex) {
-    msg.channel.send("That's not a message index number yet.").then().catch(console.error);
+    msg.channel.send("That's not a message index number yet.").catch(console.error);
     return
   }
 

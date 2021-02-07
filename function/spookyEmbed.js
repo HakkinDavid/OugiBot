@@ -224,12 +224,12 @@ async function (msg) {
     else if (material.startsWith("authorurl ")) {
       material = material.substring(10);
       if (!material.includes(".")) {
-        msg.channel.send("Author URL must be valid. Make sure you add a Top Level Domain (e.g. `.com`, `.net`, `.boo`).").then().catch(console.error);
+        msg.channel.send("Author URL must be valid. Make sure you add a Top Level Domain (e.g. `.com`, `.net`, `.boo`).").catch(console.error);
         return
       }
 
       if (material.startsWith("http:")) {
-        msg.channel.send("Make sure the provided author URL uses Hyper Text Transfer Protocol Secure (`https`).").then().catch(console.error);
+        msg.channel.send("Make sure the provided author URL uses Hyper Text Transfer Protocol Secure (`https`).").catch(console.error);
         return
       }
 
@@ -457,11 +457,11 @@ async function (msg) {
     else if (material.startsWith("url ")) {
       material = material.substring(4);
       if (!material.includes(".")) {
-        msg.channel.send("That doesn't look like an URL. Make sure you add a Top Level Domain (e.g. `.com`, `.net`, `.boo`).").then().catch(console.error);
+        msg.channel.send("That doesn't look like an URL. Make sure you add a Top Level Domain (e.g. `.com`, `.net`, `.boo`).").catch(console.error);
         return
       }
       if (material.startsWith("http:")) {
-        msg.channel.send("Make sure the provided URL uses Hyper Text Transfer Protocol Secure (`https`).").then().catch(console.error);
+        msg.channel.send("Make sure the provided URL uses Hyper Text Transfer Protocol Secure (`https`).").catch(console.error);
         return
       }
 

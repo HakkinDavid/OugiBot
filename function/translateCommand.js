@@ -7,7 +7,7 @@ async function (msg, method) {
   let arguments = spookySlices.slice(2);
   if (method == 1) {
     if (arguments.length < 1) {
-      msg.channel.send("Please use a valid syntax for the translation. Refer to the following command if you are clueless.\n> ougi help translate").then().catch(console.error);
+      msg.channel.send("Please use a valid syntax for the translation. Refer to the following command if you are clueless.\n> ougi help translate").catch(console.error);
       return
     }
     var commandAndLang = spookyCommand.toLowerCase().split("-");
@@ -16,7 +16,7 @@ async function (msg, method) {
   }
   else {
     if (arguments.length <= 1) {
-      msg.channel.send("Please use a valid syntax for the translation. Refer to the following command if you are clueless.\n> ougi help translate").then().catch(console.error);
+      msg.channel.send("Please use a valid syntax for the translation. Refer to the following command if you are clueless.\n> ougi help translate").catch(console.error);
       return
     }
     var toLang = arguments[0].toLowerCase().replace("-cn", "-CN").replace("-tw", "-TW");
@@ -143,7 +143,7 @@ async function (msg, method) {
   let isLang = ougi.whereIs(langNames, niceLang);
   let isCode = langNames[toLang];
   if (isLang == undefined && isCode == undefined) {
-    msg.channel.send("Please provide a valid destination language for the translation. Refer to the following command if you are clueless.\n> ougi help translate").then().catch(console.error);
+    msg.channel.send("Please provide a valid destination language for the translation. Refer to the following command if you are clueless.\n> ougi help translate").catch(console.error);
     return
   }
   if (isCode != undefined && isLang == undefined) {
@@ -158,7 +158,7 @@ async function (msg, method) {
     .addField("Translation to " + niceLang, res.text)
     .setFooter("Translated by Ougi", client.user.avatarURL())
     .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/ougitranslate.png?raw=true");
-    msg.channel.send({embed}).then().catch(console.error);
+    msg.channel.send({embed}).catch(console.error);
   }).catch(err => {
       console.error(err);
   });

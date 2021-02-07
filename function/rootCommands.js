@@ -10,12 +10,12 @@ async function (msg) {
     }
     let spookyCake = msg.content;
     let spookySlices = spookyCake.toLowerCase().split(" ");
-    var hauntedCommand = spookySlices[1];
-    var arguments = spookySlices.slice(2);
+    let hauntedCommand = spookySlices[1];
+    let arguments = spookySlices.slice(2);
 
-    var event = new Date();
+    let event = new Date();
 
-    var embed = new Discord.MessageEmbed()
+    let embed = new Discord.MessageEmbed()
     .setAuthor(msg.author.tag, msg.author.avatarURL())
     .setDescription("ID `" + msg.author.id + "`")
     .setColor("#FF008C")
@@ -37,30 +37,42 @@ async function (msg) {
       }
     }
 
-    client.channels.cache.get(consoleLogging).send({embed}).then().catch(console.error);
+    client.channels.cache.get(consoleLogging).send({embed}).catch(console.error);
 
-    if (hauntedCommand == "help") {
+    switch (hauntedCommand){
+      case "help":
         ougi.helpRootCommand(arguments, msg)
-    } else if (hauntedCommand == "status") {
+      break;
+      case "status":
         ougi.statusRootCommand(msg)
-    } else if (hauntedCommand == "log") {
+      break;
+      case "log":
         ougi.logRootCommand(arguments, msg)
-    } else if (hauntedCommand == "vibe_check") {
+      break;
+      case "vibe_check":
         ougi.vibeCheckReallyHard(arguments, msg)
-    } else if (hauntedCommand == "haunt") {
+      break;
+      case "haunt":
         ougi.hauntRootCommand(arguments, msg)
-    } else if (hauntedCommand == "tweet") {
+      break;
+      case "tweet":
         ougi.tweetRootCommand(msg)
-    } else if (hauntedCommand == "newsletter") {
+      break;
+      case "newsletter":
         ougi.newsletter(msg)
-    } else {
+      break;
+      case "switch":
+        ougi.switchy(arguments, msg)
+      break;
+      default:
         ougi.undefinedCommand(arguments, msg)
+      break;
     }
   }
   else {
-    var options = ["Ara ara! Only David-senpai is allowed to access my root commands", "N-nani? Stop it, my senpai. What are you doing?", "Nani? Nani? Nani? What's going on? Why is my senpai calling me out, using my root commands prefix and trying to peek at them?"];
-    var response = options[Math.floor(Math.random()*options.length)];
-    msg.channel.send(response).then().catch(console.error);
+    let options = ["Ara ara! Only David-senpai is allowed to access my root commands", "N-nani? Stop it, my senpai. What are you doing?", "Nani? Nani? Nani? What's going on? Why is my senpai calling me out, using my root commands prefix and trying to peek at them?"];
+    let response = options[Math.floor(Math.random()*options.length)];
+    msg.channel.send(response).catch(console.error);
     return
   }
 }

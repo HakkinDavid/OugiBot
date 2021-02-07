@@ -8,8 +8,8 @@ async function (arguments, msg) {
     fs.writeFileSync(logFileName, emojiList.join('\n'), console.error);
     const attachment = new Discord.MessageAttachment(logFileName);
 
-    client.channels.cache.get(fileSpace).send("__**Emoji:**__ " + emojiList.length, attachment).then().catch(console.error);
-    msg.channel.send("I've written a file containing every single emoji I can use.").then().catch(console.error);
+    client.channels.cache.get(fileSpace).send("__**Emoji:**__ " + emojiList.length, attachment).catch(console.error);
+    msg.channel.send("I've written a file containing every single emoji I can use.").catch(console.error);
   }
   else if (what == "guilds") {
     var guildsList = client.guilds.cache.map((e, x) => (x + ' = ' + e));
@@ -17,7 +17,7 @@ async function (arguments, msg) {
     fs.writeFileSync(logFileName, guildsList.join('\n'), console.error);
     const attachment = new Discord.MessageAttachment(logFileName);
 
-    client.channels.cache.get(fileSpace).send("__**Guilds:**__ " + guildsList.length, attachment).then().catch(console.error);
-    msg.channel.send("I've written a file containing every single guild I'm in.").then().catch(console.error);
+    client.channels.cache.get(fileSpace).send("__**Guilds:**__ " + guildsList.length, attachment).catch(console.error);
+    msg.channel.send("I've written a file containing every single guild I'm in.").catch(console.error);
   }
 }

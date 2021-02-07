@@ -27,7 +27,7 @@ async function (arguments, msg) {
   }
 
   if (trigger.includes("<@") && trigger.includes(">")) {
-    msg.channel.send(await ougi.text(msg, "avoidSpecialChar")).then().catch(console.error);
+    msg.channel.send(await ougi.text(msg, "avoidSpecialChar")).catch(console.error);
     return
   }
 
@@ -61,7 +61,7 @@ async function (arguments, msg) {
         existent.splice(i, 1);
         let proArray = JSON.stringify(pseudoArray);
         fs.writeFile('./settings.txt', proArray, console.error);
-        msg.channel.send(answer).then().catch(console.error);
+        msg.channel.send(answer).catch(console.error);
         ougi.backup(myBlacklist, settingsChannel);
         return
       }

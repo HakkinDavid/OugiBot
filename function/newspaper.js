@@ -6,7 +6,7 @@ async function (arguments, msg) {
   var index = arguments * 1 - 1;
 
   if (isNaN(index)) {
-    msg.channel.send("Uh, please provide a valid number (news are sorted from last to first) or leave it blank to preview the latest announcement.").then().catch(console.error);
+    msg.channel.send("Uh, please provide a valid number (news are sorted from last to first) or leave it blank to preview the latest announcement.").catch(console.error);
     return
   }
 
@@ -16,7 +16,7 @@ async function (arguments, msg) {
 
   var displayIndex = index + 1;
   if (displayIndex > maxIndex) {
-    msg.channel.send("That's not a news index number yet.").then().catch(console.error);
+    msg.channel.send("That's not a news index number yet.").catch(console.error);
     return
   }
 

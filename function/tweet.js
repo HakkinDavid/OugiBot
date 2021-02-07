@@ -35,5 +35,5 @@ function(msg) {
   }
   ghostTweet.setDescription(arguments.join(" ").slice(0, 2048));
   msg.delete().catch(O_o=>{});
-  msg.channel.send(ghostTweet).then().catch(console.error);
+  msg.channel.send(ghostTweet).catch(console.error);
 }

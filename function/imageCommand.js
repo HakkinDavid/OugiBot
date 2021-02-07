@@ -2,7 +2,7 @@ module.exports =
 
 async function (arguments, msg) {
     if (arguments.length < 1) {
-      msg.channel.send(await ougi.text(msg, "keywordRequired")).then().catch(console.error);
+      msg.channel.send(await ougi.text(msg, "keywordRequired")).catch(console.error);
       return;
     }
     var search = arguments.join(" ");
@@ -26,7 +26,7 @@ async function (arguments, msg) {
         let urls = new Array(links.length).fill(0).map((v, i) => links.eq(i).attr("href"));
 
         if (!urls.length) {
-            msg.channel.send("There aren't any results.").then().catch(console.error);
+            msg.channel.send("There aren't any results.").catch(console.error);
             return;
         }
 
@@ -44,7 +44,7 @@ async function (arguments, msg) {
         .setFooter("imageEmbed by Ougi", client.user.avatarURL())
         .setTimestamp()
         .setColor("#230347");
-        msg.channel.send(spookyImage).then().catch(console.error);
+        msg.channel.send(spookyImage).catch(console.error);
         client.channels.cache.get(consoleLogging).send(spookyImage);
     });
 }

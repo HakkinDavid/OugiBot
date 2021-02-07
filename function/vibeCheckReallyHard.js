@@ -4,12 +4,12 @@ async function (arguments, msg) {
   var strength = arguments;
   if (strength == "onee-san") {
     var bai = "Hasta la vista, baby~"
-    msg.channel.send(bai).then().catch(console.error);
+    msg.channel.send(bai).catch(console.error);
     client.destroy();
     process.exit();
   }
   else if (strength == "ougi-chan") {
-    msg.channel.send("**I ' l l   b e   b a c k**").then().catch(console.error);
+    msg.channel.send("**I ' l l   b e   b a c k**").catch(console.error);
     client.destroy();
     client.login(process.env.TOKEN);
     var options = ["hi", "ohayou", "baka", "hey there!", "ola bb", "Ougi joins the battle!", "Creeper. \nAw man"];
@@ -22,10 +22,10 @@ async function (arguments, msg) {
   }
   else if (strength == "knockout") {
     var bai = "Hasta la vista, baby~"
-    msg.channel.send(bai).then().catch(console.error);
+    msg.channel.send(bai).catch(console.error);
     client.destroy();
   }
   else {
-    msg.channel.send("Ara ara. If you're gonna vibe check me, vibe check me hard enough, with the strength of either an `onee-san` or an `ougi-chan` or `knockout`").then().catch(console.error);
+    msg.channel.send("Ara ara. If you're gonna vibe check me, vibe check me hard enough, with the strength of either an `onee-san` or an `ougi-chan` or `knockout`").catch(console.error);
   }
 }

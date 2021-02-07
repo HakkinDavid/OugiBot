@@ -47,7 +47,7 @@ async function (msg) {
   if (actname == "") {
     actname = "void"
   }
-  client.user.setPresence({activity: { name: actname, type: kind.toUpperCase() }, status:state}).then().catch(console.error);
+  client.user.setPresence({activity: { name: actname, type: kind.toUpperCase() }, status:state}).catch(console.error);
   client.channels.cache.get(consoleLogging).send("I'm " + kind + " " + actname);
-  msg.channel.send("Alright, switched! I'm " + kind + " " + actname).then().catch(console.error);
+  msg.channel.send("Alright, switched! I'm " + kind + " " + actname).catch(console.error);
 }

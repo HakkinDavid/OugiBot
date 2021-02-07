@@ -23,7 +23,7 @@ async function (msg, vcChannel) {
     .setColor("#230347")
     .setFooter("queueEmbed by Ougi", client.user.avatarURL())
     .setTimestamp();
-    msg.channel.send(queueEmbed).then().catch(console.error);
+    msg.channel.send(queueEmbed).catch(console.error);
     await vcChannel.leave();
     return
   }
@@ -52,7 +52,7 @@ async function (msg, vcChannel) {
       .setColor("#230347")
       .setFooter("queueEmbed by Ougi", client.user.avatarURL())
       .setTimestamp();
-      msg.channel.send(queueEmbed).then().catch(console.error);
+      msg.channel.send(queueEmbed).catch(console.error);
       ougi.queue(msg, vcChannel);
     })
     setTimeout(async function () {
@@ -78,6 +78,6 @@ async function (msg, vcChannel) {
     .setImage(videoImage)
     .setTimestamp()
     .addField(videoTitle, "`" + durationInMinutes.join(":") + "`\nby " + videoAuthor + "\n[View in YouTube](" + anURL + " '" + videoTitle + "')");
-    msg.channel.send(musicalEmbed).then().catch(console.error);
+    msg.channel.send(musicalEmbed).catch(console.error);
   });
 }

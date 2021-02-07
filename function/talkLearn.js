@@ -9,7 +9,7 @@ async function (arguments, msg) {
   }
 
   if (thisMessage.includes("<@") && thisMessage.includes(">")) {
-    msg.channel.send("Avoid mentions please. What? Isn't that a mention? Well, then don't include '\<\@' and '>' in the same message.").then().catch(console.error);
+    msg.channel.send("Avoid mentions please. What? Isn't that a mention? Well, then don't include '\<\@' and '>' in the same message.").catch(console.error);
     return
   }
 
@@ -23,7 +23,7 @@ async function (arguments, msg) {
   }
 
   if (breakChocolate.length !== 2){
-    msg.channel.send("Do you want to teach me something? Looks like you're doing it wrong. Use the following command for some help.\n> ougi help learn").then().catch(console.error);
+    msg.channel.send("Do you want to teach me something? Looks like you're doing it wrong. Use the following command for some help.\n> ougi help learn").catch(console.error);
     return
   }
 
@@ -59,22 +59,22 @@ async function (arguments, msg) {
   }
 
   if (trigger.length < niceCharacterAmount){
-    msg.channel.send("Please provide a trigger phrase of at least " + niceCharacterAmount.toString() + " characters long.").then().catch(console.error);
+    msg.channel.send("Please provide a trigger phrase of at least " + niceCharacterAmount.toString() + " characters long.").catch(console.error);
     return
   }
 
   if (response.length < niceCharacterAmount){
-    msg.channel.send("Please provide a response phrase of at least " + niceCharacterAmount.toString() + " characters long.").then().catch(console.error);
+    msg.channel.send("Please provide a response phrase of at least " + niceCharacterAmount.toString() + " characters long.").catch(console.error);
     return
   }
 
   if (trigger.length > maxCharacterAmount){
-    msg.channel.send("Please provide a trigger phrase of " + maxCharacterAmount.toString() + " or less characters long.").then().catch(console.error);
+    msg.channel.send("Please provide a trigger phrase of " + maxCharacterAmount.toString() + " or less characters long.").catch(console.error);
     return
   }
 
   if (response.length > maxCharacterAmount){
-    msg.channel.send("Please provide a response phrase of " + maxCharacterAmount.toString() + " or less characters long.").then().catch(console.error);
+    msg.channel.send("Please provide a response phrase of " + maxCharacterAmount.toString() + " or less characters long.").catch(console.error);
     return
   }
 
@@ -98,12 +98,12 @@ async function (arguments, msg) {
     var existent = pseudoArray[trigger];
     for(let i = 0; i < existent.length; i++) {
       if(existent[i].toLowerCase() === response) {
-        msg.channel.send("Sorry, that response for this trigger already exists.").then().catch(console.error);
+        msg.channel.send("Sorry, that response for this trigger already exists.").catch(console.error);
         return
       }
     }
     existent.push(response);
-    msg.channel.send(answer).then().catch(console.error);
+    msg.channel.send(answer).catch(console.error);
 
     client.channels.cache.get(consoleLogging).send({embed});
     pseudoArray[trigger] = existent;
@@ -114,7 +114,7 @@ async function (arguments, msg) {
     return
   }
 
-  msg.channel.send(answer).then().catch(console.error);
+  msg.channel.send(answer).catch(console.error);
 
   client.channels.cache.get(consoleLogging).send({embed});
 

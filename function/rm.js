@@ -27,7 +27,7 @@ async function (arguments, msg) {
   }
 
   if (trigger.includes("<@") && trigger.includes(">")) {
-    msg.channel.send("Avoid mentions or custom emoji please. What? Isn't that a mention or a custom emoji? Well, then don't include '\<\@' and '>' in the same message.").then().catch(console.error);
+    msg.channel.send("Avoid mentions or custom emoji please. What? Isn't that a mention or a custom emoji? Well, then don't include '\<\@' and '>' in the same message.").catch(console.error);
     return
   }
 
@@ -62,12 +62,12 @@ async function (arguments, msg) {
     let existent = pseudoArray.blacklist[guildID];
     for(i = 0; i < existent.length; i++) {
       if(existent[i].toLowerCase() === trigger) {
-        msg.channel.send("Sorry, that trigger is already blacklisted in " + msg.guild.toString() + ".").then().catch(console.error);
+        msg.channel.send("Sorry, that trigger is already blacklisted in " + msg.guild.toString() + ".").catch(console.error);
         return
       }
     }
     existent.push(trigger);
-    msg.channel.send(answer).then().catch(console.error);
+    msg.channel.send(answer).catch(console.error);
     client.channels.cache.get(consoleLogging).send("Trigger to be blacklisted: `" + trigger + "` in `" + msg.guild.toString() + "` with guildID `" + guildID + "`");
     pseudoArray.blacklist[guildID] = existent;
     let proArray = JSON.stringify(pseudoArray);
@@ -77,7 +77,7 @@ async function (arguments, msg) {
     return
   }
 
-  msg.channel.send(answer).then().catch(console.error);
+  msg.channel.send(answer).catch(console.error);
   client.channels.cache.get(consoleLogging).send("Trigger to be blacklisted: `" + trigger + "` in `" + msg.guild.toString() + "` with guildID `" + guildID + "`");
 
   pseudoArray.blacklist[guildID] = [];

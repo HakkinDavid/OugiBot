@@ -8,7 +8,7 @@ async function (arguments, msg) {
   let page = arguments * 1 - 1;
 
   if (isNaN(page)) {
-    msg.channel.send(await ougi.text(msg, "pleasePage")).then().catch(console.error);
+    msg.channel.send(await ougi.text(msg, "pleasePage")).catch(console.error);
     return
   }
 
@@ -18,7 +18,7 @@ async function (arguments, msg) {
 
   let displayPage = page + 1;
   if (displayPage > pageMax) {
-    msg.channel.send(await ougi.text(msg, "notPage")).then().catch(console.error);
+    msg.channel.send(await ougi.text(msg, "notPage")).catch(console.error);
     return
   }
 
@@ -38,5 +38,5 @@ async function (arguments, msg) {
       embed.addField(willShow[i] + " `" + willShowN[i] + "`", willShow[i+1] + " `" + willShowN[i+1] + "`")
     };
 
-  msg.channel.send({embed}).then().catch(console.error);
+  msg.channel.send({embed}).catch(console.error);
 }

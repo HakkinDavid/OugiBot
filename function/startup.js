@@ -18,7 +18,7 @@ function () {
           client.channels.cache.get(consoleLogging).send("Tweeted: " + gratefulPhrase)
         })
       }
-      client.user.setPresence({activity: { name: "my birthday party (October 4th) | " + gratefulPhrase.replace("\n", ", ") + ".", type: 'WATCHING' }, status:'online'}).then().catch(console.error);
+      client.user.setPresence({activity: { name: "my birthday party (October 4th) | " + gratefulPhrase.replace("\n", ", ") + ".", type: 'WATCHING' }, status:'online'}).catch(console.error);
       console.log("Eating cake.")
     }
     else {
@@ -50,11 +50,11 @@ function () {
         })
         var gonnaSay = willSay + 1;
         client.channels.cache.get(wordsChannel).send(gonnaSay.toString());
-        client.user.setPresence({activity: { name: guildsLength + " Discord servers | " + contentToSay.replace("\n", ", ") + ".", type: 'WATCHING' }, status:'online'}).then().catch(console.error);
+        client.user.setPresence({activity: { name: guildsLength + " Discord servers | " + contentToSay.replace("\n", ", ") + ".", type: 'WATCHING' }, status:'online'}).catch(console.error);
         console.log("Successfully started up.");
       }
       else {
-        client.user.setPresence({activity: { name: "for updates | " + contentToSay.replace("\n", ", ") + ".", type: 'WATCHING' }, status:'dnd'}).then().catch(console.error);
+        client.user.setPresence({activity: { name: "for updates | " + contentToSay.replace("\n", ", ") + ".", type: 'WATCHING' }, status:'dnd'}).catch(console.error);
         console.log("Running development instance.");
       }
     }

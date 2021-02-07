@@ -2,7 +2,7 @@ module.exports =
 
 async function (arguments, msg) {
     if (msg.content.includes("@everyone") || msg.content.includes("@here")) {
-      msg.channel.send("Ora ora ora ora! Remove that massive ping.").then().catch(console.error);
+      msg.channel.send("Ora ora ora ora! Remove that massive ping.").catch(console.error);
       return
     }
 
@@ -15,12 +15,12 @@ async function (arguments, msg) {
     if (sayMessage.length <= 0) {
       var options = ["Say what ???", "Can anyone lend me some emptiness? This homie wants some but I ate all of mine yesterday.", "Imagine talking", "Ara ara", "?"];
       var response = options[Math.floor(Math.random()*options.length)];
-      msg.channel.send(response).then().catch(console.error);
+      msg.channel.send(response).catch(console.error);
       return
     }
 
     if (sayMessage.includes("<@") && msg.content.includes(">")) {
-      msg.channel.send("Avoid pings. What? Isn't that a ping?").then().catch(console.error);
+      msg.channel.send("Avoid pings. What? Isn't that a ping?").catch(console.error);
       return
     }
 

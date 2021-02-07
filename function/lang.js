@@ -136,7 +136,7 @@ async function (arguments, msg, guildExecution) {
   let isLang = ougi.whereIs(langNames, niceLang);
   let isCode = langNames[toLang];
   if (isLang == undefined && isCode == undefined) {
-    msg.channel.send(await ougi.text(msg, "validLang") + "\n> ougi help language").then().catch(console.error);
+    msg.channel.send(await ougi.text(msg, "validLang") + "\n> ougi help language").catch(console.error);
     return
   }
   if (isCode != undefined && isLang == undefined) {

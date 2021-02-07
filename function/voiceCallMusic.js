@@ -18,7 +18,7 @@ async function (msg) {
   /*-----------------------------------*/
 
   if (!msg.guild) {
-    msg.channel.send("Huh?! This is not a Discord server. Take me into one!").then().catch(console.error);
+    msg.channel.send("Huh?! This is not a Discord server. Take me into one!").catch(console.error);
     return
   }
 
@@ -30,7 +30,7 @@ async function (msg) {
   let vcChannel = msg.member.voice.channel;
 
   if (vcChannel == null) {
-    msg.channel.send("Looks like you're not in a voice channel I can join, please get into one.").then().catch(console.error);
+    msg.channel.send("Looks like you're not in a voice channel I can join, please get into one.").catch(console.error);
     return
   }
 
@@ -57,7 +57,7 @@ async function (msg) {
     fs.unlinkSync(listPath);
     await vcChannel.leave();
     var response = [":pensive:", "oke, bye", "aight imma head out"];
-    msg.channel.send(response[Math.floor(Math.random()*response.length)]).then().catch(console.error);
+    msg.channel.send(response[Math.floor(Math.random()*response.length)]).catch(console.error);
     return
   }
 
@@ -80,7 +80,7 @@ async function (msg) {
     aList[0].loop = true;
     fs.writeFileSync(listPath, JSON.stringify(aList), console.error);
     queueEmbed.setTitle("Now looping the queue!");
-    msg.channel.send(queueEmbed).then().catch(console.error);
+    msg.channel.send(queueEmbed).catch(console.error);
     return
   }
 
@@ -103,7 +103,7 @@ async function (msg) {
     aList.pop();
     fs.writeFileSync(listPath, JSON.stringify(aList), console.error);
     queueEmbed.setTitle("Queue won't loop.");
-    msg.channel.send(queueEmbed).then().catch(console.error);
+    msg.channel.send(queueEmbed).catch(console.error);
     return
   }
 
@@ -123,7 +123,7 @@ async function (msg) {
     await vcChannel.leave();
     if (aList.length > 2) {
       queueEmbed.setTitle("Skipped!");
-      msg.channel.send(queueEmbed).then().catch(console.error);
+      msg.channel.send(queueEmbed).catch(console.error);
     }
     setTimeout(
       function(){
@@ -160,7 +160,7 @@ async function (msg) {
     fs.writeFileSync(listPath, JSON.stringify(aList), console.error);
     if (aList.length > 2 || index != 1) {
       queueEmbed.setTitle("Removed song number " + index + ".");
-      msg.channel.send(queueEmbed).then().catch(console.error);
+      msg.channel.send(queueEmbed).catch(console.error);
     }
     if (index == 1) {
       if (aList[0].loop) {
@@ -217,12 +217,12 @@ async function (msg) {
         queueEmbed.addField(videoTitle, "`" + durationInMinutes.join(":") + "`\nby " + videoAuthor + "\n[View in YouTube](" + anURL + " '" + videoTitle + "')");
       }
     }
-    msg.channel.send(queueEmbed).then().catch(console.error);
+    msg.channel.send(queueEmbed).catch(console.error);
     return
   }
 
   if (vcChannel.full) {
-    msg.channel.send("That voice channel is full, so I can't join.").then().catch(console.error);
+    msg.channel.send("That voice channel is full, so I can't join.").catch(console.error);
     return
   }
 
@@ -245,7 +245,7 @@ async function (msg) {
         if (video.id == undefined) {
           queueEmbed.setTitle("The following video is either unavailable or non-existent");
           queueEmbed.addField("\u200b", keywords.slice(0, 1024));
-          msg.channel.send(queueEmbed).then().catch(console.error);
+          msg.channel.send(queueEmbed).catch(console.error);
           return
         }
         aVideoMeta = video;
@@ -259,7 +259,7 @@ async function (msg) {
         if (videos.length < 1) {
           queueEmbed.setTitle("The following video is either unavailable or non-existent");
           queueEmbed.addField("\u200b", keywords.slice(0, 1024));
-          msg.channel.send(queueEmbed).then().catch(console.error);
+          msg.channel.send(queueEmbed).catch(console.error);
           return
         }
         aVideoMeta = videos[0];
@@ -292,13 +292,13 @@ async function (msg) {
       ougi.queue(msg, vcChannel).catch(console.error)
     }
     else {
-      msg.channel.send(queueEmbed).then().catch(console.error)
+      msg.channel.send(queueEmbed).catch(console.error)
     }
     return
   }
 
   else {
-    msg.channel.send("Looks like you're not in a voice channel I can join, please get into one.").then().catch(console.error);
+    msg.channel.send("Looks like you're not in a voice channel I can join, please get into one.").catch(console.error);
     return
   }
 }
