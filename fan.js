@@ -116,6 +116,7 @@ client.on('message', (msg) => {
         if (!msg.content.toLowerCase().startsWith(instanceID + "::ougi")) {
           return
         }
+        msg.content.replace(instanceID + "::", "")
       }
     }
 
