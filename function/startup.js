@@ -44,7 +44,7 @@ function () {
 
       let guildsLength = client.guilds.cache.map((g) => g.toString()).length;
 
-      if(process.env.DEV == 0){
+      if (!process.env.DEV){
         T.post('statuses/update', { status: contentToSay }, function(err, data, response) {
           client.channels.cache.get(consoleLogging).send("Tweeted: " + contentToSay)
         })

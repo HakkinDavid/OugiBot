@@ -23,7 +23,13 @@ global.KSoftMain = require ('@ksoft/api');
 global.ksoft = new KSoftMain.KSoftClient(process.env.KSOFTTOKEN);
 global.removeWords =  require('remove-words');
 global.instanceID = Date.now().toString().slice(-4);
-global.TEASEABLE = 1;
+
+if (process.argv.slice(2) == "silent") {
+  global.TEASEABLE = false;
+}
+else {
+  global.TEASEABLE = true;
+}
 
 if (process.env.OFFLINE == 1) {
   client.destroy();
@@ -93,9 +99,13 @@ client.on('ready', () => {
 
   fs.writeFileSync('./aimAssist.txt', "[]", console.error);
 
-  client.channels.cache.get(consoleLogging).send("**INSTANCE ID:** " + instanceID + "\n**DEV:** " + process.env.DEV).catch(console.error);
+  client.channels.cache.get(consoleLogging).send("**INSTANCE ID:** " + instanceID + "\n**DEV:** " + process.env.DEV + "\n**SILENT MODE:** " + !global.TEASEABLE).catch(console.error);
   console.log("Instance ID: " + instanceID);
-  ougi.startup();
+
+  if (global.TEASEABLE) {
+    ougi.startup();
+  }
+
 
 });
 
@@ -108,7 +118,7 @@ client.on('message', (msg) => {
       return
     }
 
-    if (global.TEASEABLE == 0) {
+    if (!global.TEASEABLE) {
       if (msg.author.id != "265257341967007758") {
         return
       }
@@ -172,7 +182,7 @@ client.on('message', (msg) => {
 })
 
 client.on('messageDelete', (msg) => {
-    if (global.TEASEABLE == 0) {
+    if (!global.TEASEABLE) {
       return
     }
 
