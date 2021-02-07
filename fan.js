@@ -86,7 +86,7 @@ console.error = function() {
 
 /* Chuuimonogatari */
 client.on('ready', () => {
-  if (process.env.DEV) {
+  if (process.env.DEV == 1) {
     findRemoveSync('./vc/', {extensions: ['.txt']});
     findRemoveSync('./ammo/', {extensions: ['.txt']});
   }
@@ -216,7 +216,7 @@ client.on('messageDelete', (msg) => {
 /*Makotomonogatari*/
 client.setInterval(
   function () {
-    if (process.env.DEV) {
+    if (process.env.DEV == 1) {
       findRemoveSync('./', {extensions: ['.txt']});
       for (i=0; i < fetchedChannels.length; i++) {
         ougi.fetch(fetchedChannels[i]);
