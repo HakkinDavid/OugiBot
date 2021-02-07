@@ -22,8 +22,8 @@ global.scrapeYt = require("scrape-yt");
 global.KSoftMain = require ('@ksoft/api');
 global.ksoft = new KSoftMain.KSoftClient(process.env.KSOFTTOKEN);
 global.removeWords =  require('remove-words');
-global.instanceID = Date.now().toString().slice(-4);
 
+global.instanceID = Date.now().toString().slice(-4);
 if (process.argv.slice(2) == "silent") {
   global.TEASEABLE = false;
 }
@@ -87,11 +87,12 @@ console.error = function() {
 /* Chuuimonogatari */
 client.on('ready', () => {
   if (process.env.DEV == 1) {
+    findRemoveSync('./cachedvoice/', {extensions: ['.mp3']});
     findRemoveSync('./vc/', {extensions: ['.txt']});
     findRemoveSync('./ammo/', {extensions: ['.txt']});
   }
   else {
-    findRemoveSync('./', {extensions: ['.txt']});
+    findRemoveSync('./', {extensions: ['.txt', '.mp3']});
   }
   for (i=0; i < fetchedChannels.length; i++) {
     ougi.fetch(fetchedChannels[i]);
