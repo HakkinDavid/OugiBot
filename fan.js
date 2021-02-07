@@ -116,7 +116,7 @@ client.on('message', (msg) => {
         if (!msg.content.toLowerCase().startsWith(instanceID + "::ougi")) {
           return
         }
-        msg.content.replace(instanceID + "::", "")
+        msg.content = msg.content.replace(instanceID + "::", "");
       }
     }
 
@@ -175,7 +175,7 @@ client.on('messageDelete', (msg) => {
     if (global.TEASEABLE == 0) {
       return
     }
-    
+
     if (msg.author == client.user) {
       return
     }
