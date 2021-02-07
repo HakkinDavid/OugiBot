@@ -172,6 +172,10 @@ client.on('message', (msg) => {
 })
 
 client.on('messageDelete', (msg) => {
+    if (global.TEASEABLE == 0) {
+      return
+    }
+    
     if (msg.author == client.user) {
       return
     }
