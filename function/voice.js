@@ -35,7 +35,7 @@ async function (msg) {
   }
 
   if (arguments.length > 1 && arguments[0].startsWith("::") && ougi.langCodes.hasOwnProperty(arguments[0].replace(/::/, ""))) {
-    langCode = arguments[0].replace(/mx/, "es").replace(/default|auto/, "en");
+    langCode = arguments[0].replace(/mx/, "es").replace(/default|auto/, "en").replace(/::/, "");
     arguments = arguments.slice(1);
   }
 

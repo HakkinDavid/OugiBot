@@ -45,7 +45,7 @@ async function (msg, vcChannel) {
       ougi.queue(msg, vcChannel);
     })
     setTimeout(async function () {
-      if (vc[msg.guild.id] == undefined) {
+      if (vc[msg.guild.id] == undefined || vc[msg.guild.id][1] == undefined) {
         return
       }
       let thisDate = vc[msg.guild.id][1].initiated;
