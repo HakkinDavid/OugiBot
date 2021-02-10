@@ -34,13 +34,8 @@ async function (msg) {
     langCode = langSettings[msg.guild.id]
   }
 
-  if (arguments.length < 1) {
-    msg.channel.send("I don't know how to read emptiness. Please specify a sentence for me to read out loud.")
-    return
-  }
-
-  if (arguments.length > 1 && ougi.langCodes.hasOwnProperty(arguments[0])) {
-    langCode = arguments[0].replace("mx", "es").replace("default", "en");
+  if (arguments.length > 1 && arguments[0].startsWith("::") && ougi.langCodes.hasOwnProperty(arguments[0].replace(/::/, ""))) {
+    langCode = arguments[0].replace(/mx/, "es").replace(/default|auto/, "en");
     arguments = arguments.slice(1);
   }
 
@@ -48,7 +43,12 @@ async function (msg) {
     langCode = "en";
   }
 
-  let readOutLoud = arguments.join(" ");
+  let readOutLoud = arguments.join(" ").replace(/[^a-zA-Z+,+.]/gi, "");
+
+  if (readOutLoud.replace(/ /gi, "").length < 1) {
+    msg.channel.send("I don't know how to read emptiness. Please specify a sentence for me to read out loud.")
+    return
+  }
 
   let cacheSpeak = './cachedvoice/' + langCode + readOutLoud + '.mp3';
 
