@@ -42,7 +42,6 @@
     "twit": "^2.2.11",
     "winston": "^3.3.3",
     "yargs-parser": "^20.2.4",
-    "ytdl-core": "^4.4.5",
     "ytdl-core-discord": "^1.2.5"
   },
   "devDependencies": {},

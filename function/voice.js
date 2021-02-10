@@ -30,8 +30,8 @@ async function (msg) {
 
   let langSettings = JSON.parse(fs.readFileSync('./settings.txt')).lang;
   let langCode = undefined;
-  if (langSettings.hasOwnProperty(msg.author.id)) {
-    langCode = langSettings[msg.author.id]
+  if (langSettings.hasOwnProperty(msg.guild.id)) {
+    langCode = langSettings[msg.guild.id]
   }
 
   if (arguments.length < 1) {
@@ -41,7 +41,7 @@ async function (msg) {
 
   if (arguments.length > 1 && ougi.langCodes.hasOwnProperty(arguments[0])) {
     langCode = arguments[0].replace("mx", "es").replace("default", "en");
-    arguments = arguments.slice(-1);
+    arguments = arguments.slice(1);
   }
 
   if (langCode == undefined) {

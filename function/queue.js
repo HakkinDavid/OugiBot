@@ -2,20 +2,10 @@ module.exports =
 
 async function (msg, vcChannel) {
   let internalDate = new Date().getTime();
-  let listPath = './vc/' + msg.guild.id + '.txt';
-  if (fs.existsSync(listPath)) {
-    let thisFile = fs.readFileSync(listPath, console.error);
-    var myList = JSON.parse(thisFile);
-    if (myList.length >= 2) {
-      myList[1].initiated = internalDate;
-      fs.writeFileSync(listPath, JSON.stringify(myList), console.error);
-    }
+  if (vc[msg.guild.id].length >= 2) {
+      vc[msg.guild.id][1].initiated = internalDate;
   }
-  else {
-    var myList = [];
-  }
-  if (myList.length < 2) {
-    fs.unlinkSync(listPath);
+  if (vc[msg.guild.id].length < 2) {
     let queueEmbed = new Discord.MessageEmbed()
     .setTitle("Queue is over!")
     .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/ougimusic.png?raw=true")
@@ -27,17 +17,16 @@ async function (msg, vcChannel) {
     await vcChannel.leave();
     return
   }
-  if (myList[0].loop) {
-    myList.push(myList[1]);
-    fs.writeFileSync(listPath, JSON.stringify(myList), console.error);
+  if (vc[msg.guild.id][0].loop) {
+    vc[msg.guild.id].push(vc[msg.guild.id][1]);
   }
   await vcChannel.join().then(async (connection) => {
-    let anURL = "https://www.youtube.com/watch?v=" + myList[1].id;
-    let videoImage = myList[1].thumbnail;
-    let videoAuthor = myList[1].channel.name;
-    let videoTitle = myList[1].title;
-    let durationInMilliseconds = myList[1].duration * 1000;
-    let durationInMinutes = [Math.floor(myList[1].duration / 60), myList[1].duration - Math.floor(myList[1].duration / 60)*60];
+    let anURL = "https://www.youtube.com/watch?v=" + vc[msg.guild.id][1].id;
+    let videoImage = vc[msg.guild.id][1].thumbnail;
+    let videoAuthor = vc[msg.guild.id][1].channel.name;
+    let videoTitle = vc[msg.guild.id][1].title;
+    let durationInMilliseconds = vc[msg.guild.id][1].duration * 1000;
+    let durationInMinutes = [Math.floor(vc[msg.guild.id][1].duration / 60), vc[msg.guild.id][1].duration - Math.floor(vc[msg.guild.id][1].duration / 60)*60];
     for (i=0; durationInMinutes.length > i; i++) {
       if (durationInMinutes[i].toString().length < 2) {
         durationInMinutes[i] = "0" + durationInMinutes[i].toString()
@@ -56,15 +45,12 @@ async function (msg, vcChannel) {
       ougi.queue(msg, vcChannel);
     })
     setTimeout(async function () {
-      if (!fs.existsSync(listPath)) {
+      if (vc[msg.guild.id] == undefined) {
         return
       }
-      let thisFile = fs.readFileSync(listPath, console.error);
-      let aList = JSON.parse(thisFile);
-      let thisDate = aList[1].initiated;
+      let thisDate = vc[msg.guild.id][1].initiated;
       if (internalDate == thisDate) {
-        aList.splice(1, 1);
-        fs.writeFileSync(listPath, JSON.stringify(aList), console.error);
+        vc[msg.guild.id].splice(1, 1);
         ougi.queue(msg, vcChannel);
       }
     }, durationInMilliseconds + 2000);

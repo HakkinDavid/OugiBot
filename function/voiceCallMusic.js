@@ -41,87 +41,70 @@ async function (msg) {
   .setFooter("queueEmbed by Ougi", client.user.avatarURL())
   .setTimestamp();
 
-  let listPath = './vc/' + msg.guild.id + '.txt';
-
   if (arguments == "stop") {
-    if (!fs.existsSync(listPath)) {
+    if (vc[msg.guild.id] == undefined) {
       msg.channel.send("Nothing was playing.");
       return
     }
-    let thisFile = fs.readFileSync(listPath, console.error);
-    let aList = JSON.parse(thisFile);
-    if (aList.length < 2) {
-      msg.channel.send("Nothing was playing.");
-      return
-    }
-    fs.unlinkSync(listPath);
+    delete vc[msg.guild.id];
     await vcChannel.leave();
-    var response = [":pensive:", "oke, bye", "aight imma head out"];
+    let response = [":pensive:", "oke, bye", "aight imma head out"];
     msg.channel.send(response[Math.floor(Math.random()*response.length)]).catch(console.error);
     return
   }
 
   if (arguments == "loop") {
-    if (!fs.existsSync(listPath)) {
+    if (vc[msg.guild.id] == undefined) {
       msg.channel.send("Nothing is playing.");
       return
     }
-    let thisFile = fs.readFileSync(listPath, console.error);
-    let aList = JSON.parse(thisFile);
-    if (aList.length < 2) {
+    if (vc[msg.guild.id].length < 2) {
       msg.channel.send("Nothing is playing.");
       return
     }
-    if (aList[0].loop) {
+    if (vc[msg.guild.id][0].loop) {
       msg.channel.send("Loop was already enabled.");
       return
     }
-    aList.push(aList[1]);
-    aList[0].loop = true;
-    fs.writeFileSync(listPath, JSON.stringify(aList), console.error);
+    vc[msg.guild.id].push(vc[msg.guild.id][1]);
+    vc[msg.guild.id][0].loop = true;
     queueEmbed.setTitle("Now looping the queue!");
     msg.channel.send(queueEmbed).catch(console.error);
     return
   }
 
   if (arguments == "unloop") {
-    if (!fs.existsSync(listPath)) {
+    if (vc[msg.guild.id] == undefined) {
       msg.channel.send("Nothing is playing.");
       return
     }
-    let thisFile = fs.readFileSync(listPath, console.error);
-    let aList = JSON.parse(thisFile);
-    if (aList.length < 2) {
+    if (vc[msg.guild.id].length < 2) {
       msg.channel.send("Nothing is playing.");
       return
     }
-    if (!aList[0].loop) {
+    if (!vc[msg.guild.id][0].loop) {
       msg.channel.send("Loop was already disabled.");
       return
     }
-    aList[0].loop = false;
-    aList.pop();
-    fs.writeFileSync(listPath, JSON.stringify(aList), console.error);
+    vc[msg.guild.id][0].loop = false;
+    vc[msg.guild.id].pop();
     queueEmbed.setTitle("Queue won't loop.");
     msg.channel.send(queueEmbed).catch(console.error);
     return
   }
 
   if (arguments == "skip") {
-    if (!fs.existsSync(listPath)) {
+    if (vc[msg.guild.id] == undefined) {
       msg.channel.send("Nothing is playing.");
       return
     }
-    let thisFile = fs.readFileSync(listPath, console.error);
-    let aList = JSON.parse(thisFile);
-    if (aList.length < 2) {
+    if (vc[msg.guild.id].length < 2) {
       msg.channel.send("Nothing is playing.");
       return
     }
-    aList.splice(1, 1);
-    fs.writeFileSync(listPath, JSON.stringify(aList), console.error);
+    vc[msg.guild.id].splice(1, 1);
     await vcChannel.leave();
-    if (aList.length > 2) {
+    if (vc[msg.guild.id].length > 2) {
       queueEmbed.setTitle("Skipped!");
       msg.channel.send(queueEmbed).catch(console.error);
     }
@@ -134,7 +117,7 @@ async function (msg) {
   }
 
   if (arguments[0] == "remove" && arguments.length == 2 || arguments[0] == "rm" && arguments.length == 2) {
-    if (!fs.existsSync(listPath)) {
+    if (vc[msg.guild.id] == undefined) {
       msg.channel.send("Nothing is playing.");
       return
     }
@@ -146,26 +129,22 @@ async function (msg) {
     if (index < 1) {
       index = 1;
     }
-    let thisFile = fs.readFileSync(listPath, console.error);
-    let aList = JSON.parse(thisFile);
-    if (aList.length < 2) {
+    if (vc[msg.guild.id].length < 2) {
       msg.channel.send("Nothing is playing.");
       return
     }
-    if (index > aList.length-1 || aList[0].loop && index > aList.length-2) {
+    if (index > vc[msg.guild.id].length-1 || vc[msg.guild.id][0].loop && index > vc[msg.guild.id].length-2) {
       msg.channel.send("That's not a queue number yet.");
       return
     }
-    aList.splice(index, 1);
-    fs.writeFileSync(listPath, JSON.stringify(aList), console.error);
-    if (aList.length > 2 || index != 1) {
+    vc[msg.guild.id].splice(index, 1);
+    if (vc[msg.guild.id].length > 2 || index != 1) {
       queueEmbed.setTitle("Removed song number " + index + ".");
       msg.channel.send(queueEmbed).catch(console.error);
     }
     if (index == 1) {
-      if (aList[0].loop) {
-        aList.pop();
-        fs.writeFileSync(listPath, JSON.stringify(aList), console.error);
+      if (vc[msg.guild.id][0].loop) {
+        vc[msg.guild.id].pop();
       }
       await vcChannel.leave();
       setTimeout(
@@ -178,37 +157,35 @@ async function (msg) {
   }
 
   if (arguments == "list" || arguments == "queue" || arguments == "playlist") {
-    if (!fs.existsSync(listPath)) {
+    if (vc[msg.guild.id] == undefined) {
       msg.channel.send("Nothing is playing.");
       return
     }
-    let thisFile = fs.readFileSync(listPath, console.error);
-    let aList = JSON.parse(thisFile);
-    if (aList.length < 2) {
+    if (vc[msg.guild.id].length < 2) {
       msg.channel.send("Nothing is playing.");
       return
     }
     queueEmbed.setTitle("Queue");
-    if (aList[0].loop) {
+    if (vc[msg.guild.id][0].loop) {
       queueEmbed.setDescription("Loop is enabled");
     }
-    for (i = 1; i < aList.length; i++) {
-      if (aList[0].loop && i == aList.length-1) {
+    for (i = 1; i < vc[msg.guild.id].length; i++) {
+      if (vc[msg.guild.id][0].loop && i == vc[msg.guild.id].length-1) {
         queueEmbed.addField("\u200b", "...")
       }
       else {
-        let anURL = "https://www.youtube.com/watch?v=" + aList[i].id;
-        let videoImage = aList[i].thumbnail;
-        let videoAuthor = aList[i].channel.name;
-        let videoTitle = aList[i].title;
+        let anURL = "https://www.youtube.com/watch?v=" + vc[msg.guild.id][i].id;
+        let videoImage = vc[msg.guild.id][i].thumbnail;
+        let videoAuthor = vc[msg.guild.id][i].channel.name;
+        let videoTitle = vc[msg.guild.id][i].title;
         if (i == 1) {
           videoTitle = "► 1.  " + videoTitle;
         }
         else {
           videoTitle = i + ".  " + videoTitle;
         }
-        let durationInMilliseconds = aList[i].duration * 1000;
-        let durationInMinutes = [Math.floor(aList[i].duration / 60), aList[i].duration - Math.floor(aList[i].duration / 60)*60];
+        let durationInMilliseconds = vc[msg.guild.id][i].duration * 1000;
+        let durationInMinutes = [Math.floor(vc[msg.guild.id][i].duration / 60), vc[msg.guild.id][i].duration - Math.floor(vc[msg.guild.id][i].duration / 60)*60];
         for (j=0; durationInMinutes.length > j; j++) {
           if (durationInMinutes[j].toString().length < 2) {
             durationInMinutes[j] = "0" + durationInMinutes[j].toString()
@@ -228,12 +205,8 @@ async function (msg) {
 
   if (vcChannel.joinable) {
     let keywords = arguments.join(" ");
-    if (fs.existsSync(listPath)) {
-      let thisFile = fs.readFileSync(listPath, console.error);
-      var myList = JSON.parse(thisFile);
-    }
-    else {
-      var myList = [{
+    if (vc[msg.guild.id] == undefined) {
+      vc[msg.guild.id] = [{
         loop: false
       }];
     }
@@ -265,13 +238,13 @@ async function (msg) {
         aVideoMeta = videos[0];
       });
     }
-    let pos = myList.length;
-    if (myList[0].loop) {
-      myList.splice(myList.length-1, 0, aVideoMeta);
+    let pos = vc[msg.guild.id].length;
+    if (vc[msg.guild.id][0].loop) {
+      vc[msg.guild.id].splice(vc[msg.guild.id].length-1, 0, aVideoMeta);
       pos--;
     }
     else {
-      myList.push(aVideoMeta);
+      vc[msg.guild.id].push(aVideoMeta);
     }
     queueEmbed.setTitle("Added to queue at position " + pos);
     let anURL = "https://www.youtube.com/watch?v=" + aVideoMeta.id;
@@ -286,9 +259,7 @@ async function (msg) {
       }
     }
     queueEmbed.addField(videoTitle, "`" + durationInMinutes.join(":") + "`\nby " + videoAuthor + "\n[View in YouTube](" + anURL + " '" + videoTitle + "')");
-
-    fs.writeFileSync(listPath, JSON.stringify(myList), console.error);
-    if (myList.length == 2) {
+    if (vc[msg.guild.id].length == 2) {
       ougi.queue(msg, vcChannel).catch(console.error)
     }
     else {

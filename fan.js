@@ -58,6 +58,8 @@ global.embedsChannel = "740187317238497340";
 global.newsChannel = "751697345737129994";
 global.neuroChannel = "759983614128947250";
 global.settingsChannel = "791151086077083688";
+global.ammo = {};
+global.vc = {};
 
 /* Rogumonogatari */
 global.consoleLogging = "726927838724489226";
@@ -88,8 +90,6 @@ console.error = function() {
 client.on('ready', () => {
   if (process.env.DEV == 1) {
     findRemoveSync('./cachedvoice/', {extensions: ['.mp3']});
-    findRemoveSync('./vc/', {extensions: ['.txt']});
-    findRemoveSync('./ammo/', {extensions: ['.txt']});
   }
   else {
     findRemoveSync('./', {extensions: ['.txt', '.mp3']});
@@ -97,8 +97,6 @@ client.on('ready', () => {
   for (i=0; i < fetchedChannels.length; i++) {
     ougi.fetch(fetchedChannels[i]);
   }
-
-  fs.writeFileSync('./aimAssist.txt', "[]", console.error);
 
   client.channels.cache.get(consoleLogging).send("**INSTANCE ID:** " + instanceID + "\n**DEV:** " + process.env.DEV + "\n**SILENT MODE:** " + !global.TEASEABLE).catch(console.error);
   console.log("Instance ID: " + instanceID);
@@ -222,8 +220,6 @@ client.setInterval(
       for (i=0; i < fetchedChannels.length; i++) {
         ougi.fetch(fetchedChannels[i]);
       }
-
-      fs.writeFileSync('./aimAssist.txt', "[]", console.error);
 
       ougi.startup();
     }

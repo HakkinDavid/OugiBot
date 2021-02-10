@@ -1,5 +1,6 @@
 module.exports = {
     'default': 'Default',
+    'auto': 'Automatic',
     'af': 'Afrikaans',
     'sq': 'Albanian',
     'am': 'Amharic',
