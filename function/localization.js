@@ -312,5 +312,11 @@ module.exports =
   },
   "sameAs": {
     "en": "It's the same as executing"
+  },
+  "speakHelpDesc": {
+    "en": "This command makes Ougi join your voice channel and say the prompted phrase. By default, Ougi will use the language set for the Discord server through {c} command."
+  },
+  "speakSpecificLang": {
+    "en": "You may as well include double colons (::) and a language ISO code."
   }
 }

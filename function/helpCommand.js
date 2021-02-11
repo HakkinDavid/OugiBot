@@ -80,6 +80,9 @@ function (arguments, msg) {
       case 'info':
         ougi.whoIsMe(msg)
       break;
+      case 'speak':
+        ougi.speakHelp(msg)
+      break;
       default:
         ougi.helpEmbed(msg)
       break;
