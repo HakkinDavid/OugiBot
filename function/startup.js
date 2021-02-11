@@ -43,6 +43,8 @@ function () {
       }
 
       let guildsLength = client.guilds.cache.map((g) => g.toString()).length;
+      let membersLength = 0;
+      client.guilds.cache.map((g) => membersLength += g.memberCount-1);
 
       if (process.env.DEV == 0){
         T.post('statuses/update', { status: contentToSay }, function(err, data, response) {
@@ -50,7 +52,7 @@ function () {
         })
         var gonnaSay = willSay + 1;
         client.channels.cache.get(wordsChannel).send(gonnaSay.toString());
-        client.user.setPresence({activity: { name: guildsLength + " Discord servers | " + contentToSay.replace("\n", ", ") + ".", type: 'WATCHING' }, status:'online'}).catch(console.error);
+        client.user.setPresence({activity: { name: guildsLength + " Discord servers, " + membersLength + " users | " + contentToSay.replace("\n", ", ") + ".", type: 'WATCHING' }, status:'online'}).catch(console.error);
         console.log("Successfully started up.");
       }
       else {
