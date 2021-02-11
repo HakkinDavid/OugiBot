@@ -5,7 +5,7 @@ function (arguments, msg) {
   let response = ["I ran out of ammo. Delete some messages in this channel in order to snipe them!", "Can't. There is nothing I can snipe from this channel.", "Sadly, no.", "The zone's clear.", "Oh frick. I missed the shot."];
 
   if (ammo[channelID] == undefined) {
-    msg.channel.send(response[Math.floor(Math.random()*options.length)]);
+    msg.channel.send(response[Math.floor(Math.random()*response.length)]);
     return
   }
 
