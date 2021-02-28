@@ -112,6 +112,16 @@ client.on('ready', () => {
 
 client.on('message', (msg) => {
     if (msg.author == client.user) {
+      if (!global.TEASEABLE) {
+        return
+      }
+      if (process.env.DEV == 1 && msg.channel.id == consoleLogging) {
+        if (msg.content.match(/\*\*INSTANCE ID:\*\* [0-9]{4}/) != "**INSTANCE ID:** " + instanceID && msg.content.match(/\*\*SILENT MODE:\*\* false/)) {
+          console.log("Another non-silent instance has been summoned.");
+          client.destroy();
+          process.exit();
+        }
+      }
       return
     }
 
