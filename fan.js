@@ -22,6 +22,8 @@ global.scrapeYt = require("scrape-yt");
 global.KSoftMain = require ('@ksoft/api');
 global.ksoft = new KSoftMain.KSoftClient(process.env.KSOFTTOKEN);
 global.removeWords =  require('remove-words');
+global.NewsAPI = require('newsapi');
+global.newsapi = new NewsAPI(process.env.NEWS);
 
 global.instanceID = Date.now().toString().slice(-4);
 if (process.argv.slice(2) == "silent") {

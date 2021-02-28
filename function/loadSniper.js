@@ -13,5 +13,5 @@ function (msg) {
     files: msg.attachments.map((files) => files.proxyUrl).join(" ")
   };
 
-  ammo[channelID].push(thisArray);
+  ammo[channelID].unshift(thisArray);
 }

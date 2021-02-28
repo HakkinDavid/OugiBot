@@ -13,19 +13,16 @@ async function (arguments, msg) {
       msg.channel.send("Huh?! This is not a Discord server. Take me into one!").catch(console.error);
       return
     }
-    let listPath = './vc/' + msg.guild.id + '.txt';
-    if (!fs.existsSync(listPath)) {
+    if (vc[msg.guild.id] == undefined) {
       msg.channel.send("Nothing is playing.");
       return
     }
-    let thisFile = fs.readFileSync(listPath, console.error);
-    let aList = JSON.parse(thisFile);
-    if (aList.length < 2) {
+    if (vc[msg.guild.id].length < 2) {
       msg.channel.send("Nothing is playing.");
       return
     }
     await ksoft.lyrics.get(
-      aList[1].title
+      vc[msg.guild.id][1].title
     ).then(track => {
       lyricsEmbed.setTitle(track.name);
       while (track.lyrics.includes('  ')) {

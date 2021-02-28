@@ -318,5 +318,11 @@ module.exports =
   },
   "speakSpecificLang": {
     "en": "You may as well include double colons (::) and a language ISO code."
+  },
+  "COVIDNEWS": {
+    "en": "COVID-19 Relevant Article brought to you by Ougi"
+  },
+  "curlHelpDesc": {
+    "en": "Use this command to get detailed information about an user, a role, an emoji, a channel or even a Discord server."
   }
 }

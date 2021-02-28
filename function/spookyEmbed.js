@@ -14,34 +14,34 @@ async function (msg) {
   let spookyCake = msg.content;
   let spookySlices = spookyCake.split(" ");
   let spookyCommand = spookySlices[1];
-  var arguments = spookySlices.slice(2);
+  let arguments = spookySlices.slice(2);
   /*-----------------------------------*/
 
-  var thisMessage = arguments.join(" ");
-  var breakChocolate = thisMessage.split("::").slice(1);
+  let thisMessage = arguments.join(" ");
+  let breakChocolate = thisMessage.split("::").slice(1);
   if (breakChocolate.length < 1) {
     msg.channel.send("Please provide at least one argument in order to create an embed. For more information, execute the following command.\n> ougi help embed");
     return
   }
-  var fieldsArray = [];
-  var fieldsTitles = [];
-  var footerArray = [];
-  var authorArray = [];
-  var presetName = "";
-  var sharedWith = [];
-  var attachmentsForEmbed = [];
-  var listOfPresets = [];
+  let fieldsArray = [];
+  let fieldsTitles = [];
+  let footerArray = [];
+  let authorArray = [];
+  let presetName = "";
+  let sharedWith = [];
+  let attachmentsForEmbed = [];
+  let listOfPresets = [];
 
   msg.attachments.map((files) => attachmentsForEmbed.push(files.url));
 
   if (msg.guild == null) {
-    var serverIcon = client.user.avatarURL();
+    var serverIcon = client.user.avatarURL({dynamic: true, size: 4096});
   }
   else {
     var serverIcon = msg.guild.iconURL();
   }
 
-  var spookyConstructor = new Discord.MessageEmbed();
+  let spookyConstructor = new Discord.MessageEmbed();
   for (i=0; breakChocolate.length > i; i++) {
     let material = breakChocolate[i];
     if (material.endsWith(" ")) {
@@ -263,14 +263,14 @@ async function (msg) {
       footerArray[0] = material + " | spookyEmbed by " + msg.author.username;
     }
     else if (material.startsWith("icon ")) {
-      material = material.substring(5).replace("guild", serverIcon).replace("ougi", client.user.avatarURL()).replace("myself", msg.author.avatarURL());
+      material = material.substring(5).replace("guild", serverIcon).replace("ougi", client.user.avatarURL({dynamic: true, size: 4096})).replace("myself", msg.author.avatarURL({dynamic: true, size: 4096}));
       if (material.startsWith("<@") && material.endsWith(">")) {
         let mentionedUser = material.slice(2, material.length-1).replace("!", "");
         if (!client.users.cache.has(mentionedUser)) {
           msg.channel.send("Footer icon must be an attached image, image URL or an user mention. Else, you may specify `guild`, `myself` or `ougi` as icons.");
           return
         }
-        footerArray[1] = client.users.cache.get(mentionedUser).avatarURL();
+        footerArray[1] = client.users.cache.get(mentionedUser).avatarURL({dynamic: true, size: 4096});
       }
       else if (material.startsWith("file")) {
         if (attachmentsForEmbed.length < 1) {
@@ -311,14 +311,14 @@ async function (msg) {
       }
     }
     else if (material.startsWith("avatar ")) {
-      material = material.substring(7).replace("guild", serverIcon).replace("ougi", client.user.avatarURL()).replace("myself", msg.author.avatarURL());
+      material = material.substring(7).replace("guild", serverIcon).replace("ougi", client.user.avatarURL({dynamic: true, size: 4096})).replace("myself", msg.author.avatarURL({dynamic: true, size: 4096}));
       if (material.startsWith("<@") && material.endsWith(">")) {
         let mentionedUser = material.slice(2, material.length-1).replace("!", "");
         if (!client.users.cache.has(mentionedUser)) {
           msg.channel.send("Author avatar must be an attached image, image URL or an user mention. Else, you may specify `guild`, `myself` or `ougi` as avatar.");
           return
         }
-        authorArray[1] = client.users.cache.get(mentionedUser).avatarURL();
+        authorArray[1] = client.users.cache.get(mentionedUser).avatarURL({dynamic: true, size: 4096});
       }
       else if (material.startsWith("file")) {
         if (attachmentsForEmbed.length < 1) {
@@ -359,14 +359,14 @@ async function (msg) {
       }
     }
     else if (material.startsWith("thumbnail ")) {
-      material = material.substring(10).replace("guild", serverIcon).replace("ougi", client.user.avatarURL()).replace("myself", msg.author.avatarURL());
+      material = material.substring(10).replace("guild", serverIcon).replace("ougi", client.user.avatarURL({dynamic: true, size: 4096})).replace("myself", msg.author.avatarURL({dynamic: true, size: 4096}));
       if (material.startsWith("<@") && material.endsWith(">")) {
         let mentionedUser = material.slice(2, material.length-1).replace("!", "");
         if (!client.users.cache.has(mentionedUser)) {
           msg.channel.send("Thumbnail must be an attached image, image URL or an user mention. Else, you may specify `guild`, `myself` or `ougi` as thumbnail.");
           return
         }
-        spookyConstructor.setThumbnail(client.users.cache.get(mentionedUser).avatarURL());
+        spookyConstructor.setThumbnail(client.users.cache.get(mentionedUser).avatarURL({dynamic: true, size: 4096}));
       }
       else if (material.startsWith("file")) {
         if (attachmentsForEmbed.length < 1) {
@@ -407,14 +407,14 @@ async function (msg) {
       }
     }
     else if (material.startsWith("image ")) {
-      material = material.substring(6).replace("guild", serverIcon).replace("ougi", client.user.avatarURL()).replace("myself", msg.author.avatarURL());
+      material = material.substring(6).replace("guild", serverIcon).replace("ougi", client.user.avatarURL({dynamic: true, size: 4096})).replace("myself", msg.author.avatarURL({dynamic: true, size: 4096}));
       if (material.startsWith("<@") && material.endsWith(">")) {
         let mentionedUser = material.slice(2, material.length-1).replace("!", "");
         if (!client.users.cache.has(mentionedUser)) {
           msg.channel.send("Image must be an attached image, image URL or an user mention. Else, you may specify `guild`, `myself` or `ougi` as image.");
           return
         }
-        spookyConstructor.setImage(client.users.cache.get(mentionedUser).avatarURL());
+        spookyConstructor.setImage(client.users.cache.get(mentionedUser).avatarURL({dynamic: true, size: 4096}));
       }
       else if (material.startsWith("file")) {
         if (attachmentsForEmbed.length < 1) {

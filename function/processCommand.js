@@ -73,8 +73,20 @@ async function (msg) {
         ougi.imageCommand(arguments, msg)
       break;
 
+      case "curl":
+        ougi.curl(msg)
+      break;
+
       case "embed":
         ougi.spookyEmbed(msg)
+      break;
+
+      case "covidnews":
+        ougi.covidNEWS(msg)
+      break;
+
+      case "stats":
+        ougi.statsCommand(msg)
       break;
 
       case "tweet":

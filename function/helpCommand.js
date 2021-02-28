@@ -20,6 +20,9 @@ function (arguments, msg) {
       case 'skip':
         ougi.skipHelp(msg)
       break;
+      case 'curl':
+        ougi.curlHelp(msg)
+      break;
       case 'lyrics':
         ougi.lyricsHelp(msg)
       break;
@@ -31,6 +34,9 @@ function (arguments, msg) {
       break;
       case 'embed':
         ougi.embedHelp(arguments, msg)
+      break;
+      case 'stats':
+        ougi.statsCommand(msg)
       break;
       case 'learn':
         ougi.learnHelp(msg)
