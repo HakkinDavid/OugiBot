@@ -10,15 +10,13 @@ function (msg) {
     guilds++;
   });
   let embed = new Discord.MessageEmbed()
-  .setTitle("Ougi's statistics")
   .addField("Users in touch", "`" + members + "` users in total.")
   .addField("Discord servers Ougi's in", "`" + guilds + "` Discord servers in total.")
   .addField("Emoji available for Ougi's usage", "`" + emoji + "` emoji in total.")
   .setAuthor("Ougi [BOT]", client.user.avatarURL())
   .addField("\u200b", "Ougi was created by `" + client.users.cache.get("265257341967007758").tag + "`")
-  .setImage(client.users.cache.get("265257341967007758").avatarURL())
   .setColor("#9C0049")
-  .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/info.png?raw=true")
+  .setThumbnail(client.users.cache.get("265257341967007758").avatarURL({dynamic: true, size: 256}))
   .setTimestamp()
   .setFooter("statsEmbed by Ougi", client.user.avatarURL());
   msg.channel.send(embed)
