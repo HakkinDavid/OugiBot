@@ -32,6 +32,9 @@ function (arguments, msg) {
       case 'guildlanguage':
         ougi.languageHelp(msg, 1)
       break;
+      case 'survey':
+        ougi.surveyHelp(msg, 1)
+      break;
       case 'embed':
         ougi.embedHelp(arguments, msg)
       break;

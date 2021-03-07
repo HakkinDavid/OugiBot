@@ -324,5 +324,8 @@ module.exports =
   },
   "curlHelpDesc": {
     "en": "Use this command to get detailed information about an user, a role, an emoji, a channel or even a Discord server."
+  },
+  "surveyHelpDesc": {
+    "en": "Are you interested on sharing your thoughts on Ougi? Execute this command and Ougi will check if there's any new survey you haven't been notified about already."
   }
 }

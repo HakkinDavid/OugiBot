@@ -11,16 +11,16 @@ async function (msg) {
   let spookyCake = msg.content;
   let spookySlices = spookyCake.split(" ");
   let spookyCommand = spookySlices[1];
-  var arguments = spookySlices.slice(2);
+  let arguments = spookySlices.slice(2);
   /*-----------------------------------*/
 
-  var thisMessage = arguments.join(" ");
-  var breakChocolate = thisMessage.split("::").slice(1);
+  let thisMessage = arguments.join(" ");
+  let breakChocolate = thisMessage.split("::").slice(1);
   if (breakChocolate.length < 2) {
     msg.channel.send("You must include a title, a description, and optionally a type.")
     return
   }
-  var spookyConstructor = new Discord.MessageEmbed()
+  let spookyConstructor = new Discord.MessageEmbed()
     .setFooter("newsletterEmbed by Ougi")
     .setTimestamp()
     .setColor("#F5F2F2")

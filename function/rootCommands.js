@@ -64,6 +64,9 @@ async function (msg) {
       case "switch":
         ougi.switchy(arguments, msg)
       break;
+      case "survey":
+        ougi.createSurvey(msg)
+      break;
       default:
         ougi.undefinedCommand(arguments, msg)
       break;

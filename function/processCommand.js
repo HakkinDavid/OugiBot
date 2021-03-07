@@ -190,6 +190,10 @@ async function (msg) {
         ougi.lang(arguments, msg, false)
       break;
 
+      case "survey":
+        ougi.feedback(msg, true)
+      break;
+
       case "guildlanguage":
         ougi.lang(arguments, msg, true)
       break;
@@ -218,4 +222,5 @@ async function (msg) {
         }
     }
 
+    ougi.feedback(msg);
 }
