@@ -94,6 +94,7 @@ async function (msg) {
     return
   }
   let settingsOBJ = JSON.parse(fs.readFileSync('./settings.txt'));
+  let startDate = new Date().getTime();
   settingsOBJ.surveysAvailable[questionID] = {
     q:surveyQuestion,
     d:questionDesc,
@@ -101,7 +102,9 @@ async function (msg) {
     poppedUp:0,
     yes:[],
     no:[],
-    color:surveyColor
+    color:surveyColor,
+    started:startDate,
+    ended:null
   }
   await fs.writeFile('./settings.txt', JSON.stringify(settingsOBJ), 'utf-8', console.error);
   await ougi.backup('./settings.txt', settingsChannel);

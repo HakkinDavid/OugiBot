@@ -16,7 +16,7 @@ async function (msg, intentional) {
     surveyRegistry[msg.author.id] = [];
   }
   for (let survey in surveysAvailable) {
-    if (!surveyRegistry[msg.author.id].includes(survey)) {
+    if (surveysAvailable[survey].ended == null && !surveyRegistry[msg.author.id].includes(survey)) {
       takeableSurvey = survey;
     }
   }

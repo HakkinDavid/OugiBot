@@ -198,6 +198,10 @@ async function (msg) {
         ougi.results(msg)
       break;
 
+      case "endsurvey":
+        ougi.results(msg, true)
+      break;
+
       case "guildlanguage":
         ougi.lang(arguments, msg, true)
       break;

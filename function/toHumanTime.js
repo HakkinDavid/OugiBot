@@ -1,7 +1,16 @@
 module.exports =
 
-function (dateOBJ) {
-  let aged = new Date().getTime() - dateOBJ.getTime();
+function (dateORms, endDateORms) {
+  if (isNaN(dateORms)) {
+    dateORms = dateORms.getTime();
+  }
+  if (endDateORms == null) {
+    endDateORms = new Date().getTime();
+  }
+  if (isNaN(endDateORms)) {
+    endDateORms = endDateORms.getTime();
+  }
+  let aged = endDateORms - dateORms;
   let age = {};
       age.s = aged / 1000; //inspired on 4castle's answer at stackoverflow, which was quite imprecise but it gave me insight
       age.min = aged / 60000;
