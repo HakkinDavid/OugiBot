@@ -62,6 +62,10 @@ async function (msg, intentional) {
         return
       }
       let settingsOBJ = JSON.parse(fs.readFileSync('./settings.txt'));
+      if (!settingsOBJ.surveys.hasOwnProperty(msg.author.id)) {
+        surveyRegistry[msg.author.id] = [];
+      }
+      settingsOBJ.surveys[msg.author.id].push(takeableSurvey);
       let pastVoteA = settingsOBJ.surveysAvailable[takeableSurvey].yes.indexOf(user.id);
       let pastVoteB = settingsOBJ.surveysAvailable[takeableSurvey].no.indexOf(user.id);
       if (pastVoteA >= 0) {
