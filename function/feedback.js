@@ -56,7 +56,7 @@ async function (msg, intentional) {
     .catch(console.error);
     await sentMSG.react(client.emojis.cache.get('818120425757999144'))
     .catch(console.error);
-    let collector = sentMSG.createReactionCollector(filter, { time: 960000 });
+    let collector = sentMSG.createReactionCollector(filter, { time: 900000 });
     collector.on('collect', async (reaction, user) => {
       if (reaction.emoji.id !== '818120409219334144' && reaction.emoji.id !== '818120425757999144') {
         return
