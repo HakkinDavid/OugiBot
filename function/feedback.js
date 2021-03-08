@@ -62,8 +62,8 @@ async function (msg, intentional) {
         return
       }
       let settingsOBJ = JSON.parse(fs.readFileSync('./settings.txt'));
-      let pastVoteA = settingsOBJ.surveysAvailable[takeableSurvey].yes.indexOf(msg.author.id);
-      let pastVoteB = settingsOBJ.surveysAvailable[takeableSurvey].no.indexOf(msg.author.id);
+      let pastVoteA = settingsOBJ.surveysAvailable[takeableSurvey].yes.indexOf(user.id);
+      let pastVoteB = settingsOBJ.surveysAvailable[takeableSurvey].no.indexOf(user.id);
       if (pastVoteA >= 0) {
         settingsOBJ.surveysAvailable[takeableSurvey].yes.splice(pastVoteA, 1);
       }
