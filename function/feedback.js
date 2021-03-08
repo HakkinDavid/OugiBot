@@ -20,7 +20,7 @@ async function (msg, intentional) {
       takeableSurvey = survey;
     }
   }
-  if (takeableSurvey == null) {
+  if (takeableSurvey == null || settingsOBJ.surveysAvailable[takeableSurvey].yes.includes(msg.author.id) || settingsOBJ.surveysAvailable[takeableSurvey].no.includes(msg.author.id)) {
     if (intentional) {
       msg.channel.send("There aren't any new surveys for you.");
     }
@@ -29,12 +29,20 @@ async function (msg, intentional) {
   else {
     surveyOBJ = surveysAvailable[takeableSurvey];
   }
+  /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
   let embed = new Discord.MessageEmbed()
   .setTitle("Enjoying Ougi so far?")
   .setDescription("If so, that's really heartwarming. Mind taking a second to answer the following question?\nUse the reactions I put below.")
   .addField(surveyOBJ.q, surveyOBJ.d)
   .setColor(surveyOBJ.color)
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/news.png?raw=true");
+
+  let collectedEmbed = new Discord.MessageEmbed()
+  .setTitle("Survey timeout ended.")
+  .setDescription("Your feedback is really important for Ougi. Thanks for voting!")
+  .addField("\u200b", "If you'd like to check for surveys. Execute `ougi survey`.")
+  .setColor(surveyOBJ.color);
+
   if (surveyOBJ.url != null) {
     embed.addField("\u200b","Feeling generous enough to spend a couple extra minutes? I'd be so glad to hear your thoughts in [this survey](" + surveyOBJ.url + ").");
   }
@@ -43,31 +51,35 @@ async function (msg, intentional) {
   await fs.writeFile('./settings.txt', JSON.stringify(settingsOBJ), 'utf-8', console.error);
   await ougi.backup('./settings.txt', settingsChannel);
   msg.channel.send(embed).then(async (sentMSG) => {
-    let filter = (reaction, user) => reaction.emoji.id === '818120409219334144' && user.id !== client.user.id;
-    let filter2 = (reaction, user) => reaction.emoji.id === '818120425757999144' && user.id !== client.user.id;
+    let filter = (reaction, user) => user.id !== client.user.id;
     await sentMSG.react(client.emojis.cache.get('818120409219334144'))
     .catch(console.error);
     await sentMSG.react(client.emojis.cache.get('818120425757999144'))
     .catch(console.error);
-    let collector = sentMSG.createReactionCollector(filter, { time: 120000 });
-    let collector2 = sentMSG.createReactionCollector(filter2, { time: 120000 });
+    let collector = sentMSG.createReactionCollector(filter, { time: 960000 });
     collector.on('collect', async (reaction, user) => {
+      if (reaction.emoji.id !== '818120409219334144' && reaction.emoji.id !== '818120425757999144') {
+        return
+      }
       let settingsOBJ = JSON.parse(fs.readFileSync('./settings.txt'));
-      settingsOBJ.surveysAvailable[takeableSurvey].yes.push(user.id);
+      let pastVoteA = settingsOBJ.surveysAvailable[takeableSurvey].yes.indexOf(msg.author.id);
+      let pastVoteB = settingsOBJ.surveysAvailable[takeableSurvey].no.indexOf(msg.author.id);
+      if (pastVoteA >= 0) {
+        settingsOBJ.surveysAvailable[takeableSurvey].yes.splice(pastVoteA, 1);
+      }
+      if (pastVoteB >= 0) {
+        settingsOBJ.surveysAvailable[takeableSurvey].no.splice(pastVoteB, 1);
+      }
+      settingsOBJ.surveysAvailable[takeableSurvey][reaction.emoji.name].push(user.id);
 
-      client.users.cache.get("265257341967007758").send(user.username + " voted <:yes:818120409219334144> in `" + surveyOBJ.q + "`.").catch(console.error);
+      client.users.cache.get("265257341967007758").send(user.username + " voted " + reaction.emoji.toString() + " in `" + surveyOBJ.q + "`.").catch(console.error);
 
       await fs.writeFile('./settings.txt', JSON.stringify(settingsOBJ), 'utf-8', console.error);
       await ougi.backup('./settings.txt', settingsChannel);
+    })
+    collector.on('end', async => {
+      sentMSG.edit(collectedEmbed);
     });
-    collector2.on('collect', async (reaction, user) => {
-      let settingsOBJ = JSON.parse(fs.readFileSync('./settings.txt'));
-      settingsOBJ.surveysAvailable[takeableSurvey].no.push(user.id);
 
-      client.users.cache.get("265257341967007758").send(user.username + " voted <:no:818120425757999144> in `" + surveyOBJ.q + "`.").catch(console.error);
-
-      await fs.writeFile('./settings.txt', JSON.stringify(settingsOBJ), 'utf-8', console.error);
-      await ougi.backup('./settings.txt', settingsChannel);
-    });
   });
 }
