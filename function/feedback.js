@@ -1,8 +1,11 @@
 module.exports =
 
 async function (msg, intentional) {
+  if (!intentional && msg.content.toLowerCase().startsWith("ougi survey")) {
+    return
+  }
   let gamble = Math.floor(Math.random()*3);
-  if (gamble < 2 && !intentional) {
+  if (gamble < 1 && !intentional) {
     return
   }
   let settingsOBJ = JSON.parse(fs.readFileSync('./settings.txt'));
