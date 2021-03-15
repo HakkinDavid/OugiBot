@@ -28,7 +28,7 @@ async function (msg) {
     return
   }
 
-  let langSettings = JSON.parse(fs.readFileSync('./settings.txt')).lang;
+  let langSettings = settingsOBJ.lang;
   let langCode = undefined;
   if (langSettings.hasOwnProperty(msg.guild.id)) {
     langCode = langSettings[msg.guild.id]

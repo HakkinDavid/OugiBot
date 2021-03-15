@@ -8,7 +8,6 @@ async function (msg, intentional) {
   if (gamble < 1 && !intentional) {
     return
   }
-  let settingsOBJ = JSON.parse(fs.readFileSync('./settings.txt'));
   let surveyRegistry = settingsOBJ.surveys;
   let surveysAvailable = settingsOBJ.surveysAvailable;
   let takeableSurvey, surveyOBJ;
@@ -61,7 +60,6 @@ async function (msg, intentional) {
       if (reaction.emoji.id !== '818120409219334144' && reaction.emoji.id !== '818120425757999144') {
         return
       }
-      let settingsOBJ = JSON.parse(fs.readFileSync('./settings.txt'));
       if (!settingsOBJ.surveys.hasOwnProperty(msg.author.id)) {
         surveyRegistry[msg.author.id] = [];
       }

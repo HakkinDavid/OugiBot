@@ -28,7 +28,7 @@ async function (msg) {
   }
   embed.addField("Content", notSpookyDM.slice(0, 1024));
 
-  let langSettings = JSON.parse(fs.readFileSync('./settings.txt')).lang;
+  let langSettings = settingsOBJ.lang;
   let langCode = undefined;
   if (langSettings.hasOwnProperty(msg.author.id)) {
     langCode = langSettings[msg.author.id]

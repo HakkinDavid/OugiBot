@@ -13,19 +13,16 @@ async function (arguments, msg) {
     return
   }
 
-  let pseudoArray = JSON.parse(fs.readFileSync('./settings.txt', 'utf-8', console.error));
   let guildID = msg.guild.id;
   let guildNews = msg.channel.id;
 
   if (arguments.length < 0) {
     if (arguments[0] == "disable") {
-      if (pseudoArray.guildNews.hasOwnProperty(guildID)){
-        delete pseudoArray.guildNews[guildID];
+      if (settingsOBJ.guildNews.hasOwnProperty(guildID)){
+        delete settingsOBJ.guildNews[guildID];
         msg.channel.send("Newsletter channel successfully disabled.");
-        let proArray = JSON.stringify(pseudoArray);
-        fs.writeFile('./settings.txt', proArray, console.error);
-        let myNewspaper = './settings.txt';
-        ougi.backup(myNewspaper, settingsChannel);
+        fs.writeFile('./settings.txt', JSON.stringify(settingsOBJ), console.error);
+        ougi.backup("./settings.txt", settingsChannel);
         return
       }
       else {
@@ -50,9 +47,7 @@ async function (arguments, msg) {
 
   msg.channel.send("I'll start sending updates and related information into <#"+ guildNews +">.");
 
-  pseudoArray.guildNews[guildID] = guildNews;
-  let proArray = JSON.stringify(pseudoArray);
-  fs.writeFile('./settings.txt', proArray, console.error);
-  let myNewspaper = './settings.txt';
-  ougi.backup(myNewspaper, settingsChannel);
+  settingsOBJ.guildNews[guildID] = guildNews;
+  fs.writeFile('./settings.txt', JSON.stringify(settingsOBJ), console.error);
+  ougi.backup("./settings.txt", settingsChannel);
 }

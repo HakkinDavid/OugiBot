@@ -1,15 +1,16 @@
 module.exports =
 
 async function (msg) {
-  let langSettings = JSON.parse(fs.readFileSync('./settings.txt')).lang;
+  let langSettings = settingsOBJ.lang;
   let langCode = null;
   let actualLangCode = null;
+  let oldestAllowed = new Date(new Date().getTime() - 1210000000).toISOString().slice(0, -5);
   let langsAllowed = ['ar','de','en','es','fr','he','it','nl','no','pt','ru','se','ud','zh'];
   if (langSettings.hasOwnProperty(msg.author.id)) {
     actualLangCode = langSettings[msg.author.id].replace(/mx/gi, "es").replace(/default|auto/gi, "en").replace(/zh\-CN|zh\-TW/gi, "zh");
     langCode = actualLangCode;
   }
-  if (msg.channel == "text" && langSettings.hasOwnProperty(msg.guild.id)) {
+  if (msg.channel == "text" && langCode == null && langSettings.hasOwnProperty(msg.guild.id)) {
     actualLangCode = langSettings[msg.guild.id].replace(/mx/gi, "es").replace(/default|auto/gi, "en").replace(/zh\-CN|zh\-TW/gi, "zh");
     langCode = actualLangCode;
   }
@@ -19,7 +20,7 @@ async function (msg) {
   let newspaperNow = await newsapi.v2.everything({
     q: 'covid-19',
     language: langCode,
-    pageSize: 10
+    from: oldestAllowed
   });
   if (newspaperNow.articles.length < 1) {
     msg.channel.send("No recent news found.");
@@ -47,7 +48,6 @@ async function (msg) {
   .setTimestamp()
   .setAuthor(article.source.name)
   .setTitle(article.title)
-  .setDescription(article.description.slice(0,2048))
-  .addField("\u200b", article.content.slice(0,1024));
+  .setDescription(article.description.slice(0,1500) + "\n\n[" + (await ougi.text(msg, "readFullNews")).replace(/{n}/gi, article.source.name) + "](" + article.url + ")");
   msg.channel.send(embed);
 }

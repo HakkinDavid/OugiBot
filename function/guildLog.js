@@ -2,9 +2,8 @@ module.exports =
 
 async function (msg) {
   let guildID = msg.guild.id;
-  let pseudoArray = JSON.parse(fs.readFileSync('./settings.txt', 'utf-8', console.error));
-  if (pseudoArray.logging.hasOwnProperty(guildID)){
-    let guildLogger = pseudoArray.logging[guildID];
+  if (settingsOBJ.logging.hasOwnProperty(guildID)){
+    let guildLogger = settingsOBJ.logging[guildID];
 
     let channelPointer = client.channels.cache.get(guildLogger);
 

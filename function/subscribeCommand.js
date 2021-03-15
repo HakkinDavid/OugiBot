@@ -1,15 +1,13 @@
 module.exports =
 
 async function (msg) {
-  let pseudoArray = JSON.parse(fs.readFileSync('./settings.txt', 'utf-8', console.error));
   let callerID = msg.author.id;
-  if (pseudoArray.subscribers.includes(callerID)) {
+  if (settingsOBJ.subscribers.includes(callerID)) {
     msg.channel.send("Beep boop. You were already subscribed!");
     return
   }
-  pseudoArray.subscribers.push(callerID);
-  let proArray = JSON.stringify(pseudoArray);
-  fs.writeFile('./settings.txt', proArray, console.error);
+  settingsOBJ.subscribers.push(callerID);
+  fs.writeFile('./settings.txt', JSON.stringify(settingsOBJ), console.error);
   let embed = new Discord.MessageEmbed()
   .setTitle("Thanks for subscribing, " + client.users.cache.get(callerID).username + "!")
   .setColor("#000000")
@@ -28,6 +26,5 @@ async function (msg) {
   if (msg.channel.type != "dm") {
     msg.channel.send("Check your DMs ;)").catch(console.error);
   }
-  let mySubs = "./settings.txt";
-  ougi.backup(mySubs, settingsChannel);
+  ougi.backup("./settings.txt", settingsChannel);
 }

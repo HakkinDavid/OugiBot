@@ -164,7 +164,7 @@ module.exports =
     "en": "Pancakes"
   },
   "impossible": {
-    "en": "Impossible"
+    "en": "**Impossible**"
   },
   "notWhoKnows": {
     "en": "I don't know the answer, but you do."
@@ -327,5 +327,167 @@ module.exports =
   },
   "surveyHelpDesc": {
     "en": "Are you interested on sharing your thoughts on Ougi? Execute this command and Ougi will check if there's any new survey you haven't been notified about already."
+  },
+  "featuredCOVID19modules": {
+    "en": "Featured COVID-19 commands"
+  },
+  "availableCommandsListCOVID19": {
+    "en": "Ougi got the following commands regarding COVID-19 pandemic:"
+  },
+  "covidnewsDesc": {
+    "en": "Fetch recent news about COVID-19 in your preferred language."
+  },
+  "healthcareDesc": {
+    "en": "Get a random healthcare advice to stay safe during the COVID-19 pandemic, in your preferred language."
+  },
+  "medicalDefinitionDesc": {
+    "en": "Get definitions about a set of COVID-19 related concepts, in your preferred language."
+  },
+  "remindLang": {
+    "en": "Set your preferred language using {c1}. Preview detailed commands usage using {c2}."
+  },
+  "readFullNews": {
+    "en": "Click here to read the full article at {n}."
+  },
+  "adviceTitle": {
+    "en": "Healthcare advice"
+  },
+  "WHOCOVID19ADVICE": {
+    "en": "Learn more at the World Health Organization site."
+  },
+  "hca1": {
+    "en": "Keep your distance. It's recommended to maintain at least 1 meter distance from others whenever it's possible."
+  },
+  "hca2": {
+    "en": "Wear a mask, specially if you cannot guarantee enough physical distance."
+  },
+  "hca3": {
+    "en": "Cover a sneeze or cough with a tissue or bent elbow."
+  },
+  "hca4": {
+    "en": "Immediately dispose of used tissue in a closed-lid bin."
+  },
+  "hca5": {
+    "en": "Avoid touching eyes, nose and mouth."
+  },
+  "hca6": {
+    "en": "Wash your hands frequently with soap and water, or with a hand sanitizer."
+  },
+  "hca7": {
+    "en": "Stay at home if you are feeling unwell."
+  },
+  "hca8": {
+    "en": "Always check local regulations before attending an event."
+  },
+  "hca9": {
+    "en": "Always check local guidelines before planning any sort of event."
+  },
+  "hca10": {
+    "en": "Brief others about precautions to prevent the spread of COVID-19 and ensure they are followed."
+  },
+  "hca11": {
+    "en": "Choose outdoor venues over indoor spaces – if indoors, ensure the area is well-ventilated."
+  },
+  "hca12": {
+    "en": "If you organize an event, minimize crowding by staggering arrivals and departures, numbering entries, designating seats/places and marking the floor to ensure physical distancing between people of at least one meter."
+  },
+  "hca13": {
+    "en": "Provide others all necessary supplies – hand hygiene stations, hand sanitizer or soap and water, tissues, closed-lid bins, distance markers and masks if they need them."
+  },
+  "hca14": {
+    "en": "Cancelling a planned event is an option that should always be considered, especially in case of non-essential events or when precautions cannot be implemented or adequately communicated."
+  },
+  "hca15": {
+    "en": "Clean your hands before you put your mask on, as well as before and after you take it off, and after you touch it at any time."
+  },
+  "hca16": {
+    "en": "Make sure your mask covers both your nose, mouth and chin."
+  },
+  "hca17": {
+    "en": "When you take off a mask, store it in a clean plastic bag, and every day either wash it if it’s a fabric mask, or dispose of a medical mask in a trash bin."
+  },
+  "hca18": {
+    "en": "Don’t use masks with valves."
+  },
+  "hca19": {
+    "en": "Outbreaks have been reported in restaurants, choir practices, fitness classes, nightclubs, offices and places of worship where people have gathered, often in crowded indoor settings where they talk loudly, shout, breathe heavily or sing."
+  },
+  "hca20": {
+    "en": "The risks of getting COVID-19 are higher in crowded and inadequately ventilated spaces where infected people spend long periods of time together in close proximity."
+  },
+  "hca21": {
+    "en": "Crowded environments are where the virus appears to spread by respiratory droplets or aerosols more efficiently, so taking precautions is even more important."
+  },
+  "hca22": {
+    "en": "Open a window. Increase the amount of natural ventilation when indoors."
+  },
+  "hca23": {
+    "en": "Hands touch many surfaces and can pick up viruses. Once contaminated, hands can transfer the virus to your eyes, nose or mouth. From there, the virus can enter your body and infect you."
+  },
+  "hca24": {
+    "en": "Clean and disinfect surfaces frequently especially those which are regularly touched, such as door handles, faucets and phone screens."
+  },
+  "hca25": {
+    "en": "The most common symptoms of COVID-19 are fever, dry cough, and tiredness."
+  },
+  "hca26": {
+    "en": "Other symptoms of COVID-19 that are less common and may affect some patients include loss of taste or smell, aches and pains, headache, sore throat, nasal congestion, red eyes, diarrhoea, or a skin rash."
+  },
+  "hca27": {
+    "en": "Stay home and self-isolate even if you have minor symptoms such as cough, headache, mild fever, until you recover."
+  },
+  "hca28": {
+    "en": "Call your health care provider or hotline for advice."
+  },
+  "hca29": {
+    "en": "If you're feeling unwell and need to leave your house or have someone near you, wear a medical mask to avoid infecting others."
+  },
+  "hca30": {
+    "en": "Keep up to date on the latest information from trusted sources, such as WHO or your local and national health authorities."
+  },
+  "mdThis": {
+    "en": "Medical definition of {m}"
+  },
+  "covid-19": {
+    "en": "COVID-19"
+  },
+  "coronavirus": {
+    "en": "coronavirus"
+  },
+  "face mask": {
+    "en": "face mask"
+  },
+  "pandemic": {
+    "en": "pandemic"
+  },
+  "quarantine": {
+    "en": "quarantine"
+  },
+  "safe distance": {
+    "en": "safe distance"
+  },
+  "symptoms": {
+    "en": "symptoms"
+  },
+  "md1": {
+    "en": "COVID-19 is the disease caused by a new coronavirus called SARS-CoV-2. WHO first learned of this new virus on 31 December 2019, following a report of a cluster of cases of ‘viral pneumonia’ in Wuhan, People’s Republic of China."
+  },
+  "md2": {
+    "en": "Coronaviruses are a type of virus. There are many different kinds, and some cause disease. A newly identified coronavirus, SARS-CoV-2, has caused a worldwide pandemic of respiratory illness, called COVID-19."
+  },
+  "md3": {
+    "en": "A pandemic is defined as “an epidemic occurring worldwide, or over a very wide area, crossing international boundaries and usually affecting a large number of people”. The classical definition includes nothing about population immunity, virology or disease severity."
+  },
+  "md4": {
+    "en": "A protective mask covering the nose and mouth or nose and eyes. It's currently being used to protect oneself and others from COVID-19."
+  },
+  "md5": {
+    "en": "A state, period, or place of isolation in which people or animals that have arrived from elsewhere or been exposed to infectious or contagious disease (such as COVID-19) are placed."
+  },
+  "md6": {
+    "en": "The World Health Organization recommends to stay at least 1 meter apart of other people, in order to minimize COVID-19 spread risks."
+  },
+  "md7": {
+    "en": "The most common symptoms of COVID-19 are fever, dry cough, and tiredness. Other symptoms of COVID-19 that are less common and may affect some patients include loss of taste or smell, aches and pains, headache, sore throat, nasal congestion, red eyes, diarrhoea, or a skin rash."
   }
 }

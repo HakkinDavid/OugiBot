@@ -13,7 +13,6 @@ async function (arguments, msg) {
     return
   }
 
-  let pseudoArray = JSON.parse(fs.readFileSync('./settings.txt', 'utf-8', console.error));
   let guildID = msg.guild.id;
   let prefix = arguments.join(" ");
 
@@ -23,9 +22,7 @@ async function (arguments, msg) {
   }
   msg.channel.send("Prefix for Ougi in " + msg.guild.toString() + " set as `" + prefix + "`.");
 
-  pseudoArray.prefix[guildID] = prefix;
-  let proArray = JSON.stringify(pseudoArray);
-  fs.writeFileSync('./settings.txt', proArray, console.error);
-  let myPrefix = './settings.txt';
-  ougi.backup(myPrefix, settingsChannel);
+  settingsOBJ.prefix[guildID] = prefix;
+  await fs.writeFile('./settings.txt', JSON.stringify(settingsOBJ), console.error);
+  ougi.backup("./settings.txt", settingsChannel);
 }

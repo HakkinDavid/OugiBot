@@ -13,19 +13,16 @@ async function (arguments, msg) {
     return
   }
 
-  let pseudoArray = JSON.parse(fs.readFileSync('./settings.txt', 'utf-8', console.error));
   let guildID = msg.guild.id;
   let guildLogger = msg.channel.id;
 
   if (arguments.length > 0) {
     if (arguments[0] == "disable") {
-      if (pseudoArray.logging.hasOwnProperty(guildID)){
-        delete pseudoArray.logging[guildID];
+      if (settingsOBJ.logging.hasOwnProperty(guildID)){
+        delete settingsOBJ.logging[guildID];
         msg.channel.send("Logging channel successfully disabled.");
-        let proArray = JSON.stringify(pseudoArray);
-        fs.writeFile('./settings.txt', proArray, console.error);
-        let myLogger = './settings.txt';
-        ougi.backup(myLogger, settingsChannel);
+        fs.writeFile('./settings.txt', JSON.stringify(settingsOBJ), console.error);
+        ougi.backup("./settings.txt", settingsChannel);
         return
       }
       else {
@@ -49,9 +46,7 @@ async function (arguments, msg) {
   }
   msg.channel.send("I'll start sending this server's commands log into <#"+ guildLogger +">.");
 
-  pseudoArray.logging[guildID] = guildLogger;
-  let proArray = JSON.stringify(pseudoArray);
-  fs.writeFile('./settings.txt', proArray, console.error);
-  let myLogger = './settings.txt';
-  ougi.backup(myLogger, settingsChannel);
+  settingsOBJ.logging[guildID] = guildLogger;
+  fs.writeFile('./settings.txt', JSON.stringify(settingsOBJ), console.error);
+  ougi.backup("./settings.txt", settingsChannel);
 }

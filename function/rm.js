@@ -49,17 +49,14 @@ async function (arguments, msg) {
     return
   }
 
-  let pseudoArray = JSON.parse(fs.readFileSync('./settings.txt', 'utf-8', console.error));
-
   let afterOptions = [
     "I'll stop reacting to `" + trigger + "` in " + msg.guild.toString() + ".",
     "Alright, I've blacklisted `" + trigger + "` in " + msg.guild.toString() + ".",
   ];
   let answer = afterOptions[Math.floor(Math.random()*afterOptions.length)];
-  let myBlacklist = "./settings.txt";
 
-  if (pseudoArray.blacklist.hasOwnProperty(guildID)){
-    let existent = pseudoArray.blacklist[guildID];
+  if (settingsOBJ.blacklist.hasOwnProperty(guildID)){
+    let existent = settingsOBJ.blacklist[guildID];
     for(i = 0; i < existent.length; i++) {
       if(existent[i].toLowerCase() === trigger) {
         msg.channel.send("Sorry, that trigger is already blacklisted in " + msg.guild.toString() + ".").catch(console.error);
@@ -69,23 +66,21 @@ async function (arguments, msg) {
     existent.push(trigger);
     msg.channel.send(answer).catch(console.error);
     client.channels.cache.get(consoleLogging).send("Trigger to be blacklisted: `" + trigger + "` in `" + msg.guild.toString() + "` with guildID `" + guildID + "`");
-    pseudoArray.blacklist[guildID] = existent;
-    let proArray = JSON.stringify(pseudoArray);
-    fs.writeFile('./settings.txt', proArray, console.error);
+    settingsOBJ.blacklist[guildID] = existent;
+    fs.writeFile('./settings.txt', JSON.stringify(settingsOBJ), console.error);
 
-    ougi.backup(myBlacklist, settingsChannel);
+    ougi.backup("./settings.txt", settingsChannel);
     return
   }
 
   msg.channel.send(answer).catch(console.error);
   client.channels.cache.get(consoleLogging).send("Trigger to be blacklisted: `" + trigger + "` in `" + msg.guild.toString() + "` with guildID `" + guildID + "`");
 
-  pseudoArray.blacklist[guildID] = [];
-  let arrayMaker = pseudoArray.blacklist[guildID];
+  settingsOBJ.blacklist[guildID] = [];
+  let arrayMaker = settingsOBJ.blacklist[guildID];
   arrayMaker.push(trigger);
-  pseudoArray.blacklist[guildID] = arrayMaker;
-  let proArray = JSON.stringify(pseudoArray);
-  fs.writeFile('./settings.txt', proArray, console.error);
+  settingsOBJ.blacklist[guildID] = arrayMaker;
+  fs.writeFile('./settings.txt', JSON.stringify(settingsOBJ), console.error);
 
-  ougi.backup(myBlacklist, settingsChannel);
+  ougi.backup("./settings.txt", settingsChannel);
 }

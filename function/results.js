@@ -1,6 +1,6 @@
 module.exports =
 
-async function (msg, shouldEnd) {
+function (msg, shouldEnd) {
   /*-----------------------------------*/
   while (msg.content.includes('  ')) {
     msg.content = msg.content.replace('  ', ' ')
@@ -14,7 +14,6 @@ async function (msg, shouldEnd) {
   let arguments = spookySlices.slice(2);
   /*-----------------------------------*/
   let thisSurvey = arguments.join(" ");
-  let settingsOBJ = await JSON.parse(await fs.readFileSync('./settings.txt'));
   if (!settingsOBJ.surveysAvailable.hasOwnProperty(thisSurvey)) {
     msg.channel.send("Not a survey ID yet.");
     return
@@ -33,13 +32,13 @@ async function (msg, shouldEnd) {
   .setTimestamp()
   .setAuthor("Ougi [BOT]", client.user.avatarURL())
   .setFooter("surveyResultsEmbed by Ougi", client.user.avatarURL());
-  if (shouldEnd) {
+  if (shouldEnd && msg.author.id == "265257341967007758") {
     if (settingsOBJ.surveysAvailable[thisSurvey].ended == null) {
       settingsOBJ.surveysAvailable[thisSurvey].ended = new Date().getTime();
       surveyDone = "Survey has ended!";
     }
-    await fs.writeFile('./settings.txt', JSON.stringify(settingsOBJ), 'utf-8', console.error);
-    await ougi.backup('./settings.txt', settingsChannel);
+    fs.writeFile('./settings.txt', JSON.stringify(settingsOBJ), 'utf-8', console.error);
+    ougi.backup('./settings.txt', settingsChannel);
   }
   embed.addField(surveyDone, "Duration: " + ougi.toHumanTime(mySurvey.started, mySurvey.ended) + ".")
   msg.channel.send(embed);

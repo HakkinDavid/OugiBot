@@ -56,11 +56,10 @@ async function (arguments, msg, guildExecution) {
   }
   langEmbed.addField(":warning: " + await ougi.text(msg, "possibleDelay"), await ougi.text(msg, "delayWarning"))
   msg.channel.send(langEmbed);
-  let pseudoArray = JSON.parse(fs.readFileSync('./settings.txt'));
-  pseudoArray.lang[preferencesID] = finalCode;
+  settingsOBJ.lang[preferencesID] = finalCode;
   if (finalCode == 'default') {
-    delete pseudoArray.lang[preferencesID]
+    delete settingsOBJ.lang[preferencesID]
   }
-  await fs.writeFile('./settings.txt', JSON.stringify(pseudoArray), console.error);
+  await fs.writeFile('./settings.txt', JSON.stringify(settingsOBJ), console.error);
   ougi.backup('./settings.txt', settingsChannel);
 }

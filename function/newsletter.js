@@ -80,10 +80,9 @@ async function (msg) {
     return
   }
   let names = [];
-  let pseudoArray = JSON.parse(fs.readFileSync("./settings.txt"));
   let mod = 0;
-  for (i=0; pseudoArray.subscribers.length > i; i++) {
-    let aSub = client.users.cache.get(pseudoArray.subscribers[i]);
+  for (i=0; settingsOBJ.subscribers.length > i; i++) {
+    let aSub = client.users.cache.get(settingsOBJ.subscribers[i]);
     if (aSub != undefined) {
       aSub.send(spookyConstructor).catch(console.error);
       names.push(aSub.username);
@@ -92,8 +91,8 @@ async function (msg) {
       mod++
     }
   }
-  for (let getKey in pseudoArray.guildNews) {
-    let newsDoor = client.channels.cache.get(pseudoArray.guildNews[getKey]);
+  for (let getKey in settingsOBJ.guildNews) {
+    let newsDoor = client.channels.cache.get(settingsOBJ.guildNews[getKey]);
     if (newsDoor != undefined) {
       newsDoor.send(spookyConstructor).catch(console.error);
       names.push(newsDoor.toString());

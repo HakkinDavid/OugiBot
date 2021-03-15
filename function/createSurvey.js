@@ -93,7 +93,6 @@ async function (msg) {
     msg.channel.send("You must include a question, question ID, a description and optionally a featured survey URL and a color.")
     return
   }
-  let settingsOBJ = JSON.parse(fs.readFileSync('./settings.txt'));
   let startDate = new Date().getTime();
   settingsOBJ.surveysAvailable[questionID] = {
     q:surveyQuestion,

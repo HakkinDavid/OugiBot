@@ -19,10 +19,8 @@ async function (msg) {
     if (msg.channel.type == "text") {
       let guildID = msg.guild.id;
 
-      let settings = JSON.parse(fs.readFileSync('./settings.txt'));
-
-      if (settings.blacklist.hasOwnProperty(guildID)){
-        let existent = settings.blacklist[guildID];
+      if (settingsOBJ.blacklist.hasOwnProperty(guildID)){
+        let existent = settingsOBJ.blacklist[guildID];
         for (i = 0; i < existent.length; i++) {
           if (existent[i].toLowerCase() === spookySlices.slice(1).join(" ")) {
             msg.channel.send("Sorry, that's blacklisted in " + msg.guild.toString() + ".").catch(console.error);
@@ -83,6 +81,14 @@ async function (msg) {
 
       case "covidnews":
         ougi.covidNEWS(msg)
+      break;
+
+      case "healthcare":
+        ougi.healthcare(msg)
+      break;
+
+      case "md":
+        ougi.medicalDefinition(arguments, msg)
       break;
 
       case "stats":

@@ -44,25 +44,21 @@ async function (arguments, msg) {
     return
   }
 
-  let pseudoArray = JSON.parse(fs.readFileSync('./settings.txt', 'utf-8', console.error));
-
   let afterOptions = [
     await ougi.text(msg, "reactingTo"),
     await ougi.text(msg, "alrightWhitelisted"),
   ];
   let answer = afterOptions[Math.floor(Math.random()*afterOptions.length)].replace(/{triggerName}/, "`" + allow + "`").replace(/{guildName}/, msg.guild.toString());
-  let myBlacklist = "./settings.txt";
 
-  if (pseudoArray.blacklist.hasOwnProperty(guildID)){
-    let existent = pseudoArray.blacklist[guildID];
+  if (settingsOBJ.blacklist.hasOwnProperty(guildID)){
+    let existent = settingsOBJ.blacklist[guildID];
     for(let i = 0; i < existent.length; i++) {
       if(existent[i].toLowerCase() === trigger) {
         client.channels.cache.get(consoleLogging).send("Trigger to be removed from blacklist: `" + trigger + "` in `" + msg.guild.toString() + "` with guildID `" + guildID + "`");
         existent.splice(i, 1);
-        let proArray = JSON.stringify(pseudoArray);
-        fs.writeFile('./settings.txt', proArray, console.error);
+        fs.writeFile('./settings.txt', JSON.stringify(settingsOBJ), console.error);
         msg.channel.send(answer).catch(console.error);
-        ougi.backup(myBlacklist, settingsChannel);
+        ougi.backup("./settings.txt", settingsChannel);
         return
       }
     }
