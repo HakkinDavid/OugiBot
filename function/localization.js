@@ -507,5 +507,8 @@ module.exports =
   },
   "covidStatsRecovered": {
     "en": "Recovered from COVID-19 cases"
+  },
+  "notCountry": {
+    "en": "Invalid country name or ISO code."
   }
 }
