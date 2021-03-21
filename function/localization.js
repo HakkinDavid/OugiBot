@@ -489,5 +489,23 @@ module.exports =
   },
   "md7": {
     "en": "The most common symptoms of COVID-19 are fever, dry cough, and tiredness. Other symptoms of COVID-19 that are less common and may affect some patients include loss of taste or smell, aches and pains, headache, sore throat, nasal congestion, red eyes, diarrhoea, or a skin rash."
+  },
+  "covidStatsTitle": {
+    "en": "COVID-19 statistics"
+  },
+  "covidStatsDesc": {
+    "en": "Fetch COVID-19 statistics for a specific country by specifying a country name or a 2 characters country ISO code."
+  },
+  "covidStatsConfirmed": {
+    "en": "Confirmed COVID-19 cases"
+  },
+  "covidStatsCritical": {
+    "en": "Critical COVID-19 cases"
+  },
+  "covidStatsDeaths": {
+    "en": "Confirmed COVID-19 deaths"
+  },
+  "covidStatsRecovered": {
+    "en": "Recovered from COVID-19 cases"
   }
 }

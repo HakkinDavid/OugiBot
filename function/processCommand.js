@@ -83,6 +83,18 @@ async function (msg) {
         ougi.covidNEWS(msg)
       break;
 
+      case "covidstats":
+        ougi.covidstats(msg)
+      break;
+
+      case "covid":
+        ougi.covidAmbiguousCommandManager(msg)
+      break;
+
+      case "covid-19":
+        ougi.covidAmbiguousCommandManager(msg)
+      break;
+
       case "healthcare":
         ougi.healthcare(msg)
       break;

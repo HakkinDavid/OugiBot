@@ -65,6 +65,9 @@ function (arguments, msg) {
       case 'covidnews':
         ougi.covidNEWSHelp(msg)
       break;
+      case 'covidstats':
+        ougi.covidstatsHelp(msg)
+      break;
       case 'healthcare':
         ougi.healthcareHelp(msg)
       break;
