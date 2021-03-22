@@ -49,8 +49,11 @@ async function (msg) {
       case "log":
         ougi.logRootCommand(arguments, msg)
       break;
-      case "vibe_check":
-        ougi.vibeCheckReallyHard(arguments, msg)
+      case "shutdown":
+        ougi.vibeCheckReallyHard(msg)
+      break;
+      case "notifysurvey":
+        ougi.notifySurvey(msg)
       break;
       case "haunt":
         ougi.hauntRootCommand(arguments, msg)
