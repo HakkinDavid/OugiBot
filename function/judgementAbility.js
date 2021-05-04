@@ -85,21 +85,21 @@ async function (msg) {
     var options = pseudoArray[thisString];
     var response = options[Math.floor(Math.random()*options.length)];
     if (msg.channel.type != "dm") {
-      while(response.includes("nigga") || response.includes("nigger") || response.includes("gay") || response.includes("cock") || response.includes("penis") || response.includes("n word")){
-        response = response
-        .replace("nigga", "unwhite")
-        .replace("nigger", "unwhiter")
-        .replace("gay", "unstraight")
-        .replace("cock", "coke")
-        .replace("penis", "coke")
-        .replace("n word", "word starting with n")
-      }
+      response = response
+      .replace(/nigga|nigger/gi, "unwhiter")
+      .replace(/gay|lesbian|transexual|bisexual/gi, "unstraight")
+      .replace(/cock|dick|penis/gi, "coke");
     }
     embed.addField("Reply", response);
     if (langCode != undefined) {
+      responseEmoji = response.match(/<:[A-Za-z0-9_]+:[0-9]+>/g);
       await translate(response, {to: langCode.replace('mx', 'es')}).then(res => {
           if (res.from.language.iso != langCode.replace('mx', 'es')) {
             response = res.text;
+            translatedEmoji = response.match(/< {0,}:[A-Za-z0-9_ ]+: {0,}[0-9]+>/g);
+            for (i=0; i < translatedEmoji.length; i++) {
+              response = response.replace(translatedEmoji[i], responseEmoji[i]);
+            }
             embed.addField("Localized as", response);
           }
       }).catch(err => {
