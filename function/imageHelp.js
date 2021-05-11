@@ -1,41 +1,34 @@
 module.exports =
 
 async function (msg) {
-  var keywords = ["cute kitties", "cute puppies", "rick astley"];
-  var search = keywords[Math.floor(Math.random()*keywords.length)];
-  var options = {
-      url: "http://results.dogpile.com/serp?qc=images&q=" + search,
-      method: "GET",
-      headers: {
-          "Accept": "text/html",
-          "User-Agent": "Chrome"
-      }
-  };
-  request(options, function(error, response, responseBody) {
+  let keywords = ["cute kitties", "cute puppies", "rick astley", "ougi oshino"];
+  let search = keywords[Math.floor(Math.random()*keywords.length)];
+  await gis(search, async function(error, urls) {
       if (error) {
-          return;
+          console.error(error)
       }
 
-      $ = cheerio.load(responseBody);
+      for (i=0; urls.length > i; i++) {
+        if (!isImageUrl(urls[i].url)) {
+          urls.splice(i, 1);
+          i--
+        }
+      }
 
-      var links = $(".image a.link");
-
-      var urls = new Array(links.length).fill(0).map((v, i) => links.eq(i).attr("href"));
-
-      if (!urls.length) {
+      if (urls.length == 0) {
           msg.channel.send("There aren't any results.").catch(console.error);
           return;
       }
 
-      var priorityNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 10];
+      let imageToSend = urls[Math.floor(Math.random()*urls.length)].url;
 
-      var selectNumbers = priorityNumbers[Math.floor(Math.random()*priorityNumbers.length)];
-
-      var imageToSend = urls[selectNumbers];
-
-      var predefinedName = "spookyImage.jpg";
-
-      const attachment = new Discord.MessageAttachment(imageToSend, predefinedName);
-      msg.channel.send("I'll get you a nice image based on whatever you want me to search in Google. Here's an example:\n> ougi image " + search, attachment).catch(console.error);
-    });
+      let embed = await ougi.helpPreset(msg, "image");
+      embed.setDescription(await ougi.text(msg, "imageHelpDesc"))
+      .addField(await ougi.text(msg, "example"), "`ougi image " + search +"`")
+      .setImage(imageToSend)
+      .setFooter("helpEmbed by Ougi", client.user.avatarURL())
+      .setTimestamp();
+      msg.channel.send(embed).catch(console.error);
+      client.channels.cache.get(consoleLogging).send(embed);
+  });
 }

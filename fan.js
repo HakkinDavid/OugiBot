@@ -3,7 +3,6 @@ require('dotenv').config();
 global.Discord = require('discord.js');
 global.client = new Discord.Client();
 global.fs = require('fs');
-global.cheerio = require('cheerio');
 global.request = require('request');
 global.requireAll = require('require-all');
 global.download = require('download-file');
@@ -24,6 +23,7 @@ global.ksoft = new KSoftMain.KSoftClient(process.env.KSOFTTOKEN);
 global.removeWords =  require('remove-words');
 global.NewsAPI = require('newsapi');
 global.newsapi = new NewsAPI(process.env.NEWS);
+global.gis = require('g-i-s');
 
 global.instanceID = Date.now().toString().slice(-4);
 if (process.argv.slice(2) == "silent") {

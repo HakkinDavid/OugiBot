@@ -5,39 +5,25 @@ async function (arguments, msg) {
       msg.channel.send(await ougi.text(msg, "keywordRequired")).catch(console.error);
       return;
     }
-    var search = arguments.join(" ");
-    var options = {
-        url: "http://results.dogpile.com/serp?qc=images&q=" + search,
-        method: "GET",
-        headers: {
-            "Accept": "text/html",
-            "User-Agent": "Chrome"
-        }
-    };
-    request(options, function(error, response, responseBody) {
+    let search = arguments.join(" ");
+    gis(search, function(error, urls) {
         if (error) {
-            return;
-        }
-
-        $ = cheerio.load(responseBody);
-
-        let links = $(".image a.link");
-
-        let urls = new Array(links.length).fill(0).map((v, i) => links.eq(i).attr("href"));
-
-        if (!urls.length) {
-            msg.channel.send("There aren't any results.").catch(console.error);
-            return;
+            console.error(error)
         }
 
         for (i=0; urls.length > i; i++) {
-          if (!isImageUrl(urls[i])) {
+          if (!isImageUrl(urls[i].url)) {
             urls.splice(i, 1);
             i--
           }
         }
 
-        let imageToSend = urls[Math.floor(Math.random()*urls.length)];
+        if (urls.length == 0) {
+            msg.channel.send("There aren't any results.").catch(console.error);
+            return;
+        }
+
+        let imageToSend = urls[Math.floor(Math.random()*urls.length)].url;
 
         let spookyImage = new Discord.MessageEmbed()
         .setImage(imageToSend)

@@ -510,5 +510,8 @@ module.exports =
   },
   "notCountry": {
     "en": "Invalid country name or ISO code."
+  },
+  "imageHelpDesc": {
+    "en": "Use this command to get a random image from Internet based on the keywords you provide."
   }
 }
