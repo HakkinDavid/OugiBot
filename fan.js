@@ -7,6 +7,7 @@ global.request = require('request');
 global.requireAll = require('require-all');
 global.download = require('download-file');
 global.Twit = require('twit');
+global.lastTweet = require('last-tweet');
 global.translate = require('@k3rn31p4nic/google-translate-api');
 global.randomCase = require('random-case');
 global.findRemoveSync = require('find-remove');
