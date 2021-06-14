@@ -97,8 +97,10 @@ async function (msg) {
           if (res.from.language.iso != langCode.replace('mx', 'es')) {
             response = res.text;
             translatedEmoji = response.match(/< {0,}:[A-Za-z0-9_ ]+: {0,}[0-9]+>/g);
-            for (i=0; i < translatedEmoji.length; i++) {
-              response = response.replace(translatedEmoji[i], responseEmoji[i]);
+            if (translatedEmoji != null) {
+              for (i=0; i < translatedEmoji.length; i++) {
+                response = response.replace(translatedEmoji[i], responseEmoji[i]);
+              }
             }
             embed.addField("Localized as", response);
           }
