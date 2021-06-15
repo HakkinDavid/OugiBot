@@ -230,18 +230,13 @@ client.on('messageDelete', (msg) => {
 /*Makotomonogatari*/
 client.setInterval(
   function () {
-    if (process.env.DEV == 1) {
-      findRemoveSync('./', {extensions: ['.txt']});
-      for (i=0; i < fetchedChannels.length; i++) {
-        ougi.fetch(fetchedChannels[i]);
-      }
-
-      ougi.startup();
+    client.destroy();
+    client.login(process.env.TOKEN);
+    findRemoveSync('./', {extensions: ['.txt']});
+    for (i=0; i < fetchedChannels.length; i++) {
+      ougi.fetch(fetchedChannels[i]);
     }
-    else {
-      client.destroy();
-      process.exit();
-    }
+    ougi.startup();
   }, 28800000);
 
 /* Kaishimonogatari */
