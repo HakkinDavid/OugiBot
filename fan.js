@@ -104,7 +104,7 @@ client.on('ready', () => {
   console.log("Instance ID: " + instanceID);
 
   if (global.TEASEABLE) {
-    ougi.startup().catch(console.error);
+    ougi.startup();
   }
 
 
