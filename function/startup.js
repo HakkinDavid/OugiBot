@@ -49,7 +49,7 @@ function () {
       if (process.env.DEV == 0){
         T.post('statuses/update', { status: contentToSay }, function(err, data, response) {
           client.channels.cache.get(consoleLogging).send("Tweeted: " + contentToSay)
-        });
+        }).catch(console.error);
         var gonnaSay = willSay + 1;
         client.channels.cache.get(wordsChannel).send(gonnaSay.toString());
         client.user.setPresence({activity: { name: guildsLength + " Discord servers, " + membersLength + " users | " + contentToSay.replace("\n", ", ") + ".", type: 'WATCHING' }, status:'online'}).catch(console.error);
