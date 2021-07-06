@@ -68,7 +68,8 @@ function (arguments, msg, isEdit) {
   }
 
   if (bullet.files.length > 0) {
-    embed.setImage(bullet.files[0])
+    embed.addField(bullet.files[0].name, "[Click here to view it on your browser](" + bullet.files[0].url + ")");
+    embed.setImage(bullet.files[0].url);
   }
 
   msg.channel.send({embed}).catch(console.error);
