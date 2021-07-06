@@ -11,10 +11,10 @@ async function (msg) {
   let thatIndex = Math.floor(Math.random()*videos.length);
   var embed = new Discord.MessageEmbed()
   .setTitle("Ougi's `lyrics` command")
-  .setAuthor("Ougi [BOT]", client.user.avatarURL())
+  .setAuthor("Ougi [BOT]", client.user.avatarURL({dynamic: true, size: 4096}))
   .setColor("#230347")
   .setDescription("Use this command to get a specified song's lyrics. You may as well not specify any song at all to get lyrics for the currently playing song from your music queue.")
-  .setFooter("helpEmbed by Ougi", client.user.avatarURL())
+  .setFooter("helpEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true")
   .addField(await ougi.text(msg, "example"), "`ougi lyrics " + videos[thatIndex] + "`")
   .addField(await ougi.text(msg, "output"), lyrics[thatIndex]);

@@ -3,10 +3,10 @@ module.exports =
 async function (msg) {
   var embed = new Discord.MessageEmbed()
   .setTitle("Ougi's data usage acknowledgement")
-  .setAuthor("Ougi [BOT]", client.user.avatarURL())
+  .setAuthor("Ougi [BOT]", client.user.avatarURL({dynamic: true, size: 4096}))
   .setColor("#230347")
   .setDescription("By using Ougi, you acknowledge and accept the following.")
-  .setFooter("acknowledgementEmbed by Ougi", client.user.avatarURL())
+  .setFooter("acknowledgementEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
   .addField("Contact for technical support, suggestions, feedback and requests", "Ougi's developer: `" + client.users.cache.get("265257341967007758").tag + "`.\nOugi's main Discord server: https://discord.gg/nB3GXW5")
   .addField("Commands logging", "For debugging purposes, commands, arguments and executant are stored in Ougi's console logs. This information is only visible to Ougi's developer.")
   .addField("Language processing events", "In order to provide a seamless immersive Artificial Intelligence experience, anything you teach to Ougi through `learn` command is permanently stored and available for anyone. Use the contact information to request the deletion of a specific trigger.")

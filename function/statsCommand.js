@@ -13,11 +13,11 @@ function (msg) {
   .addField("Users in touch", "`" + members + "` users in total.")
   .addField("Discord servers Ougi's in", "`" + guilds + "` Discord servers in total.")
   .addField("Emoji available for Ougi's usage", "`" + emoji + "` emoji in total.")
-  .setAuthor("Ougi [BOT]", client.user.avatarURL())
+  .setAuthor("Ougi [BOT]", client.user.avatarURL({dynamic: true, size: 4096}))
   .addField("\u200b", "Ougi was created by `" + client.users.cache.get("265257341967007758").tag + "`")
   .setColor("#9C0049")
   .setThumbnail(client.users.cache.get("265257341967007758").avatarURL({dynamic: true, size: 256}))
   .setTimestamp()
-  .setFooter("statsEmbed by Ougi", client.user.avatarURL());
+  .setFooter("statsEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}));
   msg.channel.send(embed)
 }

@@ -52,8 +52,8 @@ function (msg) {
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/news.png?raw=true")
   .setColor(mySurvey.color)
   .setTimestamp()
-  .setAuthor("Ougi [BOT]", client.user.avatarURL())
-  .setFooter("surveyNotificationEmbed by Ougi", client.user.avatarURL());
+  .setAuthor("Ougi [BOT]", client.user.avatarURL({dynamic: true, size: 4096}))
+  .setFooter("surveyNotificationEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}));
   let names = [];
   let mod = 0;
   for (i=0; upvoters.length > i; i++) {

@@ -43,7 +43,7 @@ function (arguments, msg, isEdit) {
   let footerLogo;
 
   if (msg.guild == null) {
-    footerLogo = client.user.avatarURL();
+    footerLogo = client.user.avatarURL({dynamic: true, size: 4096});
   }
   else {
     footerLogo = msg.guild.iconURL();
@@ -51,7 +51,7 @@ function (arguments, msg, isEdit) {
 
   let embed = new Discord.MessageEmbed()
   .setColor("#7F0037")
-  .setAuthor("Ougi [BOT]", client.user.avatarURL())
+  .setAuthor("Ougi [BOT]", client.user.avatarURL({dynamic: true, size: 4096}))
   .setThumbnail(bullet.pfp)
   .setFooter("Ougi " + action + " " + bullet.author + " (" + distance + " m)" + " with " + snipedWith + " (" + rarity + "). This channel has " + maxIndex + " snipeable messages.", footerLogo);
   if (bullet.text != "") {

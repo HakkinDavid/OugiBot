@@ -15,7 +15,7 @@ async function (msg) {
   /*-----------------------------------*/
   var thisMessage = arguments.join(" ");
   var breakChocolate = thisMessage.split("::").slice(1);
-  let icon = msg.author.avatarURL();
+  let icon = msg.author.avatarURL({dynamic: true, size: 4096});
   let embedColor = "#230347";
   if (msg.channel.type == "text") {
     icon = msg.guild.iconURL()
@@ -26,7 +26,7 @@ async function (msg) {
   let mine = [];
   let minesweeperEmbed = new Discord.MessageEmbed()
     .setColor(embedColor)
-    .setFooter("minesweeperEmbed by Ougi & " + msg.author.username, client.user.avatarURL())
+    .setFooter("minesweeperEmbed by Ougi & " + msg.author.username, client.user.avatarURL({dynamic: true, size: 4096}))
     .setThumbnail(icon);
   for (i=0; breakChocolate.length > i; i++) {
     let material = breakChocolate[i];

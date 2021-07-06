@@ -29,7 +29,7 @@ async function (arguments, msg) {
   let embed = new Discord.MessageEmbed()
     .setTitle("spookyEmoji List | Page " + displayPage)
     .setColor("#C93A57")
-    .setFooter((await ougi.text(msg, "emojiListFooter")).replace(/{hwmnemoji}/gi, howMany).replace(/{numpage}/gi, pageMax), client.user.avatarURL());
+    .setFooter((await ougi.text(msg, "emojiListFooter")).replace(/{hwmnemoji}/gi, howMany).replace(/{numpage}/gi, pageMax), client.user.avatarURL({dynamic: true, size: 4096}));
     for (i = 0; i < willShow.length; i+=2) {
       if (willShow[i+1] == undefined) {
         willShow[i+1] = "\u200b";

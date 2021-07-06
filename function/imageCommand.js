@@ -27,7 +27,7 @@ async function (arguments, msg) {
 
         let spookyImage = new Discord.MessageEmbed()
         .setImage(imageToSend)
-        .setFooter("imageEmbed by Ougi", client.user.avatarURL())
+        .setFooter("imageEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
         .setTimestamp()
         .setColor("#230347");
         msg.channel.send(spookyImage).catch(console.error);

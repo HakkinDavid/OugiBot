@@ -27,11 +27,11 @@ function(msg) {
       msg.channel.send("Author name must be a valid user mention.");
       return
     }
-    ghostTweet.setAuthor(client.users.cache.get(mentionedUser).username + " (@" + client.users.cache.get(mentionedUser).username + ")", client.users.cache.get(mentionedUser).avatarURL());
+    ghostTweet.setAuthor(client.users.cache.get(mentionedUser).username + " (@" + client.users.cache.get(mentionedUser).username + ")", client.users.cache.get(mentionedUser).avatarURL({dynamic: true, size: 4096}));
     arguments.shift();
   }
   else {
-    ghostTweet.setAuthor(msg.author.username + " (@" + msg.author.username + ")", msg.author.avatarURL());
+    ghostTweet.setAuthor(msg.author.username + " (@" + msg.author.username + ")", msg.author.avatarURL({dynamic: true, size: 4096}));
   }
   ghostTweet.setDescription(arguments.join(" ").slice(0, 2048));
   msg.delete().catch(O_o=>{});

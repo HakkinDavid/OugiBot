@@ -8,7 +8,7 @@ async function (arguments, msg) {
   .setTitle("Replied")
   .setDescription(response)
   .setColor("#FF008C")
-  .setFooter("globalLogEmbed by Ougi", client.user.avatarURL())
+  .setFooter("globalLogEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
   client.channels.cache.get(consoleLogging).send({embed});
   return
 }

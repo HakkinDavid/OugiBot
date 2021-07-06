@@ -3,9 +3,9 @@ module.exports =
 async function (arguments, msg) {
   let lyricsEmbed = new Discord.MessageEmbed()
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/ougimusic.png?raw=true")
-  .setAuthor("Ougi [BOT]", client.user.avatarURL())
+  .setAuthor("Ougi [BOT]", client.user.avatarURL({dynamic: true, size: 4096}))
   .setColor("#230347")
-  .setFooter("lyricsEmbed by Ougi", client.user.avatarURL())
+  .setFooter("lyricsEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
   .setTimestamp();
 
   if (arguments.length < 1) {

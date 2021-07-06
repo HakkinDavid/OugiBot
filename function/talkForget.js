@@ -97,7 +97,7 @@ async function (arguments, msg) {
         .setTitle("Input for talkForget")
         .addField("Response to be deleted", response)
         .setColor("#00FF73")
-        .setFooter("globalLogEmbed by Ougi", client.user.avatarURL())
+        .setFooter("globalLogEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
 
         pseudoArray[trigger] = existent;
         if (existent.length < 1) {

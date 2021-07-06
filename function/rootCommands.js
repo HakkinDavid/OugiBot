@@ -16,10 +16,10 @@ async function (msg) {
     let event = new Date();
 
     let embed = new Discord.MessageEmbed()
-    .setAuthor(msg.author.tag, msg.author.avatarURL())
+    .setAuthor(msg.author.tag, msg.author.avatarURL({dynamic: true, size: 4096}))
     .setDescription("ID `" + msg.author.id + "`")
     .setColor("#FF008C")
-    .setFooter("globalLogEmbed by Ougi", client.user.avatarURL())
+    .setFooter("globalLogEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
     .setTimestamp()
     if (hauntedCommand == undefined) {
       embed.addField("No trigger was specified", "\u200B")

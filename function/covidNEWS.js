@@ -41,7 +41,7 @@ async function (msg) {
     article.urlToImage = "https://github.com/HakkinDavid/OugiBot/images/covid/" + ["covid", "covid2", "covid3", "covidspread"][Math.floor(Math.random()*4)] + ".jpg?raw=true"
   }
   let embed = new Discord.MessageEmbed()
-  .setFooter(await ougi.text(msg, "COVIDNEWS"), client.user.avatarURL())
+  .setFooter(await ougi.text(msg, "COVIDNEWS"), client.user.avatarURL({dynamic: true, size: 4096}))
   .setColor(["#34EB43", "#34EBE1", "#EB3434", "#E2EB83"][Math.floor(Math.random()*4)])
   .setURL(article.url)
   .setImage(article.urlToImage)

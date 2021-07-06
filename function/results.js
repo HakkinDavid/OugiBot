@@ -30,8 +30,8 @@ function (msg, shouldEnd) {
   .addField("Positive votes:", upvotes/total*100 + "% of total votes.")
   .addField("Negative votes:", downvotes/total*100 + "% of total votes.")
   .setTimestamp()
-  .setAuthor("Ougi [BOT]", client.user.avatarURL())
-  .setFooter("surveyResultsEmbed by Ougi", client.user.avatarURL());
+  .setAuthor("Ougi [BOT]", client.user.avatarURL({dynamic: true, size: 4096}))
+  .setFooter("surveyResultsEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}));
   if (shouldEnd && msg.author.id == "265257341967007758") {
     if (settingsOBJ.surveysAvailable[thisSurvey].ended == null) {
       settingsOBJ.surveysAvailable[thisSurvey].ended = new Date().getTime();

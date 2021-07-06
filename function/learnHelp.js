@@ -12,10 +12,10 @@ async function (msg) {
   var answer = afterOptions[Math.floor(Math.random()*afterOptions.length)];
   var embed = new Discord.MessageEmbed()
   .setTitle("Ougi's `learn` command")
-  .setAuthor("Ougi [BOT]", client.user.avatarURL())
+  .setAuthor("Ougi [BOT]", client.user.avatarURL({dynamic: true, size: 4096}))
   .setColor("#230347")
   .setDescription("Make Ougi learn something new! You just gotta provide a trigger phrase and the desired response, separated by two colons (::).")
-  .setFooter("helpEmbed by Ougi", client.user.avatarURL())
+  .setFooter("helpEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true")
   .addField(await ougi.text(msg, "example"), "`ougi learn " + trigger + " :: " + response + "`")
   .addField(await ougi.text(msg, "output"), answer)

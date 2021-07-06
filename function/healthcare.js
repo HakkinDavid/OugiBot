@@ -10,7 +10,7 @@ async function (msg) {
   .addField("\u200b", "[" + await ougi.text(msg, "WHOCOVID19ADVICE") + "](https://www.who.int/emergencies/diseases/novel-coronavirus-2019)")
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/health.png?raw=true")
   .setColor(["#03FC66", "#03FCBA", "#F0466D", "#FA7FE5", "#7F8CFA"][Math.floor(Math.random()*5)])
-  .setFooter("Advice provided by WHO, healthyAdviceEmbed by Ougi", client.user.avatarURL())
+  .setFooter("Advice provided by WHO, healthyAdviceEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
   .setTimestamp();
   msg.channel.send(embed);
 }

@@ -4,7 +4,7 @@ function (msg, isEdit) {
   let channelID = msg.channel.id;
   let thisArray = {
     text: msg.content,
-    pfp: msg.author.avatarURL(),
+    pfp: msg.author.avatarURL({dynamic: true, size: 4096}),
     author: msg.author.username,
     files: msg.attachments.map((f) => Object.assign({}, { name: f.name, url: f.url }))
   };

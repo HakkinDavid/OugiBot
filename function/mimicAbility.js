@@ -4,7 +4,7 @@ async function (msg) {
   var embed = new Discord.MessageEmbed()
   .setTitle("Input for mimicAbility")
   .setColor("#FF008C")
-  .setFooter("globalLogEmbed by Ougi", client.user.avatarURL());
+  .setFooter("globalLogEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}));
 
   var uSaid = msg.content.toLowerCase();
   var iSaid = uSaid

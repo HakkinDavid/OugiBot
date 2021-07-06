@@ -9,9 +9,9 @@ async function (msg, vcChannel) {
     let queueEmbed = new Discord.MessageEmbed()
     .setTitle("Queue is over!")
     .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/ougimusic.png?raw=true")
-    .setAuthor("Ougi [BOT]", client.user.avatarURL())
+    .setAuthor("Ougi [BOT]", client.user.avatarURL({dynamic: true, size: 4096}))
     .setColor("#230347")
-    .setFooter("queueEmbed by Ougi", client.user.avatarURL())
+    .setFooter("queueEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
     .setTimestamp();
     msg.channel.send(queueEmbed).catch(console.error);
     await vcChannel.leave();
@@ -37,9 +37,9 @@ async function (msg, vcChannel) {
       let queueEmbed = new Discord.MessageEmbed()
       .setTitle("An error occured while playing this video. Seems like it's blocked for external use by YouTube.")
       .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/ougimusic.png?raw=true")
-      .setAuthor("Ougi [BOT]", client.user.avatarURL())
+      .setAuthor("Ougi [BOT]", client.user.avatarURL({dynamic: true, size: 4096}))
       .setColor("#230347")
-      .setFooter("queueEmbed by Ougi", client.user.avatarURL())
+      .setFooter("queueEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
       .setTimestamp();
       msg.channel.send(queueEmbed).catch(console.error);
       ougi.queue(msg, vcChannel);
@@ -56,10 +56,10 @@ async function (msg, vcChannel) {
     }, durationInMilliseconds + 2000);
     let musicalEmbed = new Discord.MessageEmbed()
     .setTitle("Music with Ougi")
-    .setAuthor("Ougi [BOT]", client.user.avatarURL())
+    .setAuthor("Ougi [BOT]", client.user.avatarURL({dynamic: true, size: 4096}))
     .setColor("#230347")
     .setDescription("Now playing")
-    .setFooter("musicalEmbed by Ougi", client.user.avatarURL())
+    .setFooter("musicalEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
     .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/ougimusic.png?raw=true")
     .setImage(videoImage)
     .setTimestamp()

@@ -12,10 +12,10 @@ async function (msg) {
   var answer = afterOptions[Math.floor(Math.random()*afterOptions.length)];
   var embed = new Discord.MessageEmbed()
   .setTitle("Ougi's `forget` command")
-  .setAuthor("Ougi [BOT]", client.user.avatarURL())
+  .setAuthor("Ougi [BOT]", client.user.avatarURL({dynamic: true, size: 4096}))
   .setColor("#230347")
   .setDescription("Make Ougi forget something, just like in Men In Black! You must provide both, the trigger phrase and the desired response to delete, separated by two colons (::), if you delete the last response available for a trigger, the trigger gets deleted too.")
-  .setFooter("helpEmbed by Ougi", client.user.avatarURL())
+  .setFooter("helpEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true")
   .addField(await ougi.text(msg, "example"), "`ougi forget " + trigger + " :: " + response + "`")
   .addField(await ougi.text(msg, "output"), answer)

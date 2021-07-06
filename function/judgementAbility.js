@@ -12,9 +12,9 @@ async function (msg) {
   }
   var embed = new Discord.MessageEmbed()
   .setTitle("Input for judgementAbility (" + msg.channel.type.replace("dm", "DM").replace("text", "Text") + " channel)")
-  .setAuthor(msg.author.tag, msg.author.avatarURL())
+  .setAuthor(msg.author.tag, msg.author.avatarURL({dynamic: true, size: 4096}))
   .setColor("#FF008C")
-  .setFooter("globalLogEmbed by Ougi", client.user.avatarURL());
+  .setFooter("globalLogEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}));
 
   var pseudoArray = JSON.parse(fs.readFileSync('./responses.txt', 'utf-8', console.error));
   var stringsArray = Object.keys(pseudoArray);

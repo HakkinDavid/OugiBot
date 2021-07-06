@@ -48,7 +48,7 @@ async function (msg, method) {
     .setColor("#6254E7")
     .addField("Input in " + ougi.langCodes[res.from.language.iso], phrase)
     .addField("Translation to " + niceLang, res.text)
-    .setFooter("Translated by Ougi", client.user.avatarURL())
+    .setFooter("Translated by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
     .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/ougitranslate.png?raw=true");
     msg.channel.send({embed}).catch(console.error);
   }).catch(err => {

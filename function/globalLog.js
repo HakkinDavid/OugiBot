@@ -7,10 +7,10 @@ async function (msg) {
   var arguments = spookySlices.slice(2);
 
   var embed = new Discord.MessageEmbed()
-  .setAuthor(msg.author.tag, msg.author.avatarURL())
+  .setAuthor(msg.author.tag, msg.author.avatarURL({dynamic: true, size: 4096}))
   .setDescription("ID `" + msg.author.id + "`")
   .setColor("#FF008C")
-  .setFooter("globalLogEmbed by Ougi", client.user.avatarURL())
+  .setFooter("globalLogEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
   .setTimestamp()
   if (spookyCommand == undefined) {
     embed.addField("No trigger was specified", "\u200B")

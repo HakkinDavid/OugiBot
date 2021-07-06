@@ -58,7 +58,7 @@ async function (arguments, msg) {
      .addField("\u200b", "[" + await ougi.text(msg, "WHOCOVID19ADVICE") + "](https://www.who.int/)")
      .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/health.png?raw=true")
      .setColor(["#03FC66", "#03FCBA", "#F0466D", "#FA7FE5", "#7F8CFA"][Math.floor(Math.random()*5)])
-     .setFooter("COVID-19 Statistics brought to you by Ougi, through COVID-19 data API (sources: Johns Hopkins CSSE, CDC, WHO)", client.user.avatarURL())
+     .setFooter("COVID-19 Statistics brought to you by Ougi, through COVID-19 data API (sources: Johns Hopkins CSSE, CDC, WHO)", client.user.avatarURL({dynamic: true, size: 4096}))
      .setTimestamp();
      msg.channel.send(embed);
     }

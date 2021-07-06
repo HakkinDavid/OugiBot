@@ -36,9 +36,9 @@ async function (msg) {
 
   let queueEmbed = new Discord.MessageEmbed()
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/ougimusic.png?raw=true")
-  .setAuthor("Ougi [BOT]", client.user.avatarURL())
+  .setAuthor("Ougi [BOT]", client.user.avatarURL({dynamic: true, size: 4096}))
   .setColor("#230347")
-  .setFooter("queueEmbed by Ougi", client.user.avatarURL())
+  .setFooter("queueEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
   .setTimestamp();
 
   if (arguments == "stop") {

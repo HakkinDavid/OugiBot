@@ -26,7 +26,7 @@ async function (msg) {
       embed.setDescription(await ougi.text(msg, "imageHelpDesc"))
       .addField(await ougi.text(msg, "example"), "`ougi image " + search +"`")
       .setImage(imageToSend)
-      .setFooter("helpEmbed by Ougi", client.user.avatarURL())
+      .setFooter("helpEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
       .setTimestamp();
       msg.channel.send(embed).catch(console.error);
       client.channels.cache.get(consoleLogging).send(embed);

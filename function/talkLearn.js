@@ -92,7 +92,7 @@ async function (arguments, msg) {
   .addField("Response to be added", response)
   .addField("With trigger", trigger)
   .setColor("#FF008C")
-  .setFooter("globalLogEmbed by Ougi", client.user.avatarURL())
+  .setFooter("globalLogEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
 
   if (pseudoArray.hasOwnProperty(trigger)){
     var existent = pseudoArray[trigger];
