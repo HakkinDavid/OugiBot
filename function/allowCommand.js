@@ -48,7 +48,7 @@ async function (arguments, msg) {
     await ougi.text(msg, "reactingTo"),
     await ougi.text(msg, "alrightWhitelisted"),
   ];
-  let answer = afterOptions[Math.floor(Math.random()*afterOptions.length)].replace(/{triggerName}/, "`" + allow + "`").replace(/{guildName}/, msg.guild.toString());
+  let answer = afterOptions[Math.floor(Math.random()*afterOptions.length)].replace(/{triggerName}/, "`" + trigger + "`").replace(/{guildName}/, msg.guild.toString());
 
   if (settingsOBJ.blacklist.hasOwnProperty(guildID)){
     let existent = settingsOBJ.blacklist[guildID];
