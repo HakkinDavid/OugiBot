@@ -60,11 +60,15 @@ function (arguments, msg, isEdit) {
     }
     else {
       embed.addField(bullet.author + " said <:quote:730061725755375667>", bullet.text.slice(0, 1024))
-      embed.addField("\u200B", bullet.text.slice(1024))
+      embed.addField("\u200b", bullet.text.slice(1024))
     }
   }
   else {
-    embed.addField("Oop-", "This message had no text. Support for media is coming soon!")
+    embed.addField(bullet.author + " shared a file", "\u200b")
+  }
+
+  if (bullet.files.length > 0) {
+    embed.setImage(bullet.files[0])
   }
 
   msg.channel.send({embed}).catch(console.error);

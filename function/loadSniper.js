@@ -6,7 +6,7 @@ function (msg, isEdit) {
     text: msg.content,
     pfp: msg.author.avatarURL(),
     author: msg.author.username,
-    files: msg.attachments.map((files) => files.proxyUrl).join(" ")
+    files: msg.attachments.map((files) => files.proxyUrl)
   };
   if (isEdit) {
     if (reloadedAmmo[channelID] == undefined) {
