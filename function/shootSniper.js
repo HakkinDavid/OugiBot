@@ -1,15 +1,18 @@
 module.exports =
 
-function (arguments, msg) {
+function (arguments, msg, isEdit) {
   let channelID = msg.channel.id;
-  let response = ["I ran out of ammo. Delete some messages in this channel in order to snipe them!", "Can't. There is nothing I can snipe from this channel.", "Sadly, no.", "The zone's clear.", "Oh frick. I missed the shot."];
+  let response = ["I ran out of ammo. Delete or edit some messages in this channel in order to snipe them!", "Can't. There is nothing I can snipe from this channel.", "Sadly, no.", "The zone's clear.", "Oh frick. I missed the shot."];
 
-  if (ammo[channelID] == undefined) {
+  if (ammo[channelID] == undefined && !isEdit || reloadedAmmo[channelID] == undefined && isEdit) {
     msg.channel.send(response[Math.floor(Math.random()*response.length)]);
     return
   }
 
   let myAmmo = ammo[channelID];
+  if (isEdit) {
+    myAmmo = reloadedAmmo[channelID];
+  }
   let maxIndex = myAmmo.length;
   let index = arguments * 1 - 1;
 

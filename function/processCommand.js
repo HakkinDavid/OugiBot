@@ -63,6 +63,10 @@ async function (msg) {
         ougi.sayCommand(arguments, msg)
       break;
 
+      case "dice":
+        ougi.dice(msg)
+      break;
+
       case "answer":
         ougi.answerCommand(arguments, msg)
       break;
@@ -174,7 +178,11 @@ async function (msg) {
       break;
 
       case "snipe":
-        ougi.shootSniper(arguments, msg)
+        ougi.shootSniper(arguments, msg, false)
+      break;
+
+      case "editsnipe":
+        ougi.shootSniper(arguments, msg, true)
       break;
 
       case "speak":

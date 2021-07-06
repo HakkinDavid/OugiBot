@@ -513,5 +513,17 @@ module.exports =
   },
   "imageHelpDesc": {
     "en": "Use this command to get a random image from Internet based on the keywords you provide."
+  },
+  "snipeHelpDesc": {
+    "en": "Use this command to make Ougi show any recently deleted messages in this channel. You may browse the deleted messages by specifying a number (starting in 1 for the last deletion)."
+  },
+  "editsnipeHelpDesc": {
+    "en": "Use this command to make Ougi show any recently messages before being edited in this channel. You may browse the edited messages by specifying a number (starting in 1 for the last edit)."
+  },
+  "diceTitle": {
+    "en": "Dice resulted in a {num}!"
+  },
+  "diceHelpDesc": {
+    "en": "Use this command to get a random number from Ougi's virtual dice."
   }
 }

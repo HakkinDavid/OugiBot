@@ -9,10 +9,16 @@ function (arguments, msg) {
         ougi.answerHelp(msg)
       break;
       case 'snipe':
-        ougi.snipeHelp(msg)
+        ougi.snipeHelp(msg, false)
+      break;
+      case 'editsnipe':
+        ougi.snipeHelp(msg, true)
       break;
       case 'image':
         ougi.imageHelp(msg)
+      break;
+      case 'dice':
+        ougi.diceHelp(msg)
       break;
       case 'music':
         ougi.musicHelp(msg)

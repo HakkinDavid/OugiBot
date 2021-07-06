@@ -62,6 +62,7 @@ global.neuroChannel = "759983614128947250";
 global.settingsChannel = "791151086077083688";
 global.localesChannel = "820971831992647681";
 global.ammo = {};
+global.reloadedAmmo = {};
 global.vc = {};
 
 global.settingsOBJ = null;
@@ -203,7 +204,6 @@ client.on('messageDelete', (msg) => {
     if (!global.TEASEABLE) {
       return
     }
-
     if (msg.author == client.user) {
       return
     }
@@ -217,14 +217,41 @@ client.on('messageDelete', (msg) => {
       let guildID = msg.guild.id;
       if (settingsOBJ.blacklist.hasOwnProperty(guildID)){
         let existent = settingsOBJ.blacklist[guildID];
-        for(var i = 0; i < existent.length; i++) {
-          if(existent[i].toLowerCase() === "snipe") {
+        for (var i = 0; i < existent.length; i++) {
+          if (existent[i].toLowerCase() === "snipe") {
             return
           }
         }
       }
     }
-    ougi.loadSniper(msg);
+    ougi.loadSniper(msg, false);
+});
+
+client.on('messageUpdate', (msg) => {
+    if (!global.TEASEABLE) {
+      return
+    }
+    if (msg.author == client.user) {
+      return
+    }
+    if (msg.content.toLowerCase().startsWith("ougi") || msg.author.bot || msg.content.startsWith("扇") || msg.content.toLowerCase().startsWith("#ougi") || msg.content.startsWith("<@629837958123356172>") || msg.content.startsWith("<@!629837958123356172>")) {
+      return
+    }
+    if (settingsOBJ.ignored.includes(msg.author.id)) {
+      return
+    }
+    if (msg.channel.type == "text") {
+      let guildID = msg.guild.id;
+      if (settingsOBJ.blacklist.hasOwnProperty(guildID)){
+        let existent = settingsOBJ.blacklist[guildID];
+        for (var i = 0; i < existent.length; i++) {
+          if (existent[i].toLowerCase() === "editsnipe") {
+            return
+          }
+        }
+      }
+    }
+    ougi.loadSniper(msg, true);
 });
 
 /*Makotomonogatari*/
