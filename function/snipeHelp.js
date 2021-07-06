@@ -3,7 +3,7 @@ module.exports =
 async function (msg, isEdit) {
   let command = 'snipe';
   if (isEdit) {
-    command =+ 'edit';
+    command = 'editsnipe';
   }
   let phrases = ["i love dogs", "where are you bb?", "is this sending?"];
   let sniped = phrases[Math.floor(Math.random()*phrases.length)];

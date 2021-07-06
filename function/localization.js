@@ -518,7 +518,7 @@ module.exports =
     "en": "Use this command to make Ougi show any recently deleted messages in this channel. You may browse the deleted messages by specifying a number (starting in 1 for the last deletion)."
   },
   "editsnipeHelpDesc": {
-    "en": "Use this command to make Ougi show any recently messages before being edited in this channel. You may browse the edited messages by specifying a number (starting in 1 for the last edit)."
+    "en": "Use this command to make Ougi show the original content of any recently edited messages in this channel. You may browse the edited messages by specifying a number (starting in 1 for the last edit)."
   },
   "diceTitle": {
     "en": "Dice resulted in a {num}!"
