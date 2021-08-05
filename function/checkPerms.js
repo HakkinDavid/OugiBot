@@ -15,4 +15,5 @@ async function (msg, permissionsArray) {
         }
     }
     msg.channel.send((await ougi.text(msg, "insufficientPerms")) + "\n•`" + missingPerms.join("`\n•`") + "`");
+    return false;
 }
