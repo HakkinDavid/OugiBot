@@ -5,7 +5,10 @@ async function (arguments, msg) {
       msg.channel.send(await ougi.text(msg, "keywordRequired")).catch(console.error);
       return;
     }
-    let search = arguments.join(" ");
+    let search = {
+        searchTerm: arguments.join(" "),
+        queryStringAddition: (msg.channel.nsfw ? '&safe=false' : '&safe=active')
+    };
     gis(search, function(error, urls) {
         if (error) {
             console.error(error)
