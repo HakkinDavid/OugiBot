@@ -95,19 +95,18 @@ console.error = function() {
 };
 
 /* Chuuimonogatari */
-client.on('ready', () => {
+client.on('ready', async () => {
   findRemoveSync('./', {extensions: ['.txt', '.mp3']});
   for (i=0; i < fetchedChannels.length; i++) {
-    ougi.fetch(fetchedChannels[i]).catch(console.error);
+    await ougi.fetch(fetchedChannels[i]).catch(console.error);
   }
 
   client.channels.cache.get(consoleLogging).send("**INSTANCE ID:** " + instanceID + "\n**DEV:** " + process.env.DEV + "\n**SILENT MODE:** " + !global.TEASEABLE).catch(console.error);
   console.log("Instance ID: " + instanceID);
 
   if (global.TEASEABLE) {
-    ougi.startup();
+    await ougi.startup();
   }
-
 
 });
 
@@ -135,15 +134,11 @@ client.on('message', (msg) => {
         return
       }
       else {
-        if (!msg.content.toLowerCase().startsWith(instanceID + "::")) {
+        if (!msg.content.startsWith(instanceID + "::")) {
           return
         }
         msg.content = msg.content.replace(instanceID + "::", "");
       }
-    }
-
-    if (!fs.existsSync('./responses.txt')) {
-      return
     }
 
     if (settingsOBJ == null || mindOBJ == null || localesCache == null) {
@@ -256,14 +251,16 @@ client.on('messageUpdate', (msg) => {
 
 /*Makotomonogatari*/
 client.setInterval(
-  function () {
+  async function () {
     client.destroy();
     client.login(process.env.TOKEN);
     findRemoveSync('./', {extensions: ['.txt']});
     for (i=0; i < fetchedChannels.length; i++) {
-      ougi.fetch(fetchedChannels[i]);
+      await ougi.fetch(fetchedChannels[i]);
     }
-    ougi.startup();
+    if (global.TEASEABLE) {
+        await ougi.startup();        
+    }
   }, 28800000);
 
 /* Kaishimonogatari */

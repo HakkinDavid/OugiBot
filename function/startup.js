@@ -9,7 +9,7 @@ function () {
   let month = todayIs.getUTCMonth() + 1;
   let day = todayIs.getUTCDate();
 
-  var iSaid = client.channels.cache.get(wordsChannel).messages.fetch({ limit: 1 }).then(messages => {
+  let iSaid = client.channels.cache.get(wordsChannel).messages.fetch({ limit: 1 }).then(messages => {
     if (month == 10 && day == 4) {
       let birthdayPhrases = ["I love my homies\nmy homies love me", "Thanks for the presents\nall my homies are wonderful", "I have cake\nI will never let it go\n//cake says: LET ME GOOOOOOOOOOOOOOOOO! PLEASE", "I got a birthday hat\nthank you all", "It's been an amazing year in Discord\nI'm so grateful to be here"];
       let gratefulPhrase = birthdayPhrases[Math.floor(Math.random()*birthdayPhrases.length)];

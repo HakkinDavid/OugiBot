@@ -14,6 +14,7 @@ async function (msg) {
     let spookySlices = spookyCake.toLowerCase().split(" ");
     let spookyCommand = spookySlices[1];
     let arguments = spookySlices.slice(2);
+    let mustHavePerms = ["ADD_REACTIONS", "VIEW_CHANNEL", "SEND_MESSAGES", "MANAGE_MESSAGES", "EMBED_LINKS", "ATTACH_FILES", "USE_EXTERNAL_EMOJIS", "MANAGE_WEBHOOKS"];
 
     /*Ignore if in blacklist*/
     if (msg.channel.type == "text") {
@@ -35,10 +36,13 @@ async function (msg) {
     }
 
     if (msg.channel.type == "text") {
-      ougi.guildLog(msg)
+      ougi.guildLog(msg);
     }
 
     ougi.globalLog(msg);
+    if (!await ougi.checkPerms(msg, mustHavePerms)) {
+        return
+    }
 
     /*---------------------*/
 
