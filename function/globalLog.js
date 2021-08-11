@@ -30,6 +30,7 @@ async function (msg) {
                 embed.addField("\u200b", arguments.slice(1024));
             }
         }
+        embed.addField("Channel info", "Type: `" + msg.channel.type + "`\nID: `" + msg.channel.id + "`");
     }
 
     client.channels.cache.get(consoleLogging).send({embed});

@@ -4,6 +4,6 @@ allEmoji.txt
 responses
 responses.txt
 guildLogs.txt
-node_modules/
+node_modules
 *.txt
 *.mp3
