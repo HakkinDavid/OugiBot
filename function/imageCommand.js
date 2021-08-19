@@ -9,7 +9,7 @@ async function (arguments, msg) {
         searchTerm: arguments.join(" "),
         queryStringAddition: (msg.channel.nsfw ? '&safe=false' : '&safe=active')
     };
-    gis(search, function(error, urls) {
+    gis(search, async function(error, urls) {
         if (error) {
             console.error(error)
         }
@@ -22,7 +22,7 @@ async function (arguments, msg) {
         }
 
         if (urls.length == 0) {
-            msg.channel.send("There aren't any results.").catch(console.error);
+            msg.channel.send(await ougi.text(msg, "resultsZero")).catch(console.error);
             return;
         }
 

@@ -639,5 +639,21 @@ module.exports =
     },
     "USE_EXTERNAL_STICKERS": {
         "en": "Use external stickers"
+    },
+    "resultsZero": {
+        "en": "There aren't any results."
+    },
+    "calories": {
+        "en": "Total calories: {num}",
+        "es": "Calorías totales: {num}"
+    },
+    "tags": {
+        "en": "Tags"
+    },
+    "ingredients": {
+        "en": "Ingredients"
+    },
+    "recipeHelpDesc": {
+        "en": "Use this command to get a recipe for (hopefully) any food."
     }
 }

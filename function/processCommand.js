@@ -127,6 +127,10 @@ async function (msg) {
         ougi.newspaper(arguments, msg)
       break;
 
+      case "recipe":
+        ougi.recipeCommand(arguments, msg)
+      break;
+
       case "learn":
         ougi.talkLearn(arguments, msg)
       break;

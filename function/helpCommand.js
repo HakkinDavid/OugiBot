@@ -44,6 +44,9 @@ function (arguments, msg) {
       case 'embed':
         ougi.embedHelp(arguments, msg)
       break;
+      case 'recipe':
+        ougi.recipeHelp(msg)
+      break;
       case 'stats':
         ougi.statsCommand(msg)
       break;

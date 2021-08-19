@@ -16,7 +16,7 @@ async function (msg) {
       }
 
       if (urls.length == 0) {
-          msg.channel.send("There aren't any results.").catch(console.error);
+          msg.channel.send(await ougi.text(msg, "resultsZero")).catch(console.error);
           return;
       }
 
