@@ -5,8 +5,7 @@ async function (arguments, msg) {
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/ougimusic.png?raw=true")
   .setAuthor("Ougi [BOT]", client.user.avatarURL({dynamic: true, size: 4096}))
   .setColor("#230347")
-  .setFooter("lyricsEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
-  .setTimestamp();
+  .setFooter("lyricsEmbed by Ougi | Lyrics provided by KSoft.Si API", client.user.avatarURL({dynamic: true, size: 4096}));
 
   if (arguments.length < 1) {
     if (!msg.guild) {
