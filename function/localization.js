@@ -105,7 +105,7 @@ module.exports =
         "surveyHelpDesc": "Are you interested on sharing your thoughts on Ougi? Execute this command and Ougi will check if there's any new survey you haven't been notified about already.",
         "featuredCOVID19modules": "Featured COVID-19 commands",
         "availableCommandsListCOVID19": "Ougi got the following commands regarding COVID-19 pandemic:",
-        "newsDesc": "Fetch recent news about whatever you'd like in your preferred language.",
+        "newsHelpDesc": "Fetch recent news about whatever you'd like in your preferred language.",
         "healthcareDesc": "Get a random healthcare advice to stay safe during the COVID-19 pandemic, in your preferred language.",
         "medicalDefinitionDesc": "Get definitions about a set of COVID-19 related concepts, in your preferred language.",
         "remindLang": "Set your preferred language using {c1}. Preview detailed commands usage using {c2}.",
