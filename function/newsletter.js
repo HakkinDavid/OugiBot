@@ -112,7 +112,7 @@ async function (msg) {
     sent: new Date().toDateString()
   };
   newsArray.push(thisArray);
-  let proArray = JSON.stringify(newsArray);
+  let proArray = JSON.stringify(newsArray, null, 4);
   let myEmbed = './newsChannel.txt';
   fs.writeFile('./newsChannel.txt', proArray, console.error);
 

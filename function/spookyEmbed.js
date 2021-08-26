@@ -190,7 +190,7 @@ async function (msg) {
       if (myLoad.hasOwnProperty(aPreset)) {
         breakChocolate.splice(i, 1);
         delete myLoad[aPreset];
-        let proArray = JSON.stringify(myLoad);
+        let proArray = JSON.stringify(myLoad, null, 4);
         let myEmbed = './embedPresets.txt';
         fs.writeFile('./embedPresets.txt', proArray, console.error);
 
@@ -597,7 +597,7 @@ async function (msg) {
     let personalizedPresetName = presetName + "::" + msg.author.id;
 
     pseudoArray[personalizedPresetName] = breakChocolate;
-    let proArray = JSON.stringify(pseudoArray);
+    let proArray = JSON.stringify(pseudoArray, null, 4);
     let myEmbed = './embedPresets.txt';
     fs.writeFile('./embedPresets.txt', proArray, console.error);
 
@@ -618,7 +618,7 @@ async function (msg) {
       pseudoArray[everyPresetShare] = breakChocolate;
     }
 
-    let proArray = JSON.stringify(pseudoArray);
+    let proArray = JSON.stringify(pseudoArray, null, 4);
 
     let myEmbed = './embedPresets.txt';
     fs.writeFile('./embedPresets.txt', proArray, console.error);

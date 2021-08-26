@@ -87,20 +87,12 @@ async function (msg) {
         ougi.spookyEmbed(msg)
       break;
 
-      case "covidnews":
-        ougi.covidNEWS(msg)
+      case "news":
+        ougi.newsCommand(arguments, msg)
       break;
 
       case "covidstats":
         ougi.covidstats(arguments, msg)
-      break;
-
-      case "covid":
-        ougi.covidAmbiguousCommandManager(arguments, msg)
-      break;
-
-      case "covid-19":
-        ougi.covidAmbiguousCommandManager(arguments, msg)
       break;
 
       case "healthcare":
@@ -153,6 +145,11 @@ async function (msg) {
 
       case "skip":
         msg.content = "ougi music skip";
+        ougi.voiceCallMusic(msg).catch(console.error)
+      break;
+
+      case "stop":
+        msg.content = "ougi music stop";
         ougi.voiceCallMusic(msg).catch(console.error)
       break;
 
@@ -232,21 +229,12 @@ async function (msg) {
         ougi.results(msg)
       break;
 
-      case "endsurvey":
-        ougi.results(msg, true)
-      break;
-
       case "guildlanguage":
         ougi.lang(arguments, msg, true)
       break;
   /*---------------------------------------------*/
       default:
-        if (spookyCommand.startsWith("translate-")) {
-          let method = 1;
-          ougi.translateCommand(msg, method)
-        }
-
-        else if (spookyCommand.toLowerCase().replace("https://", "").replace("www.", "").replace("youtu.be/", "youtube.com/watch?v=").startsWith("youtube.com/watch?v=")) {
+        if (spookyCommand.toLowerCase().replace("https://", "").replace("www.", "").replace("youtu.be/", "youtube.com/watch?v=").startsWith("youtube.com/watch?v=")) {
           msg.content = msg.content.replace("ougi", "ougi music");
           ougi.voiceCallMusic(msg).catch(console.error)
         }
@@ -263,6 +251,4 @@ async function (msg) {
           ougi.judgementAbility(msg)
         }
     }
-
-    ougi.feedback(msg);
 }

@@ -61,6 +61,7 @@ global.newsChannel = "751697345737129994";
 global.neuroChannel = "759983614128947250";
 global.settingsChannel = "791151086077083688";
 global.localesChannel = "820971831992647681";
+global.dynamicLocalesChannel = "880322518139957299";
 global.ammo = {};
 global.reloadedAmmo = {};
 global.vc = {};
@@ -68,10 +69,12 @@ global.vc = {};
 global.settingsOBJ = null;
 global.mindOBJ = null;
 global.localesCache = null;
+global.dynamicLocales = null;
+global.knowledgeBase = null;
 
 /* Rogumonogatari */
 global.consoleLogging = "726927838724489226";
-global.fetchedChannels = [settingsChannel, backupChannel, embedsChannel, newsChannel, neuroChannel, localesChannel];
+global.fetchedChannels = [settingsChannel, backupChannel, embedsChannel, newsChannel, neuroChannel, localesChannel, dynamicLocalesChannel];
 global.errorBackup = console.error;
 global.logMessages = [];
 
@@ -141,13 +144,15 @@ client.on('message', (msg) => {
       }
     }
 
-    if (settingsOBJ == null || mindOBJ == null || localesCache == null) {
-      if (!fs.existsSync('./settings.txt') || !fs.existsSync('./neuroNetworks.txt') || !fs.existsSync('./localesCache.txt')) {
+    if (settingsOBJ === null || mindOBJ === null || localesCache === null || dynamicLocales === null || knowledgeBase === null) {
+      if (!fs.existsSync('./settings.txt') || !fs.existsSync('./neuroNetworks.txt') || !fs.existsSync('./localesCache.txt') || !fs.existsSync('./dynamicLocales.txt') || !fs.existsSync('./responses.txt')) {
         return
       }
       global.settingsOBJ = JSON.parse(fs.readFileSync('./settings.txt'));
       global.mindOBJ = JSON.parse(fs.readFileSync('./neuroNetworks.txt'));
       global.localesCache = JSON.parse(fs.readFileSync('./localesCache.txt'));
+      global.dynamicLocales = JSON.parse(fs.readFileSync('./dynamicLocales.txt'));
+      global.knowledgeBase = JSON.parse(fs.readFileSync('./responses.txt', 'utf-8'));
     }
 
     if (settingsOBJ.ignored.includes(msg.author.id)) {

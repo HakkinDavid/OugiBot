@@ -1,7 +1,7 @@
 module.exports =
 
 async function (arguments, msg) {
-  var thisMessage = arguments.join(" ");
+  let thisMessage = arguments.join(" ");
 
   if (msg.content.includes("@everyone") || msg.content.includes("@here")) {
     msg.channel.send("Ora ora ora ora! Remove that massive ping.");
@@ -13,13 +13,13 @@ async function (arguments, msg) {
     return
   }
 
-  var breakChocolate = thisMessage.split("::");
-  var niceCharacterAmount = 3;
-  var maxCharacterAmount = 164;
+  let breakChocolate = thisMessage.split("::");
+  let niceCharacterAmount = 3;
+  let maxCharacterAmount = 164;
 
   if (msg.author.id == "265257341967007758") {
-    var niceCharacterAmount = 1;
-    var maxCharacterAmount = 2000;
+    niceCharacterAmount = 1;
+    maxCharacterAmount = 2000;
   }
 
   if (breakChocolate.length !== 2){
@@ -27,8 +27,8 @@ async function (arguments, msg) {
     return
   }
 
-  var trigger = breakChocolate[0].toString();
-  var response = breakChocolate[1].toString();
+  let trigger = breakChocolate[0].toString();
+  let response = breakChocolate[1].toString();
 
   while (trigger.startsWith("ougi")){
     trigger = trigger.substring(4, trigger.length)
@@ -78,14 +78,11 @@ async function (arguments, msg) {
     return
   }
 
-  var pseudoArray = JSON.parse(fs.readFileSync('./responses.txt', 'utf-8', console.error));
-
-  var afterOptions = [
+  let afterOptions = [
     "I'll start replying `" + response + "` when anyone says `" + trigger + "`",
     "Of course I already knew I should say `" + response + "` when anyone says `" + trigger + "`, I was just making sure you knew too~",
   ];
-  var answer = afterOptions[Math.floor(Math.random()*afterOptions.length)];
-  var myResponse = "./responses.txt";
+  let answer = afterOptions[Math.floor(Math.random()*afterOptions.length)];
 
   let embed = new Discord.MessageEmbed()
   .setTitle("Input for talkLearn")
@@ -94,10 +91,10 @@ async function (arguments, msg) {
   .setColor("#FF008C")
   .setFooter("globalLogEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
 
-  if (pseudoArray.hasOwnProperty(trigger)){
-    var existent = pseudoArray[trigger];
-    for(let i = 0; i < existent.length; i++) {
-      if(existent[i].toLowerCase() === response) {
+  if (knowledgeBase.hasOwnProperty(trigger)){
+    let existent = knowledgeBase[trigger];
+    for (let i = 0; i < existent.length; i++) {
+      if (existent[i].toLowerCase() === response) {
         msg.channel.send("Sorry, that response for this trigger already exists.").catch(console.error);
         return
       }
@@ -106,11 +103,10 @@ async function (arguments, msg) {
     msg.channel.send(answer).catch(console.error);
 
     client.channels.cache.get(consoleLogging).send({embed});
-    pseudoArray[trigger] = existent;
-    var proArray = JSON.stringify(pseudoArray);
-    fs.writeFile('./responses.txt', proArray, console.error);
+    knowledgeBase[trigger] = existent;
+    fs.writeFile('./responses.txt', JSON.stringify(knowledgeBase, null, 4), console.error);
 
-    ougi.backup(myResponse, backupChannel);
+    ougi.backup("./responses.txt", backupChannel);
     return
   }
 
@@ -118,12 +114,11 @@ async function (arguments, msg) {
 
   client.channels.cache.get(consoleLogging).send({embed});
 
-  pseudoArray[trigger] = [];
-  var arrayMaker = pseudoArray[trigger];
+  knowledgeBase[trigger] = [];
+  let arrayMaker = knowledgeBase[trigger];
   arrayMaker.push(response);
-  pseudoArray[trigger] = arrayMaker;
-  var proArray = JSON.stringify(pseudoArray);
-  fs.writeFile('./responses.txt', proArray, console.error);
+  knowledgeBase[trigger] = arrayMaker;
+  fs.writeFile('./responses.txt', JSON.stringify(knowledgeBase, null, 4), console.error);
 
-  ougi.backup(myResponse, backupChannel);
+  ougi.backup("./responses.txt", backupChannel);
 }

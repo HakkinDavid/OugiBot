@@ -60,6 +60,6 @@ async function (arguments, msg, guildExecution) {
   if (finalCode == 'default') {
     delete settingsOBJ.lang[preferencesID]
   }
-  await fs.writeFile('./settings.txt', JSON.stringify(settingsOBJ), console.error);
+  await fs.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), console.error);
   ougi.backup('./settings.txt', settingsChannel);
 }

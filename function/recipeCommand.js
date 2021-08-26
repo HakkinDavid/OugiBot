@@ -2,15 +2,13 @@ module.exports =
 
 async function (arguments, msg) {
     let searchParams = arguments.join(" ");
-    
-    let langSettings = settingsOBJ.lang;
     let langCode = undefined;
-    if (langSettings.hasOwnProperty(msg.author.id)) {
-        langCode = langSettings[msg.author.id]
+    if (settingsOBJ.lang.hasOwnProperty(msg.author.id)) {
+        langCode = settingsOBJ.lang[msg.author.id]
     }
     if (msg.channel.type == "text") {
-        if (langSettings.hasOwnProperty(msg.guild.id)) {
-        langCode = langSettings[msg.guild.id];
+        if (settingsOBJ.lang.hasOwnProperty(msg.guild.id)) {
+        langCode = settingsOBJ.lang[msg.guild.id];
         }
     }
     if (langCode !== undefined && langCode !== 'en') {
@@ -56,8 +54,8 @@ async function (arguments, msg) {
         .setURL(prettyRecipe.url)
         .setAuthor(prettyRecipe.source)
         .setThumbnail(prettyRecipe.image)
-        .setDescription((await ougi.text(msg, "calories")).replace(/{num}/gi, "`" + prettyRecipe.calories + "`") + "\n**" + (await ougi.text(msg, "tags")) + "**\n" + (await ougi.text(msg, [ ... prettyRecipe.dietLabels, ... prettyRecipe.healthLabels ].join(", "))))
-        .addField(await ougi.text(msg, "ingredients"), await ougi.text(msg, prettyRecipe.ingredientLines.join("\n")))
+        .setDescription((await ougi.text(msg, "calories")).replace(/{num}/gi, "`" + prettyRecipe.calories + "`") + "\n**" + (await ougi.text(msg, "tags")) + "**\n" + (await ougi.text(msg, [ ... prettyRecipe.dietLabels, ... prettyRecipe.healthLabels ].join(", "), true)))
+        .addField(await ougi.text(msg, "ingredients"), await ougi.text(msg, prettyRecipe.ingredientLines.join("\n"), true))
         .setColor("#6E2C00")
         .setFooter("recipeEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
         .setTimestamp();

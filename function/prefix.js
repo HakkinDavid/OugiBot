@@ -23,6 +23,6 @@ async function (arguments, msg) {
   msg.channel.send("Prefix for Ougi in " + msg.guild.toString() + " set as `" + prefix + "`.");
 
   settingsOBJ.prefix[guildID] = prefix;
-  await fs.writeFile('./settings.txt', JSON.stringify(settingsOBJ), console.error);
+  await fs.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), console.error);
   ougi.backup("./settings.txt", settingsChannel);
 }

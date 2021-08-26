@@ -71,8 +71,8 @@ function (arguments, msg) {
       case 'blacklist':
         ougi.removeHelp(msg)
       break;
-      case 'covidnews':
-        ougi.covidNEWSHelp(msg)
+      case 'news':
+        ougi.newsHelp(msg)
       break;
       case 'covidstats':
         ougi.covidstatsHelp(msg)

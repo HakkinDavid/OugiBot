@@ -1,27 +1,15 @@
 module.exports =
 
-async function (msg, method) {
+async function (msg) {
   let spookyCake = msg.content;
   let spookySlices = spookyCake.replace("\n", " ").split(" ");
-  let spookyCommand = spookySlices[1];
   let arguments = spookySlices.slice(2);
-  if (method == 1) {
-    if (arguments.length < 1) {
-      msg.channel.send("Please use a valid syntax for the translation. Refer to the following command if you are clueless.\n> ougi help translate").catch(console.error);
-      return
-    }
-    var commandAndLang = spookyCommand.toLowerCase().split("-");
-    var toLang = commandAndLang.slice(1).join("-").replace("-cn", "-CN").replace("-tw", "-TW");
-    var phrase = arguments.join(" ");
+  if (arguments.length <= 1) {
+    msg.channel.send("Please use a valid syntax for the translation. Refer to the following command if you are clueless.\n> ougi help translate").catch(console.error);
+    return
   }
-  else {
-    if (arguments.length <= 1) {
-      msg.channel.send("Please use a valid syntax for the translation. Refer to the following command if you are clueless.\n> ougi help translate").catch(console.error);
-      return
-    }
-    var toLang = arguments[0].toLowerCase().replace("-cn", "-CN").replace("-tw", "-TW");
-    var phrase = arguments.slice(1).join(" ");
-  }
+  let toLang = arguments[0].toLowerCase().replace("-cn", "-CN").replace("-tw", "-TW");
+  let phrase = arguments.slice(1).join(" ");
   if (toLang == "chinese") {
     toLang = "zh-CN"
   }
@@ -43,7 +31,7 @@ async function (msg, method) {
   }
   let finalCode = ougi.whereIs(ougi.langCodes, niceLang);
   translate(phrase, {to: finalCode}).then(res => {
-    var embed = new Discord.MessageEmbed()
+    let embed = new Discord.MessageEmbed()
     .setTitle("Ougi Translate")
     .setColor("#6254E7")
     .addField("Input in " + ougi.langCodes[res.from.language.iso], phrase)

@@ -27,11 +27,10 @@ async function (msg) {
     msg.channel.send("Looks like you're not in a voice channel I can join, please get into one.").catch(console.error);
     return
   }
-
-  let langSettings = settingsOBJ.lang;
+  
   let langCode = undefined;
-  if (langSettings.hasOwnProperty(msg.guild.id)) {
-    langCode = langSettings[msg.guild.id]
+  if (settingsOBJ.lang.hasOwnProperty(msg.guild.id)) {
+    langCode = settingsOBJ.lang[msg.guild.id]
   }
 
   if (arguments.length > 1 && arguments[0].startsWith("::") && ougi.langCodes.hasOwnProperty(arguments[0].replace(/::/, ""))) {

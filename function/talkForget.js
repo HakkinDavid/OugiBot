@@ -1,7 +1,7 @@
 module.exports =
 
 async function (arguments, msg) {
-  var thisMessage = arguments.join(" ");
+  let thisMessage = arguments.join(" ");
 
   if (msg.content.includes("@everyone") || msg.content.includes("@here")) {
     msg.channel.send("Ora ora ora ora! Remove that massive ping.");
@@ -13,13 +13,13 @@ async function (arguments, msg) {
     return
   }
 
-  var breakChocolate = thisMessage.split("::");
-  var niceCharacterAmount = 3;
-  var maxCharacterAmount = 164;
+  let breakChocolate = thisMessage.split("::");
+  let niceCharacterAmount = 3;
+  let maxCharacterAmount = 164;
 
   if (msg.author.id == "265257341967007758") {
-    var niceCharacterAmount = 1;
-    var maxCharacterAmount = 2000;
+    niceCharacterAmount = 1;
+    maxCharacterAmount = 2000;
   }
 
   if (breakChocolate.length !== 2){
@@ -27,8 +27,8 @@ async function (arguments, msg) {
     return
   }
 
-  var trigger = breakChocolate[0].toString();
-  var response = breakChocolate[1].toString();
+  let trigger = breakChocolate[0].toString();
+  let response = breakChocolate[1].toString();
 
   while (trigger.startsWith("ougi")){
     trigger = trigger.substring(4, trigger.length)
@@ -78,30 +78,27 @@ async function (arguments, msg) {
     return
   }
 
-  var pseudoArray = JSON.parse(fs.readFileSync('./responses.txt', 'utf-8', console.error));
-
-  var afterOptions = [
+  let afterOptions = [
     "I'll stop replying `" + response + "` when anyone says `" + trigger + "`",
     "Of course I already knew I shouldn't say `" + response + "` when anyone says `" + trigger + "`",
   ];
-  var answer = afterOptions[Math.floor(Math.random()*afterOptions.length)];
-  var myResponse = "./responses.txt";
+  let answer = afterOptions[Math.floor(Math.random()*afterOptions.length)];
 
-  if (pseudoArray.hasOwnProperty(trigger)){
-    var existent = pseudoArray[trigger];
-    for(var i = 0; i < existent.length; i++) {
-      if(existent[i].toLowerCase() === response) {
+  if (knowledgeBase.hasOwnProperty(trigger)){
+    let existent = knowledgeBase[trigger];
+    for (let i = 0; i < existent.length; i++) {
+      if (existent[i].toLowerCase() === response) {
         existent.splice(i, 1);
         msg.channel.send(answer).catch(console.error);
-        var embed = new Discord.MessageEmbed()
+        let embed = new Discord.MessageEmbed()
         .setTitle("Input for talkForget")
         .addField("Response to be deleted", response)
         .setColor("#00FF73")
         .setFooter("globalLogEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
 
-        pseudoArray[trigger] = existent;
+        knowledgeBase[trigger] = existent;
         if (existent.length < 1) {
-          delete pseudoArray[trigger];
+          delete knowledgeBase[trigger];
           embed.addField("Trigger to be deleted", trigger);
         }
         else {
@@ -109,10 +106,9 @@ async function (arguments, msg) {
         }
         
         client.channels.cache.get(consoleLogging).send({embed});
-        var proArray = JSON.stringify(pseudoArray);
-        fs.writeFile('./responses.txt', proArray, console.error);
+        fs.writeFile('./responses.txt', JSON.stringify(knowledgeBase, null, 4), console.error);
 
-        ougi.backup(myResponse, backupChannel);
+        ougi.backup("./responses.txt", backupChannel);
         return
       }
     }
