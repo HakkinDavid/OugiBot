@@ -212,7 +212,7 @@ module.exports =
         "tags": "Tags",
         "ingredients": "Ingredients",
         "recipeHelpDesc": "Use this command to get a recipe for (hopefully) any food.",
-        "undeclaredString": "Oooh. Spooky phrase goes here!!! Seems like some lazy developer forgot to localize it.",
+        "undeclaredString": "Oooh. Spooky phrase goes here!!! Seems like some lazy programmer forgot to localize it.",
         "noNews": "No recent news found."
     },
     "es": {
