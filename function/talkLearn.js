@@ -104,9 +104,9 @@ async function (arguments, msg) {
 
     client.channels.cache.get(consoleLogging).send({embed});
     knowledgeBase[trigger] = existent;
-    fs.writeFile('./responses.txt', JSON.stringify(knowledgeBase, null, 4), console.error);
+    await fs.writeFile('./responses.txt', JSON.stringify(knowledgeBase, null, 4), console.error);
 
-    ougi.backup("./responses.txt", backupChannel);
+    await ougi.backup("./responses.txt", backupChannel);
     return
   }
 
@@ -118,7 +118,7 @@ async function (arguments, msg) {
   let arrayMaker = knowledgeBase[trigger];
   arrayMaker.push(response);
   knowledgeBase[trigger] = arrayMaker;
-  fs.writeFile('./responses.txt', JSON.stringify(knowledgeBase, null, 4), console.error);
+  await fs.writeFile('./responses.txt', JSON.stringify(knowledgeBase, null, 4), console.error);
 
-  ougi.backup("./responses.txt", backupChannel);
+  await ougi.backup("./responses.txt", backupChannel);
 }

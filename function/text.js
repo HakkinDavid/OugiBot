@@ -18,18 +18,36 @@ async function (msg, stringID, dynamic) {
       break;
     }
     let returnableString = stringID;
+    if (dynamicLocales[langCode] === undefined) {
+      dynamicLocales[langCode] = {};
+    }
+    else if (dynamicLocales[langCode][stringID] !== undefined) {
+      returnableString = dynamicLocales[langCode][stringID];
+      return returnableString;
+    }
+    stringEmoji = returnableString.match(/<:[A-Za-z0-9_]+:[0-9]+>/g);
+    stringDiscordEmoji = returnableString.match(/(?<!\<):[A-Za-z0-9_]+:(?![0-9]+\>)/g);
     await translate(returnableString, {to: langCode}).then(res => {
       if (res.from.language.iso !== langCode) {
         returnableString = res.text;
+        translatedEmoji = returnableString.match(/< {0,}:[A-Za-z0-9_ ]+: {0,}[0-9]+>/g);
+        if (translatedEmoji !== null) {
+          for (i=0; i < translatedEmoji.length; i++) {
+            returnableString = returnableString.replace(translatedEmoji[i], stringEmoji[i]);
+          }
+        }
+        translatedDiscordEmoji = returnableString.match(/(?<!\<): {0,}[A-Za-z0-9_]+:(?![0-9]+\>)/g);
+        if (translatedDiscordEmoji !== null) {
+          for (i=0; i < translatedDiscordEmoji.length; i++) {
+            returnableString = returnableString.replace(translatedDiscordEmoji[i], stringDiscordEmoji[i]);
+          }
+        }
       }
     }).catch(err => {
         console.error(err);
     });
-    if (dynamicLocales[langCode] === undefined) {
-      dynamicLocales[langCode] = {};
-    }
     dynamicLocales[langCode][stringID] = returnableString;
-    await fs.writeFile('./dynamicLocales.txt', JSON.stringify(dynamicLocales, null, 4), console.error);
+    await fs.writeFile('./dynamicLocales.txt', JSON.stringify(dynamicLocales, null, 4), 'utf-8', console.error);
     await ougi.backup('./dynamicLocales.txt', dynamicLocalesChannel);
     return returnableString;
   }
@@ -45,8 +63,8 @@ async function (msg, stringID, dynamic) {
         langCode = "es";
       break;
     }
-    if (localesCache[stringID] === undefined) {
-      localesCache[stringID] = {};
+    if (localesCache[langCode] === undefined) {
+      localesCache[langCode] = {};
     }
     else if (localesCache[langCode][stringID] !== undefined) {
       returnableString = localesCache[langCode][stringID];
@@ -58,7 +76,7 @@ async function (msg, stringID, dynamic) {
         console.error(err);
     });
     localesCache[langCode][stringID] = returnableString;
-    await fs.writeFile('./localesCache.txt', JSON.stringify(localesCache, null, 4), console.error);
+    await fs.writeFile('./localesCache.txt', JSON.stringify(localesCache, null, 4), 'utf-8', console.error);
     await ougi.backup('./localesCache.txt', localesChannel);
   }
 

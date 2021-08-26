@@ -106,9 +106,9 @@ async function (arguments, msg) {
         }
         
         client.channels.cache.get(consoleLogging).send({embed});
-        fs.writeFile('./responses.txt', JSON.stringify(knowledgeBase, null, 4), console.error);
+        await fs.writeFile('./responses.txt', JSON.stringify(knowledgeBase, null, 4), console.error);
 
-        ougi.backup("./responses.txt", backupChannel);
+        await ougi.backup("./responses.txt", backupChannel);
         return
       }
     }

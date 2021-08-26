@@ -18,5 +18,5 @@ async function (input) {
   }
 
   await fs.writeFile('./neuroNetworks.txt', JSON.stringify(mindOBJ, null, 4), console.error);
-  ougi.backup('./neuroNetworks.txt', neuroChannel);
+  await ougi.backup('./neuroNetworks.txt', neuroChannel);
 }

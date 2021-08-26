@@ -7,7 +7,7 @@ async function (msg) {
     return
   }
   settingsOBJ.subscribers.push(callerID);
-  fs.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), console.error);
+  await fs.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), console.error);
   let embed = new Discord.MessageEmbed()
   .setTitle("Thanks for subscribing, " + client.users.cache.get(callerID).username + "!")
   .setColor("#000000")
@@ -26,5 +26,5 @@ async function (msg) {
   if (msg.channel.type != "dm") {
     msg.channel.send("Check your DMs ;)").catch(console.error);
   }
-  ougi.backup("./settings.txt", settingsChannel);
+  await ougi.backup("./settings.txt", settingsChannel);
 }

@@ -56,9 +56,9 @@ async function (arguments, msg) {
       if(existent[i].toLowerCase() === trigger) {
         client.channels.cache.get(consoleLogging).send("Trigger to be removed from blacklist: `" + trigger + "` in `" + msg.guild.toString() + "` with guildID `" + guildID + "`");
         existent.splice(i, 1);
-        fs.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), console.error);
+        await fs.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), console.error);
         msg.channel.send(answer).catch(console.error);
-        ougi.backup("./settings.txt", settingsChannel);
+        await ougi.backup("./settings.txt", settingsChannel);
         return
       }
     }

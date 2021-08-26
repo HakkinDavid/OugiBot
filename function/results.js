@@ -1,6 +1,6 @@
 module.exports =
 
-function (msg, shouldEnd) {
+async function (msg, shouldEnd) {
   /*-----------------------------------*/
   while (msg.content.includes('  ')) {
     msg.content = msg.content.replace('  ', ' ')
@@ -37,8 +37,8 @@ function (msg, shouldEnd) {
       settingsOBJ.surveysAvailable[thisSurvey].ended = new Date().getTime();
       surveyDone = "Survey has ended!";
     }
-    fs.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), 'utf-8', console.error);
-    ougi.backup('./settings.txt', settingsChannel);
+    await fs.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), 'utf-8', console.error);
+    await ougi.backup('./settings.txt', settingsChannel);
   }
   embed.addField(surveyDone, "Duration: " + ougi.toHumanTime(mySurvey.started, mySurvey.ended) + ".")
   msg.channel.send(embed);

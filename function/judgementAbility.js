@@ -74,16 +74,11 @@ async function (msg) {
       .replace(/gay|lesbian|transexual|bisexual/gi, "unstraight")
       .replace(/cock|dick|penis/gi, "coke");
     }
+    
     embed.addField("Reply", response);
+
     if (settingsOBJ.lang[msg.author.id] !== undefined) {
-      responseEmoji = response.match(/<:[A-Za-z0-9_]+:[0-9]+>/g);
       response = await ougi.text(msg, response, true);
-      translatedEmoji = response.match(/< {0,}:[A-Za-z0-9_ ]+: {0,}[0-9]+>/g);
-      if (translatedEmoji !== null) {
-          for (i=0; i < translatedEmoji.length; i++) {
-          response = response.replace(translatedEmoji[i], responseEmoji[i]);
-        }
-      }
       embed.addField("Localized as", response);
     }
     msg.channel.send(response).catch(console.error);

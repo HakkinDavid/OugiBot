@@ -114,8 +114,8 @@ async function (msg) {
   newsArray.push(thisArray);
   let proArray = JSON.stringify(newsArray, null, 4);
   let myEmbed = './newsChannel.txt';
-  fs.writeFile('./newsChannel.txt', proArray, console.error);
+  await fs.writeFile('./newsChannel.txt', proArray, console.error);
 
-  ougi.backup(myEmbed, newsChannel);
+  await ougi.backup(myEmbed, newsChannel);
   msg.channel.send("Sent this newsletter to:\n" + names.join('\n'), spookyConstructor);
 }
