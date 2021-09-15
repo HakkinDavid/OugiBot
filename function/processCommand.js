@@ -91,6 +91,22 @@ async function (msg) {
         ougi.newsCommand(arguments, msg)
       break;
 
+      case "work":
+        ougi.workCommand(msg)
+      break;
+
+      //case "crime":
+      //  ougi.crimeCommand(arguments, msg)
+      //break;
+
+      //case "rob":
+      //  ougi.robCommand(arguments, msg)
+      //break;
+
+      case "balance":
+        ougi.balanceCheck(arguments, msg)
+      break;
+
       case "covidstats":
         ougi.covidstats(arguments, msg)
       break;
@@ -201,6 +217,7 @@ async function (msg) {
       case "prefix":
         ougi.prefix(arguments, msg)
       break;
+
       case "setlog":
         ougi.setLog(arguments, msg)
       break;
@@ -231,6 +248,18 @@ async function (msg) {
 
       case "guildlanguage":
         ougi.lang(arguments, msg, true)
+      break;
+
+      case "xp-channel":
+        ougi.manageEconomy('channel', msg, arguments)
+      break;
+
+      case "economy":
+        ougi.manageEconomy('economy', msg, arguments)
+      break;
+
+      case "seticon":
+        ougi.economyIcons(arguments, msg)
       break;
   /*---------------------------------------------*/
       default:

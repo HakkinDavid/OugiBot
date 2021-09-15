@@ -2,7 +2,7 @@ module.exports =
 
 async function (arguments, msg) {
   if (msg.channel.type != "text") {
-    msg.channel.send("You must be in a server to run this command.");
+    msg.channel.send(await ougi.text(msg, "mustGuild"));
     return
   }
 

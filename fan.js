@@ -169,12 +169,13 @@ client.on('message', (msg) => {
       ougi.rootCommands(msg);
     }
 
-    else if (msg.channel.type == "text" && msg.content.length > 0) {
+    else if (msg.channel.type === "text" && msg.content.length > 0) {
       let guildID = msg.guild.id;
+      let regularMessage = true;
       if (settingsOBJ.prefix.hasOwnProperty(guildID)){
         let aPrefix = settingsOBJ.prefix[guildID];
         if (msg.content.toLowerCase().startsWith(aPrefix)) {
-          if (msg.content.length == aPrefix.length) {
+          if (msg.content.length === aPrefix.length) {
             msg.content = 'ougi';
           }
           else {
@@ -183,18 +184,23 @@ client.on('message', (msg) => {
           }
 
           ougi.processCommand(msg);
+          regularMessage = false;
         }
+      }
+
+      if (regularMessage && settingsOBJ.economy.hasOwnProperty(guildID) && !settingsOBJ.economy[guildID].disabled && (settingsOBJ.economy[guildID].channels.length === 0 || settingsOBJ.economy[guildID].channels.includes(msg.channel.id))) {
+        ougi.economy('xp', msg);
       }
     }
 
-    else if (msg.content == "I want to opt out from using Ougi [BOT]." && msg.channel.type == "dm") {
+    else if (msg.content === "I want to opt out from using Ougi [BOT]." && msg.channel.type === "dm") {
       let pseudoMSG = msg;
       pseudoMSG.content = "ougi OPTOUTSTATEMENT";
       ougi.globalLog(pseudoMSG);
       ougi.optout(msg);
     }
 
-    else if (msg.channel.type == "dm" && msg.content.length > 0) {
+    else if (msg.channel.type === "dm" && msg.content.length > 0) {
       ougi.judgementAbility(msg);
     }
 })
@@ -253,19 +259,13 @@ client.on('messageUpdate', (msg) => {
     ougi.loadSniper(msg, true);
 });
 
-/*Makotomonogatari*/
 client.setInterval(
   async function () {
-    client.destroy();
-    client.login(process.env.TOKEN);
-    findRemoveSync('./', {extensions: ['.txt']});
-    for (i=0; i < fetchedChannels.length; i++) {
-      await ougi.fetch(fetchedChannels[i]);
-    }
-    if (global.TEASEABLE) {
-        await ougi.startup();        
-    }
-  }, 28800000);
+    await fs.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), console.error);
+    await ougi.backup('./settings.txt', settingsChannel);
+  },
+  300000
+)
 
 /* Kaishimonogatari */
 client.login(process.env.TOKEN);
