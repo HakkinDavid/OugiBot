@@ -93,7 +93,7 @@ module.exports =
         "lookEmoji": "Take a look at the emoji list!",
         "pleasePage": "Uh, please provide a page number.",
         "notPage": "That's not a page yet.",
-        "emojiListFooter": "spookyEmoji List by Ougi [{hwmnemoji} emoji in {numpage} pages]",
+        "emojiListFooter": "spookyEmoji List by Ougi [{emoji} emoji in {numpage} pages]",
         "emojiListHelpDesc": "Take a look at all emoji that Ougi has access to. You can also browse by page.",
         "languageHelpDesc": "Change the language Ougi uses when talking to you.",
         "guildLanguageHelpDesc": "Change the language Ougi uses inside a specific Discord server.",

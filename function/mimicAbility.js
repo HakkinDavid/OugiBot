@@ -1,32 +1,18 @@
 module.exports =
 
 async function (msg) {
-  var embed = new Discord.MessageEmbed()
-  .setTitle("Input for mimicAbility")
+  let reply = await ougi.customEmoji(msg.content.toLowerCase().split(" ").slice(0, 5), null, true);
+  while (reply.length > 3) {
+    reply.splice(Math.floor(Math.random()*reply.length), 1);
+  }
+  reply = reply.join(" ");
+  let embed = new Discord.MessageEmbed()
+  .setTitle("mimicAbility")
   .setColor("#FF008C")
-  .setFooter("globalLogEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}));
+  .setFooter("globalLogEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
+  .addField("Replied", reply);
 
-  var uSaid = msg.content.toLowerCase();
-  var iSaid = uSaid
-  .replace("ougi", msg.author.username)
-  .replace("扇忍野", msg.author.username)
-  .replace("扇", msg.author.username)
-  .replace("<@!629837958123356172>", msg.author.username)
-  .replace("<@629837958123356172>", msg.author.username)
-  .replace("i am", "you are not")
-  .replace("smart", "dumb")
-  .replace("cute", "ugly")
-  .replace("funny", "unfunny")
-  .replace("@everyone", "no one")
-  .replace("@here", "unhere");
-  if (uSaid == iSaid) {
-    iSaid = randomCase(iSaid);
-  }
-  if (iSaid == "") {
-    return
-  }
-  msg.channel.send(iSaid);
-  embed.addField("Content", uSaid);
-  embed.addField("Replied", iSaid);
+  msg.channel.send(reply);
+  
   client.channels.cache.get(consoleLogging).send(embed);
 }

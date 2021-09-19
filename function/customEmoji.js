@@ -1,26 +1,29 @@
 module.exports =
 
-async function (arguments, msg) {
-  var emojiArray = [];
-  var emojiIDList = client.emojis.cache.filter(emoji => emoji.available).map((e) => e.toString()).join("\n");
-  var emojiNameList = client.emojis.cache.filter(emoji => emoji.available).map((e) => e.name.toLowerCase()).join("\n");
+async function (arguments, msg, self) {
+  let emojiArray = [];
+  let emojiIDList = client.emojis.cache.filter(emoji => emoji.available).map((e) => e.toString()).join("\n");
+  let emojiNameList = client.emojis.cache.filter(emoji => emoji.available).map((e) => e.name.toLowerCase()).join("\n");
+  let proArrayID = emojiIDList.split("\n");
+  let proArrayName = emojiNameList.split("\n");
   for (i=0; i < arguments.length; i++) {
-    var searchFor = arguments[i];
-    var proArrayID = emojiIDList.split("\n");
-    var proArrayName = emojiNameList.split("\n");
+    let spookyEmoji;
 
-    var positionEmoji = proArrayName.indexOf(searchFor);
+    let positionEmoji = proArrayName.indexOf(arguments[i]);
 
-    if (positionEmoji == -1) {
-      var spookyEmoji = "<:unknown_emoji:731996283790950420>"
+    if (positionEmoji === -1) {
+      positionEmoji = proArrayName.indexOf(stringSimilarity.findBestMatch(arguments[i], proArrayName).bestMatch.target);
     }
-    else if (arguments[i] == "random") {
-      var spookyEmoji = "<a:random:742246590982651976>";
+    if (arguments[i] === "random") {
+      spookyEmoji = "<a:random:742246590982651976>";
     }
     else {
-      var spookyEmoji = proArrayID[positionEmoji];
+      spookyEmoji = proArrayID[positionEmoji];
     }
     emojiArray.push(spookyEmoji)
+  }
+  if (self) {
+    return emojiArray;
   }
   if (emojiArray.length >= 1) {
     while (emojiArray.join("").length >= 2000) {
@@ -30,7 +33,7 @@ async function (arguments, msg) {
 
     msg.channel.send(emojiArray.join("")).then((message) => {
       if (emojiArray.includes("<a:random:742246590982651976>") && emojiArray.length <= 6) {
-        var lucky = client.setInterval(function () {
+        let lucky = client.setInterval(function () {
           let newEmoji = emojiArray.indexOf("<a:random:742246590982651976>");
           let thatEmoji = proArrayID[Math.floor(Math.random()*proArrayID.length)];
           emojiArray.splice(newEmoji, 1, thatEmoji);
@@ -38,7 +41,7 @@ async function (arguments, msg) {
           if (!emojiArray.includes("<a:random:742246590982651976>")) {
             client.clearInterval(lucky);
           }
-        }, 600, message, emojiArray, proArrayID, lucky);
+        }, 600);
       }
       else if (emojiArray.includes("<a:random:742246590982651976>") && emojiArray.length > 6) {
         let emojiString = emojiArray.join("");
