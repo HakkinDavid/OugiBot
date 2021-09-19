@@ -2,13 +2,18 @@ module.exports =
 
 async function (msg, stringID, dynamic) {
   let langCode = "en";
-  if (settingsOBJ.lang.hasOwnProperty(msg.author.id)) {
-    langCode = settingsOBJ.lang[msg.author.id]
-  }
-  if (msg.channel.type === "text") {
-    if (settingsOBJ.lang.hasOwnProperty(msg.guild.id)) {
-      langCode = settingsOBJ.lang[msg.guild.id];
+  if (typeof msg === 'object') {
+    if (settingsOBJ.lang.hasOwnProperty(msg.author.id)) {
+      langCode = settingsOBJ.lang[msg.author.id];
     }
+    if (msg.channel.type === "text") {
+      if (settingsOBJ.lang.hasOwnProperty(msg.guild.id)) {
+        langCode = settingsOBJ.lang[msg.guild.id];
+      }
+    }
+  }
+  else if (typeof msg === 'string') {
+    langCode = msg;
   }
   
   if (dynamic) {

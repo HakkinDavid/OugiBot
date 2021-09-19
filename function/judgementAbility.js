@@ -29,7 +29,7 @@ async function (msg) {
   
   let prevSimilarity = stringSimilarity.findBestMatch(notSpookyDM, stringsArray).bestMatch.rating;
   if (prevSimilarity * 100 < 90) {
-    notSpookyDM = await ougi.text(msg, notSpookyDM, true);
+    notSpookyDM = await ougi.text('en', notSpookyDM, true);
     embed.addField("Translated for processing", notSpookyDM.slice(0, 1024));
   }
 
