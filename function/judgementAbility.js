@@ -76,11 +76,9 @@ async function (msg) {
     }
     
     embed.addField("Reply", response);
-
-    if (settingsOBJ.lang[msg.author.id] !== undefined) {
-      response = await ougi.text(msg, response, true);
-      embed.addField("Localized as", response);
-    }
+    response = await ougi.text(msg, response, true);
+    embed.addField("Localized as", response);
+    
     msg.channel.send(response).catch(console.error);
     client.channels.cache.get(consoleLogging).send({embed});
   }
