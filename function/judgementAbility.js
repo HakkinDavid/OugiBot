@@ -18,6 +18,7 @@ async function (msg) {
 
   let stringsArray = Object.keys(knowledgeBase);
   let notSpookyDM = msg.content.toLowerCase();
+  let usedLang;
   notSpookyDM = notSpookyDM.replace('<@629837958123356172>', 'ougi').replace('扇', 'ougi').replace('<@!629837958123356172>', 'ougi');
   while (notSpookyDM.startsWith("ougi")) {
     notSpookyDM = notSpookyDM.substring(4, notSpookyDM.length)
@@ -29,7 +30,9 @@ async function (msg) {
   
   let prevSimilarity = stringSimilarity.findBestMatch(notSpookyDM, stringsArray).bestMatch.rating;
   if (prevSimilarity * 100 < 90) {
-    notSpookyDM = await ougi.text('en', notSpookyDM, true);
+    let msgTranslation = await ougi.text('en', notSpookyDM, true, true);
+    notSpookyDM = msgTranslation.value;
+    usedLang = msgTranslation.fromCode;
     embed.addField("Translated for processing", notSpookyDM.slice(0, 1024));
   }
 
@@ -76,8 +79,10 @@ async function (msg) {
     }
     
     embed.addField("Reply", response);
-    response = await ougi.text(msg, response, true);
-    embed.addField("Localized as", response);
+    if (prevSimilarity * 100 < 90) {
+      response = await ougi.text(usedLang, response, true);
+      embed.addField("Localized as", response);
+    }
     
     msg.channel.send(response).catch(console.error);
     client.channels.cache.get(consoleLogging).send({embed});

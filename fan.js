@@ -73,7 +73,15 @@ global.knowledgeBase = null;
 
 /* Rogumonogatari */
 global.consoleLogging = "726927838724489226";
-global.fetchedChannels = [settingsChannel, backupChannel, embedsChannel, newsChannel, neuroChannel, localesChannel, dynamicLocalesChannel];
+global.fetchedChannels = [
+  settingsChannel,
+  backupChannel,
+  embedsChannel,
+  newsChannel,
+  // neuroChannel,
+  localesChannel,
+  dynamicLocalesChannel
+];
 global.errorBackup = console.error;
 global.logMessages = [];
 
@@ -143,12 +151,12 @@ client.on('message', (msg) => {
       }
     }
 
-    if (settingsOBJ === null || mindOBJ === null || localesCache === null || dynamicLocales === null || knowledgeBase === null) {
-      if (!fs.existsSync('./settings.txt') || !fs.existsSync('./neuroNetworks.txt') || !fs.existsSync('./localesCache.txt') || !fs.existsSync('./dynamicLocales.txt') || !fs.existsSync('./responses.txt')) {
+    if (settingsOBJ === null || /* mindOBJ === null || */ localesCache === null || dynamicLocales === null || knowledgeBase === null) {
+      if (!fs.existsSync('./settings.txt') || /* !fs.existsSync('./neuroNetworks.txt') || */ !fs.existsSync('./localesCache.txt') || !fs.existsSync('./dynamicLocales.txt') || !fs.existsSync('./responses.txt')) {
         return
       }
       global.settingsOBJ = JSON.parse(fs.readFileSync('./settings.txt'));
-      global.mindOBJ = JSON.parse(fs.readFileSync('./neuroNetworks.txt'));
+      // global.mindOBJ = JSON.parse(fs.readFileSync('./neuroNetworks.txt'));
       global.localesCache = JSON.parse(fs.readFileSync('./localesCache.txt'));
       global.dynamicLocales = JSON.parse(fs.readFileSync('./dynamicLocales.txt'));
       global.knowledgeBase = JSON.parse(fs.readFileSync('./responses.txt', 'utf-8'));
@@ -261,6 +269,9 @@ client.on('messageUpdate', (msg) => {
 
 client.setInterval(
   async function () {
+    if (!global.TEASEABLE) {
+      return
+    }
     await fs.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), console.error);
     await ougi.backup('./settings.txt', settingsChannel);
   },

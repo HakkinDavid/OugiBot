@@ -1,6 +1,8 @@
 module.exports =
 
 async function (input) {
+  // i need a better approach
+  /*
   let idea = removeWords(input);
   let identifier = idea[0];
 
@@ -19,4 +21,6 @@ async function (input) {
 
   await fs.writeFile('./neuroNetworks.txt', JSON.stringify(mindOBJ, null, 4), console.error);
   await ougi.backup('./neuroNetworks.txt', neuroChannel);
+  */
+  return
 }

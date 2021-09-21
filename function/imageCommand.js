@@ -21,7 +21,7 @@ async function (arguments, msg) {
           }
         }
 
-        if (urls.length == 0) {
+        if (urls.length === 0) {
             msg.channel.send(await ougi.text(msg, "resultsZero")).catch(console.error);
             return;
         }

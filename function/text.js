@@ -1,6 +1,6 @@
 module.exports =
 
-async function (msg, stringID, dynamic) {
+async function (msg, stringID, dynamic, raw) {
   let langCode = "en";
   if (typeof msg === 'object') {
     if (settingsOBJ.lang.hasOwnProperty(msg.author.id)) {
@@ -23,6 +23,7 @@ async function (msg, stringID, dynamic) {
       break;
     }
     let returnableString = stringID;
+    let fromCode;
     if (dynamicLocales[langCode] === undefined) {
       dynamicLocales[langCode] = {};
     }
@@ -34,6 +35,7 @@ async function (msg, stringID, dynamic) {
     stringDiscordEmoji = returnableString.match(/(?<!\<):[A-Za-z0-9_]+:(?![0-9]+\>)/g);
     await translate(returnableString, {to: langCode}).then(res => {
       if (res.from.language.iso !== langCode) {
+        fromCode = res.from.language.iso;
         returnableString = res.text;
         translatedEmoji = returnableString.match(/< {0,}:[A-Za-z0-9_ ]+: {0,}[0-9]+>/g);
         if (translatedEmoji !== null) {
@@ -54,6 +56,7 @@ async function (msg, stringID, dynamic) {
     dynamicLocales[langCode][stringID] = returnableString;
     await fs.writeFile('./dynamicLocales.txt', JSON.stringify(dynamicLocales, null, 4), 'utf-8', console.error);
     await ougi.backup('./dynamicLocales.txt', dynamicLocalesChannel);
+    if (raw) { return { value: returnableString, fromCode, stringEmoji, stringDiscordEmoji } };
     return returnableString;
   }
 
