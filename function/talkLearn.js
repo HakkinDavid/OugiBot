@@ -83,15 +83,19 @@ async function (arguments, msg) {
     "Of course I already knew I should say `" + response + "` when anyone says `" + trigger + "`, I was just making sure you knew too~",
   ];
   let answer = afterOptions[Math.floor(Math.random()*afterOptions.length)];
+  let potentialLinks = response.match(/https{0,1}:\/\//gi);
+  if (potentialLinks.length > 0) {
+    answer = answer + "\n\n```P.S. Since this response seems to include media, and because learn command is Ougi's main source of public replies, it will be audited by Ougi's developer (just to make sure nothing NSFW or illegal is stored).```";
+  }
 
   let embed = new Discord.MessageEmbed()
   .setTitle("Input for talkLearn")
   .addField("Response to be added", response)
   .addField("With trigger", trigger)
   .setColor("#FF008C")
-  .setFooter("globalLogEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
+  .setFooter("globalLogEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}));
 
-  if (knowledgeBase.hasOwnProperty(trigger)){
+  if (knowledgeBase.hasOwnProperty(trigger)) {
     let existent = knowledgeBase[trigger];
     for (let i = 0; i < existent.length; i++) {
       if (existent[i].toLowerCase() === response) {
@@ -107,6 +111,7 @@ async function (arguments, msg) {
     await fs.writeFile('./responses.txt', JSON.stringify(knowledgeBase, null, 4), console.error);
 
     await ougi.backup("./responses.txt", backupChannel);
+    if (potentialLinks.length > 0) client.users.cache.get().send("User uploaded media.\n" + "**Trigger:** " + trigger + "\n**Response:** " + response + "\n\n" + potentialLinks.join("\n"));
     return
   }
 
@@ -121,4 +126,6 @@ async function (arguments, msg) {
   await fs.writeFile('./responses.txt', JSON.stringify(knowledgeBase, null, 4), console.error);
 
   await ougi.backup("./responses.txt", backupChannel);
+  if (potentialLinks.length > 0) client.users.cache.get().send("User uploaded media.\n" + "**Trigger:** " + trigger + "\n**Response:** " + response + "\n\n" + potentialLinks.join("\n"));
+  return
 }
