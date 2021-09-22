@@ -32,7 +32,7 @@ async function (msg) {
   if (prevSimilarity * 100 < 90) {
     let msgTranslation = await ougi.text('en', notSpookyDM, true, true);
     notSpookyDM = msgTranslation.value;
-    usedLang = msgTranslation.fromCode;
+    usedLang = msgTranslation.fromCode || msg;
     embed.addField("Translated for processing", notSpookyDM.slice(0, 1024));
   }
 
@@ -71,7 +71,7 @@ async function (msg) {
   if (finalSimilarity >= minSimilarity){
     let options = knowledgeBase[thisString];
     let response = options[Math.floor(Math.random()*options.length)];
-    if (msg.channel.type != "dm") {
+    if (msg.channel.type !== "dm") {
       response = response
       .replace(/nigga|nigger/gi, "unwhiter")
       .replace(/gay|lesbian|transexual|bisexual/gi, "unstraight")
@@ -80,7 +80,7 @@ async function (msg) {
     
     embed.addField("Reply", response);
     if (prevSimilarity * 100 < 90) {
-      response = await ougi.text(usedLang ? usedLang : msg, response, true);
+      response = await ougi.text(usedLang, response, true);
       embed.addField("Localized as", response);
     }
     
