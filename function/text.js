@@ -24,6 +24,9 @@ async function (msg, stringID, dynamic, raw) {
     }
     let returnableString = stringID;
     let fromCode;
+    if (returnableString.includes('http')) {
+      return returnableString;
+    }
     if (dynamicLocales[langCode] === undefined) {
       dynamicLocales[langCode] = {};
     }
