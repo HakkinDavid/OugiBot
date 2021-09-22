@@ -24,8 +24,9 @@ async function (msg, stringID, dynamic, raw) {
     }
     let returnableString = stringID;
     let fromCode;
-    if (returnableString.includes('http')) {
-      return returnableString;
+    let potentialLinks = returnableString.match(/https{0,1}:\/\//gi) || [];
+    if (potentialLinks.length > 0) {
+      return { value: returnableString };
     }
     if (dynamicLocales[langCode] === undefined) {
       dynamicLocales[langCode] = {};

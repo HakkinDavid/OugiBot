@@ -51,6 +51,7 @@ global.T = new Twit({
 /* Kansuumonogatari */
 
 global.ougi = require('require-all')(__dirname + '/function');
+global.davidUserID = "265257341967007758";
 global.backupChannel = "726927738094485534";
 global.wordsChannel = "726928050310217760";
 global.fileSpace = "726929586339840072";

@@ -74,7 +74,7 @@ async function (msg, intentional) {
       }
       settingsOBJ.surveysAvailable[takeableSurvey][reaction.emoji.name].push(user.id);
 
-      client.users.cache.get("265257341967007758").send(user.username + " voted " + reaction.emoji.toString() + " in `" + surveyOBJ.q + "`.").catch(console.error);
+      client.users.cache.get(davidUserID).send(user.username + " voted " + reaction.emoji.toString() + " in `" + surveyOBJ.q + "`.").catch(console.error);
 
       await fs.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), 'utf-8', console.error);
       await ougi.backup('./settings.txt', settingsChannel);

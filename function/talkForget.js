@@ -17,7 +17,7 @@ async function (arguments, msg) {
   let niceCharacterAmount = 3;
   let maxCharacterAmount = 164;
 
-  if (msg.author.id == "265257341967007758") {
+  if (msg.author.id == davidUserID) {
     niceCharacterAmount = 1;
     maxCharacterAmount = 2000;
   }

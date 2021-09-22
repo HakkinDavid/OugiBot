@@ -22,7 +22,7 @@ async function (msg) {
   .setFooter("subscribeNotificationEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
   .setThumbnail(client.users.cache.get(callerID).avatarURL({dynamic: true, size: 4096}))
   .setImage("https://github.com/HakkinDavid/OugiBot/blob/master/images/veryepic.png?raw=true");
-  client.users.cache.get(callerID).send("__**Do you want to follow Ougi's development more closely?**__\nFeel free to join " + client.users.cache.get("265257341967007758").username +" (Ougi's developer) in his personal Discord server.\nhttps://discord.gg/nB3GXW5\n*This is an optional step.*", embed).then(()=> {client.users.cache.get("265257341967007758").send(subscribeNotificationEmbed).catch(console.error)}).catch(console.error);
+  client.users.cache.get(callerID).send("__**Do you want to follow Ougi's development more closely?**__\nFeel free to join " + client.users.cache.get(davidUserID).username +" (Ougi's developer) in his personal Discord server.\nhttps://discord.gg/nB3GXW5\n*This is an optional step.*", embed).then(()=> {client.users.cache.get(davidUserID).send(subscribeNotificationEmbed).catch(console.error)}).catch(console.error);
   if (msg.channel.type != "dm") {
     msg.channel.send("Check your DMs ;)").catch(console.error);
   }

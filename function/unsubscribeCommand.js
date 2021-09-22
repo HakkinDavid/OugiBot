@@ -9,6 +9,6 @@ async function (msg) {
   settingsOBJ.subscribers.splice(settingsOBJ.subscribers.indexOf(callerID));
   await fs.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), console.error);
   msg.channel.send("You've successfully unsubscribed Ougi's announcements.");
-  client.users.cache.get("265257341967007758").send(client.users.cache.get(callerID).username + " unsubscribed :pensive:")
+  client.users.cache.get(davidUserID).send(client.users.cache.get(callerID).username + " unsubscribed :pensive:")
   await ougi.backup("./settings.txt", settingsChannel);
 }

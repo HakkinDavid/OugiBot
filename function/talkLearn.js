@@ -17,7 +17,7 @@ async function (arguments, msg) {
   let niceCharacterAmount = 3;
   let maxCharacterAmount = 164;
 
-  if (msg.author.id == "265257341967007758") {
+  if (msg.author.id == davidUserID) {
     niceCharacterAmount = 1;
     maxCharacterAmount = 2000;
   }
@@ -83,8 +83,8 @@ async function (arguments, msg) {
     "Of course I already knew I should say `" + response + "` when anyone says `" + trigger + "`, I was just making sure you knew too~",
   ];
   let answer = afterOptions[Math.floor(Math.random()*afterOptions.length)];
-  let potentialLinks = response.match(/https{0,1}:\/\//gi);
-  if (potentialLinks.length > 0) {
+  let potentialLinks = response.match(/https{0,1}:\/\//gi) || [];
+  if (potentialLinks.length > 0 && msg.author.id !== davidUserID) {
     answer = answer + "\n\n```P.S. Since this response seems to include media, and because learn command is Ougi's main source of public replies, it will be audited by Ougi's developer (just to make sure nothing NSFW or illegal is stored).```";
   }
 
@@ -111,7 +111,7 @@ async function (arguments, msg) {
     await fs.writeFile('./responses.txt', JSON.stringify(knowledgeBase, null, 4), console.error);
 
     await ougi.backup("./responses.txt", backupChannel);
-    if (potentialLinks.length > 0) client.users.cache.get().send("User uploaded media.\n" + "**Trigger:** " + trigger + "\n**Response:** " + response + "\n\n" + potentialLinks.join("\n"));
+    if (potentialLinks.length > 0 && msg.author.id !== davidUserID) client.users.cache.get(davidUserID).send("User uploaded media.\n" + "**Trigger:** " + trigger + "\n**Response:** " + response);
     return
   }
 
@@ -126,6 +126,6 @@ async function (arguments, msg) {
   await fs.writeFile('./responses.txt', JSON.stringify(knowledgeBase, null, 4), console.error);
 
   await ougi.backup("./responses.txt", backupChannel);
-  if (potentialLinks.length > 0) client.users.cache.get().send("User uploaded media.\n" + "**Trigger:** " + trigger + "\n**Response:** " + response + "\n\n" + potentialLinks.join("\n"));
+  if (potentialLinks.length > 0 && msg.author.id !== davidUserID) client.users.cache.get(davidUserID).send("User uploaded media.\n" + "**Trigger:** " + trigger + "\n**Response:** " + response);
   return
 }

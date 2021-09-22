@@ -32,7 +32,7 @@ async function (msg, shouldEnd) {
   .setTimestamp()
   .setAuthor("Ougi [BOT]", client.user.avatarURL({dynamic: true, size: 4096}))
   .setFooter("surveyResultsEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}));
-  if (shouldEnd && msg.author.id == "265257341967007758") {
+  if (shouldEnd && msg.author.id == davidUserID) {
     if (settingsOBJ.surveysAvailable[thisSurvey].ended == null) {
       settingsOBJ.surveysAvailable[thisSurvey].ended = new Date().getTime();
       surveyDone = "Survey has ended!";
