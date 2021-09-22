@@ -80,7 +80,7 @@ async function (msg) {
     
     embed.addField("Reply", response);
     if (prevSimilarity * 100 < 90) {
-      response = await ougi.text(usedLang, response, true);
+      response = await ougi.text(usedLang ? usedLang : msg, response, true);
       embed.addField("Localized as", response);
     }
     

@@ -28,8 +28,19 @@ async function (msg, stringID, dynamic, raw) {
       dynamicLocales[langCode] = {};
     }
     else if (dynamicLocales[langCode][stringID] !== undefined) {
-      returnableString = dynamicLocales[langCode][stringID];
+      returnableString = dynamicLocales[langCode][stringID].value;
+      if (raw) { return { value: returnableString, fromCode: dynamicLocales[langCode][stringID].fromCode } };
       return returnableString;
+    }
+    else {
+      let keyedTranslations = Object.keys(dynamicLocales[langCode]);
+      let mostSimilar = stringSimilarity.findBestMatch(stringID, keyedTranslations).bestMatch;
+      if (mostSimilar.rating * 100 > 50) {
+        // ¿Tú qué dices Moris? Ehhhhh... 50 a 50.
+        returnableString = dynamicLocales[langCode][mostSimilar.target].value;
+        if (raw) { return { value: returnableString, fromCode: dynamicLocales[langCode][mostSimilar.target].fromCode } };
+        return returnableString;
+      }
     }
     stringEmoji = returnableString.match(/<:[A-Za-z0-9_]+:[0-9]+>/g);
     stringDiscordEmoji = returnableString.match(/(?<!\<):[A-Za-z0-9_]+:(?![0-9]+\>)/g);
@@ -53,7 +64,7 @@ async function (msg, stringID, dynamic, raw) {
     }).catch(err => {
         console.error(err);
     });
-    dynamicLocales[langCode][stringID] = returnableString;
+    dynamicLocales[langCode][stringID] = { value: returnableString, fromCode };
     await fs.writeFile('./dynamicLocales.txt', JSON.stringify(dynamicLocales, null, 4), 'utf-8', console.error);
     await ougi.backup('./dynamicLocales.txt', dynamicLocalesChannel);
     if (raw) { return { value: returnableString, fromCode, stringEmoji, stringDiscordEmoji } };
