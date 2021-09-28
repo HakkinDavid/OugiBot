@@ -19,6 +19,12 @@ async function (msg) {
         .setTimestamp()
         .setColor("#021959");
     for (i=0; breakChocolate.length > i; i++) {
+        while (breakChocolate[i].startsWith(" ")) {
+            breakChocolate[i] = breakChocolate[i].slice(1);
+        }
+        while (breakChocolate[i].endsWith(" ")) {
+            breakChocolate[i] = breakChocolate[i].slice(0, -1);
+        }
         if (breakChocolate[i].startsWith("user")) {
             users = breakChocolate[i].match(/[0-9]{17,}/gi);
             if (users.length === 0) {
