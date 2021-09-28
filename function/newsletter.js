@@ -10,7 +10,6 @@ async function (msg) {
   }
   let spookyCake = msg.content;
   let spookySlices = spookyCake.split(" ");
-  let spookyCommand = spookySlices[1];
   let arguments = spookySlices.slice(2);
   /*-----------------------------------*/
 

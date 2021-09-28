@@ -16,8 +16,37 @@ async function (msg) {
     let arguments = spookySlices.slice(2);
     let mustHavePerms = ["ADD_REACTIONS", "VIEW_CHANNEL", "SEND_MESSAGES", "MANAGE_MESSAGES", "EMBED_LINKS", "ATTACH_FILES", "USE_EXTERNAL_EMOJIS", "MANAGE_WEBHOOKS"];
 
+    // ratelimits spammers
+    let ratelimit = (new Date).getTime();
+
+    if (settingsOBJ.ratelimit[msg.author.id] && !((ratelimit - settingsOBJ.ratelimit[msg.author.id]) > 1500)) {
+        msg.channel.send((await ougi.text(msg, "ratelimited")).replace(/{t}/, "`" + (1500 - (ratelimit - settingsOBJ.ratelimit[msg.author.id]))/1000) + "`");
+        ougi.globalLog("Rate limit applied to user " + msg.author.tag + " (" + (1500 - (ratelimit - settingsOBJ.ratelimit[msg.author.id]))/1000 + "s)");
+        return
+    }
+
+    settingsOBJ.ratelimit[msg.author.id] = ratelimit;
+
+    // ignore those who i deem unworthy of using ougi
+    if (settingsOBJ.banned[msg.author.id]) {
+      if (!isNaN(settingsOBJ.banned[msg.author.id].until) && (settingsOBJ.banned[msg.author.id].until - (new Date).getTime()) <= 0) {
+        delete settingsOBJ.banned[msg.author.id];
+        msg.channel.send("Your ban sentence has expired.");
+      }
+      else {
+        let banEmbed = new Discord.MessageEmbed()
+        .setColor("#20064F")
+        .setTitle("It's a beautiful day outside...")
+        .setDescription("Yoinks! Your right to use Ougi has been forfeited because of an inappropriate usage.")
+        .addField("Ban expires until", settingsOBJ.banned[msg.author.id].until)
+        .addField("Reason", settingsOBJ.banned[msg.author.id].reason);
+        msg.channel.send(banEmbed);
+        return
+      }
+    }
+
     /*Ignore if in blacklist*/
-    if (msg.channel.type == "text") {
+    if (msg.channel.type === "text") {
       let guildID = msg.guild.id;
 
       if (settingsOBJ.blacklist.hasOwnProperty(guildID)){
@@ -35,7 +64,7 @@ async function (msg) {
       }
     }
 
-    if (msg.channel.type == "text") {
+    if (msg.channel.type === "text") {
       ougi.guildLog(msg);
     }
 

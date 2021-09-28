@@ -13,8 +13,6 @@ async function (msg) {
     let hauntedCommand = spookySlices[1];
     let arguments = spookySlices.slice(2);
 
-    let event = new Date();
-
     let embed = new Discord.MessageEmbed()
     .setAuthor(msg.author.tag, msg.author.avatarURL({dynamic: true, size: 4096}))
     .setDescription("ID `" + msg.author.id + "`")
@@ -69,6 +67,9 @@ async function (msg) {
       break;
       case "survey":
         ougi.createSurvey(msg)
+      break;
+      case "ban":
+        ougi.banCommand(msg)
       break;
       default:
         ougi.undefinedCommand(arguments, msg)

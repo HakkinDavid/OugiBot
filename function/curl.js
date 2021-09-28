@@ -1,49 +1,64 @@
 module.exports =
 
-function (msg) {
+async function (msg) {
   let thisOBJ, titleCurl, mentioned, curlType, memberCurl, iconCurl;
   let colorCurl = "#43B581";
-  if (msg.mentions.users.first() != null) {
+  if (msg.mentions.users.first() !== undefined) {
     mentioned = msg.mentions.users.first();
-    if (!client.users.cache.has(mentioned.id)) {
+    thisOBJ = await client.users.fetch(mentioned.id);
+    if (thisOBJ === undefined) {
       msg.channel.send("User couldn't be fetched. Do them share a Discord server with Ougi? Did them block Ougi?");
       return
     }
     curlType = "user";
-    thisOBJ = client.users.cache.get(mentioned.id);
     titleCurl = "User: " + thisOBJ.tag;
     iconCurl = thisOBJ.avatarURL({dynamic: true, size: 4096});
-    if (msg.channel.type == "text") {
-      isMember = msg.guild.member(thisOBJ);
-      if (isMember != null) {
-        memberCurl = isMember;
+    if (msg.channel.type === "text") {
+      memberCurl = await msg.guild.members.fetch(thisOBJ).catch((e) => {});
+      if (memberCurl !== undefined) {
         titleCurl = "Member: " + memberCurl.displayName;
         colorCurl = memberCurl.displayHexColor;
       }
     }
   }
-  else if (msg.mentions.channels.first() != null) {
-    thisOBJ = msg.guild.channels.cache.get(msg.mentions.channels.first().id);
+  else if (msg.mentions.channels.first() !== undefined) {
+    thisOBJ = await msg.guild.channels.fetch(msg.mentions.channels.first().id);
     curlType = "channel";
     titleCurl = "Channel: #" + thisOBJ.name;
     colorCurl = "#7289DA";
   }
-  else if (msg.mentions.roles.first() != null) {
-    thisOBJ = msg.guild.roles.cache.get(msg.mentions.roles.first().id);
+  else if (msg.mentions.roles.first() !== undefined) {
+    thisOBJ = await msg.guild.roles.fetch(msg.mentions.roles.first().id);
     curlType = "role";
     titleCurl = "Role: @" + thisOBJ.name;
     colorCurl = thisOBJ.hexColor;
   }
-  else if (msg.content.match(/<:[\w-]+:[0-9]+>/)) {
-    potentialEmoji = msg.content.match(/<:[\w-]+:[0-9]+>/);
+  else if (msg.content.match(/<a{0,1}:[\w-]+:[0-9]+>/)) {
+    let potentialEmoji = msg.content.match(/<:[\w-]+:[0-9]+>/);
     client.emojis.cache.each((e) => { if (e.toString() == potentialEmoji) { thisOBJ = e; curlType = "emoji"; iconCurl = e.url; titleCurl = "Emoji: " + thisOBJ.name + " " + thisOBJ.toString(); colorCurl = "#FFCC4D"; } });
   }
-  else if (msg.guild != null && msg.content.includes("server") || msg.content.includes("guild")) {
+  else if (msg.guild !== undefined && (msg.content.includes("server") || msg.content.includes("guild"))) {
     thisOBJ = msg.guild;
     curlType = "server";
     titleCurl = "Discord server: " + thisOBJ.toString();
     iconCurl = thisOBJ.iconURL({dynamic: true, size: 4096});
     colorCurl = "#8B9BD4";
+  }
+  else if (msg.content.match(/[0-9]{17,}/)) {
+    let potentialID = msg.content.match(/[0-9]{17,}/)[0];
+    thisOBJ = await client.users.fetch(potentialID);
+    if (thisOBJ !== undefined) {
+      curlType = "user";
+      titleCurl = "User: " + thisOBJ.tag;
+      iconCurl = thisOBJ.avatarURL({dynamic: true, size: 4096});
+      if (msg.channel.type === "text") {
+        memberCurl = await msg.guild.members.fetch(thisOBJ).catch((e) => {});
+        if (memberCurl !== undefined) {
+          titleCurl = "Member: " + memberCurl.displayName;
+          colorCurl = memberCurl.displayHexColor;
+        }
+      }
+    }
   }
 
   if (curlType == null) {

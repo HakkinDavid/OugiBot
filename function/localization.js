@@ -214,7 +214,8 @@ module.exports =
         "recipeHelpDesc": "Use this command to get a recipe for (hopefully) any food.",
         "undeclaredString": "Oooh. Spooky phrase goes here!!! Seems like some lazy programmer forgot to localize it.",
         "noNews": "No recent news found.",
-        "levelup": "Level Up!"
+        "levelup": "Level Up!",
+        "ratelimited": "I cannot type this fast! Wait {t} seconds, please."
     },
     "es": {
         "helpTitle": "Página de ayuda con Ougi",
