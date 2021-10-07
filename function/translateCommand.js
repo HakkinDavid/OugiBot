@@ -30,7 +30,7 @@ async function (msg) {
     niceLang = isCode;
   }
   let finalCode = ougi.whereIs(ougi.langCodes, niceLang);
-  translate(phrase, {to: finalCode}).then(res => {
+  translate(phrase, {to: finalCode, client: 'gtx'}).then(res => {
     let embed = new Discord.MessageEmbed()
     .setTitle("Ougi Translate")
     .setColor("#6254E7")

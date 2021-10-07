@@ -12,7 +12,7 @@ async function (arguments, msg) {
         }
     }
     if (langCode !== undefined && langCode !== 'en') {
-        await translate(searchParams, {from: langCode.replace('mx', 'es'), to: "en"}).then(res => {
+        await translate(searchParams, {client: 'gtx', from: langCode.replace('mx', 'es'), to: "en"}).then(res => {
             if (res.from.language.iso != "en") {
               searchParams = res.text;
             }

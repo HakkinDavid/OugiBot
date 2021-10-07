@@ -49,7 +49,7 @@ async function (msg, stringID, dynamic, raw) {
     }
     stringEmoji = returnableString.match(/<:[A-Za-z0-9_]+:[0-9]+>/g);
     stringDiscordEmoji = returnableString.match(/(?<!\<):[A-Za-z0-9_]+:(?![0-9]+\>)/g);
-    await translate(returnableString, {to: langCode}).then(res => {
+    await translate(returnableString, {to: langCode, client: 'gtx'}).then(res => {
       if (res.from.language.iso !== langCode) {
         fromCode = res.from.language.iso;
         returnableString = res.text;
@@ -94,7 +94,7 @@ async function (msg, stringID, dynamic, raw) {
       returnableString = localesCache[langCode][stringID];
       return returnableString;
     }
-    await translate(ougi.localization.en[stringID], {to: langCode}).then(res => {
+    await translate(ougi.localization.en[stringID], {to: langCode, client: 'gtx'}).then(res => {
         returnableString = res.text;
     }).catch(err => {
         console.error(err);
