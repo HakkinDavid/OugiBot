@@ -65,7 +65,7 @@ async function (msg) {
     }
 
     await vcChannel.join().then(async (connection) => {
-      msg.react(':loud_sound:');
+      msg.react('🔊');
       msg.react('<:ougi:730355760864952401>');
       await connection.play(cacheSpeak, { volume: false }).on('finish', () => {
         fs.unlink(cacheSpeak, console.error);
@@ -77,6 +77,8 @@ async function (msg) {
     let speaking = false;
     let completed = 0;
     let j = 0;
+    msg.react('🔊');
+    msg.react('<:ougi:730355760864952401>');
     let limit = setInterval(async () => {
       if (readOutLoud.replace(/ |\n/gi, "").length > 0) {
         let cacheSpeak = './cachedvoice/' + langCode + (new Date).getTime() + '.mp3';
@@ -97,12 +99,12 @@ async function (msg) {
         });
         j++;
         let index = j;
+        let ratelimit = (new Date).getTime() + 1000;
+        settingsOBJ.ratelimit[msg.author.id] = ratelimit;
         let voicy = setInterval(async () => {
           if (!speaking && completed === (index - 1)) {
             speaking = true;
             await vcChannel.join().then(async (connection) => {
-              msg.react(':loud_sound:');
-              msg.react('<:ougi:730355760864952401>');
               await connection.play(cacheSpeak, { volume: false }).on('finish', () => {
                 completed++;
                 fs.unlink(cacheSpeak, console.error);
