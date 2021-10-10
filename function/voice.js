@@ -76,7 +76,7 @@ async function (msg) {
     let completed = 0;
     let j = 0;
     let limit = setInterval(async () => {
-      if (readOutLoud.split(" ").length > 0) {
+      if (readOutLoud.replace(/ |\n/gi, "").length > 0) {
         let cacheSpeak = './cachedvoice/' + langCode + (new Date).getTime() + '.mp3';
         let wordyArray = readOutLoud.split(" ");
         let reading = [];
@@ -101,8 +101,9 @@ async function (msg) {
               await connection.play(cacheSpeak, { volume: false }).on('finish', () => {
                 completed++;
                 fs.unlink(cacheSpeak, console.error);
-                if (completed === j) {
+                if (completed >= j) {
                   connection.disconnect();
+                  return
                 }
                 speaking = false;
                 client.clearInterval(voicy);
@@ -114,6 +115,6 @@ async function (msg) {
       else {
         client.clearInterval(limit);
       }
-    }, 2000);
+    }, 1000);
   }
 }
