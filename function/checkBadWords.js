@@ -29,7 +29,7 @@ function (msg) {
   }
   if (!insutedBack) {
     if (msg.content.includes("?")) {
-      ougi.answerCommand(arguments, msg);
+      ougi.answerCommand(msg);
       return
     }
     ougi.mimicAbility(msg);

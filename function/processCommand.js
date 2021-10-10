@@ -101,7 +101,7 @@ async function (msg) {
       break;
 
       case "answer":
-        ougi.answerCommand(arguments, msg)
+        ougi.answerCommand(msg)
       break;
 
       case "image":
