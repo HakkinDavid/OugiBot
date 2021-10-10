@@ -49,7 +49,7 @@ async function (msg) {
     return
   }
 
-  let cacheSpeak = './cachedvoice/' + langCode + readOutLoud + '.mp3';
+  let cacheSpeak = './cachedvoice/' + langCode + (new Date).getTime() + '.mp3';
 
   if (!fs.existsSync(cacheSpeak)) {
     await ougi.tts({
