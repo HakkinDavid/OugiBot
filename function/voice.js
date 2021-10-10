@@ -64,6 +64,9 @@ async function (msg) {
       });
     }
 
+    let ratelimit = (new Date).getTime() + (5 * readOutLoud.length);
+    settingsOBJ.ratelimit[msg.author.id] = ratelimit;
+
     await vcChannel.join().then(async (connection) => {
       msg.react('🔊');
       msg.react('<:ougi:730355760864952401>');
