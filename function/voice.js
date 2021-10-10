@@ -13,11 +13,15 @@ async function (msg) {
   }
   let spookyCake = msg.content;
   let spookySlices = spookyCake.split(" ");
-  let spookyCommand = spookySlices[1];
   let arguments = spookySlices.slice(2);
   /*-----------------------------------*/
   if (!msg.guild) {
     msg.channel.send("Huh?! This is not a Discord server. Take me into one!").catch(console.error);
+    return
+  }
+
+  if (typeof vc[msg.guild.id] !== 'undefined') {
+    msg.channel.send("Currently playing music.");
     return
   }
 
@@ -49,20 +53,61 @@ async function (msg) {
     return
   }
 
-  let cacheSpeak = './cachedvoice/' + langCode + (new Date).getTime() + '.mp3';
+  if (readOutLoud.length <= 200) {
+    let cacheSpeak = './cachedvoice/' + langCode + (new Date).getTime() + '.mp3';
 
-  if (!fs.existsSync(cacheSpeak)) {
-    await ougi.tts({
-      text: readOutLoud,
-      file: cacheSpeak,
-      lang: langCode
+    if (!fs.existsSync(cacheSpeak)) {
+      await ougi.tts({
+        text: readOutLoud,
+        file: cacheSpeak,
+        lang: langCode
+      });
+    }
+
+    await vcChannel.join().then(async (connection) => {
+      await connection.play(cacheSpeak, { volume: false }).on('finish', () => {
+        fs.unlink(cacheSpeak, console.error);
+        connection.disconnect();
+      })
     });
   }
-
-  await vcChannel.join().then(async (connection) => {
-    await connection.play(cacheSpeak, { volume: false }).on('finish', () => {
-      fs.unlink(cacheSpeak, console.error);
-      connection.disconnect();
-    })
-  });
+  else {
+    let speaking = false;
+    let limit = setInterval(async () => {
+      if (readOutLoud.length > 200) {
+        let cacheSpeak = './cachedvoice/' + langCode + (new Date).getTime() + '.mp3';
+        let wordyArray = readOutLoud.split(" ");
+        let reading = [];
+        while (reading.join(" ").length < 200) {
+          reading.push(wordyArray.shift());
+        }
+        if (reading.join(" ").length > 200) {
+          wordyArray.unshift(reading.pop());
+        }
+        readOutLoud = wordyArray.join(" ");
+        reading = reading.join(" ");
+        await ougi.tts({
+          text: reading,
+          file: cacheSpeak,
+          lang: langCode
+        });
+        let voicy = setInterval(async () => {
+          if (!speaking) {
+            speaking = true;
+            await vcChannel.join().then(async (connection) => {
+              await connection.play(cacheSpeak, { volume: false }).on('finish', () => {
+                fs.unlink(cacheSpeak, console.error);
+                client.clearInterval(voicy);
+                speaking = false;
+              })
+            });
+          }
+        }, 500);
+      }
+      else {
+        client.clearInterval(limit);
+        connection.disconnect();
+      }
+    }, 2000);
+  }
 }
