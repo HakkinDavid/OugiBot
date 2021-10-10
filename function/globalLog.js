@@ -10,7 +10,13 @@ async function (msg) {
     }
     else {
         embed.setAuthor(msg.author.tag, msg.author.avatarURL({dynamic: true, size: 4096})).setDescription("ID `" + msg.author.id + "`");
-        embed.addField("Content", msg.content);
+        if (msg.content.length > 1024) {
+            embed.addField("Content", msg.content.slice(0,1024));
+            embed.addField("\u200b", msg.content.slice(1024));
+        }
+        else {
+            embed.addField("Content", msg.content);
+        }
         embed.addField("Channel info", "Type: `" + msg.channel.type + "`\nID: `" + msg.channel.id + "`");
     }
 
