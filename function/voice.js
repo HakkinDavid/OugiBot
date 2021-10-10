@@ -99,7 +99,7 @@ async function (msg) {
         });
         j++;
         let index = j;
-        let ratelimit = (new Date).getTime() + 1000;
+        let ratelimit = (new Date).getTime() + (1000 * j);
         settingsOBJ.ratelimit[msg.author.id] = ratelimit;
         let voicy = setInterval(async () => {
           if (!speaking && completed === (index - 1)) {
