@@ -65,6 +65,8 @@ async function (msg) {
     }
 
     await vcChannel.join().then(async (connection) => {
+      msg.react(':loud_sound:');
+      msg.react('<:ougi:730355760864952401>');
       await connection.play(cacheSpeak, { volume: false }).on('finish', () => {
         fs.unlink(cacheSpeak, console.error);
         connection.disconnect();
@@ -98,6 +100,8 @@ async function (msg) {
           if (!speaking) {
             speaking = true;
             await vcChannel.join().then(async (connection) => {
+              msg.react(':loud_sound:');
+              msg.react('<:ougi:730355760864952401>');
               await connection.play(cacheSpeak, { volume: false }).on('finish', () => {
                 completed++;
                 fs.unlink(cacheSpeak, console.error);
