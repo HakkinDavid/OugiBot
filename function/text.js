@@ -80,7 +80,9 @@ async function (msg, stringID, dynamic, raw) {
     stringID = 'undeclaredString';
   }
 
-  let returnableString = ougi.localization[langCode][stringID] || null;
+  let returnableString;
+  if (typeof ougi.localization[langCode] === 'undefined') returnableString = null;
+  else returnableString = ougi.localization[langCode][stringID] || null;
   if (returnableString === null && ougi.localization.en[stringID] !== undefined) {
     switch (langCode) {
       case "mx":
