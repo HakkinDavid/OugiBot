@@ -96,8 +96,9 @@ async function (msg) {
           lang: langCode
         });
         j++;
+        let index = j;
         let voicy = setInterval(async () => {
-          if (!speaking) {
+          if (!speaking && completed === (index - 1)) {
             speaking = true;
             await vcChannel.join().then(async (connection) => {
               msg.react(':loud_sound:');
