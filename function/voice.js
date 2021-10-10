@@ -73,6 +73,8 @@ async function (msg) {
   }
   else {
     let speaking = false;
+    let completed = 0;
+    let j = 0;
     let limit = setInterval(async () => {
       if (readOutLoud.split(" ").length > 0) {
         let cacheSpeak = './cachedvoice/' + langCode + (new Date).getTime() + '.mp3';
@@ -91,14 +93,19 @@ async function (msg) {
           file: cacheSpeak,
           lang: langCode
         });
+        j++;
         let voicy = setInterval(async () => {
           if (!speaking) {
             speaking = true;
             await vcChannel.join().then(async (connection) => {
               await connection.play(cacheSpeak, { volume: false }).on('finish', () => {
+                completed++;
                 fs.unlink(cacheSpeak, console.error);
-                client.clearInterval(voicy);
+                if (completed === j) {
+                  connection.disconnect();
+                }
                 speaking = false;
+                client.clearInterval(voicy);
               })
             });
           }
