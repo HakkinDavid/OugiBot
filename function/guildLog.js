@@ -27,7 +27,13 @@ async function (msg, options) {
     }
 
     else {
-      embed.addField("Content", msg.content);
+      if (msg.content.length > 1024) {
+        embed.addField("Content", msg.content.slice(0,1024));
+        embed.addField("\u200b", msg.content.slice(1024));
+      }
+      else {
+          embed.addField("Content", msg.content);
+      }
     }
 
 
