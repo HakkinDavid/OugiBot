@@ -251,6 +251,12 @@ client.on('messageUpdate', (msg) => {
     if (msg.content.toLowerCase().startsWith("ougi") || msg.author.bot || msg.content.startsWith("扇") || msg.content.toLowerCase().startsWith("#ougi") || msg.content.startsWith("<@629837958123356172>") || msg.content.startsWith("<@!629837958123356172>")) {
       return
     }
+    if (settingsOBJ === null) {
+      if (!fs.existsSync('./settings.txt')) {
+        return
+      }
+      global.settingsOBJ = JSON.parse(fs.readFileSync('./settings.txt'));
+    }
     if (settingsOBJ.ignored.includes(msg.author.id)) {
       return
     }
