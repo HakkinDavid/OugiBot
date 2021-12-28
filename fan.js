@@ -224,6 +224,16 @@ client.on('messageDelete', (msg) => {
     if (msg.content.toLowerCase().startsWith("ougi") || msg.author.bot || msg.content.startsWith("扇") || msg.content.toLowerCase().startsWith("#ougi") || msg.content.startsWith("<@629837958123356172>") || msg.content.startsWith("<@!629837958123356172>")) {
       return
     }
+    if (settingsOBJ === null || /* mindOBJ === null || */ localesCache === null || dynamicLocales === null || knowledgeBase === null) {
+      if (!fs.existsSync('./settings.txt') || /* !fs.existsSync('./neuroNetworks.txt') || */ !fs.existsSync('./localesCache.txt') || !fs.existsSync('./dynamicLocales.txt') || !fs.existsSync('./responses.txt')) {
+        return
+      }
+      global.settingsOBJ = JSON.parse(fs.readFileSync('./settings.txt'));
+      // global.mindOBJ = JSON.parse(fs.readFileSync('./neuroNetworks.txt'));
+      global.localesCache = JSON.parse(fs.readFileSync('./localesCache.txt'));
+      global.dynamicLocales = JSON.parse(fs.readFileSync('./dynamicLocales.txt'));
+      global.knowledgeBase = JSON.parse(fs.readFileSync('./responses.txt', 'utf-8'));
+    }
     if (settingsOBJ.ignored.includes(msg.author.id)) {
       return
     }
@@ -251,11 +261,15 @@ client.on('messageUpdate', (msg) => {
     if (msg.content.toLowerCase().startsWith("ougi") || msg.author.bot || msg.content.startsWith("扇") || msg.content.toLowerCase().startsWith("#ougi") || msg.content.startsWith("<@629837958123356172>") || msg.content.startsWith("<@!629837958123356172>")) {
       return
     }
-    if (settingsOBJ === null) {
-      if (!fs.existsSync('./settings.txt')) {
+    if (settingsOBJ === null || /* mindOBJ === null || */ localesCache === null || dynamicLocales === null || knowledgeBase === null) {
+      if (!fs.existsSync('./settings.txt') || /* !fs.existsSync('./neuroNetworks.txt') || */ !fs.existsSync('./localesCache.txt') || !fs.existsSync('./dynamicLocales.txt') || !fs.existsSync('./responses.txt')) {
         return
       }
       global.settingsOBJ = JSON.parse(fs.readFileSync('./settings.txt'));
+      // global.mindOBJ = JSON.parse(fs.readFileSync('./neuroNetworks.txt'));
+      global.localesCache = JSON.parse(fs.readFileSync('./localesCache.txt'));
+      global.dynamicLocales = JSON.parse(fs.readFileSync('./dynamicLocales.txt'));
+      global.knowledgeBase = JSON.parse(fs.readFileSync('./responses.txt', 'utf-8'));
     }
     if (settingsOBJ.ignored.includes(msg.author.id)) {
       return
