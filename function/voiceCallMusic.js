@@ -59,6 +59,7 @@ async function (msg) {
     }
     if (vc[msg.guild.id].length < 2) {
       msg.channel.send("Nothing is playing.");
+      delete vc[msg.guild.id];
       return
     }
     if (vc[msg.guild.id][0].loop) {
@@ -79,6 +80,7 @@ async function (msg) {
     }
     if (vc[msg.guild.id].length < 2) {
       msg.channel.send("Nothing is playing.");
+      delete vc[msg.guild.id];
       return
     }
     if (!vc[msg.guild.id][0].loop) {
@@ -99,6 +101,7 @@ async function (msg) {
     }
     if (vc[msg.guild.id].length < 2) {
       msg.channel.send("Nothing is playing.");
+      delete vc[msg.guild.id];
       return
     }
     vc[msg.guild.id].splice(1, 1);
@@ -130,6 +133,7 @@ async function (msg) {
     }
     if (vc[msg.guild.id].length < 2) {
       msg.channel.send("Nothing is playing.");
+      delete vc[msg.guild.id];
       return
     }
     if (index > vc[msg.guild.id].length-1 || vc[msg.guild.id][0].loop && index > vc[msg.guild.id].length-2) {

@@ -15,6 +15,7 @@ async function (msg, vcChannel) {
     .setTimestamp();
     msg.channel.send(queueEmbed).catch(console.error);
     await vcChannel.leave();
+    delete vc[msg.guild.id];
     return
   }
   if (vc[msg.guild.id][0].loop) {
