@@ -5,7 +5,7 @@ async function (msg, options) {
   if (settingsOBJ.logging.hasOwnProperty(guildID)){
     let guildLogger = settingsOBJ.logging[guildID];
 
-    let channelPointer = await msg.guild.channels.fetch(guildLogger);
+    let channelPointer = await client.channels.fetch(guildLogger);
 
     if (channelPointer === undefined) {
       ougi.globalLog("Skipped invalid logging channel for " + msg.guild.toString() + ".");

@@ -82,7 +82,7 @@ async function (msg) {
   let mod = 0;
   for (i=0; settingsOBJ.subscribers.length > i; i++) {
     let aSub = await client.users.fetch(settingsOBJ.subscribers[i]);
-    if (aSub !== undefined) {
+    if (aSub) {
       aSub.send(spookyConstructor).catch(console.error);
       names.push(aSub.username);
     }
@@ -91,8 +91,8 @@ async function (msg) {
     }
   }
   for (let getKey in settingsOBJ.guildNews) {
-    let newsDoor = await msg.guild.channels.fetch(settingsOBJ.guildNews[getKey]);
-    if (newsDoor !== undefined) {
+    let newsDoor = await client.channels.fetch(settingsOBJ.guildNews[getKey]);
+    if (newsDoor) {
       newsDoor.send(spookyConstructor).catch(console.error);
       names.push(newsDoor.toString());
     }
