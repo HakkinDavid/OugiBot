@@ -230,15 +230,26 @@ async function (msg) {
     else {
       await scrapeYt.search(keywords, {
         type: "video",
-        limit: 1
-      }).then(videos => {
-        if (videos.length < 1) {
-          queueEmbed.setTitle("The following video is either unavailable or non-existent");
+        limit: 10
+      }).then(async (videos) => {
+        if (videos.length > 1) {
+          for (x = 0; x < videos.length; x++) {
+            try {
+              await ytdl.getBasicInfo("https://www.youtube.com/watch?v=" + videos[x].id);
+              aVideoMeta = videos[x];
+              break;
+            }
+            catch (e) {
+              ougi.globalLog('Skipping video with ID ' + videos[x].id + ' because of an error\n' + e);
+            }
+          }
+        }
+        if (aVideoMeta === undefined) {
+          queueEmbed.setTitle("I wasn't able to play");
           queueEmbed.addField("\u200b", keywords.slice(0, 1024));
           msg.channel.send(queueEmbed).catch(console.error);
           return
         }
-        aVideoMeta = videos[0];
       });
     }
     let pos = vc[msg.guild.id].length;
