@@ -7,7 +7,7 @@ async function (msg) {
     mentioned = msg.mentions.users.first();
     thisOBJ = await client.users.fetch(mentioned.id);
     if (thisOBJ === undefined) {
-      msg.channel.send("User couldn't be fetched. Do them share a Discord server with Ougi? Did them block Ougi?");
+      msg.channel.send("User couldn't be fetched. Do they share a Discord server with Ougi? Did they block Ougi?");
       return
     }
     curlType = "user";

@@ -67,7 +67,7 @@ function (msg) {
     }
   }
   if (mod > 0) {
-    console.log("Skipped " + mod + " invalid IDs.")
+    ougi.globalLog("Skipped " + mod + " invalid IDs.")
   }
   msg.channel.send("Sent this newsletter to:\n" + names.join('\n'), embed);
 }

@@ -81,8 +81,8 @@ async function (msg) {
   let names = [];
   let mod = 0;
   for (i=0; settingsOBJ.subscribers.length > i; i++) {
-    let aSub = client.users.cache.get(settingsOBJ.subscribers[i]);
-    if (aSub != undefined) {
+    let aSub = await client.users.fetch(settingsOBJ.subscribers[i]);
+    if (aSub !== undefined) {
       aSub.send(spookyConstructor).catch(console.error);
       names.push(aSub.username);
     }
@@ -91,8 +91,8 @@ async function (msg) {
     }
   }
   for (let getKey in settingsOBJ.guildNews) {
-    let newsDoor = client.channels.cache.get(settingsOBJ.guildNews[getKey]);
-    if (newsDoor != undefined) {
+    let newsDoor = await msg.guild.channels.fetch(settingsOBJ.guildNews[getKey]);
+    if (newsDoor !== undefined) {
       newsDoor.send(spookyConstructor).catch(console.error);
       names.push(newsDoor.toString());
     }
@@ -101,7 +101,7 @@ async function (msg) {
     }
   }
   if (mod > 0) {
-    console.log("Skipped " + mod + " invalid IDs.")
+    ougi.globalLog("Skipped " + mod + " invalid IDs.")
   }
   let newsArray = JSON.parse(fs.readFileSync('./newsChannel.txt', 'utf-8', console.error));
   let thisArray = {
