@@ -43,30 +43,36 @@ async function (arguments, msg) {
     }).catch(console.error);
   }
   else {
-    await ksoft.lyrics.get(
-      arguments.join(" ")
-    ).then(track => {
-      lyricsEmbed.setTitle(track.name);
-      while (track.lyrics.includes('  ')) {
-        track.lyrics = track.lyrics.replace('  ', ' ')
-      }
-      let laLetra = track.lyrics.split("\n\n");
-      for (i=0; laLetra.length > i && i < 25; i++) {
-        if (laLetra[i].length < 1) {
-          laLetra[i] = "\u200b";
+    try {
+      await ksoft.lyrics.get(
+        arguments.join(" ")
+      ).then(track => {
+        lyricsEmbed.setTitle(track.name);
+        while (track.lyrics.includes('  ')) {
+          track.lyrics = track.lyrics.replace('  ', ' ')
         }
-        else if (laLetra[i].length > 1024) {
-          laLetra.splice(i, 0, laLetra[i].slice(1024));
-          laLetra[i] = laLetra[i].substring(0, 1024);
+        let laLetra = track.lyrics.split("\n\n");
+        for (i=0; laLetra.length > i && i < 25; i++) {
+          if (laLetra[i].length < 1) {
+            laLetra[i] = "\u200b";
+          }
+          else if (laLetra[i].length > 1024) {
+            laLetra.splice(i, 0, laLetra[i].slice(1024));
+            laLetra[i] = laLetra[i].substring(0, 1024);
+          }
+          if (i == 0) {
+            lyricsEmbed.addField("by " + track.artist.name, laLetra[i]);
+          }
+          else {
+            lyricsEmbed.addField("\u200b", laLetra[i]);
+          }
         }
-        if (i == 0) {
-          lyricsEmbed.addField("by " + track.artist.name, laLetra[i]);
-        }
-        else {
-          lyricsEmbed.addField("\u200b", laLetra[i]);
-        }
-      }
-      msg.channel.send(lyricsEmbed).catch(console.error);
-    }).catch(console.error);
+        msg.channel.send(lyricsEmbed).catch(console.error);
+      });
+    }
+    catch (e) {
+      console.error(e);
+      msg.channel.send("Lyrics aren't available right now.");
+    }
   }
 }
