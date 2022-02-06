@@ -229,8 +229,7 @@ async function (msg) {
     }
     else {
       await scrapeYt.search(keywords, {
-        type: "video",
-        limit: 10
+        type: "video"
       }).then(async (videos) => {
         if (videos.length > 1) {
           for (x = 0; x < videos.length; x++) {
@@ -245,8 +244,8 @@ async function (msg) {
           }
         }
         if (aVideoMeta === undefined) {
-          queueEmbed.setTitle("I wasn't able to play");
-          queueEmbed.addField("\u200b", keywords.slice(0, 1024));
+          queueEmbed.setTitle("I wasn't able to play any video titled as the following");
+          queueEmbed.setDescription("\u200b", keywords.slice(0, 1024));
           msg.channel.send(queueEmbed).catch(console.error);
           return
         }
