@@ -71,9 +71,6 @@ async function (msg) {
       case "ban":
         ougi.banCommand(msg)
       break;
-      case "history":
-        ougi.historyCommand(arguments, msg)
-      break;
       default:
         ougi.undefinedCommand(arguments, msg)
       break;
