@@ -215,7 +215,8 @@ module.exports =
         "undeclaredString": "Oooh. Spooky phrase goes here!!! Seems like some lazy programmer forgot to localize it.",
         "noNews": "No recent news found.",
         "levelup": "Level Up!",
-        "ratelimited": "I cannot type this fast! Wait {t} seconds, please."
+        "ratelimited": "I cannot type this fast! Wait {t} seconds, please.",
+        "privacyPolicy": "Ougi has a privacy policy regarding how it uses your data, check it out by using `ougi acknowledgement`!"
     },
     "es": {
         "helpTitle": "Página de ayuda con Ougi",
