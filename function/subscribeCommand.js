@@ -7,7 +7,7 @@ async function (msg) {
     return
   }
   settingsOBJ.subscribers.push(callerID);
-  await fs.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), console.error);
+  await ougi.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), console.error);
   let embed = new Discord.MessageEmbed()
   .setTitle("Thanks for subscribing, " + client.users.cache.get(callerID).username + "!")
   .setColor("#000000")

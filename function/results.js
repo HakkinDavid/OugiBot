@@ -37,7 +37,7 @@ async function (msg, shouldEnd) {
       settingsOBJ.surveysAvailable[thisSurvey].ended = new Date().getTime();
       surveyDone = "Survey has ended!";
     }
-    await fs.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), 'utf-8', console.error);
+    await ougi.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), console.error);
     await ougi.backup('./settings.txt', settingsChannel);
   }
   embed.addField(surveyDone, "Duration: " + ougi.toHumanTime(mySurvey.started, mySurvey.ended) + ".")

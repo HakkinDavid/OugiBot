@@ -47,7 +47,7 @@ async function (msg, intentional) {
   }
   settingsOBJ.surveys[msg.author.id].push(takeableSurvey);
   settingsOBJ.surveysAvailable[takeableSurvey].poppedUp++;
-  await fs.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), 'utf-8', console.error);
+  await ougi.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), console.error);
   await ougi.backup('./settings.txt', settingsChannel);
   msg.channel.send(embed).then(async (sentMSG) => {
     let filter = (reaction, user) => user.id !== client.user.id;
@@ -76,7 +76,7 @@ async function (msg, intentional) {
 
       client.users.cache.get(davidUserID).send(user.username + " voted " + reaction.emoji.toString() + " in `" + surveyOBJ.q + "`.").catch(console.error);
 
-      await fs.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), 'utf-8', console.error);
+      await ougi.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), console.error);
       await ougi.backup('./settings.txt', settingsChannel);
     })
     collector.on('end', async => {

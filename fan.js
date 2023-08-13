@@ -23,6 +23,7 @@ global.removeWords =  require('remove-words');
 global.NewsAPI = require('newsapi');
 global.newsapi = new NewsAPI(process.env.NEWS);
 global.gis = require('g-i-s');
+global.CryptoJS = require("crypto-js");
 
 global.instanceID = Date.now().toString().slice(-4);
 if (process.argv.slice(2) == "silent") {
@@ -156,11 +157,11 @@ client.on('message', (msg) => {
       if (!fs.existsSync('./settings.txt') || /* !fs.existsSync('./neuroNetworks.txt') || */ !fs.existsSync('./localesCache.txt') || !fs.existsSync('./dynamicLocales.txt') || !fs.existsSync('./responses.txt')) {
         return
       }
-      global.settingsOBJ = JSON.parse(fs.readFileSync('./settings.txt'));
-      // global.mindOBJ = JSON.parse(fs.readFileSync('./neuroNetworks.txt'));
-      global.localesCache = JSON.parse(fs.readFileSync('./localesCache.txt'));
-      global.dynamicLocales = JSON.parse(fs.readFileSync('./dynamicLocales.txt'));
-      global.knowledgeBase = JSON.parse(fs.readFileSync('./responses.txt', 'utf-8'));
+      global.settingsOBJ = JSON.parse(ougi.readFile('./settings.txt'));
+      // global.mindOBJ = JSON.parse(ougi.readFile('./neuroNetworks.txt'));
+      global.localesCache = JSON.parse(ougi.readFile('./localesCache.txt'));
+      global.dynamicLocales = JSON.parse(ougi.readFile('./dynamicLocales.txt'));
+      global.knowledgeBase = JSON.parse(ougi.readFile('./responses.txt', 'utf-8'));
     }
 
     if (settingsOBJ.ignored.includes(msg.author.id)) {
@@ -228,11 +229,11 @@ client.on('messageDelete', (msg) => {
       if (!fs.existsSync('./settings.txt') || /* !fs.existsSync('./neuroNetworks.txt') || */ !fs.existsSync('./localesCache.txt') || !fs.existsSync('./dynamicLocales.txt') || !fs.existsSync('./responses.txt')) {
         return
       }
-      global.settingsOBJ = JSON.parse(fs.readFileSync('./settings.txt'));
-      // global.mindOBJ = JSON.parse(fs.readFileSync('./neuroNetworks.txt'));
-      global.localesCache = JSON.parse(fs.readFileSync('./localesCache.txt'));
-      global.dynamicLocales = JSON.parse(fs.readFileSync('./dynamicLocales.txt'));
-      global.knowledgeBase = JSON.parse(fs.readFileSync('./responses.txt', 'utf-8'));
+      global.settingsOBJ = JSON.parse(ougi.readFile('./settings.txt'));
+      // global.mindOBJ = JSON.parse(ougi.readFile('./neuroNetworks.txt'));
+      global.localesCache = JSON.parse(ougi.readFile('./localesCache.txt'));
+      global.dynamicLocales = JSON.parse(ougi.readFile('./dynamicLocales.txt'));
+      global.knowledgeBase = JSON.parse(ougi.readFile('./responses.txt', 'utf-8'));
     }
     if (settingsOBJ.ignored.includes(msg.author.id)) {
       return
@@ -265,11 +266,11 @@ client.on('messageUpdate', (msg) => {
       if (!fs.existsSync('./settings.txt') || /* !fs.existsSync('./neuroNetworks.txt') || */ !fs.existsSync('./localesCache.txt') || !fs.existsSync('./dynamicLocales.txt') || !fs.existsSync('./responses.txt')) {
         return
       }
-      global.settingsOBJ = JSON.parse(fs.readFileSync('./settings.txt'));
-      // global.mindOBJ = JSON.parse(fs.readFileSync('./neuroNetworks.txt'));
-      global.localesCache = JSON.parse(fs.readFileSync('./localesCache.txt'));
-      global.dynamicLocales = JSON.parse(fs.readFileSync('./dynamicLocales.txt'));
-      global.knowledgeBase = JSON.parse(fs.readFileSync('./responses.txt', 'utf-8'));
+      global.settingsOBJ = JSON.parse(ougi.readFile('./settings.txt'));
+      // global.mindOBJ = JSON.parse(ougi.readFile('./neuroNetworks.txt'));
+      global.localesCache = JSON.parse(ougi.readFile('./localesCache.txt'));
+      global.dynamicLocales = JSON.parse(ougi.readFile('./dynamicLocales.txt'));
+      global.knowledgeBase = JSON.parse(ougi.readFile('./responses.txt', 'utf-8'));
     }
     if (settingsOBJ.ignored.includes(msg.author.id)) {
       return
@@ -293,7 +294,7 @@ client.setInterval(
     if (!global.TEASEABLE) {
       return
     }
-    await fs.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), console.error);
+    await ougi.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), console.error);
     await ougi.backup('./settings.txt', settingsChannel);
   },
   300000

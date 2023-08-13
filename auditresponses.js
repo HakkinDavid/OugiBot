@@ -1,5 +1,5 @@
 const fs = require('fs');
-let responses = JSON.parse(fs.readFileSync('./responses.txt', 'utf-8'));
+let responses = JSON.parse(ougi.readFile('./responses.txt', 'utf-8'));
 let links = [];
 
 for (trigger in responses) {
@@ -16,4 +16,4 @@ for (trigger in responses) {
     }
 }
 
-fs.writeFileSync('./linksInReplies.txt', JSON.stringify(links, null, 4));
+ougi.writeFileSync('./linksInReplies.txt', JSON.stringify(links, null, 4));

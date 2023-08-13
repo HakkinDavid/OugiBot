@@ -105,7 +105,7 @@ async function (msg) {
     started:startDate,
     ended:null
   }
-  await fs.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), 'utf-8', console.error);
+  await ougi.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), console.error);
   await ougi.backup('./settings.txt', settingsChannel);
 
   let embed = new Discord.MessageEmbed()

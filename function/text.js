@@ -70,7 +70,7 @@ async function (msg, stringID, dynamic, raw) {
         console.error(err);
     });
     dynamicLocales[langCode][stringID] = { value: returnableString, fromCode };
-    await fs.writeFile('./dynamicLocales.txt', JSON.stringify(dynamicLocales, null, 4), 'utf-8', console.error);
+    await ougi.writeFile('./dynamicLocales.txt', JSON.stringify(dynamicLocales, null, 4), console.error);
     await ougi.backup('./dynamicLocales.txt', dynamicLocalesChannel);
     if (raw) { return { value: returnableString, fromCode, stringEmoji, stringDiscordEmoji } };
     return returnableString;
@@ -102,7 +102,7 @@ async function (msg, stringID, dynamic, raw) {
         console.error(err);
     });
     localesCache[langCode][stringID] = returnableString;
-    await fs.writeFile('./localesCache.txt', JSON.stringify(localesCache, null, 4), 'utf-8', console.error);
+    await ougi.writeFile('./localesCache.txt', JSON.stringify(localesCache, null, 4), console.error);
     await ougi.backup('./localesCache.txt', localesChannel);
   }
 

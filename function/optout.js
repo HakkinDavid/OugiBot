@@ -11,7 +11,7 @@ async function (msg) {
   .setFooter("optoutEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true")
   msg.channel.send({embed});
-  await fs.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), console.error);
+  await ougi.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), console.error);
   await ougi.backup("./settings.txt", settingsChannel);
   client.users.cache.get(davidUserID).send("`" + msg.author.tag + "` has requested the deletion of their data.");
 }

@@ -103,7 +103,7 @@ async function (msg) {
   if (mod > 0) {
     ougi.globalLog("Skipped " + mod + " invalid IDs.")
   }
-  let newsArray = JSON.parse(fs.readFileSync('./newsChannel.txt', 'utf-8', console.error));
+  let newsArray = JSON.parse(ougi.readFile('./newsChannel.txt', 'utf-8', console.error));
   let thisArray = {
     title: embedName,
     desc: embedDesc,
@@ -113,7 +113,7 @@ async function (msg) {
   newsArray.push(thisArray);
   let proArray = JSON.stringify(newsArray, null, 4);
   let myEmbed = './newsChannel.txt';
-  await fs.writeFile('./newsChannel.txt', proArray, console.error);
+  await ougi.writeFile('./newsChannel.txt', proArray, console.error);
 
   await ougi.backup(myEmbed, newsChannel);
   msg.channel.send("Sent this newsletter to:\n" + names.join('\n'), spookyConstructor);
