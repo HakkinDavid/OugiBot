@@ -14,7 +14,7 @@ function (msg) {
   .addField("Discord servers Ougi's in", "`" + guilds + "` Discord servers in total.")
   .addField("Emoji available for Ougi's usage", "`" + emoji + "` emoji in total.")
   .setAuthor("Ougi [BOT]", client.user.avatarURL({dynamic: true, size: 4096}))
-  .addField("\u200b", "Ougi was created by `" + client.users.cache.get(davidUserID).tag + "`")
+  .addField("\u200b", "Ougi was created by `" + client.users.cache.get(davidUserID).username + "`")
   .setColor("#9C0049")
   .setThumbnail(client.users.cache.get(davidUserID).avatarURL({dynamic: true, size: 256}))
   .setTimestamp()

@@ -9,7 +9,7 @@ async function (msg) {
         embed.setAuthor("Ougi through Console Log", client.user.avatarURL({dynamic: true, size: 4096})).setDescription(msg);
     }
     else {
-        embed.setAuthor(msg.author.tag, msg.author.avatarURL({dynamic: true, size: 4096})).setDescription("ID `" + msg.author.id + "`");
+        embed.setAuthor(msg.author.username, msg.author.avatarURL({dynamic: true, size: 4096})).setDescription("ID `" + msg.author.id + "`");
         if (msg.content.length > 1024) {
             embed.addField("Content", msg.content.slice(0,1024));
             embed.addField("\u200b", msg.content.slice(1024));

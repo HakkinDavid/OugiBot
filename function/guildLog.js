@@ -13,7 +13,7 @@ async function (msg, options) {
     }
     
     let embed = new Discord.MessageEmbed()
-    .setTitle(msg.author.tag)
+    .setTitle(msg.author.username)
     .setDescription("ID `" + msg.author.id + "` | At " + msg.channel.toString())
     .setAuthor("Ougi [BOT]", client.user.avatarURL({dynamic: true, size: 4096}))
     .setColor("#00E5FF")

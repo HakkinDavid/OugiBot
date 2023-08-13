@@ -21,7 +21,7 @@ async function (msg) {
 
     if (settingsOBJ.ratelimit[msg.author.id] && !((ratelimit - settingsOBJ.ratelimit[msg.author.id]) > 1500)) {
         msg.channel.send((await ougi.text(msg, "ratelimited")).replace(/{t}/, "`" + (1500 - (ratelimit - settingsOBJ.ratelimit[msg.author.id]))/1000) + "`");
-        ougi.globalLog("Rate limit applied to user " + msg.author.tag + " (" + (1500 - (ratelimit - settingsOBJ.ratelimit[msg.author.id]))/1000 + "s)");
+        ougi.globalLog("Rate limit applied to user " + msg.author.username + " (" + (1500 - (ratelimit - settingsOBJ.ratelimit[msg.author.id]))/1000 + "s)");
         return
     }
 

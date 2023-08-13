@@ -13,5 +13,5 @@ async function (msg) {
   msg.channel.send({embed});
   await ougi.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), console.error);
   await ougi.backup("./settings.txt", settingsChannel);
-  client.users.cache.get(davidUserID).send("`" + msg.author.tag + "` has requested the deletion of their data.");
+  client.users.cache.get(davidUserID).send("`" + msg.author.username + "` has requested the deletion of their data.");
 }

@@ -11,7 +11,7 @@ async function (msg) {
       return
     }
     curlType = "user";
-    titleCurl = "User: " + thisOBJ.tag;
+    titleCurl = "User: " + thisOBJ.username;
     iconCurl = thisOBJ.avatarURL({dynamic: true, size: 4096});
     if (msg.channel.type === "text") {
       memberCurl = await msg.guild.members.fetch(thisOBJ).catch((e) => {});
@@ -49,7 +49,7 @@ async function (msg) {
     thisOBJ = await client.users.fetch(potentialID);
     if (thisOBJ !== undefined) {
       curlType = "user";
-      titleCurl = "User: " + thisOBJ.tag;
+      titleCurl = "User: " + thisOBJ.username;
       iconCurl = thisOBJ.avatarURL({dynamic: true, size: 4096});
       if (msg.channel.type === "text") {
         memberCurl = await msg.guild.members.fetch(thisOBJ).catch((e) => {});
