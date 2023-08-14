@@ -85,7 +85,7 @@ async function (msg) {
     
     msg.channel.send(response).catch(console.error);
     client.channels.cache.get(consoleLogging).send({embed});
-    logCount++;
+    logsCount++;
   }
   else {
     embed.addField("Unsatisfied similarity minimum percentage", "Falling back to checkBadWords");
