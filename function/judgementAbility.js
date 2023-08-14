@@ -85,12 +85,12 @@ async function (msg) {
     
     msg.channel.send(response).catch(console.error);
     client.channels.cache.get(consoleLogging).send({embed});
-    logsCount++;
   }
   else {
     embed.addField("Unsatisfied similarity minimum percentage", "Falling back to checkBadWords");
     client.channels.cache.get(consoleLogging).send({embed});
     ougi.checkBadWords(msg);
   }
+  global.logsCount++;
   msg.channel.stopTyping();
 }
