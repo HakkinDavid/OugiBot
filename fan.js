@@ -74,7 +74,7 @@ global.dynamicLocales = null;
 global.knowledgeBase = null;
 
 /* Rogumonogatari */
-global.consoleLogging = "726927838724489226";
+global.consoleLogging = "1140457399673688176";
 global.fetchedChannels = [
   settingsChannel,
   backupChannel,
@@ -298,6 +298,14 @@ client.setInterval(
     global.reloadedAmmo = {};
     await ougi.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), console.error);
     await ougi.backup('./settings.txt', settingsChannel);
+    await client.channels.cache.get(channelID).messages.fetch({ limit: Infinity }).then(
+      async (messages) => {
+        await messages.forEach((obj) => {
+          obj.delete().catch(O_o=>{});
+        });
+        console.log("Cleaning logs ...");
+      }
+    ).catch(console.error);
   },
   300000
 )
