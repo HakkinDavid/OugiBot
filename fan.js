@@ -307,6 +307,7 @@ client.setInterval(
         console.log("Cleaning logs ...");
       }
     ).catch(console.error);
+    logsCount = 0;
   },
   300000
 )
