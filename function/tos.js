@@ -13,5 +13,6 @@ async function (msg) {
   .addField("Message deletions for `snipe` command", "Under the deletion of a message within a channel Ougi has access to, the deleted message is **temporarily** stored in the bot's instance (just so `snipe` command can be used!) and it's not visible to anyone. Feel free to disable this on your guild by executing `ougi remove snipe`.")
   .addField("Per-user opt out from Ougi services", "If you don't agree with this data usage acknowledgement, you can opt out from everything regarding Ougi. Opt out by sending a direct message to " + client.user.toString() + " containing the following: `I want to opt out from using Ougi [BOT].`")
   .addField("Once you opt out...", "Ougi won't process any input from you, and will send a notice to our team so we delete any remaining of your data in Ougi's database.")
+  .addField("Detailed Privacy Policy at", "https://github.com/HakkinDavid/OugiBot/blob/1e510275c395a691181e8ec18fcb39263d7cc2db/docs/Ougi%20BOT%20Privacy%20Policy.pdf")
   msg.channel.send({embed}).catch(console.error);
 }
