@@ -294,6 +294,8 @@ client.setInterval(
     if (!global.TEASEABLE) {
       return
     }
+    global.ammo = {};
+    global.reloadedAmmo = {};
     await ougi.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), console.error);
     await ougi.backup('./settings.txt', settingsChannel);
   },
