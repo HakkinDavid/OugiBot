@@ -86,6 +86,7 @@ global.fetchedChannels = [
 ];
 global.errorBackup = console.error;
 global.logMessages = [];
+global.logsCount = 0;
 
 console.error = function() {
     logMessages.push.apply(logMessages, arguments);
@@ -298,7 +299,7 @@ client.setInterval(
     global.reloadedAmmo = {};
     await ougi.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), console.error);
     await ougi.backup('./settings.txt', settingsChannel);
-    await client.channels.cache.get(channelID).messages.fetch({ limit: Infinity }).then(
+    await client.channels.cache.get(consoleLogging).messages.fetch({ limit: logsCount }).then(
       async (messages) => {
         await messages.forEach((obj) => {
           obj.delete().catch(O_o=>{});
