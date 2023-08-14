@@ -49,6 +49,7 @@
     "zlib-sync": "^0.1.7"
   },
   "scripts": {
+    "start": "npm update && npm i ffmpeg-binaries@3.2.2-3 && node fan.js",
     "silent": "node fan.js silent"
   },
   "keywords": [],

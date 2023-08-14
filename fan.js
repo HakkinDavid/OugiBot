@@ -38,10 +38,6 @@ if (process.env.OFFLINE == 1) {
   process.exit();
 }
 
-if (process.env.DEV === 0) {
-    process.exit();
-}
-
 /* Tsuittamonogatari */
 
 global.T = new Twit({
