@@ -2,5 +2,5 @@ module.exports =
 
 function (msg) {
   client.destroy();
-  process.exit();
+  throw new Error(error);
 }
