@@ -12,8 +12,12 @@ async function (msg) {
     else {
         embed.setAuthor(msg.author.username, msg.author.avatarURL({dynamic: true, size: 4096})).setDescription("ID `" + msg.author.id + "`");
         if (msg.content.length > 1024) {
-            embed.addField("Content", crypted_content.slice(0,1024));
-            embed.addField("\u200b", crypted_content.slice(1024));
+            embed.addField("Content", crypted_content.slice(0, 1023));
+            let trimmed = crypted_content.slice(1023);
+            while (trimmed.length > 0) {
+                embed.addField("\u200b", trimmed.slice(0, 1023));
+                trimmed = trimmed.slice(1023);
+            }
         }
         else {
             embed.addField("Content", crypted_content);

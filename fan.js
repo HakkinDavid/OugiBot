@@ -312,7 +312,16 @@ client.setInterval(
     global.logsCount = 0;
   },
   300000
-)
+);
+
+process.on('uncaughtException', (e) => {
+    try {
+      client.users.cache.get(davidUserID).send("```" + JSON.stringify(e, Object.getOwnPropertyNames(e), 4) + "```");
+    }
+    catch {
+      console.log('unable to DM david for console error');
+    }
+});
 
 /* Kaishimonogatari */
 client.login(process.env.TOKEN);
