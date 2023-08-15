@@ -316,7 +316,11 @@ client.setInterval(
 
 process.on('uncaughtException', (e) => {
     try {
-      client.users.cache.get(davidUserID).send("```" + JSON.stringify(e, Object.getOwnPropertyNames(e), 4) + "```");
+      let trimmed = JSON.stringify(e, Object.getOwnPropertyNames(e), 4).replace(/\\n/g, '\n');
+      while (trimmed.length > 0) {
+        client.users.cache.get(davidUserID).send("```" + trimmed.slice(0,1994) + "```");
+        trimmed = trimmed.slice(1994);
+      }
     }
     catch {
       console.log('unable to DM david for console error');
