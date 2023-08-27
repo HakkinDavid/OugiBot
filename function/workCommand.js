@@ -11,6 +11,10 @@ async function (msg) {
         return
     }
 
+    if (typeof settingsOBJ.economy[msg.guild.id].users[msg.author.id] === undefined) {
+        ougi.economy('reset_user', msg)
+    }
+
     let rn = new Date;
 
     if (!((rn.getTime() - settingsOBJ.economy[msg.guild.id].users[msg.author.id].worked) > settingsOBJ.economy[msg.guild.id].cooldown*1000)) {

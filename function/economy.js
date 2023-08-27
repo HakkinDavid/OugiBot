@@ -15,7 +15,7 @@ function (action, msg, options) {
             cooldown: 10
         }
     }
-    if (!settingsOBJ.economy[guildID].users.hasOwnProperty(msg.author.id)) {
+    if (!settingsOBJ.economy[guildID].users.hasOwnProperty(msg.author.id) || action === 'reset_user') {
         settingsOBJ.economy[guildID].users[msg.author.id] = {
             money: 0,
             inventory: [],

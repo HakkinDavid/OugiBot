@@ -22,7 +22,7 @@ global.ksoft = new KSoftMain.KSoftClient(process.env.KSOFTTOKEN);
 global.removeWords =  require('remove-words');
 global.NewsAPI = require('newsapi');
 global.newsapi = new NewsAPI(process.env.NEWS);
-global.gis = require('g-i-s');
+global.gis = require('async-g-i-s');
 global.CryptoJS = require("crypto-js");
 
 global.instanceID = Date.now().toString().slice(-4);
@@ -123,7 +123,7 @@ client.on('ready', async () => {
 
 });
 
-client.on('message', (msg) => {
+client.on('message', async (msg) => {
     if (msg.author == client.user) {
       if (!global.TEASEABLE) {
         return
@@ -172,6 +172,15 @@ client.on('message', (msg) => {
       return
     }
 
+    let replied_to_ougi = false;
+    
+    try {
+      if (msg.reference !== null) replied_to_ougi = (await msg.channel.messages.fetch(msg.reference.messageID)).author.id === client.user.id;
+    }
+    catch (e) {
+      console.log(e);
+    }
+
     if (msg.content.toLowerCase().startsWith("ougi") || msg.content.startsWith("扇") || msg.content.startsWith("<@629837958123356172>") || msg.content.startsWith("<@!629837958123356172>")) {
       ougi.processCommand(msg);
     }
@@ -197,6 +206,10 @@ client.on('message', (msg) => {
           ougi.processCommand(msg);
           regularMessage = false;
         }
+      }
+
+      if (replied_to_ougi && regularMessage) {
+        ougi.judgementAbility(msg);
       }
 
       if (regularMessage && settingsOBJ.economy.hasOwnProperty(guildID) && !settingsOBJ.economy[guildID].disabled && (settingsOBJ.economy[guildID].channels.length === 0 || settingsOBJ.economy[guildID].channels.includes(msg.channel.id))) {
@@ -324,6 +337,7 @@ process.on('uncaughtException', (e) => {
     }
     catch {
       console.log('unable to DM david for console error');
+      console.error(e);
     }
 });
 

@@ -37,7 +37,7 @@ async function (msg) {
         }
         else if (breakChocolate[i].startsWith("until")) {
             until = breakChocolate[i].slice(6);
-            date = Date.parse(until.replace(/[^0-9A-Za-z]+/gi, " "));
+            date = Date.parse(until.replace(/[^0-9A-Za-z\:\-]+/gi, " "));
             if (!isNaN(date)) until = date;
         }
     }
