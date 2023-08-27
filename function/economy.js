@@ -24,7 +24,9 @@ function (action, msg, options) {
             badges: [],
             worked: 0
         };
+        if (action === 'reset_user') return;
     }
+    if (settingsOBJ.economy[guildID].disabled) return;
     switch (action) {
         case 'xp': {
             let experience = Math.floor(msg.content.length/(Math.random()*settingsOBJ.economy[guildID].multiplier + 1));

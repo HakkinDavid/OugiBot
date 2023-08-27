@@ -6,13 +6,13 @@ async function (msg) {
         return
     }
 
-    if (!settingsOBJ.economy.hasOwnProperty(msg.guild.id)) {
+    if (!settingsOBJ.economy.hasOwnProperty(msg.guild.id) || settingsOBJ.economy[msg.guild.id].disabled) {
         msg.channel.send("Economy is not enabled in this Discord server.");
         return
     }
 
-    if (typeof settingsOBJ.economy[msg.guild.id].users[msg.author.id] === undefined) {
-        ougi.economy('reset_user', msg)
+    if (!settingsOBJ.economy[msg.guild.id].users[msg.author.id] || !settingsOBJ.economy[msg.guild.id].users[msg.author.id].worked) {
+        await ougi.economy('reset_user', msg);
     }
 
     let rn = new Date;
