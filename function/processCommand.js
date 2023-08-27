@@ -38,7 +38,7 @@ async function (msg) {
         .setColor("#20064F")
         .setTitle("It's a beautiful day outside...")
         .setDescription("Yoinks! Your right to use Ougi has been forfeited because of an inappropriate usage.")
-        .addField("Ban expires until", settingsOBJ.banned[msg.author.id].until)
+        .addField("Ban expires until", new Date (settingsOBJ.banned[msg.author.id].until))
         .addField("Reason", settingsOBJ.banned[msg.author.id].reason);
         msg.channel.send(banEmbed);
         return
