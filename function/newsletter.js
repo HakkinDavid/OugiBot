@@ -19,8 +19,8 @@ async function (msg) {
     msg.channel.send("You must include a title, a description, and optionally a type.")
     return
   }
-  let spookyConstructor = new Discord.MessageEmbed()
-    .setFooter("newsletterEmbed by Ougi")
+  let spookyConstructor = new Discord.EmbedBuilder()
+    .setFooter({text: "newsletterEmbed by Ougi"})
     .setTimestamp()
     .setColor("#F5F2F2")
     .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/news.png?raw=true");
@@ -83,7 +83,7 @@ async function (msg) {
   for (i=0; settingsOBJ.subscribers.length > i; i++) {
     let aSub = await client.users.fetch(settingsOBJ.subscribers[i]);
     if (aSub) {
-      aSub.send(spookyConstructor).catch(console.error);
+      aSub.send({embeds: [spookyConstructor]}).catch(console.error);
       names.push(aSub.username);
     }
     else {
@@ -93,7 +93,7 @@ async function (msg) {
   for (let getKey in settingsOBJ.guildNews) {
     let newsDoor = await client.channels.fetch(settingsOBJ.guildNews[getKey]);
     if (newsDoor) {
-      newsDoor.send(spookyConstructor).catch(console.error);
+      newsDoor.send({embeds: [spookyConstructor]}).catch(console.error);
       names.push(newsDoor.toString());
     }
     else {

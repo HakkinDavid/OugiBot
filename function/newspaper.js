@@ -22,10 +22,10 @@ async function (arguments, msg) {
 
   var news = paper[index];
   let thatType = news.type;
-  var spookyConstructor = new Discord.MessageEmbed()
+  var spookyConstructor = new Discord.EmbedBuilder()
   .setTitle(news.title)
   .setDescription(news.desc)
-  .setFooter("newspaperEmbed by Ougi | Date: " + news.sent + " | Page " + displayIndex + " of " + maxIndex)
+  .setFooter({text: "newspaperEmbed by Ougi | Date: " + news.sent + " | Page " + displayIndex + " of " + maxIndex})
   .setColor("#F5F2F2")
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/news.png?raw=true");
   if (thatType == "info") {

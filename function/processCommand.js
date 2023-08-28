@@ -34,13 +34,13 @@ async function (msg) {
         msg.channel.send("Your ban sentence has expired.");
       }
       else {
-        let banEmbed = new Discord.MessageEmbed()
+        let banEmbed = new Discord.EmbedBuilder()
         .setColor("#20064F")
         .setTitle("It's a beautiful day outside...")
         .setDescription("Yoinks! Your right to use Ougi has been forfeited because of an inappropriate usage.")
-        .addField("Ban expires until", new Date (settingsOBJ.banned[msg.author.id].until))
-        .addField("Reason", settingsOBJ.banned[msg.author.id].reason);
-        msg.channel.send(banEmbed);
+        .addFields({name: "Ban expires until", value: new Date (settingsOBJ.banned[msg.author.id].until)})
+        .addFields({name: "Reason", value: settingsOBJ.banned[msg.author.id].reason});
+        msg.channel.send({embeds: [banEmbed]});
         return
       }
     }

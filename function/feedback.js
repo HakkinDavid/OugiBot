@@ -29,27 +29,27 @@ async function (msg, intentional) {
     surveyOBJ = surveysAvailable[takeableSurvey];
   }
   /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-  let embed = new Discord.MessageEmbed()
+  let embed = new Discord.EmbedBuilder()
   .setTitle("Enjoying Ougi so far?")
   .setDescription("If so, that's really heartwarming. Mind taking a second to answer the following question?\nUse the reactions I put below.")
-  .addField(surveyOBJ.q, surveyOBJ.d)
+  .addFields({name: surveyOBJ.q, value: surveyOBJ.d})
   .setColor(surveyOBJ.color)
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/news.png?raw=true");
 
-  let collectedEmbed = new Discord.MessageEmbed()
+  let collectedEmbed = new Discord.EmbedBuilder()
   .setTitle("Survey timeout ended.")
   .setDescription("Your feedback is really important for Ougi. Thanks for voting!")
-  .addField("\u200b", "If you'd like to check for surveys. Execute `ougi survey`.")
+  .addFields({name: "\u200b", value: "If you'd like to check for surveys. Execute `ougi survey`."})
   .setColor(surveyOBJ.color);
 
   if (surveyOBJ.url != null) {
-    embed.addField("\u200b","Feeling generous enough to spend a couple extra minutes? I'd be so glad to hear your thoughts in [this survey](" + surveyOBJ.url + ").");
+    embed.addFields({name: "\u200b", value: "Feeling generous enough to spend a couple extra minutes? I'd be so glad to hear your thoughts in [this survey](" + surveyOBJ.url + ")."});
   }
   settingsOBJ.surveys[msg.author.id].push(takeableSurvey);
   settingsOBJ.surveysAvailable[takeableSurvey].poppedUp++;
   await ougi.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), console.error);
   await ougi.backup('./settings.txt', settingsChannel);
-  msg.channel.send(embed).then(async (sentMSG) => {
+  msg.channel.send({embeds: [embed]}).then(async (sentMSG) => {
     let filter = (reaction, user) => user.id !== client.user.id;
     await sentMSG.react(client.emojis.cache.get('818120409219334144'))
     .catch(console.error);

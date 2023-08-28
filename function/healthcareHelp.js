@@ -3,7 +3,7 @@ module.exports =
 async function (msg) {
   let embed = await ougi.helpPreset(msg, "healthcare");
   embed.setDescription((await ougi.text(msg, "healthcareDesc")))
-  .addField(await ougi.text(msg, "example"), "`ougi healthcare`");
+  .addFields({name: await ougi.text(msg, "example"), value: "`ougi healthcare`"});
 
-  msg.channel.send({embed}).catch(console.error);
+  msg.channel.send({embeds: [embed]}).catch(console.error);
 }

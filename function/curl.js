@@ -66,13 +66,13 @@ async function (msg) {
     return
   }
 
-  let embed = new Discord.MessageEmbed()
+  let embed = new Discord.EmbedBuilder()
   .setTitle(titleCurl)
-  .addField("Discord " + curlType + " created at " + thisOBJ.createdAt.toDateString().slice(4).replace(/ 0/gi, " "), ougi.toHumanTime(thisOBJ.createdAt) + " ago.");
+  .addFields({name: "Discord " + curlType + " created at " + thisOBJ.createdAt.toDateString().slice(4).replace(/ 0/gi, " "), value: ougi.toHumanTime(thisOBJ.createdAt) + " ago."});
   if (memberCurl != null) {
-    embed.addField("Joined " + msg.guild.toString() + " at " + memberCurl.joinedAt.toDateString().slice(4).replace(/ 0/gi, " "), ougi.toHumanTime(memberCurl.joinedAt) + " ago.")
-    .addField("__Most distinctive role__", memberCurl.roles.hoist.toString())
-    .addField("__Stats__", "**Are they gone?** " + memberCurl.deleted.toString().replace(/false/, "No... Not yet. **SNAPS** " + "<:ougi_snap:744675693295828992>").replace(/true/, "Yes. :sunglasses:") + "\n**Is this member a bot?** " + memberCurl.user.bot.toString().replace(/false/, "Not really. Only at videogames.").replace(/true/, "Yes.") + "\n**Roles:** " + memberCurl.roles.cache.array().length)
+    embed.addFields({name: "Joined " + msg.guild.toString() + " at " + memberCurl.joinedAt.toDateString().slice(4).replace(/ 0/gi, " "), value: ougi.toHumanTime(memberCurl.joinedAt) + " ago."})
+    .addFields({name: "__Most distinctive role__", value: memberCurl.roles.hoist.toString()})
+    .addFields({name: "__Stats__", value: "**Are they gone?** " + memberCurl.deleted.toString().replace(/false/, "No... Not yet. **SNAPS** " + "<:ougi_snap:744675693295828992>").replace(/true/, "Yes. :sunglasses:") + "\n**Is this member a bot?** " + memberCurl.user.bot.toString().replace(/false/, "Not really. Only at videogames.").replace(/true/, "Yes.") + "\n**Roles:** " + memberCurl.roles.cache.array().length})
     let finalWords = memberCurl.lastMessage;
     if (finalWords != null && !finalWords.content.startsWith("ougi")) {
       embed.setDescription("*\"" + finalWords.content.slice(0,2040) + " ...\"*");
@@ -80,9 +80,9 @@ async function (msg) {
   }
   embed.setColor(colorCurl)
   .setTimestamp()
-  .setFooter("curlEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}));
+  .setFooter({text: "curlEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})});
   if (iconCurl != null) {
-    embed.setImage(iconCurl).addField("\u200b", "[Click here to download this icon](" + iconCurl + ")");
+    embed.setImage(iconCurl).addFields({name: "\u200b", value: "[Click here to download this icon](" + iconCurl + ")"});
   }
-  msg.channel.send(embed);
+  msg.channel.send({embeds: [embed]});
 }

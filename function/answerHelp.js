@@ -7,8 +7,8 @@ async function (msg) {
   var question = await ougi.text(msg, phrases[Math.floor(Math.random()*phrases.length)]);
   let embed = await ougi.helpPreset(msg, "answer");
   embed.setDescription(await ougi.text(msg, "answerHelpDesc"))
-  .addField(await ougi.text(msg, "example"), "`ougi answer " + question + "`")
-  .addField(await ougi.text(msg, "output"), response);
+  .addFields({name: await ougi.text(msg, "example"), value: "`ougi answer " + question + "`"})
+  .addFields({name: await ougi.text(msg, "output"), value: response});
 
-  msg.channel.send({embed}).catch(console.error);
+  msg.channel.send({embeds: [embed]}).catch(console.error);
 }

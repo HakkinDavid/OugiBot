@@ -24,11 +24,11 @@ async function (arguments, msg) {
 
     let imageToSend = urls[Math.floor(Math.random()*urls.length)];
 
-    let spookyImage = new Discord.MessageEmbed()
+    let spookyImage = new Discord.EmbedBuilder()
     .setImage(imageToSend.url)
-    .setFooter("imageEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
+    .setFooter({text: "imageEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
     .setTimestamp()
     .setColor(imageToSend.color);
-    msg.channel.send(spookyImage).catch(console.error);
-    client.channels.cache.get(consoleLogging).send(spookyImage);
+    msg.channel.send({embeds: [spookyImage]}).catch(console.error);
+    client.channels.cache.get(consoleLogging).send({embeds: [spookyImage]});
 }

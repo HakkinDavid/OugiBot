@@ -35,12 +35,12 @@ async function (arguments, msg, guildExecution) {
     niceLang = isCode;
   }
   let finalCode = ougi.whereIs(ougi.langCodes, niceLang);
-  let langEmbed = new Discord.MessageEmbed()
+  let langEmbed = new Discord.EmbedBuilder()
   .setTitle((await ougi.text(msg, "newLang")).replace(/{langName}/gi, niceLang + " (" + finalCode + ")"))
-  .setAuthor("Ougi [BOT]", client.user.avatarURL({dynamic: true, size: 4096}))
+  .setAuthor({name: "Ougi [BOT]", icon: client.user.avatarURL({dynamic: true, size: 4096})})
   .setColor("#32A852")
   .setDescription(await ougi.text(msg, "langDesc"))
-  .setFooter("langEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
+  .setFooter({text: "langEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/world.png?raw=true");
   if (finalCode == 'default') {
     langEmbed.setTitle("Language preferences restored to default");
@@ -54,8 +54,8 @@ async function (arguments, msg, guildExecution) {
       langEmbed.setDescription("Ougi will use each user's language preferences.");
     }
   }
-  langEmbed.addField(":warning: " + await ougi.text(msg, "possibleDelay"), await ougi.text(msg, "delayWarning"))
-  msg.channel.send(langEmbed);
+  langEmbed.addFields({name: ":warning: " + await ougi.text(msg, "possibleDelay"), value: await ougi.text(msg, "delayWarning")})
+  msg.channel.send({embeds: [langEmbed]});
   settingsOBJ.lang[preferencesID] = finalCode;
   if (finalCode == 'default') {
     delete settingsOBJ.lang[preferencesID]

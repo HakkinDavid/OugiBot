@@ -67,7 +67,11 @@ async function (msg) {
     let ratelimit = (new Date).getTime() + (5 * readOutLoud.length);
     settingsOBJ.ratelimit[msg.author.id] = ratelimit;
 
-    await vcChannel.join().then(async (connection) => {
+    await Voice.joinVoiceChannel({
+      channelId: vcChannel.id,
+      guildId: vcChannel.guild.id,
+      adapterCreator: vcChannel.guild.voiceAdapterCreator
+    }).then(async (connection) => {
       msg.react('🔊');
       msg.react('<:ougi:730355760864952401>');
       await connection.play(cacheSpeak, { volume: false }).on('finish', () => {

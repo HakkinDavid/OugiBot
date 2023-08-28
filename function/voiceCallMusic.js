@@ -33,11 +33,11 @@ async function (msg) {
     return
   }
 
-  let queueEmbed = new Discord.MessageEmbed()
+  let queueEmbed = new Discord.EmbedBuilder()
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/ougimusic.png?raw=true")
-  .setAuthor("Ougi [BOT]", client.user.avatarURL({dynamic: true, size: 4096}))
+  .setAuthor({name: "Ougi [BOT]", icon: client.user.avatarURL({dynamic: true, size: 4096})})
   .setColor("#230347")
-  .setFooter("queueEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
+  .setFooter({text: "queueEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
   .setTimestamp();
 
   if (arguments == "stop") {
@@ -69,7 +69,7 @@ async function (msg) {
     vc[msg.guild.id].push(vc[msg.guild.id][1]);
     vc[msg.guild.id][0].loop = true;
     queueEmbed.setTitle("Now looping the queue!");
-    msg.channel.send(queueEmbed).catch(console.error);
+    msg.channel.send({embeds: [queueEmbed]}).catch(console.error);
     return
   }
 
@@ -90,7 +90,7 @@ async function (msg) {
     vc[msg.guild.id][0].loop = false;
     vc[msg.guild.id].pop();
     queueEmbed.setTitle("Queue won't loop.");
-    msg.channel.send(queueEmbed).catch(console.error);
+    msg.channel.send({embeds: [queueEmbed]}).catch(console.error);
     return
   }
 
@@ -108,7 +108,7 @@ async function (msg) {
     await vcChannel.leave();
     if (vc[msg.guild.id].length > 2) {
       queueEmbed.setTitle("Skipped!");
-      msg.channel.send(queueEmbed).catch(console.error);
+      msg.channel.send({embeds: [queueEmbed]}).catch(console.error);
     }
     setTimeout(
       function(){
@@ -143,7 +143,7 @@ async function (msg) {
     vc[msg.guild.id].splice(index, 1);
     if (vc[msg.guild.id].length > 2 || index != 1) {
       queueEmbed.setTitle("Removed song number " + index + ".");
-      msg.channel.send(queueEmbed).catch(console.error);
+      msg.channel.send({embeds: [queueEmbed]}).catch(console.error);
     }
     if (index == 1) {
       if (vc[msg.guild.id][0].loop) {
@@ -174,7 +174,7 @@ async function (msg) {
     }
     for (i = 1; i < vc[msg.guild.id].length; i++) {
       if (vc[msg.guild.id][0].loop && i == vc[msg.guild.id].length-1) {
-        queueEmbed.addField("\u200b", "...")
+        queueEmbed.addFields({name: "\u200b", value: "..."})
       }
       else {
         let anURL = "https://www.youtube.com/watch?v=" + vc[msg.guild.id][i].id;
@@ -194,10 +194,10 @@ async function (msg) {
             durationInMinutes[j] = "0" + durationInMinutes[j].toString()
           }
         }
-        queueEmbed.addField(videoTitle, "`" + durationInMinutes.join(":") + "`\nby " + videoAuthor + "\n[View in YouTube](" + anURL + " '" + videoTitle + "')");
+        queueEmbed.addFields({name: videoTitle, value: "`" + durationInMinutes.join(":") + "`\nby " + videoAuthor + "\n[View in YouTube](" + anURL + " '" + videoTitle + "')"});
       }
     }
-    msg.channel.send(queueEmbed).catch(console.error);
+    msg.channel.send({embeds: [queueEmbed]}).catch(console.error);
     return
   }
 
@@ -220,8 +220,8 @@ async function (msg) {
       await scrapeYt.getVideo(myVideoID).then(video => {
         if (video.id == undefined) {
           queueEmbed.setTitle("The following video is either unavailable or non-existent");
-          queueEmbed.addField("\u200b", keywords.slice(0, 1024));
-          msg.channel.send(queueEmbed).catch(console.error);
+          queueEmbed.addFields({name: "\u200b", value: keywords.slice(0, 1024)});
+          msg.channel.send({embeds: [queueEmbed]}).catch(console.error);
           return
         }
         aVideoMeta = video;
@@ -246,7 +246,7 @@ async function (msg) {
         if (aVideoMeta === undefined) {
           queueEmbed.setTitle("I wasn't able to play any video titled as the following");
           queueEmbed.setDescription("\u200b", keywords.slice(0, 1024));
-          msg.channel.send(queueEmbed).catch(console.error);
+          msg.channel.send({embeds: [queueEmbed]}).catch(console.error);
           return
         }
       });
@@ -271,12 +271,12 @@ async function (msg) {
         durationInMinutes[i] = "0" + durationInMinutes[i].toString()
       }
     }
-    queueEmbed.addField(videoTitle, "`" + durationInMinutes.join(":") + "`\nby " + videoAuthor + "\n[View in YouTube](" + anURL + " '" + videoTitle + "')");
+    queueEmbed.addFields({name: videoTitle, value: "`" + durationInMinutes.join(":") + "`\nby " + videoAuthor + "\n[View in YouTube](" + anURL + " '" + videoTitle + "')"});
     if (vc[msg.guild.id].length == 2) {
       ougi.queue(msg, vcChannel).catch(console.error)
     }
     else {
-      msg.channel.send(queueEmbed).catch(console.error)
+      msg.channel.send({embeds: [queueEmbed]}).catch(console.error)
     }
     return
   }

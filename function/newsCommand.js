@@ -35,14 +35,14 @@ async function (arguments, msg) {
   if (article.urlToImage.length < 1) {
     article.urlToImage = "https://github.com/HakkinDavid/OugiBot/images/world.png?raw=true"
   }
-  let embed = new Discord.MessageEmbed()
-  .setFooter("newsArticleEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
+  let embed = new Discord.EmbedBuilder()
+  .setFooter({text: "newsArticleEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
   .setColor(["#34EB43", "#34EBE1", "#EB3434", "#E2EB83"][Math.floor(Math.random()*4)])
   .setURL(article.url)
   .setImage(article.urlToImage)
   .setTimestamp()
-  .setAuthor(article.source.name)
+  .setAuthor({name: article.source.name})
   .setTitle(article.title)
   .setDescription(article.description.slice(0,1500) + "\n\n[" + (await ougi.text(msg, "readFullNews")).replace(/{n}/gi, article.source.name) + "](" + article.url + ")");
-  msg.channel.send(embed);
+  msg.channel.send({embeds: [embed]});
 }

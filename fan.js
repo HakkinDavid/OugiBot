@@ -1,7 +1,28 @@
 /* Shokkamonogatari */
 require('dotenv').config();
 global.Discord = require('discord.js');
-global.client = new Discord.Client();
+global.client = new Discord.Client({
+  intents: [
+    Discord.GatewayIntentBits.AutoModerationConfiguration,
+    Discord.GatewayIntentBits.AutoModerationExecution,
+    Discord.GatewayIntentBits.DirectMessageReactions,
+    Discord.GatewayIntentBits.DirectMessageTyping,
+    Discord.GatewayIntentBits.DirectMessages,
+    Discord.GatewayIntentBits.GuildBans,
+    Discord.GatewayIntentBits.GuildEmojisAndStickers,
+    Discord.GatewayIntentBits.GuildIntegrations,
+    Discord.GatewayIntentBits.GuildInvites,
+    Discord.GatewayIntentBits.GuildMessageReactions,
+    Discord.GatewayIntentBits.GuildMessageTyping,
+    Discord.GatewayIntentBits.GuildMessages,
+    Discord.GatewayIntentBits.GuildModeration,
+    Discord.GatewayIntentBits.GuildScheduledEvents,
+    Discord.GatewayIntentBits.GuildVoiceStates,
+    Discord.GatewayIntentBits.GuildWebhooks,
+    Discord.GatewayIntentBits.Guilds,
+    Discord.GatewayIntentBits.MessageContent
+  ]
+});
 global.fs = require('fs');
 global.request = require('request');
 global.requireAll = require('require-all');
@@ -24,6 +45,7 @@ global.NewsAPI = require('newsapi');
 global.newsapi = new NewsAPI(process.env.NEWS);
 global.gis = require('async-g-i-s');
 global.CryptoJS = require("crypto-js");
+global.Voice = require('@discordjs/voice');
 
 global.instanceID = Date.now().toString().slice(-4);
 if (process.argv.slice(2) == "silent") {
@@ -94,15 +116,15 @@ console.error = function() {
       logMessages.pop();
     }
     else {
-      let criticalEmbed = new Discord.MessageEmbed()
-      .setAuthor("CONSOLE ERROR")
+      let criticalEmbed = new Discord.EmbedBuilder()
+      .setAuthor({name: "CONSOLE ERROR"})
       .setColor("#c20d00")
-      .setFooter("errorLogEmbed by Ougi", client.user.avatarURL())
+      .setFooter({text: "errorLogEmbed by Ougi", icon: client.user.avatarURL()})
       .setTimestamp()
       .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/fatal.png?raw=true")
       .setDescription(logMessages.pop().toString());
 
-      client.channels.cache.get(consoleLogging).send(criticalEmbed).catch(console.error);
+      client.channels.cache.get(consoleLogging).send({embeds: [criticalEmbed]}).catch(console.error);
     }
     errorBackup.apply(console, arguments);
 };
@@ -123,7 +145,7 @@ client.on('ready', async () => {
 
 });
 
-client.on('message', async (msg) => {
+client.on('messageCreate', async (msg) => {
     if (msg.author == client.user) {
       if (!global.TEASEABLE) {
         return
@@ -175,7 +197,7 @@ client.on('message', async (msg) => {
     let replied_to_ougi = false;
     
     try {
-      if (msg.reference !== null) replied_to_ougi = (await msg.channel.messages.fetch(msg.reference.messageID)).author.id === client.user.id;
+      // if (msg.reference !== null) replied_to_ougi = (await msg.channel.messages.fetch(msg.reference.messageID)).author.id === client.user.id;
     }
     catch (e) {
       console.log(e);
@@ -303,7 +325,7 @@ client.on('messageUpdate', (msg) => {
     ougi.loadSniper(msg, true);
 });
 
-client.setInterval(
+setInterval(
   async function () {
     if (!global.TEASEABLE) {
       return
@@ -337,7 +359,7 @@ process.on('uncaughtException', (e) => {
     }
     catch {
       console.log('unable to DM david for console error');
-      console.error(e);
+      console.log(e);
     }
 });
 

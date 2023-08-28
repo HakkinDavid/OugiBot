@@ -41,7 +41,7 @@ async function (msg) {
     var serverIcon = msg.guild.iconURL();
   }
 
-  let spookyConstructor = new Discord.MessageEmbed();
+  let spookyConstructor = new Discord.EmbedBuilder();
   for (i=0; breakChocolate.length > i; i++) {
     let material = breakChocolate[i];
     if (material.endsWith(" ")) {
@@ -522,32 +522,32 @@ async function (msg) {
     }
   }
   if (footerArray[0] != undefined && footerArray[1] == undefined) {
-    spookyConstructor.setFooter(footerArray[0])
+    spookyConstructor.setFooter({text: footerArray[0]})
   }
   else if (footerArray[0] == undefined && footerArray[1] != undefined) {
-    spookyConstructor.setFooter("\u200b", footerArray[1])
+    spookyConstructor.setFooter({text: "\u200b", icon: footerArray[1]})
   }
   else if (footerArray[0] != undefined && footerArray[1] != undefined) {
-    spookyConstructor.setFooter(footerArray[0], footerArray[1])
+    spookyConstructor.setFooter({text: footerArray[0], icon: footerArray[1]})
   }
 
   if (authorArray[0] != undefined && authorArray[1] == undefined && authorArray[2] == undefined) {
-    spookyConstructor.setAuthor(authorArray[0])
+    spookyConstructor.setAuthor({name: authorArray[0]})
   }
   else if (authorArray[0] == undefined && authorArray[1] != undefined && authorArray[2] == undefined) {
-    spookyConstructor.setAuthor("\u200b", authorArray[1])
+    spookyConstructor.setAuthor({name: "\u200b", icon: authorArray[1]})
   }
   else if (authorArray[0] != undefined && authorArray[1] != undefined && authorArray[2] == undefined) {
-    spookyConstructor.setAuthor(authorArray[0], authorArray[1])
+    spookyConstructor.setAuthor({name: authorArray[0], icon: authorArray[1]})
   }
   else if (authorArray[0] != undefined && authorArray[1] == undefined && authorArray[2] != undefined) {
-    spookyConstructor.setAuthor(authorArray[0], undefined, authorArray[2])
+    spookyConstructor.setAuthor({name: authorArray[0], icon: undefined, url: authorArray[2]})
   }
   else if (authorArray[0] == undefined && authorArray[1] != undefined && authorArray[2] != undefined) {
-    spookyConstructor.setAuthor("\u200b", authorArray[1], authorArray[2])
+    spookyConstructor.setAuthor({name: "\u200b", icon: authorArray[1], url: authorArray[2]})
   }
   else if (authorArray[0] != undefined && authorArray[1] != undefined && authorArray[2] != undefined) {
-    spookyConstructor.setAuthor(authorArray[0], authorArray[1], authorArray[2])
+    spookyConstructor.setAuthor({name: authorArray[0], icon: authorArray[1], url: authorArray[2]})
   }
 
   for (i=0; fieldsArray.length > i || fieldsTitles.length > i; i++) {
@@ -568,18 +568,18 @@ async function (msg) {
 
   for (i=0; fieldsArray.length > i || fieldsTitles.length > i; i++) {
     if (fieldsArray[i] != undefined && fieldsTitles[i] != undefined) {
-      spookyConstructor.addField(fieldsTitles[i], fieldsArray[i])
+      spookyConstructor.addFields({name: fieldsTitles[i], value: fieldsArray[i]})
     }
     else if (fieldsArray[i] == undefined && fieldsTitles[i] != undefined) {
-      spookyConstructor.addField(fieldsTitles[i], "\u200b")
+      spookyConstructor.addFields({name: fieldsTitles[i], value: "\u200b"})
     }
     else if (fieldsArray[i] != undefined && fieldsTitles[i] == undefined) {
-      spookyConstructor.addField("\u200b", fieldsArray[i])
+      spookyConstructor.addFields({name: "\u200b", value: fieldsArray[i]})
     }
   }
 
   if (breakChocolate.length >= 1) {
-    msg.channel.send(spookyConstructor).then(
+    msg.channel.send({embeds: [spookyConstructor]}).then(
       setTimeout(
         function () {
           msg.delete().catch(O_o=>{})

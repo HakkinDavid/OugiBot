@@ -13,29 +13,29 @@ async function (msg) {
     let hauntedCommand = spookySlices[1];
     let arguments = spookySlices.slice(2);
 
-    let embed = new Discord.MessageEmbed()
-    .setAuthor(msg.author.username, msg.author.avatarURL({dynamic: true, size: 4096}))
+    let embed = new Discord.EmbedBuilder()
+    .setAuthor({name: msg.author.username, icon: msg.author.avatarURL({dynamic: true, size: 4096})})
     .setDescription("ID `" + msg.author.id + "`")
     .setColor("#FF008C")
-    .setFooter("globalLogEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
+    .setFooter({text: "globalLogEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
     .setTimestamp()
     if (hauntedCommand == undefined) {
-      embed.addField("No trigger was specified", "\u200B")
+      embed.addFields({name: "No trigger was specified", value: "\u200B"})
     }
     else {
-      embed.addField(":warning: **ROOT** command", hauntedCommand);
+      embed.addFields({name: ":warning: **ROOT** command", value: hauntedCommand});
     }
     if (arguments != "") {
       if (arguments.length < 1024) {
-        embed.addField("Arguments", arguments.join(" "))
+        embed.addFields({name: "Arguments", value: arguments.join(" ")})
       }
       else {
-        embed.addField("Arguments", arguments.join(" ").slice(0, 1024))
-        embed.addField("\u200B", arguments.join(" ").slice(1024))
+        embed.addFields({name: "Arguments", value: arguments.join(" ").slice(0, 1024)})
+        embed.addFields({name: "\u200B", value: arguments.join(" ").slice(1024)})
       }
     }
 
-    client.channels.cache.get(consoleLogging).send({embed}).catch(console.error);
+    client.channels.cache.get(consoleLogging).send({embeds: [embed]}).catch(console.error);
 
     switch (hauntedCommand){
       case "help":

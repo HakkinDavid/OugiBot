@@ -108,16 +108,16 @@ async function (msg) {
   await ougi.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), console.error);
   await ougi.backup('./settings.txt', settingsChannel);
 
-  let embed = new Discord.MessageEmbed()
+  let embed = new Discord.EmbedBuilder()
   .setTitle("Enjoying Ougi so far?")
   .setDescription("If so, that's really heartwarming. Mind taking a second to answer the following question?\nUse the reactions I put below.")
-  .addField(settingsOBJ.surveysAvailable[questionID].q, settingsOBJ.surveysAvailable[questionID].d)
+  .addFields({name: settingsOBJ.surveysAvailable[questionID].q, value: settingsOBJ.surveysAvailable[questionID].d})
   .setColor(settingsOBJ.surveysAvailable[questionID].color)
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/news.png?raw=true");
   if (settingsOBJ.surveysAvailable[questionID].url != null) {
-    embed.addField("\u200b","Feeling generous enough to spend a couple extra minutes? I'd be so glad to hear your thoughts in [this survey](" + settingsOBJ.surveysAvailable[questionID].url + ").");
+    embed.addFields({name: "\u200b", value: "Feeling generous enough to spend a couple extra minutes? I'd be so glad to hear your thoughts in [this survey](" + settingsOBJ.surveysAvailable[questionID].url + ")."});
   }
-  msg.channel.send("This is what users will get:", embed).then(async (sentMSG) => {
+  msg.channel.send("This is what users will get:", {embeds: [embed]}).then(async (sentMSG) => {
       await sentMSG.react(client.emojis.cache.get('818120409219334144'))
       .catch(console.error);
       await sentMSG.react(client.emojis.cache.get('818120425757999144'))
