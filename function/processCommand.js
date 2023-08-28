@@ -46,7 +46,7 @@ async function (msg) {
     }
 
     /*Ignore if in blacklist*/
-    if (msg.channel.type === "text") {
+    if (msg.channel.type === Discord.ChannelType.GuildText) {
       let guildID = msg.guild.id;
 
       if (settingsOBJ.blacklist.hasOwnProperty(guildID)){
@@ -64,7 +64,7 @@ async function (msg) {
       }
     }
 
-    if (msg.channel.type === "text") {
+    if (msg.channel.type === Discord.ChannelType.GuildText) {
       ougi.guildLog(msg);
     }
 

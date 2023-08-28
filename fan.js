@@ -21,6 +21,9 @@ global.client = new Discord.Client({
     Discord.GatewayIntentBits.GuildWebhooks,
     Discord.GatewayIntentBits.Guilds,
     Discord.GatewayIntentBits.MessageContent
+  ],
+  'partials': [
+    Discord.Partials.User, Discord.Partials.Channel, Discord.Partials.GuildMember, Discord.Partials.Message, Discord.Partials.Reaction, Discord.Partials.GuildScheduledEvent, Discord.Partials.ThreadMember
   ]
 });
 global.fs = require('fs');
@@ -160,7 +163,7 @@ client.on('messageCreate', async (msg) => {
       return
     }
 
-    if (msg.author.bot) {
+    if (msg.author && msg.author.bot) {
       return
     }
 
@@ -211,7 +214,7 @@ client.on('messageCreate', async (msg) => {
       ougi.rootCommands(msg);
     }
 
-    else if (msg.channel.type === "text" && msg.content.length > 0) {
+    else if (msg.channel.type === Discord.ChannelType.GuildText && msg.content.length > 0) {
       let guildID = msg.guild.id;
       let regularMessage = true;
       if (settingsOBJ.prefix.hasOwnProperty(guildID)){
@@ -239,14 +242,14 @@ client.on('messageCreate', async (msg) => {
       }
     }
 
-    else if (msg.content === "I want to opt out from using Ougi [BOT]." && msg.channel.type === "dm") {
+    else if (msg.content === "I want to opt out from using Ougi [BOT]." && msg.channel.type === Discord.ChannelType.DM) {
       let pseudoMSG = msg;
       pseudoMSG.content = "ougi OPTOUTSTATEMENT";
       ougi.globalLog(pseudoMSG);
       ougi.optout(msg);
     }
 
-    else if (msg.channel.type === "dm" && msg.content.length > 0) {
+    else if (msg.channel.type === Discord.ChannelType.DM && msg.content.length > 0) {
       ougi.judgementAbility(msg);
     }
 })
@@ -258,7 +261,7 @@ client.on('messageDelete', (msg) => {
     if (msg.author == client.user) {
       return
     }
-    if (msg.content.toLowerCase().startsWith("ougi") || msg.author.bot || msg.content.startsWith("扇") || msg.content.toLowerCase().startsWith("#ougi") || msg.content.startsWith("<@629837958123356172>") || msg.content.startsWith("<@!629837958123356172>")) {
+    if (msg.author && msg.author.bot || msg.content && (msg.content.toLowerCase().startsWith("ougi") || msg.content.startsWith("扇") || msg.content.toLowerCase().startsWith("#ougi") || msg.content.startsWith("<@629837958123356172>") || msg.content.startsWith("<@!629837958123356172>"))) {
       return
     }
     if (settingsOBJ === null || /* mindOBJ === null || */ localesCache === null || dynamicLocales === null || knowledgeBase === null) {
@@ -295,7 +298,7 @@ client.on('messageUpdate', (msg) => {
     if (msg.author == client.user) {
       return
     }
-    if (msg.content.toLowerCase().startsWith("ougi") || msg.author.bot || msg.content.startsWith("扇") || msg.content.toLowerCase().startsWith("#ougi") || msg.content.startsWith("<@629837958123356172>") || msg.content.startsWith("<@!629837958123356172>")) {
+    if (msg.author && msg.author.bot || msg.content && (msg.content.toLowerCase().startsWith("ougi") || msg.content.startsWith("扇") || msg.content.toLowerCase().startsWith("#ougi") || msg.content.startsWith("<@629837958123356172>") || msg.content.startsWith("<@!629837958123356172>"))) {
       return
     }
     if (settingsOBJ === null || /* mindOBJ === null || */ localesCache === null || dynamicLocales === null || knowledgeBase === null) {

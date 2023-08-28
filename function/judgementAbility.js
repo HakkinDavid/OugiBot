@@ -11,7 +11,7 @@ async function (msg) {
     msg.content = msg.content.replace('\n', ' ')
   }
   let embed = new Discord.EmbedBuilder()
-  .setTitle("Input for judgementAbility (" + msg.channel.type.toString().replace("dm", "DM").replace("text", "Text") + " channel)")
+  .setTitle("Input for judgementAbility (" + msg.channel.type + " type channel)")
   .setAuthor({name: msg.author.username, icon: msg.author.avatarURL({dynamic: true, size: 4096})})
   .setColor("#FF008C")
   .setFooter({text: "globalLogEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})});
@@ -37,7 +37,6 @@ async function (msg) {
   }
 
   ougi.ideaCoreProcessor(notSpookyDM);
-  msg.channel.startTyping();
   ougi.sleep(500);
   let levenaryIdea = levenary(notSpookyDM, stringsArray);
   let myLevU = leven(notSpookyDM, levenaryIdea);
@@ -71,7 +70,7 @@ async function (msg) {
   if (finalSimilarity >= minSimilarity){
     let options = knowledgeBase[thisString];
     let response = options[Math.floor(Math.random()*options.length)];
-    if (msg.channel.type !== "dm") {
+    if (msg.channel.type !== Discord.ChannelType.DM) {
       response = response
       .replace(/nigga|nigger/gi, "unwhiter")
       .replace(/cock|dick|penis/gi, "coke");
@@ -92,5 +91,4 @@ async function (msg) {
     ougi.checkBadWords(msg);
   }
   global.logsCount++;
-  msg.channel.stopTyping();
 }

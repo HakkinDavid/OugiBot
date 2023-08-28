@@ -23,7 +23,7 @@ async function (msg) {
   .setThumbnail(client.users.cache.get(callerID).avatarURL({dynamic: true, size: 4096}))
   .setImage("https://github.com/HakkinDavid/OugiBot/blob/master/images/veryepic.png?raw=true");
   client.users.cache.get(callerID).send("__**Do you want to follow Ougi's development more closely?**__\nFeel free to join " + client.users.cache.get(davidUserID).username +" (Ougi's developer) in his personal Discord server.\nhttps://discord.gg/nB3GXW5\n*This is an optional step.*", {embeds: [embed]}).then(()=> {client.users.cache.get(davidUserID).send({embeds: [subscribeNotificationEmbed]}).catch(console.error)}).catch(console.error);
-  if (msg.channel.type != "dm") {
+  if (msg.channel.type !== Discord.ChannelType.DM) {
     msg.channel.send("Check your DMs ;)").catch(console.error);
   }
   await ougi.backup("./settings.txt", settingsChannel);

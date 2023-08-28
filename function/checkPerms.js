@@ -1,7 +1,7 @@
 module.exports =
 
 async function (msg, permissionsArray) {
-    if (msg.channel.type !== "text") {
+    if (msg.channel.type !== Discord.ChannelType.GuildText) {
         return true
     }
     let missingPerms = await msg.guild.me.permissionsIn(msg.channel).missing(permissionsArray);
