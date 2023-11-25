@@ -149,6 +149,10 @@ client.on('ready', async () => {
 });
 
 client.on('messageCreate', async (msg) => {
+    if (msg.author === null) {
+      console.log("Unable to retrieve user object in messageCreate event.");
+      return
+    }
     if (msg.author == client.user) {
       if (!global.TEASEABLE) {
         return
@@ -255,6 +259,10 @@ client.on('messageCreate', async (msg) => {
 })
 
 client.on('messageDelete', (msg) => {
+    if (msg.author === null) {
+      console.log("Unable to retrieve user object in messageDelete event.");
+      return
+    }
     if (!global.TEASEABLE) {
       return
     }
@@ -292,6 +300,10 @@ client.on('messageDelete', (msg) => {
 });
 
 client.on('messageUpdate', (msg) => {
+    if (msg.author === null) {
+      console.log("Unable to retrieve user object in messageUpdate event.");
+      return
+    }
     if (!global.TEASEABLE) {
       return
     }

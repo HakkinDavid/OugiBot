@@ -4,7 +4,13 @@ async function (msg, permissionsArray) {
     if (msg.channel.type !== Discord.ChannelType.GuildText) {
         return true
     }
-    let missingPerms = await msg.guild.me.permissionsIn(msg.channel).missing(permissionsArray);
+    let missingPerms = []
+    try {
+        missingPerms = await msg.guild.me.permissionsIn(msg.channel).missing(permissionsArray);
+    }
+    catch {
+        console.log("Permissions unchecked.");
+    }
     if (missingPerms.length === 0) {
         return true
     }

@@ -7,8 +7,9 @@ async function (channelID) {
   client.channels.cache.get(channelID).messages.fetch({ limit: 1 }).then(
     async (messages) => {
       let lastMessage = messages.first();
-      await download(lastMessage.attachments.first().url)
-      console.log("Retrieved database object at " + lastMessage.attachments.first().url);
+      let myURL = lastMessage.attachments.first().url.replace(/\?[^\?]+$/gi, '');
+      await download(myURL)
+      console.log("Retrieved database object at " + myURL);
     }
   ).catch(console.error);
 }
