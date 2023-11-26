@@ -34,7 +34,7 @@ async function (msg) {
     let embed = new Discord.EmbedBuilder()
     .setTitle("Ougi Translate")
     .setColor("#6254E7")
-    .addFields({name: "Input in " + ougi.langCodes[res.from.language.iso], phrase})
+    .addFields({name: "Input in " + ougi.langCodes[res.from.language.iso], value: phrase})
     .addFields({name: "Translation to " + niceLang, value: res.text})
     .setFooter({text: "Translated by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
     .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/ougitranslate.png?raw=true");
