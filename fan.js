@@ -349,17 +349,6 @@ setInterval(
     global.reloadedAmmo = {};
     await ougi.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), console.error);
     await ougi.backup('./settings.txt', settingsChannel);
-    if (global.logsCount >= 1) {
-        await client.channels.cache.get(consoleLogging).messages.fetch({ limit: global.logsCount }).then(
-          async (messages) => {
-            await messages.forEach((obj) => {
-              obj.delete().catch(O_o=>{});
-            });
-            console.log("Cleaning logs ...");
-          }
-        ).catch(console.error);
-    }
-    global.logsCount = 0;
   },
   300000
 );
