@@ -54,7 +54,7 @@ async function (msg) {
   }
 
   if (readOutLoud.length <= 200) {
-    let cacheSpeak = './cachedvoice/' + langCode + (new Date).getTime() + '.mp3';
+    let cacheSpeak = 'cachedvoice/' + langCode + (new Date).getTime() + '.mp3';
 
     if (!fs.existsSync(cacheSpeak)) {
       await ougi.tts({
@@ -67,17 +67,18 @@ async function (msg) {
     let ratelimit = (new Date).getTime() + (5 * readOutLoud.length);
     settingsOBJ.ratelimit[msg.author.id] = ratelimit;
 
-    await Voice.joinVoiceChannel({
+    let connection = await Voice.joinVoiceChannel({
       channelId: vcChannel.id,
       guildId: vcChannel.guild.id,
       adapterCreator: vcChannel.guild.voiceAdapterCreator
-    }).then(async (connection) => {
+    });
+    let player = Voice.createAudioPlayer();
+    connection.subscribe(player);
+    let audio = Voice.createAudioResource(Nodepath.join(__dirname, cacheSpeak));
+    player.play(audio);
+    player.on(Voice.AudioPlayerStatus.Playing, () => {
       msg.react('🔊');
       msg.react('<:ougi:730355760864952401>');
-      await connection.play(cacheSpeak, { volume: false }).on('finish', () => {
-        fs.unlink(cacheSpeak, console.error);
-        connection.disconnect();
-      })
     });
   }
   else {
