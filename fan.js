@@ -116,8 +116,9 @@ global.logsCount = 0;
 
 console.error = function() {
     logMessages.push.apply(logMessages, arguments);
-    while (logMessages[logMessages.length-1] == "\n" || logMessages[logMessages.length-1] == null || logMessages[logMessages.length-1] == undefined){
+    if (logMessages[logMessages.length-1] == "\n" || logMessages[logMessages.length-1] == null || logMessages[logMessages.length-1] == undefined){
       logMessages.pop();
+      return
     }
       let criticalEmbed = new Discord.EmbedBuilder()
       .setAuthor({name: "CONSOLE ERROR"})
