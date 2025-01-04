@@ -116,17 +116,17 @@ global.logsCount = 0;
 
 console.error = function() {
     logMessages.push.apply(logMessages, arguments);
-    if (logMessages[0] == "\n" || logMessages[0] == null || logMessages[0] == undefined){
+    while (logMessages[logMessages.length-1] == "\n" || logMessages[logMessages.length-1] == null || logMessages[logMessages.length-1] == undefined){
       logMessages.pop();
     }
     else {
       let criticalEmbed = new Discord.EmbedBuilder()
       .setAuthor({name: "CONSOLE ERROR"})
       .setColor("#c20d00")
-      .setFooter({text: "errorLogEmbed by Ougi", icon: client.user.avatarURL() || "https://github.com/HakkinDavid/OugiBot/blob/master/images/ougi.png?raw=true"})
+      .setFooter({text: "errorLogEmbed by Ougi", icon: "https://github.com/HakkinDavid/OugiBot/blob/master/images/ougi.png?raw=true"})
       .setTimestamp()
       .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/fatal.png?raw=true")
-      .setDescription((logMessages.pop() || "").toString());
+      .setDescription(logMessages.pop().toString());
 
       client.channels.cache.get(consoleLogging).send({embeds: [criticalEmbed]}).catch(console.error);
     }
