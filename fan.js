@@ -123,10 +123,10 @@ console.error = function() {
       let criticalEmbed = new Discord.EmbedBuilder()
       .setAuthor({name: "CONSOLE ERROR"})
       .setColor("#c20d00")
-      .setFooter({text: "errorLogEmbed by Ougi", icon: client.user?.avatarURL()})
+      .setFooter({text: "errorLogEmbed by Ougi", icon: client.user.avatarURL() || "https://github.com/HakkinDavid/OugiBot/blob/master/images/ougi.png?raw=true"})
       .setTimestamp()
       .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/fatal.png?raw=true")
-      .setDescription(logMessages.pop()?.toString());
+      .setDescription((logMessages.pop() || "").toString());
 
       client.channels.cache.get(consoleLogging).send({embeds: [criticalEmbed]}).catch(console.error);
     }
