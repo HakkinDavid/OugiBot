@@ -119,7 +119,6 @@ console.error = function() {
     while (logMessages[logMessages.length-1] == "\n" || logMessages[logMessages.length-1] == null || logMessages[logMessages.length-1] == undefined){
       logMessages.pop();
     }
-    else {
       let criticalEmbed = new Discord.EmbedBuilder()
       .setAuthor({name: "CONSOLE ERROR"})
       .setColor("#c20d00")
@@ -129,7 +128,6 @@ console.error = function() {
       .setDescription(logMessages.pop().toString());
 
       client.channels.cache.get(consoleLogging).send({embeds: [criticalEmbed]}).catch(console.error);
-    }
     errorBackup.apply(console, arguments);
 };
 
