@@ -126,7 +126,7 @@ console.error = function() {
       .setFooter({text: "errorLogEmbed by Ougi", icon: client.user.avatarURL()})
       .setTimestamp()
       .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/fatal.png?raw=true")
-      .setDescription(logMessages.pop().toString());
+      .setDescription(logMessages.pop()?.toString());
 
       client.channels.cache.get(consoleLogging).send({embeds: [criticalEmbed]}).catch(console.error);
     }
