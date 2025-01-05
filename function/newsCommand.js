@@ -1,6 +1,10 @@
 module.exports =
 
 async function (arguments, msg) {
+  if (arguments.length < 1) {
+    msg.channel.send("Please provide some keywords to search!");
+    return;
+  }
   let langCode = null;
   let actualLangCode = null;
   let oldestAllowed = new Date(new Date().getTime() - 1210000000).toISOString().slice(0, -5);
@@ -32,7 +36,7 @@ async function (arguments, msg) {
       article[localizedProperties[i]] = await ougi.text(msg, article[localizedProperties[i]], true);
     }
   }
-  if (article.urlToImage.length < 1) {
+  if (!article.urlToImage?.length) {
     article.urlToImage = "https://github.com/HakkinDavid/OugiBot/images/world.png?raw=true"
   }
   let embed = new Discord.MessageEmbed()
