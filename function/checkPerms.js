@@ -9,8 +9,7 @@ async function (msg, permissionsArray) {
         missingPerms = await msg.guild.members.me.permissionsIn(msg.channel).missing(permissionsArray);
     }
     catch (e) {
-        console.log(e);
-        console.log("Permissions unchecked.");
+        ougi.guildLog("Permissions for `" + msg.content + "` missing!");
     }
     if (missingPerms.length === 0) {
         return true

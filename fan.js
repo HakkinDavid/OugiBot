@@ -113,7 +113,6 @@ global.database = {
 };
 global.errorBackup = console.error;
 global.logMessages = [];
-global.logsCount = 0;
 
 console.error = function() {
     logMessages.push.apply(logMessages, arguments);
@@ -211,7 +210,7 @@ client.on('messageCreate', async (msg) => {
     let replied_to_ougi = false;
     
     try {
-      // if (msg.reference !== null) replied_to_ougi = (await msg.channel.messages.fetch(msg.reference.messageID)).author.id === client.user.id;
+      if (msg.reference !== null) replied_to_ougi = (await msg.channel.messages.fetch(msg.reference.messageId)).author.id === client.user.id;
     }
     catch (e) {
       console.log(e);
@@ -245,7 +244,7 @@ client.on('messageCreate', async (msg) => {
       }
 
       if (replied_to_ougi && regularMessage) {
-        ougi.judgementAbility(msg);
+        ougi.judgementAbility(msg, replied_to_ougi);
       }
 
       if (regularMessage && settingsOBJ.economy.hasOwnProperty(guildID) && !settingsOBJ.economy[guildID].disabled && (settingsOBJ.economy[guildID].channels.length === 0 || settingsOBJ.economy[guildID].channels.includes(msg.channel.id))) {

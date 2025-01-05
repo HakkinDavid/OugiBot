@@ -48,5 +48,5 @@ async function (arguments, msg) {
     .setColor("#FC0000")
     .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/fatal.png?raw=true");
   }
-  msg.channel.send(spookyConstructor).catch(console.error)
+  msg.channel.send({embeds: [spookyConstructor]}).catch(console.error);
 }

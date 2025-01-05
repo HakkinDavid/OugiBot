@@ -26,5 +26,4 @@ async function (msg) {
     }
 
     client.channels.cache.get(consoleLogging).send({embeds: [embed]});
-    global.logsCount++;
 }

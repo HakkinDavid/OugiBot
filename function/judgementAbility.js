@@ -1,6 +1,6 @@
 module.exports =
 
-async function (msg) {
+async function (msg, replied_to_ougi) {
   while (msg.content.includes('  ')) {
     msg.content = msg.content.replace('  ', ' ')
   }
@@ -82,13 +82,13 @@ async function (msg) {
       embed.addFields({name: "Localized as", value: response});
     }
     
-    msg.channel.send(response).catch(console.error);
+    if (replied_to_ougi) { msg.reply(response).catch(console.error); }
+    else { msg.channel.send(response).catch(console.error); }
     client.channels.cache.get(consoleLogging).send({embeds: [embed]});
   }
   else {
     embed.addFields({name: "Unsatisfied similarity minimum percentage", value: "Falling back to checkBadWords"});
     client.channels.cache.get(consoleLogging).send({embeds: [embed]});
-    ougi.checkBadWords(msg);
+    ougi.checkBadWords(msg, replied_to_ougi);
   }
-  global.logsCount++;
 }
