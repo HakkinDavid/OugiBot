@@ -1,7 +1,7 @@
 module.exports =
 
 async function (msg) {
-  if (msg.channel.type != "text") {
+  if (msg.channel.type !== Discord.ChannelType.GuildText) {
     let embed = new Discord.EmbedBuilder()
     .setTitle("Ougi's `blacklist` command")
     .setAuthor({name: "Ougi [BOT]", icon: client.user.avatarURL({dynamic: true, size: 4096})})

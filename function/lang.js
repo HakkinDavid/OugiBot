@@ -3,7 +3,7 @@ module.exports =
 async function (arguments, msg, guildExecution) {
   let preferencesID = msg.author.id;
   if (guildExecution) {
-    if (msg.channel.type != "text") {
+    if (msg.channel.type !== Discord.ChannelType.GuildText) {
       msg.channel.send(await ougi.text(msg, "mustGuild"));
       return
     }

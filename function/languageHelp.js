@@ -8,7 +8,7 @@ async function (msg, guild) {
   if (guild) {
     embed = await ougi.helpPreset(msg, "guildlanguage");
     embed.setDescription(await ougi.text(msg, "guildLanguageHelpDesc") + " " + await ougi.text(msg, "possibleLangInput"))
-    if (msg.channel.type != "text") {
+    if (msg.channel.type !== Discord.ChannelType.GuildText) {
       embed.addFields({name: await ougi.text(msg, "onlyGuilds"), value: ":warning: " + await ougi.text(msg, "mustGuild")})
     }
     embed.addFields({name: await ougi.text(msg, "specialPermission"), value: ":warning: " + await ougi.text(msg, "onlyOwner")})

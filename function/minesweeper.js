@@ -17,7 +17,7 @@ async function (msg) {
   var breakChocolate = thisMessage.split("::").slice(1);
   let icon = msg.author.avatarURL({dynamic: true, size: 4096});
   let embedColor = "#230347";
-  if (msg.channel.type == "text") {
+  if (msg.channel.type == Discord.ChannelType.GuildText) {
     icon = msg.guild.iconURL()
   }
   let difficulty = 5;

@@ -8,7 +8,7 @@ async function (msg) {
   .setColor("#230347")
   .setFooter({text: "helpEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true");
-  if (msg.channel.type != "text") {
+  if (msg.channel.type !== Discord.ChannelType.GuildText) {
     embed.addFields({name: "This is only available in Discord servers.", value: ":warning: You must be in a Discord server in order to preview information about this command."})
     msg.channel.send({embeds: [embed]}).catch(console.error);
     return

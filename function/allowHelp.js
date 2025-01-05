@@ -2,7 +2,7 @@ module.exports =
 
 async function (msg) {
   let embed = await ougi.helpPreset(msg, "allow");
-  if (msg.channel.type != "text") {
+  if (msg.channel.type !== Discord.ChannelType.GuildText) {
     embed.addFields({name: await ougi.text(msg, "onlyGuilds"), value: ":warning: " + await ougi.text(msg, "inGuildWarning")})
     msg.channel.send({embeds: [embed]}).catch(console.error);
     return

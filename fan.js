@@ -285,7 +285,7 @@ client.on('messageDelete', (msg) => {
     if (settingsOBJ.ignored.includes(msg.author.id)) {
       return
     }
-    if (msg.channel.type == "text") {
+    if (msg.channel.type == Discord.ChannelType.GuildText) {
       let guildID = msg.guild.id;
       if (settingsOBJ.blacklist.hasOwnProperty(guildID)){
         let existent = settingsOBJ.blacklist[guildID];
@@ -326,7 +326,7 @@ client.on('messageUpdate', (msg) => {
     if (settingsOBJ.ignored.includes(msg.author.id)) {
       return
     }
-    if (msg.channel.type == "text") {
+    if (msg.channel.type == Discord.ChannelType.GuildText) {
       let guildID = msg.guild.id;
       if (settingsOBJ.blacklist.hasOwnProperty(guildID)){
         let existent = settingsOBJ.blacklist[guildID];

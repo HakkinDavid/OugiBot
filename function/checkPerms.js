@@ -8,7 +8,8 @@ async function (msg, permissionsArray) {
     try {
         missingPerms = await msg.guild.me.permissionsIn(msg.channel).missing(permissionsArray);
     }
-    catch {
+    catch (e) {
+        console.log(e);
         console.log("Permissions unchecked.");
     }
     if (missingPerms.length === 0) {

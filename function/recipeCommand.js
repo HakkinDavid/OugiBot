@@ -6,7 +6,7 @@ async function (arguments, msg) {
     if (settingsOBJ.lang.hasOwnProperty(msg.author.id)) {
         langCode = settingsOBJ.lang[msg.author.id]
     }
-    if (msg.channel.type == "text") {
+    if (msg.channel.type == Discord.ChannelType.GuildText) {
         if (settingsOBJ.lang.hasOwnProperty(msg.guild.id)) {
         langCode = settingsOBJ.lang[msg.guild.id];
         }
