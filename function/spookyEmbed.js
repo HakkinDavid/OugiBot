@@ -148,7 +148,7 @@ async function (msg) {
         msg.channel.send("Preset name must be between 1 and 100 characters long.");
         return
       }
-      let myLoad = JSON.parse(ougi.readFile("./embedPresets.txt"));
+      let myLoad = ougi.readFile("./embedPresets.txt"));
       let aPreset = material + "::" + msg.author.id;
       if (myLoad.hasOwnProperty(aPreset)) {
         let gonnaPull = myLoad[aPreset].reverse();
@@ -164,7 +164,7 @@ async function (msg) {
       }
     }
     else if (material.startsWith("list")) {
-      let myLoad = JSON.parse(ougi.readFile("./embedPresets.txt"));
+      let myLoad = ougi.readFile("./embedPresets.txt"));
       let aPreset = "::" + msg.author.id;
       let allPresets = Object.keys(myLoad);
       for (e=0; allPresets.length > e; e++) {
@@ -185,7 +185,7 @@ async function (msg) {
         msg.channel.send("Preset name must be between 1 and 100 characters long.");
         return
       }
-      let myLoad = JSON.parse(ougi.readFile("./embedPresets.txt"));
+      let myLoad = ougi.readFile("./embedPresets.txt"));
       let aPreset = material + "::" + msg.author.id;
       if (myLoad.hasOwnProperty(aPreset)) {
         breakChocolate.splice(i, 1);
@@ -593,7 +593,7 @@ async function (msg) {
       msg.channel.send("Your embed must not be empty.");
       return
     }
-    let pseudoArray = JSON.parse(ougi.readFile('./embedPresets.txt', 'utf-8', console.error));
+    let pseudoArray = ougi.readFile('./embedPresets.txt', 'utf-8', console.error);
     let personalizedPresetName = presetName + "::" + msg.author.id;
 
     pseudoArray[personalizedPresetName] = breakChocolate;
@@ -610,7 +610,7 @@ async function (msg) {
       msg.channel.send("Your embed must not be empty.");
       return
     }
-    let pseudoArray = JSON.parse(ougi.readFile('./embedPresets.txt', 'utf-8', console.error));
+    let pseudoArray = ougi.readFile('./embedPresets.txt', 'utf-8', console.error);
     let circleOfSharing = [];
     for (i=0; i < sharedWith.length; i++) {
       circleOfSharing.push(client.users.cache.get(sharedWith[i]).username);

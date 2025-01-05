@@ -103,7 +103,7 @@ async function (msg) {
   if (mod > 0) {
     ougi.globalLog("Skipped " + mod + " invalid IDs.")
   }
-  let newsArray = JSON.parse(ougi.readFile('./newsChannel.txt', 'utf-8', console.error));
+  let newsArray = ougi.readFile('./newsChannel.txt', 'utf-8', console.error);
   let thisArray = {
     title: embedName,
     desc: embedDesc,

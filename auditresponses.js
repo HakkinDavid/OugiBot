@@ -1,5 +1,5 @@
 const fs = require('fs');
-let responses = JSON.parse(ougi.readFile('./responses.txt', 'utf-8'));
+let responses = ougi.readFile('./responses.txt', 'utf-8');
 let links = [];
 
 for (trigger in responses) {

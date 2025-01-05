@@ -136,7 +136,10 @@ console.error = function() {
 client.on('ready', async () => {
   findRemoveSync('./', {extensions: ['.txt', '.mp3']});
   for (i=0; i < fetchedChannels.length; i++) {
-    await ougi.fetch(fetchedChannels[i]).catch(console.error);
+    if ((await ougi.fetch(fetchedChannels[i])) === false) {
+      console.log("Refetching " + fetchedChannels[i]);
+      i--;
+    }
   }
 
   client.channels.cache.get(consoleLogging).send("**INSTANCE ID:** " + instanceID + "\n**DEV:** " + process.env.DEV + "\n**SILENT MODE:** " + !global.TEASEABLE).catch(console.error);
@@ -187,11 +190,11 @@ client.on('messageCreate', async (msg) => {
       if (!fs.existsSync('./settings.txt') || /* !fs.existsSync('./neuroNetworks.txt') || */ !fs.existsSync('./localesCache.txt') || !fs.existsSync('./dynamicLocales.txt') || !fs.existsSync('./responses.txt')) {
         return
       }
-      global.settingsOBJ = JSON.parse(ougi.readFile('./settings.txt'));
-      // global.mindOBJ = JSON.parse(ougi.readFile('./neuroNetworks.txt'));
-      global.localesCache = JSON.parse(ougi.readFile('./localesCache.txt'));
-      global.dynamicLocales = JSON.parse(ougi.readFile('./dynamicLocales.txt'));
-      global.knowledgeBase = JSON.parse(ougi.readFile('./responses.txt', 'utf-8'));
+      global.settingsOBJ = ougi.readFile('./settings.txt');
+      // global.mindOBJ = ougi.readFile('./neuroNetworks.txt');
+      global.localesCache = ougi.readFile('./localesCache.txt');
+      global.dynamicLocales = ougi.readFile('./dynamicLocales.txt');
+      global.knowledgeBase = ougi.readFile('./responses.txt', 'utf-8');
     }
 
     if (settingsOBJ.ignored.includes(msg.author.id)) {
@@ -276,11 +279,11 @@ client.on('messageDelete', (msg) => {
       if (!fs.existsSync('./settings.txt') || /* !fs.existsSync('./neuroNetworks.txt') || */ !fs.existsSync('./localesCache.txt') || !fs.existsSync('./dynamicLocales.txt') || !fs.existsSync('./responses.txt')) {
         return
       }
-      global.settingsOBJ = JSON.parse(ougi.readFile('./settings.txt'));
-      // global.mindOBJ = JSON.parse(ougi.readFile('./neuroNetworks.txt'));
-      global.localesCache = JSON.parse(ougi.readFile('./localesCache.txt'));
-      global.dynamicLocales = JSON.parse(ougi.readFile('./dynamicLocales.txt'));
-      global.knowledgeBase = JSON.parse(ougi.readFile('./responses.txt', 'utf-8'));
+      global.settingsOBJ = ougi.readFile('./settings.txt');
+      // global.mindOBJ = ougi.readFile('./neuroNetworks.txt');
+      global.localesCache = ougi.readFile('./localesCache.txt');
+      global.dynamicLocales = ougi.readFile('./dynamicLocales.txt');
+      global.knowledgeBase = ougi.readFile('./responses.txt', 'utf-8');
     }
     if (settingsOBJ.ignored.includes(msg.author.id)) {
       return
@@ -317,11 +320,11 @@ client.on('messageUpdate', (msg) => {
       if (!fs.existsSync('./settings.txt') || /* !fs.existsSync('./neuroNetworks.txt') || */ !fs.existsSync('./localesCache.txt') || !fs.existsSync('./dynamicLocales.txt') || !fs.existsSync('./responses.txt')) {
         return
       }
-      global.settingsOBJ = JSON.parse(ougi.readFile('./settings.txt'));
-      // global.mindOBJ = JSON.parse(ougi.readFile('./neuroNetworks.txt'));
-      global.localesCache = JSON.parse(ougi.readFile('./localesCache.txt'));
-      global.dynamicLocales = JSON.parse(ougi.readFile('./dynamicLocales.txt'));
-      global.knowledgeBase = JSON.parse(ougi.readFile('./responses.txt', 'utf-8'));
+      global.settingsOBJ = ougi.readFile('./settings.txt');
+      // global.mindOBJ = ougi.readFile('./neuroNetworks.txt');
+      global.localesCache = ougi.readFile('./localesCache.txt');
+      global.dynamicLocales = ougi.readFile('./dynamicLocales.txt');
+      global.knowledgeBase = ougi.readFile('./responses.txt', 'utf-8');
     }
     if (settingsOBJ.ignored.includes(msg.author.id)) {
       return

@@ -24,7 +24,7 @@ function () {
     else {
       let store = messages.first().content;
       let willSay = store * 1;
-      let pseudoEnglish = JSON.parse(ougi.readFile('./spookyWords', 'utf-8', console.error));
+      let pseudoEnglish = ougi.readFile('./spookyWords', 'utf-8', console.error);
       let pick = ["have", "homies"];
       let action = pick[Math.floor(Math.random()*pick.length)];
 
