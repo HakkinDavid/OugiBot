@@ -50,6 +50,7 @@ global.gis = require('async-g-i-s');
 global.CryptoJS = require("crypto-js");
 global.Voice = require('@discordjs/voice');
 global.Nodepath = require('node:path');
+global.colors = require('@colors/colors/safe');
 
 global.instanceID = Date.now().toString().slice(-4);
 if (process.argv.slice(2) == "silent") {

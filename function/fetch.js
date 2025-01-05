@@ -20,10 +20,10 @@ async function (channelID, filename) {
           if (ougi.readFile(filename) === undefined) {
             lastMessage.delete();
             fs.unlinkSync(filename);
-            console.log(("[EH] Bad file " + filename + " deleted, retrying soon...").yellow);
+            console.log(colors.yellow("[EH] Bad file " + filename + " deleted, retrying soon..."));
           }
           else {
-            console.log(("[OK] Retrieved " + filename + ".").green);
+            console.log(colors.green("[OK] Retrieved " + filename + "."));
             success = true;
           }
           clearInterval(checking);
