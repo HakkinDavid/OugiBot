@@ -116,5 +116,5 @@ async function (msg) {
   await ougi.writeFile(database.news.file, proArray, console.error);
 
   await ougi.backup(myEmbed, newsChannel);
-  msg.channel.send("Sent this newsletter to:\n" + names.join('\n'), spookyConstructor);
+  msg.channel.send("Sent this newsletter to:\n" + names.join('\n'), {embeds: [spookyConstructor]});
 }
