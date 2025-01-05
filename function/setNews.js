@@ -16,7 +16,7 @@ async function (arguments, msg) {
   let guildID = msg.guild.id;
   let guildNews = msg.channel.id;
 
-  if (arguments.length < 0) {
+  if (arguments.length > 0) {
     if (arguments[0] == "disable") {
       if (settingsOBJ.guildNews.hasOwnProperty(guildID)){
         delete settingsOBJ.guildNews[guildID];
