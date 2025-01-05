@@ -18,8 +18,8 @@ async function (channelID) {
             console.error(error);
           } else {
             console.log("Saved as " + filename + ". Checking...");
-            let checking = setInterval(async () => {
-              if (!(await fs.exists(filename))) return;
+            let checking = setInterval(() => {
+              if (!fs.existsSync(filename)) return;
               if (ougi.readFile(filename) === undefined) {
                 lastMessage.delete();
                 fs.unlinkSync(filename);
