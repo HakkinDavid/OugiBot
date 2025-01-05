@@ -6,7 +6,7 @@ async function (msg, permissionsArray) {
     }
     let missingPerms = []
     try {
-        missingPerms = await msg.guild.me.permissionsIn(msg.channel).missing(permissionsArray);
+        missingPerms = await msg.guild.members.me.permissionsIn(msg.channel).missing(permissionsArray);
     }
     catch (e) {
         console.log(e);
