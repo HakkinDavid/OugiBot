@@ -144,7 +144,7 @@ setInterval(ougi.syncData, 30000);
 /* Chuuimonogatari */
 client.on('ready', async () => {
   findRemoveSync('./', {extensions: ['.txt', '.mp3']});
-  await syncData();
+  await ougi.syncData();
 
   client.channels.cache.get(consoleLogging).send("**INSTANCE ID:** " + instanceID + "\n**DEV:** " + process.env.DEV + "\n**SILENT MODE:** " + !global.TEASEABLE).catch(console.error);
   console.log("Instance ID: " + instanceID);
