@@ -101,15 +101,15 @@ global.knowledgeBase = null;
 
 /* Rogumonogatari */
 global.consoleLogging = "1140457399673688176";
-global.fetchedChannels = [
-  settingsChannel,
-  backupChannel,
-  embedsChannel,
-  newsChannel,
-  // neuroChannel,
-  localesChannel,
-  dynamicLocalesChannel
-];
+global.fetchedChannels = {
+  'settings': {id: settingsChannel, file: './settings.txt'},
+  'backup': {id: backupChannel, file: './responses.txt'},
+  'embeds': {id: embedsChannel, file: './embedPresets.txt'},
+  'news': {id: newsChannel, file: './newsChannel.txt'},
+  // 'neuro': {id: neuroChannel, file: './neuroNetworks.txt'},
+  'locales': {id: localesChannel, file: './localesCache.txt'},
+  'dynamicLocales': {id: dynamicLocalesChannel, file: './dynamicLocales.txt'}
+};
 global.errorBackup = console.error;
 global.logMessages = [];
 global.logsCount = 0;
@@ -135,9 +135,9 @@ console.error = function() {
 /* Chuuimonogatari */
 client.on('ready', async () => {
   findRemoveSync('./', {extensions: ['.txt', '.mp3']});
-  for (i=0; i < fetchedChannels.length; i++) {
-    await ougi.fetch(fetchedChannels[i]);
-  }
+  fetchedChannels.forEach(async (fetchChannel) => {
+    await ougi.fetch(fetchChannel.id, fetchChannel.file);
+  });
 
   client.channels.cache.get(consoleLogging).send("**INSTANCE ID:** " + instanceID + "\n**DEV:** " + process.env.DEV + "\n**SILENT MODE:** " + !global.TEASEABLE).catch(console.error);
   console.log("Instance ID: " + instanceID);
