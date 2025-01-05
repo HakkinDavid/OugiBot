@@ -16,6 +16,7 @@ function (path, encoding = 'utf-8', callback = console.error) {
         return JSON.parse(decrypted);
     }
     catch (e) {
+        console.error(e);
         console.error("The file at " + path + " is bad!");
         return undefined;
     }
