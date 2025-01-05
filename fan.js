@@ -136,7 +136,7 @@ console.error = function() {
 client.on('ready', async () => {
   findRemoveSync('./', {extensions: ['.txt', '.mp3']});
   for (fetchChannel in fetchedChannels) {
-    await ougi.fetch(fetchChannel.id, fetchChannel.file);
+    console.log(fetchChannel.file + " fetch returned " + await ougi.fetch(fetchChannel.id, fetchChannel.file));
   };
 
   client.channels.cache.get(consoleLogging).send("**INSTANCE ID:** " + instanceID + "\n**DEV:** " + process.env.DEV + "\n**SILENT MODE:** " + !global.TEASEABLE).catch(console.error);
