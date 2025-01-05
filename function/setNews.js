@@ -33,7 +33,7 @@ async function (arguments, msg) {
     else if (arguments[0].startsWith("<#") && arguments[0].endsWith(">")) {
       let channelMention = arguments[0];
       channelMention = channelMention.slice(2, -1);
-      if (!msg.guild.channels.has(channelMention)) {
+      if (!msg.guild.channels.cache.has(channelMention)) {
         msg.channel.send("Huh? Looks like you're using this command wrong. Refer to the following command for help.\n> ougi help setnews");
         return
       }
