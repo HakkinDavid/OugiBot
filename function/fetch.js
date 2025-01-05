@@ -10,7 +10,7 @@ async function (channelID) {
       let myURL = lastMessage.attachments.first().url;
       await download(myURL, {
         filename: lastMessage.attachments.first().name
-      }, console.error);
+      }, (error, filename) => { if (error) { console.error(error); } else { console.log("Saved as " + filename); }});
       console.log("Retrieved database object at " + myURL);
     }
   ).catch(console.error);
