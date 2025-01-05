@@ -135,8 +135,8 @@ console.error = function() {
 /* Chuuimonogatari */
 client.on('ready', async () => {
   findRemoveSync('./', {extensions: ['.txt', '.mp3']});
-  for (fetchChannel in fetchedChannels) {
-    console.log(fetchChannel.file + " fetch returned " + await ougi.fetch(fetchChannel.id, fetchChannel.file));
+  for (ch_prop in fetchedChannels) {
+    console.log(fetchedChannels[ch_prop].file + " fetch returned " + await ougi.fetch(fetchedChannels[ch_prop].id, fetchedChannels[ch_prop].file));
   };
 
   client.channels.cache.get(consoleLogging).send("**INSTANCE ID:** " + instanceID + "\n**DEV:** " + process.env.DEV + "\n**SILENT MODE:** " + !global.TEASEABLE).catch(console.error);
