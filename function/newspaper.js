@@ -1,9 +1,9 @@
 module.exports =
 
 async function (arguments, msg) {
-  var paper = ougi.readFile(database.news.file, 'utf-8', console.error).reverse();
-  var maxIndex = paper.length;
-  var index = arguments * 1 - 1;
+  let paper = ougi.readFile(database.news.file, 'utf-8', console.error).reverse();
+  let maxIndex = paper.length;
+  let index = arguments * 1 - 1;
 
   if (isNaN(index)) {
     msg.channel.send("Uh, please provide a valid number (news are sorted from last to first) or leave it blank to preview the latest announcement.").catch(console.error);
@@ -14,15 +14,15 @@ async function (arguments, msg) {
     index = 0
   }
 
-  var displayIndex = index + 1;
+  let displayIndex = index + 1;
   if (displayIndex > maxIndex) {
     msg.channel.send("That's not a news index number yet.").catch(console.error);
     return
   }
 
-  var news = paper[index];
+  let news = paper[index];
   let thatType = news.type;
-  var spookyConstructor = new Discord.EmbedBuilder()
+  let spookyConstructor = new Discord.EmbedBuilder()
   .setTitle(news.title)
   .setDescription(news.desc)
   .setFooter({text: "newspaperEmbed by Ougi | Date: " + news.sent + " | Page " + displayIndex + " of " + maxIndex})

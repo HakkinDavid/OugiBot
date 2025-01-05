@@ -7,7 +7,7 @@ async function (arguments, msg) {
   }
 
   let guildID = msg.guild.id;
-  let elAdmin = msg.guild.ownerID;
+  let elAdmin = msg.guild.ownerId;
 
   if (elAdmin != msg.author.id) {
     msg.channel.send(await ougi.text(msg, "mustOwn"));

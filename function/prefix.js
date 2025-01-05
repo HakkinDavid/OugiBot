@@ -6,7 +6,7 @@ async function (arguments, msg) {
     return
   }
 
-  let elAdmin = msg.guild.ownerID;
+  let elAdmin = msg.guild.ownerId;
 
   if (elAdmin != msg.author.id) {
     msg.channel.send("You must be the server's owner to run this command.");
