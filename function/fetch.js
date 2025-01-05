@@ -7,26 +7,37 @@ async function (channelID) {
     success = true;
   }
   else {
-    client.channels.cache.get(channelID).messages.fetch({ limit: 1 }).then(
+    await client.channels.cache.get(channelID).messages.fetch({ limit: 1 }).then(
       async (messages) => {
         let lastMessage = messages.first();
         let myURL = lastMessage.attachments.first().url;
         await download(myURL, {
           filename: lastMessage.attachments.first().name
-        }, (error, filename) => {
+        }, async (error, filename) => {
           if (error) {
             console.error(error);
           } else {
             console.log("Saved as " + filename + ". Checking...");
-            if (ougi.readFile(filename) === undefined) {
-              lastMessage.delete();
-              fs.unlinkSync(filename);
-              console.log("Bad file " + filename + " deleted, retrying soon...");
-            }
-            else {
-              console.log(filename + " ok.");
-              success = true;
-            }
+            let check_attempts = 0;
+            await new Promise ((resolve, reject) => {
+              let checking = setInterval(() => {
+                if (!fs.existsSync(filename)) return;
+                if (ougi.readFile(filename) === undefined) {
+                  if (check_attempts > 25) {
+                    lastMessage.delete();
+                    fs.unlinkSync(filename);
+                    clearInterval(checking);
+                    reject("Bad file " + filename + " deleted, retrying soon...");
+                  }
+                  check_attempts++;
+                }
+                else {
+                  success = true;
+                  clearInterval(checking);
+                  resolve(filename + " ok.");
+                }
+              }, 500);
+            });
           }
         });
       }
