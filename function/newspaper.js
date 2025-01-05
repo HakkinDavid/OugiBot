@@ -1,7 +1,7 @@
 module.exports =
 
 async function (arguments, msg) {
-  var paper = ougi.readFile('./newsChannel.txt', 'utf-8', console.error).reverse();
+  var paper = ougi.readFile(database.news.file, 'utf-8', console.error).reverse();
   var maxIndex = paper.length;
   var index = arguments * 1 - 1;
 

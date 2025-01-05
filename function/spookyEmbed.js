@@ -191,8 +191,8 @@ async function (msg) {
         breakChocolate.splice(i, 1);
         delete myLoad[aPreset];
         let proArray = JSON.stringify(myLoad, null, 4);
-        let myEmbed = './embedPresets.txt';
-        await ougi.writeFile('./embedPresets.txt', proArray, console.error);
+        let myEmbed = database.embeds.file;
+        await ougi.writeFile(database.embeds.file, proArray, console.error);
 
         await ougi.backup(myEmbed, embedsChannel);
         msg.channel.send("Deleted preset `" + material + "`.");
@@ -593,13 +593,13 @@ async function (msg) {
       msg.channel.send("Your embed must not be empty.");
       return
     }
-    let pseudoArray = ougi.readFile('./embedPresets.txt', 'utf-8', console.error);
+    let pseudoArray = ougi.readFile(database.embeds.file, 'utf-8', console.error);
     let personalizedPresetName = presetName + "::" + msg.author.id;
 
     pseudoArray[personalizedPresetName] = breakChocolate;
     let proArray = JSON.stringify(pseudoArray, null, 4);
-    let myEmbed = './embedPresets.txt';
-    await ougi.writeFile('./embedPresets.txt', proArray, console.error);
+    let myEmbed = database.embeds.file;
+    await ougi.writeFile(database.embeds.file, proArray, console.error);
 
     await ougi.backup(myEmbed, embedsChannel);
     msg.channel.send("Saved preset as `" + presetName + "`, it's now available for you to use as template. Include `::load " + presetName + "` as command option whenever you want to use it.");
@@ -610,7 +610,7 @@ async function (msg) {
       msg.channel.send("Your embed must not be empty.");
       return
     }
-    let pseudoArray = ougi.readFile('./embedPresets.txt', 'utf-8', console.error);
+    let pseudoArray = ougi.readFile(database.embeds.file, 'utf-8', console.error);
     let circleOfSharing = [];
     for (i=0; i < sharedWith.length; i++) {
       circleOfSharing.push(client.users.cache.get(sharedWith[i]).username);
@@ -620,8 +620,8 @@ async function (msg) {
 
     let proArray = JSON.stringify(pseudoArray, null, 4);
 
-    let myEmbed = './embedPresets.txt';
-    await ougi.writeFile('./embedPresets.txt', proArray, console.error);
+    let myEmbed = database.embeds.file;
+    await ougi.writeFile(database.embeds.file, proArray, console.error);
 
     await ougi.backup(myEmbed, embedsChannel);
     msg.channel.send("Shared preset as `" + msg.author.username + "'s preset` with `" + circleOfSharing.join("`, `") + "`. It's now available for them to use as template until it's overwritten by another share of yours. In order to keep it, they must load and save it under another name. Tell them to include `::load " + msg.author.username + "'s preset` as command option whenever they want to use it.");

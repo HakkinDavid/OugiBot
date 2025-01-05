@@ -52,6 +52,6 @@ async function (msg) {
         };
     }
     msg.channel.send("Banned users\n```" + users.join(", ") + " = " + JSON.stringify({reason, until}, null, 4) + "```");
-    await ougi.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), console.error);
-    await ougi.backup('./settings.txt', settingsChannel);
+    await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
+    await ougi.backup(database.settings.file, settingsChannel);
 }

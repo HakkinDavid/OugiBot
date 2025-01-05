@@ -1,10 +1,9 @@
 module.exports =
 
-async function (channelID, filename) {
-  let success = false;
+async function (channelID, filename, data_obj_name = undefined) {
   if (client.channels.cache.get(channelID) == undefined) {
     console.log("Skipping unexistent channel " + channelID);
-    success = true;
+    if (data_obj_name) database[data_obj_name].done = true;
   }
   else {
     lastMessage = (await client.channels.cache.get(channelID).messages.fetch({ limit: 1 })).first();
@@ -21,15 +20,15 @@ async function (channelID, filename) {
             lastMessage.delete();
             fs.unlinkSync(filename);
             console.log(colors.yellow("[EH] Bad file " + filename + " deleted, retrying soon..."));
+            if (data_obj_name) database[data_obj_name].done = false;
           }
           else {
             console.log(colors.green("[OK] Retrieved " + filename + "."));
-            success = true;
+            if (data_obj_name) database[data_obj_name].done = true;
           }
           clearInterval(checking);
         }, 500);
       }
     });
   }
-  return success;
 }

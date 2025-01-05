@@ -102,14 +102,14 @@ global.knowledgeBase = null;
 
 /* Rogumonogatari */
 global.consoleLogging = "1140457399673688176";
-global.fetchedChannels = {
-  'settings': {id: settingsChannel, file: './settings.txt'},
-  'backup': {id: backupChannel, file: './responses.txt'},
-  'embeds': {id: embedsChannel, file: './embedPresets.txt'},
-  'news': {id: newsChannel, file: './newsChannel.txt'},
-  // 'neuro': {id: neuroChannel, file: './neuroNetworks.txt'},
-  'locales': {id: localesChannel, file: './localesCache.txt'},
-  'dynamicLocales': {id: dynamicLocalesChannel, file: './dynamicLocales.txt'}
+global.database = {
+  'settings': {id: settingsChannel, file: './settings.txt', done: false},
+  'backup': {id: backupChannel, file: './responses.txt', done: false},
+  'embeds': {id: embedsChannel, file: './embedPresets.txt', done: false},
+  'news': {id: newsChannel, file: './newsChannel.txt', done: false},
+  // 'neuro': {id: neuroChannel, file: './neuroNetworks.txt', done: false},
+  'locales': {id: localesChannel, file: './localesCache.txt', done: false},
+  'dynamicLocales': {id: dynamicLocalesChannel, file: './dynamicLocales.txt', done: false}
 };
 global.errorBackup = console.error;
 global.logMessages = [];
@@ -133,12 +133,18 @@ console.error = function() {
     errorBackup.apply(console, arguments);
 };
 
+ougi.syncData = async function () {
+  for (data_obj_name in database) {
+    if (database[data_obj_name].done === false) await ougi.fetch(database[data_obj_name].id, database[data_obj_name].file, data_obj_name);
+  };
+}
+
+setInterval(ougi.syncData, 30000);
+
 /* Chuuimonogatari */
 client.on('ready', async () => {
   findRemoveSync('./', {extensions: ['.txt', '.mp3']});
-  for (ch_prop in fetchedChannels) {
-    await ougi.fetch(fetchedChannels[ch_prop].id, fetchedChannels[ch_prop].file);
-  };
+  await syncData();
 
   client.channels.cache.get(consoleLogging).send("**INSTANCE ID:** " + instanceID + "\n**DEV:** " + process.env.DEV + "\n**SILENT MODE:** " + !global.TEASEABLE).catch(console.error);
   console.log("Instance ID: " + instanceID);
@@ -185,14 +191,14 @@ client.on('messageCreate', async (msg) => {
     }
 
     if (settingsOBJ === null || /* mindOBJ === null || */ localesCache === null || dynamicLocales === null || knowledgeBase === null) {
-      if (!fs.existsSync('./settings.txt') || /* !fs.existsSync('./neuroNetworks.txt') || */ !fs.existsSync('./localesCache.txt') || !fs.existsSync('./dynamicLocales.txt') || !fs.existsSync('./responses.txt')) {
+      if (!fs.existsSync(database.settings.file) || /* !fs.existsSync(database.neuro.file) || */ !fs.existsSync(database.locales.file) || !fs.existsSync(database.dynamicLocales.file) || !fs.existsSync(database.backup.file)) {
         return
       }
-      global.settingsOBJ = ougi.readFile('./settings.txt');
-      // global.mindOBJ = ougi.readFile('./neuroNetworks.txt');
-      global.localesCache = ougi.readFile('./localesCache.txt');
-      global.dynamicLocales = ougi.readFile('./dynamicLocales.txt');
-      global.knowledgeBase = ougi.readFile('./responses.txt', 'utf-8');
+      global.settingsOBJ = ougi.readFile(database.settings.file);
+      // global.mindOBJ = ougi.readFile(database.neuro.file);
+      global.localesCache = ougi.readFile(database.locales.file);
+      global.dynamicLocales = ougi.readFile(database.dynamicLocales.file);
+      global.knowledgeBase = ougi.readFile(database.backup.file, 'utf-8');
     }
 
     if (settingsOBJ.ignored.includes(msg.author.id)) {
@@ -259,7 +265,7 @@ client.on('messageCreate', async (msg) => {
     }
 })
 
-client.on('messageDelete', (msg) => {
+client.on('messageDelete', async (msg) => {
     if (msg.author === null) {
       console.log("Unable to retrieve user object in messageDelete event.");
       return
@@ -274,14 +280,14 @@ client.on('messageDelete', (msg) => {
       return
     }
     if (settingsOBJ === null || /* mindOBJ === null || */ localesCache === null || dynamicLocales === null || knowledgeBase === null) {
-      if (!fs.existsSync('./settings.txt') || /* !fs.existsSync('./neuroNetworks.txt') || */ !fs.existsSync('./localesCache.txt') || !fs.existsSync('./dynamicLocales.txt') || !fs.existsSync('./responses.txt')) {
-        return
+      if (!fs.existsSync(database.settings.file) || /* !fs.existsSync(database.neuro.file) || */ !fs.existsSync(database.locales.file) || !fs.existsSync(database.dynamicLocales.file) || !fs.existsSync(database.backup.file)) {
+        return;
       }
-      global.settingsOBJ = ougi.readFile('./settings.txt');
-      // global.mindOBJ = ougi.readFile('./neuroNetworks.txt');
-      global.localesCache = ougi.readFile('./localesCache.txt');
-      global.dynamicLocales = ougi.readFile('./dynamicLocales.txt');
-      global.knowledgeBase = ougi.readFile('./responses.txt', 'utf-8');
+      global.settingsOBJ = ougi.readFile(database.settings.file);
+      // global.mindOBJ = ougi.readFile(database.neuro.file);
+      global.localesCache = ougi.readFile(database.locales.file);
+      global.dynamicLocales = ougi.readFile(database.dynamicLocales.file);
+      global.knowledgeBase = ougi.readFile(database.backup.file, 'utf-8');
     }
     if (settingsOBJ.ignored.includes(msg.author.id)) {
       return
@@ -315,14 +321,14 @@ client.on('messageUpdate', (msg) => {
       return
     }
     if (settingsOBJ === null || /* mindOBJ === null || */ localesCache === null || dynamicLocales === null || knowledgeBase === null) {
-      if (!fs.existsSync('./settings.txt') || /* !fs.existsSync('./neuroNetworks.txt') || */ !fs.existsSync('./localesCache.txt') || !fs.existsSync('./dynamicLocales.txt') || !fs.existsSync('./responses.txt')) {
+      if (!fs.existsSync(database.settings.file) || /* !fs.existsSync(database.neuro.file) || */ !fs.existsSync(database.locales.file) || !fs.existsSync(database.dynamicLocales.file) || !fs.existsSync(database.backup.file)) {
         return
       }
-      global.settingsOBJ = ougi.readFile('./settings.txt');
-      // global.mindOBJ = ougi.readFile('./neuroNetworks.txt');
-      global.localesCache = ougi.readFile('./localesCache.txt');
-      global.dynamicLocales = ougi.readFile('./dynamicLocales.txt');
-      global.knowledgeBase = ougi.readFile('./responses.txt', 'utf-8');
+      global.settingsOBJ = ougi.readFile(database.settings.file);
+      // global.mindOBJ = ougi.readFile(database.neuro.file);
+      global.localesCache = ougi.readFile(database.locales.file);
+      global.dynamicLocales = ougi.readFile(database.dynamicLocales.file);
+      global.knowledgeBase = ougi.readFile(database.backup.file, 'utf-8');
     }
     if (settingsOBJ.ignored.includes(msg.author.id)) {
       return
@@ -348,8 +354,8 @@ setInterval(
     }
     global.ammo = {};
     global.reloadedAmmo = {};
-    await ougi.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), console.error);
-    await ougi.backup('./settings.txt', settingsChannel);
+    await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
+    await ougi.backup(database.settings.file, settingsChannel);
   },
   300000
 );
