@@ -128,7 +128,8 @@ console.error = function() {
       .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/fatal.png?raw=true")
       .setDescription(logMessages.pop().toString());
 
-     errorBackup.apply(console, arguments); client.channels.cache.get(consoleLogging).send({embeds: [criticalEmbed]}).catch(console.error);
+     errorBackup.apply(console, arguments);
+    client.channels.cache.get(consoleLogging).send({embeds: [criticalEmbed]}).catch(console.error);
 };
 
 ougi.syncData = async function () {
