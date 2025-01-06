@@ -91,7 +91,9 @@ async function (msg) {
     }
   }
   for (let getKey in settingsOBJ.guildNews) {
-    let newsDoor = await client.channels.fetch(settingsOBJ.guildNews[getKey]);
+    let newsDoor = null;
+    try { await client.channels.fetch(settingsOBJ.guildNews[getKey]); }
+    catch { console.log("Channel " + guildNews[getKey] + " in server " + getKey + " is unreachable."); }
     if (newsDoor) {
       newsDoor.send({embeds: [spookyConstructor]}).catch(console.error);
       names.push(newsDoor.toString());
