@@ -81,7 +81,9 @@ async function (msg) {
   let names = [];
   let mod = 0;
   for (i=0; settingsOBJ.subscribers.length > i; i++) {
-    let aSub = await client.users.fetch(settingsOBJ.subscribers[i]);
+    let aSub = null;
+    try { aSub = await client.users.fetch(settingsOBJ.subscribers[i]); }
+    catch { console.log("Subscriber " + settingsOBJ.subscribers[i] + " is unreachable."); }
     if (aSub) {
       aSub.send({embeds: [spookyConstructor]}).catch(console.error);
       names.push(aSub.username);
@@ -93,7 +95,7 @@ async function (msg) {
   for (let getKey in settingsOBJ.guildNews) {
     let newsDoor = null;
     try { await client.channels.fetch(settingsOBJ.guildNews[getKey]); }
-    catch { console.log("Channel " + guildNews[getKey] + " in server " + getKey + " is unreachable."); }
+    catch { console.log("Channel " + settingsOBJ.guildNews[getKey] + " in server " + getKey + " is unreachable."); }
     if (newsDoor) {
       newsDoor.send({embeds: [spookyConstructor]}).catch(console.error);
       names.push(newsDoor.toString());
