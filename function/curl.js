@@ -72,7 +72,7 @@ async function (msg) {
   if (memberCurl != null) {
     embed.addFields({name: "Joined " + msg.guild.toString() + " at " + memberCurl.joinedAt.toDateString().slice(4).replace(/ 0/gi, " "), value: ougi.toHumanTime(memberCurl.joinedAt) + " ago."})
     .addFields({name: "__Most distinctive role__", value: memberCurl.roles.hoist.toString()})
-    .addFields({name: "__Stats__", value: "**Are they gone?** " + memberCurl.deleted.toString().replace(/false/, "No... Not yet. **SNAPS** " + "<:ougi_snap:744675693295828992>").replace(/true/, "Yes. :sunglasses:") + "\n**Is this member a bot?** " + memberCurl.user.bot.toString().replace(/false/, "Not really. Only at videogames.").replace(/true/, "Yes.") + "\n**Roles:** " + memberCurl.roles.cache.array().length})
+    //.addFields({name: "__Stats__", value: "**Are they gone?** " + memberCurl.deleted.toString().replace(/false/, "No... Not yet. **SNAPS** " + "<:ougi_snap:744675693295828992>").replace(/true/, "Yes. :sunglasses:") + "\n**Is this member a bot?** " + memberCurl.user.bot.toString().replace(/false/, "Not really. Only at videogames.").replace(/true/, "Yes.") + "\n**Roles:** " + memberCurl.roles.cache.array().length})
     let finalWords = memberCurl.lastMessage;
     if (finalWords != null && !finalWords.content.startsWith("ougi")) {
       embed.setDescription("*\"" + finalWords.content.slice(0,2040) + " ...\"*");
