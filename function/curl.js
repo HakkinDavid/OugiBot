@@ -14,7 +14,7 @@ async function (msg) {
     titleCurl = "User: " + thisOBJ.username;
     iconCurl = thisOBJ.avatarURL({dynamic: true, size: 4096});
     if (msg.channel.type === Discord.ChannelType.GuildText) {
-      memberCurl = await msg.guild.members.members.fetch(thisOBJ).catch((e) => {});
+      memberCurl = await msg.guild.members.fetch(thisOBJ).catch((e) => {});
       if (memberCurl !== undefined) {
         titleCurl = "Member: " + memberCurl.displayName;
         colorCurl = memberCurl.displayHexColor;
