@@ -35,7 +35,7 @@ async function (msg) {
   }
   else if (msg.content.match(/<a{0,1}:[\w-]+:[0-9]+>/)) {
     let potentialEmoji = msg.content.match(/<:[\w-]+:[0-9]+>/);
-    client.emojis.cache.each((e) => { if (e.toString() == potentialEmoji) { thisOBJ = e; curlType = "emoji"; iconCurl = e.url; titleCurl = "Emoji: " + thisOBJ.name + " " + thisOBJ.toString(); colorCurl = "#FFCC4D"; } });
+    client.emojis.cache.each((e) => { if (e.toString() == potentialEmoji) { thisOBJ = e; curlType = "emoji"; iconCurl = e.imageURL(); titleCurl = "Emoji: " + thisOBJ.name + " " + thisOBJ.toString(); colorCurl = "#FFCC4D"; } });
   }
   else if (msg.guild !== undefined && (msg.content.includes("server") || msg.content.includes("guild"))) {
     thisOBJ = msg.guild;
