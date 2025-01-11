@@ -70,7 +70,7 @@ catch (e) {
   client.channels.cache.get(consoleLogging).send({embeds: [embed]});
 
 try {
-  let updated_user_context = user_context + "\n" + (await ougi.genAIText(
+  let updated_user_context = await ougi.genAIText(
     [
       { role: 'system', content: (await ougi.text(msg, "whoAmI")) },
       { role: 'system', content: (await ougi.text(msg, "userIsNamed")).replace(/{userName}/, msg.author.username) + (user_context ? "\n" + user_context : "") },
@@ -78,7 +78,7 @@ try {
       { role: 'user', content: msg.content },
       { role: 'system', content: (await ougi.text(msg, "userDescription")) }
     ]
-  ));
+  );
 
   settingsOBJ.AI.description[msg.author.id] = updated_user_context;
   await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
