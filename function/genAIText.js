@@ -16,18 +16,7 @@ async function generateText(input = []) {
   
     const data = await response.json();
 
-    let spookyReply = "";
-
-    for (str in data) {
-        if (typeof data[str] === 'string') {
-            spookyReply = spookyReply + "\n" + data[str];
-        }
-        else if (typeof data[str] === 'object') {
-            for (str2 in data[str]) {
-                if (typeof data[str][str2] === 'string') spookyReply = spookyReply + "\n" + data[str][str2];
-            }
-        }
-    }
+    let spookyReply = Object.values(data)[0];
 
     return spookyReply;
   }
