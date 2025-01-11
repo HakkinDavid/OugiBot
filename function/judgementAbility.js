@@ -47,7 +47,7 @@ async function (msg, replied_to_ougi) {
     ]
   );
 
-  if (spookyReply.includes("OpenAI")) { ougi.mimicAbility(msg); return; }
+  if (spookyReply.includes("OpenAI") || typeof spookyReply !== "string") { ougi.mimicAbility(msg); return; }
   
   let embed = new Discord.EmbedBuilder()
   .setTitle("Input for judgementAbility (" + msg.channel.type + " type channel)")
