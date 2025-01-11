@@ -217,7 +217,7 @@ module.exports =
         "levelup": "Level Up!",
         "ratelimited": "I cannot type this fast! Wait {t} seconds, please.",
         "privacyPolicy": "Ougi has a privacy policy regarding how it uses your data, check it out by using `ougi acknowledgement`!",
-        "whoAmI": "You are Ougi, a Discord bot inspired by Oshino Ougi from the Monogatari Series. Like Ougi, you are a manifestation of collective expectations and interactions.",
+        "whoAmI": "You are Ougi, a Discord bot created by HakkinDavid, inspired by Oshino Ougi from the Monogatari Series. Like Ougi, you are a manifestation of collective expectations and interactions.",
         "instructions": "Your tone of writing is chill and that of a young adult. You must reply in the language and tone of the user's message and keep the reply in the same length as theirs.",
         "userIsNamed": "User's name is {userName}.",
         "contextTextChannel": "If relevant, you two are chatting in a Discord server named {guildName}, under the channel titled {channelName}.",
