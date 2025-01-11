@@ -36,7 +36,10 @@ async function (msg, replied_to_ougi) {
 
   let user_context = settingsOBJ.AI.description[msg.author.id];
 
-  let spookyReply = await ougi.genAIText(
+  let spookyReply = null;
+
+try {
+  spookyReply = await ougi.genAIText(
     [
       { role: 'system', content: (await ougi.text(msg, "whoAmI")) },
       { role: 'system', content: (await ougi.text(msg, "instructions")) },
@@ -46,8 +49,13 @@ async function (msg, replied_to_ougi) {
       { role: 'user', content: msg.content }
     ]
   );
+}
+catch (e) {
+  spookyReply = null;
+  console.error(e);
+}
 
-  if (spookyReply.includes("OpenAI") || typeof spookyReply !== "string") { ougi.mimicAbility(msg); return; }
+  if (typeof spookyReply !== "string" || spookyReply.includes("OpenAI")) { ougi.mimicAbility(msg); return; }
   
   let embed = new Discord.EmbedBuilder()
   .setTitle("Input for judgementAbility (" + msg.channel.type + " type channel)")
@@ -61,6 +69,7 @@ async function (msg, replied_to_ougi) {
   else { msg.channel.send(spookyReply).catch(console.error); }
   client.channels.cache.get(consoleLogging).send({embeds: [embed]});
 
+try {
   let updated_user_context = user_context + "\n" + (await ougi.genAIText(
     [
       { role: 'system', content: (await ougi.text(msg, "whoAmI")) },
@@ -74,4 +83,8 @@ async function (msg, replied_to_ougi) {
   settingsOBJ.AI.description[msg.author.id] = updated_user_context;
   await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
   await ougi.backup(database.settings.file, settingsChannel);
+}
+catch (e) {
+console.error(e);
+}
 }
