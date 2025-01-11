@@ -4,7 +4,7 @@ async function (msg) {
   let commandsArray = [
     `say`,
     `answer`,
-    //`image`,
+    `image`,
     `translate`,
     `dice`,
     //`recipe`,

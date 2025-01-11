@@ -198,6 +198,19 @@ client.on('messageCreate', async (msg) => {
       global.localesCache = ougi.readFile(database.locales.file);
       global.dynamicLocales = ougi.readFile(database.dynamicLocales.file);
       global.knowledgeBase = ougi.readFile(database.backup.file, 'utf-8');
+
+      if (!settingsOBJ.hasOwnProperty("AI")) {
+        console.log(colors.yellow("Settings OBJ AI property created."))
+        settingsOBJ.AI = {};
+      }
+      if (!settingsOBJ.AI.hasOwnProperty("description")) {
+        console.log(colors.yellow("Settings OBJ AI description property created."))
+        settingsOBJ.AI.description = {};
+      }
+      if (!settingsOBJ.AI.description.hasOwnProperty("265257341967007758")) {
+        console.log(colors.yellow("Settings OBJ AI description for HakkinDavid property created."))
+        settingsOBJ.AI.description["265257341967007758"] = "HakkinDavid, the creator of Ougi Bot.";
+      }
     }
 
     if (settingsOBJ.ignored.includes(msg.author.id)) {

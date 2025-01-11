@@ -5,30 +5,26 @@ async function (arguments, msg) {
       msg.channel.send(await ougi.text(msg, "keywordRequired")).catch(console.error);
       return;
     }
-    let urls = await gis(arguments.join(" "), {
-        query: { safe: (msg.channel.nsfw ? "off" : "on") },
-        //userAgent: 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
-    });
 
-    for (i=0; urls.length > i; i++) {
-      if (!isImageUrl(urls[i].url)) {
-        urls.splice(i, 1);
-        i--
-      }
+    let imageToSend = "https://image.pollinations.ai/prompt/" + encodeURIComponent(arguments.join(" ")) + "?width=1920&height=1080&nologo=true&private=true&safe=" + (msg.channel.nsfw ? "false" : "true") + "&seed=" + 100 * Math.random() + 1;
+
+    let foreshadow = await msg.channel.send((await ougi.text(msg, "awaitGenImg")).replace(/{userName}/, msg.author.username));
+
+    try {
+      const response = await fetch(imageToSend);
+      const imageAttachment = new Discord.AttachmentBuilder(response.body, { name: "ougi-generated-image.png" });
+      let spookyImage = new Discord.EmbedBuilder()
+          .setTitle(await ougi.text(msg, "genImg"))
+          .setDescription(arguments.join(" "))
+          .setImage("attachment://ougi-generated-image.png")
+          .setFooter({text: "imageEmbed by Ougi, prompt by " + msg.author.username, icon: client.user.avatarURL({dynamic: true, size: 4096})})
+          .setTimestamp()
+          .setColor("#230347");
+      msg.channel.send({embeds: [spookyImage], files: [imageAttachment]}).catch(console.error);
+      foreshadow.delete();
     }
-
-    if (urls.length === 0) {
-        msg.channel.send(await ougi.text(msg, "resultsZero")).catch(console.error);
-        return;
+    catch (e) {
+      console.error(e);
+      foreshadow.edit(await ougi.text(msg, "unableGenImg"));
     }
-
-    let imageToSend = urls[Math.floor(Math.random()*urls.length)];
-
-    let spookyImage = new Discord.EmbedBuilder()
-    .setImage(imageToSend.url)
-    .setFooter({text: "imageEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
-    .setTimestamp()
-    .setColor(imageToSend.color);
-    msg.channel.send({embeds: [spookyImage]}).catch(console.error);
-    client.channels.cache.get(consoleLogging).send({embeds: [spookyImage]});
 }

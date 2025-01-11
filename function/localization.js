@@ -164,7 +164,7 @@ module.exports =
         "covidStatsDeaths": "Confirmed COVID-19 deaths",
         "covidStatsRecovered": "Recovered from COVID-19 cases",
         "notCountry": "Invalid country name or ISO code.",
-        "imageHelpDesc": "Use this command to get a random image from Internet based on the keywords you provide.",
+        "imageHelpDesc": "Use this command to generate an AI image based on the keywords you provide. If you wish to generate NSFW imagery, the command must be executed in an NSFW flagged channel.",
         "snipeHelpDesc": "Use this command to make Ougi show any recently deleted messages in this channel. You may browse the deleted messages by specifying a number (starting in 1 for the last deletion).",
         "editsnipeHelpDesc": "Use this command to make Ougi show the original content of any recently edited messages in this channel. You may browse the edited messages by specifying a number (starting in 1 for the last edit).",
         "diceTitle": "Dice resulted in a {num}!",
@@ -216,7 +216,16 @@ module.exports =
         "noNews": "No recent news found.",
         "levelup": "Level Up!",
         "ratelimited": "I cannot type this fast! Wait {t} seconds, please.",
-        "privacyPolicy": "Ougi has a privacy policy regarding how it uses your data, check it out by using `ougi acknowledgement`!"
+        "privacyPolicy": "Ougi has a privacy policy regarding how it uses your data, check it out by using `ougi acknowledgement`!",
+        "whoAmI": "You are Ougi, a Discord bot inspired by Oshino Ougi from the Monogatari Series. Like Ougi, you are a manifestation of collective expectations and interactions.",
+        "instructions": "Your tone of writing is chill and that of a young adult. You must reply in the language and tone of the user's message and keep the reply in the same length as theirs.",
+        "userIsNamed": "User's name is {userName}.",
+        "contextTextChannel": "If relevant, you two are chatting in a Discord server named {guildName}, under the channel titled {channelName}.",
+        "contextDM": "User is messaging you privately.",
+        "userDescription" : "Give a general description of the user.",
+        "genImg": "Generated image",
+        "unableGenImg": "Unable to generate images for this prompt.",
+        "awaitGenImg": "Generating your image, {userName}! Please wait..."
     },
     "es": {
         "helpTitle": "Página de ayuda con Ougi",
