@@ -18,5 +18,7 @@ async function generateText(input = []) {
 
     //let spookyReply = Object.values(data)[0];
 
+    console.log(data);
+
     return data;
   }
