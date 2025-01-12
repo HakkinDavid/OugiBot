@@ -40,8 +40,9 @@ async function (msg, stringID, dynamic, raw) {
     else {
       let keyedTranslations = Object.keys(dynamicLocales[langCode]);
       let mostSimilar = stringSimilarity.findBestMatch(stringID, keyedTranslations).bestMatch;
-      if (mostSimilar.rating * 100 > 50) {
+      if (mostSimilar.rating * 100 > 75) {
         // ¿Tú qué dices Moris? Ehhhhh... 50 a 50.
+        // Nah. 75.
         returnableString = dynamicLocales[langCode][mostSimilar.target].value;
         if (raw) { return { value: returnableString, fromCode: dynamicLocales[langCode][mostSimilar.target].fromCode } };
         return returnableString;
