@@ -60,11 +60,6 @@ else {
   global.TEASEABLE = true;
 }
 
-if (process.env.OFFLINE == 1) {
-  client.destroy();
-  process.exit();
-}
-
 /* Tsuittamonogatari */
 
 global.T = new Twit({
@@ -81,7 +76,6 @@ global.T = new Twit({
 global.ougi = require('require-all')(__dirname + '/function');
 global.davidUserID = "265257341967007758";
 global.backupChannel = "726927738094485534";
-global.wordsChannel = "726928050310217760";
 global.fileSpace = "726929586339840072";
 global.remindersChannel = "726929651573981225";
 global.embedsChannel = "740187317238497340";
@@ -160,24 +154,21 @@ client.on('messageCreate', async (msg) => {
       return
     }
     if (msg.author == client.user) {
-      if (!global.TEASEABLE) {
-        return
-      }
-      if (process.env.DEV == 1 && msg.channel.id == consoleLogging) {
-        if (msg.content.match(/\*\*INSTANCE ID:\*\* [0-9]{4}/) != "**INSTANCE ID:** " + instanceID && msg.content.match(/\*\*SILENT MODE:\*\* false/)) {
-          console.log("Another non-silent instance has been summoned.");
-          client.destroy();
-          process.exit();
+      return
+    }
+
+    if (msg.author && msg.author.bot) {
+      if (msg.channel.type === Discord.ChannelType.GuildText && msg.author.id === '302050872383242240' && settingsOBJ.guildBump.hasOwnProperty(msg.guild.id)) {
+        if (msg.embeds[0].data.description.includes("Bump done")) {
+          settingsOBJ.guildBump[msg.guild.id].next_bump = msg.createdTimestamp + 1000 * 60 * 60 * 2;
+          settingsOBJ.guildBump[msg.guild.id].reminded = false;
+          ougi.globalLog("Bump for " + msg.guild.toString() + " detected at " + msg.createdTimestamp + ". Next bump should occur no sooner than " + settingsOBJ.guildBump[msg.guild.id].next_bump + ".");
         }
       }
       return
     }
 
-    if (msg.author && msg.author.bot) {
-      return
-    }
-
-    if (!global.TEASEABLE) {
+    if (!global.TEASEABLE || process.env.DEV) {
       if (msg.author.id != "265257341967007758") {
         return
       }
@@ -199,16 +190,21 @@ client.on('messageCreate', async (msg) => {
       global.dynamicLocales = ougi.readFile(database.dynamicLocales.file);
       global.knowledgeBase = ougi.readFile(database.backup.file, 'utf-8');
 
+      if (!settingsOBJ.hasOwnProperty("guildBump")) {
+        console.log(colors.yellow("Settings OBJ guildBump property created."));
+        settingsOBJ.guildBump = {};
+      }
+
       if (!settingsOBJ.hasOwnProperty("AI")) {
-        console.log(colors.yellow("Settings OBJ AI property created."))
+        console.log(colors.yellow("Settings OBJ AI property created."));
         settingsOBJ.AI = {};
       }
       if (!settingsOBJ.AI.hasOwnProperty("description")) {
-        console.log(colors.yellow("Settings OBJ AI description property created."))
+        console.log(colors.yellow("Settings OBJ AI description property created."));
         settingsOBJ.AI.description = {};
       }
       if (!settingsOBJ.AI.description.hasOwnProperty("265257341967007758")) {
-        console.log(colors.yellow("Settings OBJ AI description for HakkinDavid property created."))
+        console.log(colors.yellow("Settings OBJ AI description for HakkinDavid property created."));
         settingsOBJ.AI.description["265257341967007758"] = "HakkinDavid, the creator of Ougi Bot.";
       }
     }
@@ -370,6 +366,22 @@ setInterval(
     await ougi.backup(database.settings.file, settingsChannel);
   },
   300000
+);
+
+setInterval(
+  async function () {
+    if (!global.TEASEABLE) {
+      return
+    }
+    let ctime = Date.now();
+    for (guildID in settingsOBJ.guildBump) {
+      if (settingsOBJ.guildBump[guildID].next_bump < ctime && !settingsOBJ.guildBump[guildID].reminded) {
+        await client.channels.cache.get(settingsOBJ.guildBump[guildID].channel).send((await ougi.text((settingsOBJ.lang[guildID] || "en"), "bumpNow")).replace("{timeStamp}", '<t:' + Math.round(ctime/1000) + ':t>') + (settingsOBJ.guildBump[guildID].role ? "\n<@&" + settingsOBJ.guildBump[guildID].role + ">" : ""));
+        settingsOBJ.guildBump[guildID].reminded = true;
+      }
+    }
+  },
+  60000
 );
 
 process.on('uncaughtException', (e) => {

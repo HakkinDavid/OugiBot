@@ -110,6 +110,9 @@ function (arguments, msg) {
       case 'info':
         ougi.whoIsMe(msg)
       break;
+      case 'remindbump':
+        ougi.remindbumpHelp(msg)
+      break;
       case 'speak':
         ougi.speakHelp(msg)
       break;

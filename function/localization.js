@@ -225,7 +225,8 @@ module.exports =
         "userDescription" : "Give a general description of the user.",
         "genImg": "Generated image",
         "unableGenImg": "Unable to generate images for this prompt.",
-        "awaitGenImg": "Generating your image, {userName}! Please wait..."
+        "awaitGenImg": "Generating your image, {userName}! Please wait...",
+        "bumpNow": "Babe! It's {timeStamp} already. Time for your Disboard bump!"
     },
     "es": {
         "helpTitle": "Página de ayuda con Ougi",
@@ -239,7 +240,8 @@ module.exports =
         "availableCommands": "Mirad el pedazo de comandos que se trae Ougi",
         "availableCommandsList": "Por lo pronto, Ougi cuenta con estos comandos",
         "improving": "¡Echaremos caña para que algún día haya más!",
-        "calories": "Calorías totales: {num}"
+        "calories": "Calorías totales: {num}",
+        "bumpNow": "¡Chavales! ¡Que ya son las {timeStamp} y toca levantar la fiesta en Disboard!"
     },
     "mx": {
         "helpTitle": "Ayuda de Ougi",

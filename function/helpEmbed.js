@@ -15,6 +15,7 @@ async function (msg) {
     `curl`,
     `snipe`,
     //`speak`,
+    `remindbump`,
     `news`,
     `stats`,
     `embed`,

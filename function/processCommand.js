@@ -290,6 +290,10 @@ async function (msg) {
       case "seticon":
         ougi.economyIcons(arguments, msg)
       break;
+
+      case "remindbump":
+        ougi.remindBump(arguments, msg)
+      break;
   /*---------------------------------------------*/
       default:
         if (spookyCommand.toLowerCase().replace("https://", "").replace("www.", "").replace("youtu.be/", "youtube.com/watch?v=").startsWith("youtube.com/watch?v=")) {
