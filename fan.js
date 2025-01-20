@@ -142,10 +142,7 @@ client.on('ready', async () => {
   client.channels.cache.get(consoleLogging).send("**INSTANCE ID:** " + instanceID + "\n**DEV:** " + process.env.DEV + "\n**SILENT MODE:** " + !global.TEASEABLE).catch(console.error);
   console.log("Instance ID: " + instanceID);
 
-  if (global.TEASEABLE) {
-    await ougi.startup();
-  }
-
+  ougi.startup();
 });
 
 client.on('messageCreate', async (msg) => {
@@ -180,21 +177,7 @@ client.on('messageCreate', async (msg) => {
       }
     }
 
-    if (settingsOBJ === null || /* mindOBJ === null || */ localesCache === null || dynamicLocales === null || knowledgeBase === null) {
-      if (!fs.existsSync(database.settings.file) || /* !fs.existsSync(database.neuro.file) || */ !fs.existsSync(database.locales.file) || !fs.existsSync(database.dynamicLocales.file) || !fs.existsSync(database.backup.file)) {
-        return
-      }
-      global.settingsOBJ = ougi.readFile(database.settings.file);
-      // global.mindOBJ = ougi.readFile(database.neuro.file);
-      global.localesCache = ougi.readFile(database.locales.file);
-      global.dynamicLocales = ougi.readFile(database.dynamicLocales.file);
-      global.knowledgeBase = ougi.readFile(database.backup.file, 'utf-8');
-
-      if (!settingsOBJ.hasOwnProperty("guildBump")) {
-        console.log(colors.yellow("Settings OBJ guildBump property created."));
-        settingsOBJ.guildBump = {};
-      }
-    }
+    if (!ougi.startup()) return;
 
     if (settingsOBJ.ignored.includes(msg.author.id)) {
       if (msg.content == "I want to start using Ougi [BOT].") {
@@ -274,16 +257,7 @@ client.on('messageDelete', async (msg) => {
     if (msg.author && msg.author.bot || msg.content && (msg.content.toLowerCase().startsWith("ougi") || msg.content.startsWith("扇") || msg.content.toLowerCase().startsWith("#ougi") || msg.content.startsWith("<@629837958123356172>") || msg.content.startsWith("<@!629837958123356172>"))) {
       return
     }
-    if (settingsOBJ === null || /* mindOBJ === null || */ localesCache === null || dynamicLocales === null || knowledgeBase === null) {
-      if (!fs.existsSync(database.settings.file) || /* !fs.existsSync(database.neuro.file) || */ !fs.existsSync(database.locales.file) || !fs.existsSync(database.dynamicLocales.file) || !fs.existsSync(database.backup.file)) {
-        return;
-      }
-      global.settingsOBJ = ougi.readFile(database.settings.file);
-      // global.mindOBJ = ougi.readFile(database.neuro.file);
-      global.localesCache = ougi.readFile(database.locales.file);
-      global.dynamicLocales = ougi.readFile(database.dynamicLocales.file);
-      global.knowledgeBase = ougi.readFile(database.backup.file, 'utf-8');
-    }
+    if (!ougi.startup()) return;
     if (settingsOBJ.ignored.includes(msg.author.id)) {
       return
     }
@@ -315,16 +289,7 @@ client.on('messageUpdate', (msg) => {
     if (msg.author && msg.author.bot || msg.content && (msg.content.toLowerCase().startsWith("ougi") || msg.content.startsWith("扇") || msg.content.toLowerCase().startsWith("#ougi") || msg.content.startsWith("<@629837958123356172>") || msg.content.startsWith("<@!629837958123356172>"))) {
       return
     }
-    if (settingsOBJ === null || /* mindOBJ === null || */ localesCache === null || dynamicLocales === null || knowledgeBase === null) {
-      if (!fs.existsSync(database.settings.file) || /* !fs.existsSync(database.neuro.file) || */ !fs.existsSync(database.locales.file) || !fs.existsSync(database.dynamicLocales.file) || !fs.existsSync(database.backup.file)) {
-        return
-      }
-      global.settingsOBJ = ougi.readFile(database.settings.file);
-      // global.mindOBJ = ougi.readFile(database.neuro.file);
-      global.localesCache = ougi.readFile(database.locales.file);
-      global.dynamicLocales = ougi.readFile(database.dynamicLocales.file);
-      global.knowledgeBase = ougi.readFile(database.backup.file, 'utf-8');
-    }
+    if (!ougi.startup()) return;
     if (settingsOBJ.ignored.includes(msg.author.id)) {
       return
     }
@@ -344,7 +309,7 @@ client.on('messageUpdate', (msg) => {
 
 setInterval(
   async function () {
-    if (!global.TEASEABLE) {
+    if (!global.TEASEABLE || !ougi.startup()) {
       return
     }
     global.ammo = {};
@@ -357,7 +322,7 @@ setInterval(
 
 setInterval(
   async function () {
-    if (!global.TEASEABLE) {
+    if (!global.TEASEABLE || !ougi.startup()) {
       return
     }
     let ctime = Date.now();
