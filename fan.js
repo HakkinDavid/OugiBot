@@ -362,7 +362,7 @@ setInterval(
     }
     let ctime = Date.now();
     for (guildID in settingsOBJ.guildBump) {
-      if (settingsOBJ.guildBump[guildID].next_bump < ctime && !settingsOBJ.guildBump[guildID].reminded) {
+      if (!isNaN(settingsOBJ.guildBump[guildID].next_bump) && settingsOBJ.guildBump[guildID].next_bump < ctime && !settingsOBJ.guildBump[guildID].reminded) {
         await client.channels.cache.get(settingsOBJ.guildBump[guildID].channel).send((await ougi.text((settingsOBJ.lang[guildID] || "en"), "bumpNow")).replace("{timeStamp}", '<t:' + Math.round(ctime/1000) + ':t>') + (settingsOBJ.guildBump[guildID].role ? "\n<@&" + settingsOBJ.guildBump[guildID].role + ">" : ""));
         settingsOBJ.guildBump[guildID].reminded = true;
       }
