@@ -46,6 +46,7 @@ try {
       { role: 'system', content: (await ougi.text(msg, "userIsNamed")).replace(/{userName}/, msg.author.username) + (user_context ? "\n" + user_context : "") },
       { role: 'system', content: context },
       ... previous_messages,
+      { role: 'assistant', content: (await ougi.text(msg, "evilMode")) },
       { role: 'user', content: msg.content }
     ]
   );

@@ -226,7 +226,8 @@ module.exports =
         "genImg": "Generated image",
         "unableGenImg": "Unable to generate images for this prompt.",
         "awaitGenImg": "Generating your image, {userName}! Please wait...",
-        "bumpNow": "Babe! It's {timeStamp} already. Time for your Disboard bump!"
+        "bumpNow": "Babe! It's {timeStamp} already. Time for your Disboard bump!",
+        "evilMode": "Oh, hello there, you miserable worm. What do you want?"
     },
     "es": {
         "helpTitle": "Página de ayuda con Ougi",
