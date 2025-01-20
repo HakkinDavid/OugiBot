@@ -194,19 +194,6 @@ client.on('messageCreate', async (msg) => {
         console.log(colors.yellow("Settings OBJ guildBump property created."));
         settingsOBJ.guildBump = {};
       }
-
-      if (!settingsOBJ.hasOwnProperty("AI")) {
-        console.log(colors.yellow("Settings OBJ AI property created."));
-        settingsOBJ.AI = {};
-      }
-      if (!settingsOBJ.AI.hasOwnProperty("description")) {
-        console.log(colors.yellow("Settings OBJ AI description property created."));
-        settingsOBJ.AI.description = {};
-      }
-      if (!settingsOBJ.AI.description.hasOwnProperty("265257341967007758")) {
-        console.log(colors.yellow("Settings OBJ AI description for HakkinDavid property created."));
-        settingsOBJ.AI.description["265257341967007758"] = "HakkinDavid, the creator of Ougi Bot.";
-      }
     }
 
     if (settingsOBJ.ignored.includes(msg.author.id)) {
