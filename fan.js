@@ -168,7 +168,7 @@ client.on('messageCreate', async (msg) => {
       return
     }
 
-    if (!global.TEASEABLE || process.env.DEV) {
+    if (!global.TEASEABLE) {
       if (msg.author.id != "265257341967007758") {
         return
       }
