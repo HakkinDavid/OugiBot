@@ -39,7 +39,12 @@ async function (arguments, msg) {
 
   msg.channel.send("I'll remind " + (guildBumpRole ? "<@&" + guildBumpRole + ">" : "you all") + " to bump in <#"+ guildBump +">.");
 
-  settingsOBJ.guildBump[guildID] = {channel: guildBump, role: guildBumpRole, next_bump: null, reminded: false};
+  if (!settingsOBJ.guildBump.hasOwnProperty(guildID)) {
+    ougi.globalLog("Initializing remindBump in " + msg.guild.toString() + ".");
+    settingsOBJ.guildBump[guildID] = {channel: guildBump, role: guildBumpRole, next_bump: null, reminded: false};
+  }
+  settingsOBJ.guildBump[guildID].channel = guildBump;
+  settingsOBJ.guildBump[guildID].role = guildBumpRole;
   await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
   await ougi.backup("./settings.txt", settingsChannel);
 }
