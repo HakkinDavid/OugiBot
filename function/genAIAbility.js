@@ -56,7 +56,7 @@ catch (e) {
   console.error(e);
 }
 
-  if (typeof spookyReply !== "string" || spookyReply.includes("OpenAI")) { ougi.judgementAbility(msg, replied_to_ougi); return; }
+  if (typeof spookyReply !== "string" || spookyReply.includes("OpenAI")) { console.log(spookyReply); ougi.judgementAbility(msg, replied_to_ougi); return; }
 
   spookyReply = await ougi.text(msg, spookyReply, true);
   
