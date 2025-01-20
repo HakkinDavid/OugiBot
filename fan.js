@@ -223,7 +223,7 @@ client.on('messageCreate', async (msg) => {
       }
 
       if (replied_to_ougi && regularMessage) {
-        ougi.judgementAbility(msg, replied_to_ougi);
+        ougi.genAIAbility(msg, replied_to_ougi);
       }
 
       if (regularMessage && settingsOBJ.economy.hasOwnProperty(guildID) && !settingsOBJ.economy[guildID].disabled && (settingsOBJ.economy[guildID].channels.length === 0 || settingsOBJ.economy[guildID].channels.includes(msg.channel.id))) {
@@ -239,7 +239,7 @@ client.on('messageCreate', async (msg) => {
     }
 
     else if (msg.channel.type === Discord.ChannelType.DM && msg.content.length > 0) {
-      ougi.judgementAbility(msg);
+      ougi.genAIAbility(msg);
     }
 })
 

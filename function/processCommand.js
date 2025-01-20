@@ -310,7 +310,7 @@ async function (msg) {
         }
 
         else {
-          ougi.judgementAbility(msg)
+          ougi.genAIAbility(msg)
         }
     }
 }
