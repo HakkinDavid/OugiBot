@@ -16,9 +16,5 @@ async function generateText(input = []) {
   
     const data = await response.json();
 
-    console.log(data);
-
-    //let spookyReply = Object.values(data)[0];
-
-    return (typeof data === "string" ? data : Object.values(data)[data.length-1]);
+    return ougi.getNestedString(data);
   }

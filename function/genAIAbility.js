@@ -46,7 +46,7 @@ try {
       { role: 'system', content: (await ougi.text(msg, "userIsNamed")).replace(/{userName}/, msg.author.username) + (user_context ? "\n" + user_context : "") },
       { role: 'system', content: context },
       ... previous_messages,
-      { role: 'assistant', content: (await ougi.text(msg, "evilMode")) },
+      { role: 'assistant', content: (await ougi.text(msg, "introductionAI")) },
       { role: 'user', content: msg.content }
     ]
   );
@@ -72,7 +72,6 @@ catch (e) {
   else { msg.channel.send(spookyReply).catch(console.error); }
   client.channels.cache.get(consoleLogging).send({embeds: [embed]});
 
-  /*
   try {
     let updated_user_context = await ougi.genAIText(
       [
@@ -91,5 +90,4 @@ catch (e) {
   catch (e) {
     console.error(e);
   }
-  */
 }
