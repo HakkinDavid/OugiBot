@@ -317,22 +317,24 @@ setInterval(
     global.reloadedAmmo = {};
     await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
     await ougi.backup(database.settings.file, settingsChannel);
-    exec("termux-battery-status | jq '.percentage'", (error, stdout, stderr) => {
-        if (error) {
-            ougi.globalLog(`Error when checking battery: ${error.message}`);
-            return;
-        }
-        if (stderr) {
-            ougi.globalLog(`Stderr when checking battery: ${stderr}`);
-            return;
-        }
-        let battery = stdout.trim();
-
-        ougi.globalLog("Server battery: " + battery + "%");
-        if (battery <= 25) {
-          client.users.cache.get(davidUserID).send("Server battery: " + battery + "%. Charge now!");
-        }
-    });
+    if (processs.env.BATTERY) {
+      exec("termux-battery-status | jq '.percentage'", (error, stdout, stderr) => {
+          if (error) {
+              ougi.globalLog(`Error when checking battery: ${error.message}`);
+              return;
+          }
+          if (stderr) {
+              ougi.globalLog(`Stderr when checking battery: ${stderr}`);
+              return;
+          }
+          let battery = stdout.trim();
+  
+          ougi.globalLog("Server battery: " + battery + "%");
+          if (battery <= 25) {
+            client.users.cache.get(davidUserID).send("Server battery: " + battery + "%. Charge now!");
+          }
+      });
+    }
   },
   300000
 );
