@@ -51,6 +51,7 @@ global.CryptoJS = require("crypto-js");
 global.Voice = require('@discordjs/voice');
 global.Nodepath = require('node:path');
 global.colors = require('@colors/colors/safe');
+global.exec = require("child_process").exec;
 
 global.instanceID = Date.now().toString().slice(-4);
 if (process.argv.slice(2) == "silent") {
@@ -316,6 +317,22 @@ setInterval(
     global.reloadedAmmo = {};
     await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
     await ougi.backup(database.settings.file, settingsChannel);
+    exec("battery", (error, stdout, stderr) => {
+        if (error) {
+            ougi.globalLog(`Error when checking battery: ${error.message}`);
+            return;
+        }
+        if (stderr) {
+            ougi.globalLog(`Stderr when checking battery: ${stderr}`);
+            return;
+        }
+        let battery = stdout.trim();
+
+        ougi.globalLog("Server battery: " + battery + "%");
+        if (battery <= 25) {
+          client.users.cache.get(davidUserID).send("Server battery: " + battery + "%. Charge now!");
+        }
+    });
   },
   300000
 );
