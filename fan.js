@@ -317,7 +317,7 @@ setInterval(
     global.reloadedAmmo = {};
     await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
     await ougi.backup(database.settings.file, settingsChannel);
-    exec("battery", (error, stdout, stderr) => {
+    exec("termux-battery-status | jq '.percentage'", (error, stdout, stderr) => {
         if (error) {
             ougi.globalLog(`Error when checking battery: ${error.message}`);
             return;
