@@ -9,7 +9,7 @@ async function generateText(input = []) {
       body: JSON.stringify({
         messages: input,
         seed: 100 * Math.random() + 1,
-        model: 'evil',
+        model: 'openai',
         jsonMode: true
       })
     });
