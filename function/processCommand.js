@@ -168,6 +168,10 @@ async function (msg) {
         ougi.recipeCommand(arguments, msg)
       break;
 
+      case "react":
+        ougi.reactCommand(arguments, msg)
+      break;
+
       case "learn":
         ougi.talkLearn(arguments, msg)
       break;
