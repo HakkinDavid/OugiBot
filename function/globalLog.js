@@ -1,3 +1,5 @@
+const CryptoJS = require('crypto-js');
+
 module.exports =
 
 async function (msg) {

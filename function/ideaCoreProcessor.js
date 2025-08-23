@@ -20,7 +20,7 @@ async function (input) {
   }
 
   await ougi.writeFile(database.neuro.file, JSON.stringify(mindOBJ, null, 4), console.error);
-  await ougi.backup(database.neuro.file, neuroChannel);
+  await ougi.backup(database.neuro.file, channels.neuro);
   */
   return
 }

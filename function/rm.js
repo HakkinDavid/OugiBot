@@ -69,7 +69,7 @@ async function (arguments, msg) {
     settingsOBJ.blacklist[guildID] = existent;
     await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
 
-    await ougi.backup("./settings.txt", settingsChannel);
+    await ougi.backup("./settings.txt", channels.settings);
     return
   }
 
@@ -82,5 +82,5 @@ async function (arguments, msg) {
   settingsOBJ.blacklist[guildID] = arrayMaker;
   await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
 
-  await ougi.backup("./settings.txt", settingsChannel);
+  await ougi.backup("./settings.txt", channels.settings);
 }

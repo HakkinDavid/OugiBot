@@ -1,31 +1,7 @@
-/* Shokkamonogatari */
+/* Shokkamonogatari - Discord.js v14.21.0 Refactor */
+
 require('dotenv').config();
-global.Discord = require('discord.js');
-global.client = new Discord.Client({
-  intents: [
-    Discord.GatewayIntentBits.AutoModerationConfiguration,
-    Discord.GatewayIntentBits.AutoModerationExecution,
-    Discord.GatewayIntentBits.DirectMessageReactions,
-    Discord.GatewayIntentBits.DirectMessageTyping,
-    Discord.GatewayIntentBits.DirectMessages,
-    Discord.GatewayIntentBits.GuildBans,
-    Discord.GatewayIntentBits.GuildEmojisAndStickers,
-    Discord.GatewayIntentBits.GuildIntegrations,
-    Discord.GatewayIntentBits.GuildInvites,
-    Discord.GatewayIntentBits.GuildMessageReactions,
-    Discord.GatewayIntentBits.GuildMessageTyping,
-    Discord.GatewayIntentBits.GuildMessages,
-    Discord.GatewayIntentBits.GuildModeration,
-    Discord.GatewayIntentBits.GuildScheduledEvents,
-    Discord.GatewayIntentBits.GuildVoiceStates,
-    Discord.GatewayIntentBits.GuildWebhooks,
-    Discord.GatewayIntentBits.Guilds,
-    Discord.GatewayIntentBits.MessageContent
-  ],
-  'partials': [
-    Discord.Partials.User, Discord.Partials.Channel, Discord.Partials.GuildMember, Discord.Partials.Message, Discord.Partials.Reaction, Discord.Partials.GuildScheduledEvent, Discord.Partials.ThreadMember
-  ]
-});
+global.Discord = require('discord.js')
 global.fs = require('fs');
 global.request = require('request');
 global.requireAll = require('require-all');
@@ -40,54 +16,77 @@ global.leven = require('leven');
 global.isHexcolor = require('is-hexcolor');
 global.isImageUrl = require('is-image-url');
 global.ytdl = require('ytdl-core-discord');
-global.scrapeYt = require("scrape-yt");
-global.KSoftMain = require ('@ksoft/api');
-global.ksoft = new KSoftMain.KSoftClient(process.env.KSOFTTOKEN);
-global.removeWords =  require('remove-words');
+global.scrapeYt = require('scrape-yt');
+global.KSoftClient = require('@ksoft/api').KSoftClient;
+global.removeWords = require('remove-words');
 global.NewsAPI = require('newsapi');
-global.newsapi = new NewsAPI(process.env.NEWS);
 global.gis = require('async-g-i-s');
-global.CryptoJS = require("crypto-js");
-global.Voice = require('@discordjs/voice');
-global.Nodepath = require('node:path');
+global.CryptoJS = require('crypto-js');
+global.exec = require('child_process').exec;
+global.Voice = require('@discordjs/voice').Voice;
+global.path = require('node:path');
 global.colors = require('@colors/colors/safe');
-global.exec = require("child_process").exec;
 
+/* ===== Cliente ===== */
+global.client = new Discord.Client({
+    intents: [
+        Discord.GatewayIntentBits.Guilds,
+        Discord.GatewayIntentBits.GuildMessages,
+        Discord.GatewayIntentBits.MessageContent,
+        Discord.GatewayIntentBits.DirectMessages,
+        Discord.GatewayIntentBits.GuildMessageReactions,
+        Discord.GatewayIntentBits.DirectMessageReactions,
+        Discord.GatewayIntentBits.GuildBans,
+        Discord.GatewayIntentBits.GuildModeration,
+        Discord.GatewayIntentBits.GuildWebhooks,
+        Discord.GatewayIntentBits.GuildVoiceStates,
+        Discord.GatewayIntentBits.GuildScheduledEvents,
+        Discord.GatewayIntentBits.AutoModerationConfiguration,
+        Discord.GatewayIntentBits.AutoModerationExecution
+    ],
+    partials: [
+        Discord.Partials.User,
+        Discord.Partials.Channel,
+        Discord.Partials.Message,
+        Discord.Partials.GuildMember,
+        Discord.Partials.Reaction,
+        Discord.Partials.ThreadMember,
+        Discord.Partials.GuildScheduledEvent
+    ]
+});
+
+/* ===== Variables Globales ===== */
 global.instanceID = Date.now().toString().slice(-4);
-if (process.argv.slice(2) == "silent") {
-  global.TEASEABLE = false;
-}
-else {
-  global.TEASEABLE = true;
-}
+global.TEASEABLE = process.argv.slice(2)[0] !== 'silent';
+global.davidUserID = "265257341967007758";
+global.consoleLogging = "1140457399673688176";
 
-/* Tsuittamonogatari */
+global.ksoft = new KSoftClient(process.env.KSOFTTOKEN);
+global.newsapi = new NewsAPI(process.env.NEWS);
 
 global.T = new Twit({
-  consumer_key:         process.env.CKEY,
-  consumer_secret:      process.env.CSECRET,
-  access_token:         process.env.ACCTOKEN,
-  access_token_secret:  process.env.ACCTOKENSECRET,
-  timeout_ms:           60*1000,  // optional HTTP request timeout to apply to all requests.
-  strictSSL:            true,     // optional - requires SSL certificates to be valid.
-})
+    consumer_key: process.env.CKEY,
+    consumer_secret: process.env.CSECRET,
+    access_token: process.env.ACCTOKEN,
+    access_token_secret: process.env.ACCTOKENSECRET,
+    timeout_ms: 60_000,
+    strictSSL: true
+});
 
-/* Kansuumonogatari */
+global.ougi = requireAll(path.join(__dirname, 'function'));
 
-global.ougi = require('require-all')(__dirname + '/function');
-global.davidUserID = "265257341967007758";
-global.backupChannel = "726927738094485534";
-global.fileSpace = "726929586339840072";
-global.remindersChannel = "726929651573981225";
-global.embedsChannel = "740187317238497340";
-global.newsChannel = "751697345737129994";
-global.neuroChannel = "759983614128947250";
-global.settingsChannel = "791151086077083688";
-global.localesChannel = "820971831992647681";
-global.dynamicLocalesChannel = "880322518139957299";
-global.ammo = {};
-global.reloadedAmmo = {};
-global.vc = {};
+/* ===== Configuración de Canales ===== */
+global.channels = {
+    backup: "726927738094485534",
+    fileSpace: "726929586339840072",
+    reminders: "726929651573981225",
+    embeds: "740187317238497340",
+    news: "751697345737129994",
+    neuro: "759983614128947250",
+    settings: "791151086077083688",
+    locales: "820971831992647681",
+    dynamicLocales: "880322518139957299"
+};
 
 global.settingsOBJ = null;
 global.mindOBJ = null;
@@ -95,280 +94,169 @@ global.localesCache = null;
 global.dynamicLocales = null;
 global.knowledgeBase = null;
 
-/* Rogumonogatari */
-global.consoleLogging = "1140457399673688176";
+global.ammo = {};
+global.reloadedAmmo = {};
+
 global.database = {
-  'settings': {id: settingsChannel, file: './settings.txt', done: false},
-  'backup': {id: backupChannel, file: './responses.txt', done: false},
-  'embeds': {id: embedsChannel, file: './embedPresets.txt', done: false},
-  'news': {id: newsChannel, file: './newsChannel.txt', done: false},
-  // 'neuro': {id: neuroChannel, file: './neuroNetworks.txt', done: false},
-  'locales': {id: localesChannel, file: './localesCache.txt', done: false},
-  'dynamicLocales': {id: dynamicLocalesChannel, file: './dynamicLocales.txt', done: false}
+    settings: { id: channels.settings, file: './settings.txt', done: false },
+    backup: { id: channels.backup, file: './responses.txt', done: false },
+    embeds: { id: channels.embeds, file: './embedPresets.txt', done: false },
+    news: { id: channels.news, file: './newsChannel.txt', done: false },
+    locales: { id: channels.locales, file: './localesCache.txt', done: false },
+    dynamicLocales: { id: channels.dynamicLocales, file: './dynamicLocales.txt', done: false }
 };
+
+let logMessages = [];
 global.errorBackup = console.error;
-global.logMessages = [];
 
-console.error = function() {
-    logMessages.push.apply(logMessages, arguments);
-    if (logMessages[logMessages.length-1] == "\n" || logMessages[logMessages.length-1] == null || logMessages[logMessages.length-1] == undefined){
-      logMessages.pop();
-      return
-    }
-      let criticalEmbed = new Discord.EmbedBuilder()
-      .setAuthor({name: "CONSOLE ERROR"})
-      .setColor("#c20d00")
-      .setFooter({text: "errorLogEmbed by Ougi", icon: "https://github.com/HakkinDavid/OugiBot/blob/master/images/ougi.png?raw=true"})
-      .setTimestamp()
-      .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/fatal.png?raw=true")
-      .setDescription(logMessages.pop().toString());
+/* ===== Manejo de Errores ===== */
+console.error = (...args) => {
+    logMessages.push(...args);
+    if (!logMessages.at(-1)) return logMessages.pop();
 
-     errorBackup.apply(console, arguments);
-    client.channels.cache.get(consoleLogging).send({embeds: [criticalEmbed]}).catch(console.error);
+    global.criticalEmbed = new Discord.EmbedBuilder()
+        .setAuthor({ name: "CONSOLE ERROR" })
+        .setColor("#c20d00")
+        .setFooter({ text: "errorLogEmbed by Ougi", iconURL: "https://github.com/HakkinDavid/OugiBot/blob/master/images/ougi.png?raw=true" })
+        .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/fatal.png?raw=true")
+        .setDescription(logMessages.pop().toString());
+
+    errorBackup.apply(console, args);
+    client.channels.cache.get(consoleLogging)?.send({ embeds: [criticalEmbed] }).catch(errorBackup);
 };
 
-ougi.syncData = async function () {
-  for (data_obj_name in database) {
-    if (database[data_obj_name].done === false) await ougi.fetch(database[data_obj_name].id, database[data_obj_name].file, data_obj_name);
-  };
+/* ===== Sincronización de Base de Datos ===== */
+async function syncData() {
+    for (const [key, data] of Object.entries(database)) {
+        if (!data.done) await ougi.fetch(data.id, data.file, key);
+    }
 }
+setInterval(syncData, 30_000);
 
-setInterval(ougi.syncData, 30000);
-
-/* Chuuimonogatari */
-client.on('ready', async () => {
-  findRemoveSync('./', {extensions: ['.txt', '.mp3']});
-  await ougi.syncData();
-
-  client.channels.cache.get(consoleLogging).send("**INSTANCE ID:** " + instanceID + "\n**DEV:** " + process.env.DEV + "\n**SILENT MODE:** " + !global.TEASEABLE).catch(console.error);
-  console.log("Instance ID: " + instanceID);
-
-  ougi.startup();
+/* ===== Eventos del Cliente ===== */
+client.once('ready', async () => {
+    try {
+        findRemoveSync('./', { extensions: ['.txt', '.mp3'] });
+        await syncData();
+        client.channels.cache.get(consoleLogging)?.send(`**INSTANCE ID:** ${instanceID}\n**DEV:** ${process.env.DEV}\n**SILENT MODE:** ${!TEASEABLE}`).catch(console.error);
+        console.log(`Instance ID: ${instanceID}`);
+        ougi.startup();
+    } catch (err) {
+        console.error("Error en ougi.startup:", err);
+    }
 });
 
 client.on('messageCreate', async (msg) => {
-    if (msg.author === null) {
-      console.log("Unable to retrieve user object in messageCreate event.");
-      return
-    }
-    if (msg.author == client.user) {
-      return
-    }
+    if (!msg.author || msg.author.bot && msg.author.id !== '302050872383242240') return;
 
-    if (msg.author && msg.author.bot) {
-      if (msg.channel.type === Discord.ChannelType.GuildText && msg.author.id === '302050872383242240' && settingsOBJ.guildBump.hasOwnProperty(msg.guild.id)) {
-        if (msg.embeds[0].data.description.includes("Bump done")) {
-          settingsOBJ.guildBump[msg.guild.id].next_bump = msg.createdTimestamp + 1000 * 60 * 60 * 2;
-          settingsOBJ.guildBump[msg.guild.id].reminded = false;
-          ougi.globalLog("Bump for " + msg.guild.toString() + " detected at " + msg.createdTimestamp + ". Next bump should occur no sooner than " + settingsOBJ.guildBump[msg.guild.id].next_bump + ".");
-        }
-      }
-      return
-    }
-
-    if (!global.TEASEABLE) {
-      if (msg.author.id != "265257341967007758") {
-        return
-      }
-      else {
-        if (!msg.content.startsWith(instanceID + "::")) {
-          return
-        }
-        msg.content = msg.content.replace(instanceID + "::", "");
-      }
-    }
+    if (!TEASEABLE && msg.author.id !== davidUserID) return;
+    if (!TEASEABLE && msg.content.startsWith(`${instanceID}::`)) msg.content = msg.content.replace(`${instanceID}::`, '');
 
     if (!ougi.startup()) return;
-
-    if (settingsOBJ.ignored.includes(msg.author.id)) {
-      if (msg.content == "I want to start using Ougi [BOT].") {
-        ougi.optback(msg);
-      }
-      return
+    if (settingsOBJ?.ignored.includes(msg.author.id)) {
+        if (msg.content === "I want to start using Ougi [BOT].") ougi.optback(msg);
+        return;
     }
 
-    let replied_to_ougi = false;
-    
-    try {
-      if (msg.reference !== null) replied_to_ougi = (await msg.channel.messages.fetch(msg.reference.messageId)).author.id === client.user.id;
-    }
-    catch (e) {
-      console.log(e);
-    }
-
-    if (msg.content.toLowerCase().startsWith("ougi") || msg.content.startsWith("扇") || msg.content.startsWith("<@629837958123356172>") || msg.content.startsWith("<@!629837958123356172>")) {
-      ougi.processCommand(msg);
+    let repliedToOugi = false;
+    if (msg.reference) {
+        try {
+            global.refMsg = await msg.channel.messages.fetch(msg.reference.messageId);
+            repliedToOugi = refMsg.author.id === client.user.id;
+        } catch { }
     }
 
-    else if (msg.content.toLowerCase().startsWith("#ougi")) {
-      ougi.rootCommands(msg);
+    global.lower = msg.content.toLowerCase();
+    if (lower.startsWith("ougi") || lower.startsWith("扇") || msg.mentions.has(client.user)) {
+        return ougi.processCommand(msg);
+    } else if (lower.startsWith("#ougi")) {
+        return ougi.rootCommands(msg);
+    } else if (msg.channel.type === Discord.ChannelType.DM && msg.content.length > 0) {
+        return ougi.genAIAbility(msg);
     }
 
-    else if (msg.channel.type === Discord.ChannelType.GuildText && msg.content.length > 0) {
-      let guildID = msg.guild.id;
-      let regularMessage = true;
-      if (settingsOBJ.prefix.hasOwnProperty(guildID)){
-        let aPrefix = settingsOBJ.prefix[guildID];
-        if (msg.content.toLowerCase().startsWith(aPrefix)) {
-          if (msg.content.length === aPrefix.length) {
-            msg.content = 'ougi';
-          }
-          else {
-            msg.content = msg.content.substring(aPrefix.length);
-            msg.content = 'ougi ' + msg.content;
-          }
+    if (msg.channel.type === Discord.ChannelType.GuildText && msg.content.length > 0) {
+        global.guildID = msg.guild.id;
+        global.prefix = settingsOBJ.prefix[guildID] || '';
+        let isCommand = false;
 
-          ougi.processCommand(msg);
-          regularMessage = false;
+        if (prefix && lower.startsWith(prefix)) {
+            msg.content = 'ougi ' + msg.content.slice(prefix.length).trim();
+            ougi.processCommand(msg);
+            isCommand = true;
         }
-      }
 
-      if (replied_to_ougi && regularMessage) {
-        ougi.genAIAbility(msg, replied_to_ougi);
-      }
-
-      if (regularMessage && settingsOBJ.economy.hasOwnProperty(guildID) && !settingsOBJ.economy[guildID].disabled && (settingsOBJ.economy[guildID].channels.length === 0 || settingsOBJ.economy[guildID].channels.includes(msg.channel.id))) {
-        ougi.economy('xp', msg);
-      }
+        if (!isCommand && repliedToOugi) ougi.genAIAbility(msg, repliedToOugi);
+        if (!isCommand && settingsOBJ.economy?.[guildID]?.channels.includes(msg.channel.id)) ougi.economy('xp', msg);
     }
 
-    else if (msg.content === "I want to opt out from using Ougi [BOT]." && msg.channel.type === Discord.ChannelType.DM) {
-      let pseudoMSG = msg;
-      pseudoMSG.content = "ougi OPTOUTSTATEMENT";
-      ougi.globalLog(pseudoMSG);
-      ougi.optout(msg);
+    if (msg.channel.type === Discord.ChannelType.DM && msg.content === "I want to opt out from using Ougi [BOT].") {
+        global.pseudoMSG = { ...msg, content: "ougi OPTOUTSTATEMENT" };
+        ougi.globalLog(pseudoMSG);
+        ougi.optout(msg);
     }
-
-    else if (msg.channel.type === Discord.ChannelType.DM && msg.content.length > 0) {
-      ougi.genAIAbility(msg);
-    }
-})
-
-client.on('messageDelete', async (msg) => {
-    if (msg.author === null) {
-      console.log("Unable to retrieve user object in messageDelete event.");
-      return
-    }
-    if (!global.TEASEABLE) {
-      return
-    }
-    if (msg.author == client.user) {
-      return
-    }
-    if (msg.author && msg.author.bot || msg.content && (msg.content.toLowerCase().startsWith("ougi") || msg.content.startsWith("扇") || msg.content.toLowerCase().startsWith("#ougi") || msg.content.startsWith("<@629837958123356172>") || msg.content.startsWith("<@!629837958123356172>"))) {
-      return
-    }
-    if (!ougi.startup()) return;
-    if (settingsOBJ.ignored.includes(msg.author.id)) {
-      return
-    }
-    if (msg.channel.type == Discord.ChannelType.GuildText) {
-      let guildID = msg.guild.id;
-      if (settingsOBJ.blacklist.hasOwnProperty(guildID)){
-        let existent = settingsOBJ.blacklist[guildID];
-        for (var i = 0; i < existent.length; i++) {
-          if (existent[i].toLowerCase() === "snipe") {
-            return
-          }
-        }
-      }
-    }
-    ougi.loadSniper(msg, false);
 });
 
-client.on('messageUpdate', (msg) => {
-    if (msg.author === null) {
-      console.log("Unable to retrieve user object in messageUpdate event.");
-      return
-    }
-    if (!global.TEASEABLE) {
-      return
-    }
-    if (msg.author == client.user) {
-      return
-    }
-    if (msg.author && msg.author.bot || msg.content && (msg.content.toLowerCase().startsWith("ougi") || msg.content.startsWith("扇") || msg.content.toLowerCase().startsWith("#ougi") || msg.content.startsWith("<@629837958123356172>") || msg.content.startsWith("<@!629837958123356172>"))) {
-      return
-    }
-    if (!ougi.startup()) return;
-    if (settingsOBJ.ignored.includes(msg.author.id)) {
-      return
-    }
-    if (msg.channel.type == Discord.ChannelType.GuildText) {
-      let guildID = msg.guild.id;
-      if (settingsOBJ.blacklist.hasOwnProperty(guildID)){
-        let existent = settingsOBJ.blacklist[guildID];
-        for (var i = 0; i < existent.length; i++) {
-          if (existent[i].toLowerCase() === "editsnipe") {
-            return
-          }
+/* ===== Eventos de Sniping ===== */
+['messageDelete', 'messageUpdate'].forEach(event => {
+    client.on(event, async (msg, oldMsg) => {
+        if (!msg?.author || msg.author.bot) return;
+        if (!ougi.startup() || settingsOBJ.ignored.includes(msg.author.id)) return;
+        if (msg.channel.type === Discord.ChannelType.GuildText) {
+            global.guildID = msg.guild.id;
+            global.blacklist = settingsOBJ.blacklist?.[guildID] || [];
+            if ((event === 'messageDelete' && blacklist.includes('snipe')) ||
+                (event === 'messageUpdate' && blacklist.includes('editsnipe'))) return;
         }
-      }
-    }
-    ougi.loadSniper(msg, true);
+        ougi.loadSniper(msg, event === 'messageUpdate');
+    });
 });
 
-setInterval(
-  async function () {
-    if (!global.TEASEABLE || !ougi.startup()) {
-      return
-    }
-    global.ammo = {};
-    global.reloadedAmmo = {};
+/* ===== Intervalos de Backup y Battery ===== */
+setInterval(async () => {
+    if (!TEASEABLE || !ougi.startup()) return;
     await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
-    await ougi.backup(database.settings.file, settingsChannel);
+    await ougi.backup(database.settings.file, channels.settings);
+
     if (process.env.BATTERY) {
-      exec("termux-battery-status | jq '.percentage'", (error, stdout, stderr) => {
-          if (error) {
-              ougi.globalLog(`Error when checking battery: ${error.message}`);
-              return;
-          }
-          if (stderr) {
-              ougi.globalLog(`Stderr when checking battery: ${stderr}`);
-              return;
-          }
-          let battery = stdout.trim();
-  
-          ougi.globalLog("Server battery: " + battery + "%");
-          if (battery <= 25) {
-            client.users.cache.get(davidUserID).send("Server battery: " + battery + "%. Charge now!");
-          }
-      });
+        exec("termux-battery-status | jq '.percentage'", (error, stdout, stderr) => {
+            if (error || stderr) return ougi.globalLog(`Battery check error: ${error?.message || stderr}`);
+            global.battery = parseInt(stdout.trim());
+            ougi.globalLog(`Server battery: ${battery}%`);
+            if (battery <= 25) client.users.cache.get(davidUserID)?.send(`Server battery: ${battery}%. Charge now!`);
+        });
     }
-  },
-  300000
-);
+}, 300_000);
 
-setInterval(
-  async function () {
-    if (!global.TEASEABLE || !ougi.startup()) {
-      return
+/* ===== Intervalo para Recordatorios de Bump ===== */
+setInterval(async () => {
+    if (!TEASEABLE || !ougi.startup()) return;
+    global.now = Date.now();
+    for (const [guildID, bumpData] of Object.entries(settingsOBJ.guildBump || {})) {
+        if (bumpData.next_bump && bumpData.next_bump < now && !bumpData.reminded) {
+            ougi.globalLog(`Reminded users to bump guild ${guildID}`);
+            global.message = (await ougi.text(settingsOBJ.lang[guildID] || "en", "bumpNow"))
+                .replace("{timeStamp}", `<t:${Math.floor(now / 1000)}:t>`);
+            global.channel = client.channels.cache.get(bumpData.channel);
+            if (channel) await channel.send(`${message}${bumpData.role ? `\n<@&${bumpData.role}>` : ''}`);
+            bumpData.reminded = true;
+        }
     }
-    let ctime = Date.now();
-    for (guildID in settingsOBJ.guildBump) {
-      if (settingsOBJ.guildBump[guildID].next_bump && settingsOBJ.guildBump[guildID].next_bump < ctime && !settingsOBJ.guildBump[guildID].reminded) {
-        ougi.globalLog("Reminded users to bump guild with ID " + guildID + " as bump became available at " + settingsOBJ.guildBump[guildID].next_bump);
-        await client.channels.cache.get(settingsOBJ.guildBump[guildID].channel).send((await ougi.text((settingsOBJ.lang[guildID] || "en"), "bumpNow")).replace("{timeStamp}", '<t:' + Math.round(ctime/1000) + ':t>') + (settingsOBJ.guildBump[guildID].role ? "\n<@&" + settingsOBJ.guildBump[guildID].role + ">" : ""));
-        settingsOBJ.guildBump[guildID].reminded = true;
-      }
-    }
-  },
-  60000
-);
+}, 60_000);
 
-process.on('uncaughtException', (e) => {
+/* ===== Manejo de Excepciones Globales ===== */
+process.on('uncaughtException', async (e) => {
     try {
-      let trimmed = JSON.stringify(e, Object.getOwnPropertyNames(e), 4).replace(/\\n/g, '\n');
-      while (trimmed.length > 0) {
-        client.users.cache.get(davidUserID).send("```" + trimmed.slice(0,1994) + "```");
-        trimmed = trimmed.slice(1994);
-      }
-    }
-    catch {
-      console.log('unable to DM david for console error');
-      console.log(e);
+        let trimmed = JSON.stringify(e, Object.getOwnPropertyNames(e), 4).replace(/\\n/g, '\n');
+        while (trimmed.length > 0) {
+            await client.users.cache.get(davidUserID)?.send("```" + trimmed.slice(0, 1994) + "```");
+            trimmed = trimmed.slice(1994);
+        }
+    } catch {
+        console.log('Unable to DM David for console error');
+        console.log(e);
     }
 });
 
-/* Kaishimonogatari */
+/* ===== Login ===== */
 client.login(process.env.TOKEN);

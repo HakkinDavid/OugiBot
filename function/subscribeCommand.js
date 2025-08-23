@@ -26,5 +26,5 @@ async function (msg) {
   if (msg.channel.type !== Discord.ChannelType.DM) {
     msg.channel.send("Check your DMs ;)").catch(console.error);
   }
-  await ougi.backup("./settings.txt", settingsChannel);
+  await ougi.backup("./settings.txt", channels.settings);
 }

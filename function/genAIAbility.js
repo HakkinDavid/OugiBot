@@ -85,7 +85,7 @@ catch (e) {
 
     settingsOBJ.AI.description[msg.author.id] = updated_user_context;
     await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
-    await ougi.backup(database.settings.file, settingsChannel);
+    await ougi.backup(database.settings.file, channels.settings);
   }
   catch (e) {
     console.error(e);

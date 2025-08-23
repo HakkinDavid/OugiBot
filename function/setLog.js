@@ -22,7 +22,7 @@ async function (arguments, msg) {
         delete settingsOBJ.logging[guildID];
         msg.channel.send("Logging channel successfully disabled.");
         await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
-        await ougi.backup("./settings.txt", settingsChannel);
+        await ougi.backup("./settings.txt", channels.settings);
         return
       }
       else {
@@ -48,5 +48,5 @@ async function (arguments, msg) {
 
   settingsOBJ.logging[guildID] = guildLogger;
   await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
-  await ougi.backup("./settings.txt", settingsChannel);
+  await ougi.backup("./settings.txt", channels.settings);
 }

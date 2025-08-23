@@ -22,7 +22,7 @@ async function (arguments, msg) {
         delete settingsOBJ.guildNews[guildID];
         msg.channel.send("Newsletter channel successfully disabled.");
         await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
-        await ougi.backup("./settings.txt", settingsChannel);
+        await ougi.backup("./settings.txt", channels.settings);
         return
       }
       else {
@@ -49,5 +49,5 @@ async function (arguments, msg) {
 
   settingsOBJ.guildNews[guildID] = guildNews;
   await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
-  await ougi.backup("./settings.txt", settingsChannel);
+  await ougi.backup("./settings.txt", channels.settings);
 }

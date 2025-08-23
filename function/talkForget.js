@@ -108,7 +108,7 @@ async function (arguments, msg) {
         client.channels.cache.get(consoleLogging).send({embeds: [embed]});
         await ougi.writeFile(database.backup.file, JSON.stringify(knowledgeBase, null, 4), console.error);
 
-        await ougi.backup("./responses.txt", backupChannel);
+        await ougi.backup("./responses.txt", channels.backup);
         return
       }
     }

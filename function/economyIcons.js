@@ -16,14 +16,14 @@ async function (arguments, msg) {
             settingsOBJ.economy[msg.guild.id].currency = arguments.slice(1).join(" ");
             msg.channel.send("Currency icon updated.");
             await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
-            await ougi.backup(database.settings.file, settingsChannel);
+            await ougi.backup(database.settings.file, channels.settings);
         }
         break;
         case "xp": {
             settingsOBJ.economy[msg.guild.id].xp = arguments.slice(1).join(" ");
             msg.channel.send("XP icon updated.");
             await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
-            await ougi.backup(database.settings.file, settingsChannel);
+            await ougi.backup(database.settings.file, channels.settings);
         }
         break;
         default:

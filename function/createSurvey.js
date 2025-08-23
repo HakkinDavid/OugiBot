@@ -106,7 +106,7 @@ async function (msg) {
     ended:null
   }
   await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
-  await ougi.backup(database.settings.file, settingsChannel);
+  await ougi.backup(database.settings.file, channels.settings);
 
   let embed = new Discord.EmbedBuilder()
   .setTitle("Enjoying Ougi so far?")

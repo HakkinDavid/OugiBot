@@ -1,3 +1,5 @@
+const CryptoJS = require('crypto-js');
+
 module.exports =
 
 function (path, encoding = 'utf-8', callback = console.error) {
