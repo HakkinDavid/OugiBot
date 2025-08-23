@@ -10,7 +10,6 @@ const {
   entersState, 
   VoiceConnectionStatus 
 } = require('@discordjs/voice');
-const ougi = require('./ougi.tts');
 
 module.exports = async function(msg) {
   if (!msg.guild) {
