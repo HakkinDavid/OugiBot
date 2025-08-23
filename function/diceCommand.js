@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 
-module.exports = async function diceCommand(msg) {
+module.exports = async function (msg) {
   try {
     const num = Math.floor(Math.random() * 6) + 1;
 
