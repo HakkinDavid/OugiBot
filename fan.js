@@ -88,6 +88,7 @@ global.channels = {
     dynamicLocales: "880322518139957299"
 };
 
+global.vc = {};
 global.settingsOBJ = null;
 global.mindOBJ = null;
 global.localesCache = null;
