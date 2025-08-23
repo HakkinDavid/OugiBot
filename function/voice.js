@@ -1,12 +1,16 @@
 const fs = require('fs');
 const path = require('path');
+const prism = require('prism-media');
 const { 
   joinVoiceChannel, 
   createAudioPlayer, 
   createAudioResource, 
   AudioPlayerStatus, 
-  getVoiceConnection 
+  getVoiceConnection, 
+  entersState, 
+  VoiceConnectionStatus 
 } = require('@discordjs/voice');
+const ougi = require('./ougi.tts');
 
 module.exports = async function(msg) {
   if (!msg.guild) {
@@ -40,11 +44,13 @@ module.exports = async function(msg) {
   // Rate limit
   settingsOBJ.ratelimit[msg.author.id] = Date.now() + (5 * textToSpeak.length);
 
+  // Join VC
   const connection = getVoiceConnection(msg.guild.id) || joinVoiceChannel({
     channelId: memberVC.id,
     guildId: memberVC.guild.id,
     adapterCreator: memberVC.guild.voiceAdapterCreator,
   });
+  await entersState(connection, VoiceConnectionStatus.Ready, 10_000);
 
   const player = createAudioPlayer();
   connection.subscribe(player);
@@ -52,11 +58,10 @@ module.exports = async function(msg) {
   msg.react('🔊');
   msg.react('<:ougi:730355760864952401>');
 
-  // Split text into chunks of ~200 chars
+  // Split text into ~200 char chunks
   const chunks = [];
   while (textToSpeak.length > 0) {
     let slice = textToSpeak.slice(0, 200);
-    // Ensure we cut at a space if possible
     const lastSpace = slice.lastIndexOf(' ');
     if (lastSpace > 0 && textToSpeak.length > 200) {
       slice = slice.slice(0, lastSpace);
@@ -65,16 +70,26 @@ module.exports = async function(msg) {
     textToSpeak = textToSpeak.slice(slice.length).trim();
   }
 
+  // Sequentially play chunks
   for (const chunk of chunks) {
-    const cachePath = path.join(__dirname, 'cachedvoice', `${langCode}-${Date.now()}.mp3`);
-    await ougi.tts({ text: chunk, file: cachePath, lang: langCode });
-    const resource = createAudioResource(cachePath);
+    const cacheDir = path.join(__dirname, '..', 'cachedvoice');
+    if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir, { recursive: true });
+
+    const cachePath = path.join(cacheDir, `${langCode}-${Date.now()}.mp3`);
+    await ougi({ text: chunk, file: cachePath, lang: langCode });
+
+    const resource = createAudioResource(
+      new prism.FFmpeg({ args: ['-i', cachePath, '-f', 'opus', '-ar', '48000', '-ac', '2'] }),
+      { inputType: 'opus' }
+    );
+
     player.play(resource);
 
-    // Wait for current chunk to finish
     await new Promise(resolve => {
       player.once(AudioPlayerStatus.Idle, () => {
-        fs.unlink(cachePath, console.error);
+        fs.access(cachePath, fs.constants.F_OK, err => {
+          if (!err) fs.unlink(cachePath, console.error);
+        });
         resolve();
       });
     });
