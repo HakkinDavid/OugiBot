@@ -1,135 +1,82 @@
-module.exports =
+const fs = require('fs');
+const path = require('path');
+const { 
+  joinVoiceChannel, 
+  createAudioPlayer, 
+  createAudioResource, 
+  AudioPlayerStatus, 
+  getVoiceConnection 
+} = require('@discordjs/voice');
 
-async function (msg) {
-  /*-----------------------------------*/
-  while (msg.content.includes('  ')) {
-    msg.content = msg.content.replace('  ', ' ')
-  }
-  while (msg.content.includes('\n\n')) {
-    msg.content = msg.content.replace('\n\n', '\n')
-  }
-  while (msg.content.includes('\n')) {
-    msg.content = msg.content.replace('\n', ' ')
-  }
-  let spookyCake = msg.content;
-  let spookySlices = spookyCake.split(" ");
-  let arguments = spookySlices.slice(2);
-  /*-----------------------------------*/
+module.exports = async function(msg) {
   if (!msg.guild) {
-    msg.channel.send("Huh?! This is not a Discord server. Take me into one!").catch(console.error);
-    return
+    return msg.channel.send("Huh?! This is not a Discord server. Take me into one!");
   }
 
-  if (typeof vc[msg.guild.id] !== 'undefined') {
-    msg.channel.send("Currently playing music.");
-    return
+  const memberVC = msg.member.voice.channel;
+  if (!memberVC) {
+    return msg.channel.send("Looks like you're not in a voice channel I can join, please get into one.");
   }
 
-  let vcChannel = msg.member.voice.channel;
+  // Normalize message content
+  const cleanedContent = msg.content.replace(/\s+/g, ' ').trim();
+  let args = cleanedContent.split(" ").slice(2);
 
-  if (vcChannel == null) {
-    msg.channel.send("Looks like you're not in a voice channel I can join, please get into one.").catch(console.error);
-    return
-  }
-  
-  let langCode = undefined;
-  if (settingsOBJ.lang.hasOwnProperty(msg.guild.id)) {
-    langCode = settingsOBJ.lang[msg.guild.id]
-  }
-
-  if (arguments.length > 1 && arguments[0].startsWith("::") && ougi.langCodes.hasOwnProperty(arguments[0].replace(/::/, ""))) {
-    langCode = arguments[0].replace(/mx/gi, "es").replace(/default|auto/gi, "en").replace(/::/gi, "");
-    arguments = arguments.slice(1);
-  }
-
-  if (langCode == undefined) {
-    langCode = "en";
-  }
-
-  let readOutLoud = arguments.join(" ").replace(/[\+\*\?\^\$\(\)\[\]\{\}\|\\\&\/\@]/gi, "");
-
-  if (readOutLoud.replace(/ /gi, "").length < 1) {
-    msg.channel.send("I don't know how to read emptiness. Please specify a sentence for me to read out loud.")
-    return
-  }
-
-  if (readOutLoud.length <= 200) {
-    let cacheSpeak = 'cachedvoice/' + langCode + (new Date).getTime() + '.mp3';
-
-    if (!fs.existsSync(cacheSpeak)) {
-      await ougi.tts({
-        text: readOutLoud,
-        file: cacheSpeak,
-        lang: langCode
-      });
+  // Determine language
+  let langCode = (settingsOBJ.lang[msg.guild.id]) ?? 'en';
+  if (args.length > 1 && args[0].startsWith("::")) {
+    const code = args[0].replace(/::/, "").toLowerCase();
+    if (ougi.langCodes[code]) {
+      langCode = code.replace(/mx/i, "es").replace(/default|auto/i, "en");
+      args = args.slice(1);
     }
+  }
 
-    let ratelimit = (new Date).getTime() + (5 * readOutLoud.length);
-    settingsOBJ.ratelimit[msg.author.id] = ratelimit;
+  let textToSpeak = args.join(" ").replace(/[\+\*\?\^\$\(\)\[\]\{\}\|\\\&\/\@]/g, "").trim();
+  if (!textToSpeak) {
+    return msg.channel.send("I don't know how to read emptiness. Please specify a sentence for me to read out loud.");
+  }
 
-    let connection = await Voice.joinVoiceChannel({
-      channelId: vcChannel.id,
-      guildId: vcChannel.guild.id,
-      adapterCreator: vcChannel.guild.voiceAdapterCreator
-    });
-    let player = Voice.createAudioPlayer();
-    connection.subscribe(player);
-    let audio = Voice.createAudioResource(Nodepath.join(__dirname, cacheSpeak));
-    player.play(audio);
-    player.on(Voice.AudioPlayerStatus.Playing, () => {
-      msg.react('🔊');
-      msg.react('<:ougi:730355760864952401>');
+  // Rate limit
+  settingsOBJ.ratelimit[msg.author.id] = Date.now() + (5 * textToSpeak.length);
+
+  const connection = getVoiceConnection(msg.guild.id) || joinVoiceChannel({
+    channelId: memberVC.id,
+    guildId: memberVC.guild.id,
+    adapterCreator: memberVC.guild.voiceAdapterCreator,
+  });
+
+  const player = createAudioPlayer();
+  connection.subscribe(player);
+
+  msg.react('🔊');
+  msg.react('<:ougi:730355760864952401>');
+
+  // Split text into chunks of ~200 chars
+  const chunks = [];
+  while (textToSpeak.length > 0) {
+    let slice = textToSpeak.slice(0, 200);
+    // Ensure we cut at a space if possible
+    const lastSpace = slice.lastIndexOf(' ');
+    if (lastSpace > 0 && textToSpeak.length > 200) {
+      slice = slice.slice(0, lastSpace);
+    }
+    chunks.push(slice.trim());
+    textToSpeak = textToSpeak.slice(slice.length).trim();
+  }
+
+  for (const chunk of chunks) {
+    const cachePath = path.join(__dirname, 'cachedvoice', `${langCode}-${Date.now()}.mp3`);
+    await ougi.tts({ text: chunk, file: cachePath, lang: langCode });
+    const resource = createAudioResource(cachePath);
+    player.play(resource);
+
+    // Wait for current chunk to finish
+    await new Promise(resolve => {
+      player.once(AudioPlayerStatus.Idle, () => {
+        fs.unlink(cachePath, console.error);
+        resolve();
+      });
     });
   }
-  else {
-    let speaking = false;
-    let completed = 0;
-    let j = 0;
-    msg.react('🔊');
-    msg.react('<:ougi:730355760864952401>');
-    let limit = setInterval(async () => {
-      if (readOutLoud.replace(/ |\n/gi, "").length > 0) {
-        let cacheSpeak = './cachedvoice/' + langCode + (new Date).getTime() + '.mp3';
-        let wordyArray = readOutLoud.split(" ");
-        let reading = [];
-        while (reading.join(" ").length < 200) {
-          reading.push(wordyArray.shift());
-        }
-        if (reading.join(" ").length > 200) {
-          wordyArray.unshift(reading.pop());
-        }
-        readOutLoud = wordyArray.join(" ");
-        reading = reading.join(" ");
-        await ougi.tts({
-          text: reading,
-          file: cacheSpeak,
-          lang: langCode
-        });
-        j++;
-        let index = j;
-        let ratelimit = (new Date).getTime() + (1000 * j);
-        settingsOBJ.ratelimit[msg.author.id] = ratelimit;
-        let voicy = setInterval(async () => {
-          if (!speaking && completed === (index - 1)) {
-            speaking = true;
-            await vcChannel.join().then(async (connection) => {
-              await connection.play(cacheSpeak, { volume: false }).on('finish', () => {
-                completed++;
-                fs.unlink(cacheSpeak, console.error);
-                if (completed >= j) {
-                  connection.disconnect();
-                  return
-                }
-                speaking = false;
-                client.clearInterval(voicy);
-              })
-            });
-          }
-        }, 500);
-      }
-      else {
-        client.clearInterval(limit);
-      }
-    }, 1000);
-  }
-}
+};

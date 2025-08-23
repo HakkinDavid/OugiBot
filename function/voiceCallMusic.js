@@ -5,13 +5,13 @@ const { EmbedBuilder } = require('discord.js');
 module.exports = async function(msg) {
   try {
     if (!msg.guild) {
-      await msg.channel.send(await ougi.text(msg, "notInGuild"));
+      await msg.channel.send(await ougi.text(msg, "mustGuild"));
       return;
     }
 
     const args = msg.content.trim().split(/\s+/).slice(2);
     if (!args.length) {
-      await msg.channel.send(await ougi.text(msg, "musicNoArgs"));
+      await msg.channel.send(await ougi.text(msg, "keywordRequired"));
       return;
     }
 
