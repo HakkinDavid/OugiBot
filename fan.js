@@ -175,10 +175,13 @@ client.on('messageCreate', async (msg) => {
     }
 
     const lower = msg.content.toLowerCase();
+    let ourConcern = false;
     if (lower.startsWith("ougi") || lower.startsWith("扇") || msg.mentions.has(client.user)) {
         ougi.processCommand(msg);
+        ourConcern = true;
     } else if (lower.startsWith("#ougi")) {
         ougi.rootCommands(msg);
+        ourConcern = true;
     } else if (msg.channel.type === Discord.ChannelType.DM && msg.content.length > 0) {
         if (msg.content === "I want to opt out from using Ougi [BOT].") {
             const pseudoMSG = { ...msg, content: "ougi OPTOUTSTATEMENT" };
@@ -187,6 +190,7 @@ client.on('messageCreate', async (msg) => {
         }
         else {
             ougi.genAIAbility(msg);
+            ourConcern = true;
         }
     } else if (msg.channel.type === Discord.ChannelType.GuildText && msg.content.length > 0) {
         const guildID = msg.guild.id;
@@ -196,14 +200,17 @@ client.on('messageCreate', async (msg) => {
         if (prefix && lower.startsWith(prefix)) {
             msg.content = 'ougi ' + msg.content.slice(prefix.length).trim();
             ougi.processCommand(msg);
+            ourConcern = true;
             isCommand = true;
         }
 
-        if (!isCommand && repliedToOugi) ougi.genAIAbility(msg, repliedToOugi);
+        if (!isCommand && repliedToOugi) { ougi.genAIAbility(msg, repliedToOugi); ourConcern = true; }
         if (!isCommand && settingsOBJ.economy?.[guildID]?.channels.includes(msg.channel.id)) ougi.economy('xp', msg);
     }
-    settingsOBJ.interactionsCounter[msg.author.id] += 1;
-    settingsOBJ.interactionsCounter[msg.channel.id] += 1;
+    if (ourConcern) {
+        settingsOBJ.interactionsCounter[msg.author.id] += 1;
+        settingsOBJ.interactionsCounter[msg.channel.id] += 1;
+    }
 });
 
 /* ===== Eventos de Sniping ===== */
