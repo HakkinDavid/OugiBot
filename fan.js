@@ -219,7 +219,7 @@ setInterval(async () => {
     await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
     await ougi.backup(database.settings.file, channels.settings);
 
-    if (process.env.BATTERY) {
+    if (process.env.BATTERY == 1) {
         exec("termux-battery-status | jq '.percentage'", (error, stdout, stderr) => {
             if (error || stderr) return ougi.globalLog(`Battery check error: ${error?.message || stderr}`);
             global.battery = parseInt(stdout.trim());
