@@ -21,7 +21,7 @@ module.exports = async function(msg) {
         return t;
     }
 
-    function resolveExpression(expr) {
+    function resolveExpression(expr, stopBeforeLast = false) {
         // Separar rootVar de los accesadores
         const rootMatch = expr.match(/^([a-zA-Z_$][a-zA-Z0-9_$]*)/);
         if (!rootMatch) return { error: "No se detectó variable raíz válida." };
@@ -32,6 +32,7 @@ module.exports = async function(msg) {
         let remainder = expr.slice(rootMatch[1].length);
         const regex = /(\.([a-zA-Z_$][a-zA-Z0-9_$]*)|\[([^\]]+)\])/g;
         let m;
+        let keys = [];
         while ((m = regex.exec(remainder)) !== null) {
             let key;
             if (m[2] !== undefined) {
@@ -40,6 +41,16 @@ module.exports = async function(msg) {
             } else {
                 key = parseBracketKey(m[3], target);
             }
+            keys.push(key);
+        }
+
+        if (stopBeforeLast && keys.length === 0) {
+            return { error: "No hay propiedad para asignar." };
+        }
+
+        let limit = stopBeforeLast ? keys.length - 1 : keys.length;
+        for (let i = 0; i < limit; i++) {
+            let key = keys[i];
             if (target && typeof target === 'object' && key in target) {
                 target = target[key];
             } else {
@@ -47,9 +58,59 @@ module.exports = async function(msg) {
             }
         }
 
-        return { value: target };
+        if (stopBeforeLast) {
+            return { target: target, lastKey: keys[keys.length - 1] };
+        } else {
+            return { value: target };
+        }
     }
 
+    // Check if expression contains '=' for assignment
+    const assignIndex = expression.indexOf('=');
+    if (assignIndex !== -1) {
+        const leftExpr = expression.slice(0, assignIndex).trim();
+        const rightExpr = expression.slice(assignIndex + 1).trim();
+
+        // Resolve left expression to get target object and last key
+        const resolved = resolveExpression(leftExpr, true);
+        if (resolved.error) {
+            msg.channel.send(resolved.error);
+            return;
+        }
+
+        let parsedValue;
+        try {
+            // Try to parse rightExpr as JSON
+            parsedValue = JSON.parse(rightExpr);
+        } catch (e) {
+            // If JSON.parse fails, try to parse as primitive manually
+            if (rightExpr === "true") {
+                parsedValue = true;
+            } else if (rightExpr === "false") {
+                parsedValue = false;
+            } else if (rightExpr === "null") {
+                parsedValue = null;
+            } else if (!isNaN(rightExpr)) {
+                parsedValue = Number(rightExpr);
+            } else if ((rightExpr.startsWith("'") && rightExpr.endsWith("'")) || (rightExpr.startsWith('"') && rightExpr.endsWith('"'))) {
+                parsedValue = rightExpr.slice(1, -1);
+            } else {
+                // If all fails, treat as string
+                parsedValue = rightExpr;
+            }
+        }
+
+        try {
+            resolved.target[resolved.lastKey] = parsedValue;
+            msg.channel.send(`Propiedad \`${leftExpr}\` actualizada correctamente.`);
+        } catch (err) {
+            msg.channel.send(`Error al asignar el valor: ${err.message}`);
+        }
+
+        return;
+    }
+
+    // If no assignment, behave as before (inspection)
     const result = resolveExpression(expression);
 
     if (result.error) {
