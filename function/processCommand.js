@@ -136,12 +136,7 @@ module.exports = async function (msg) {
         await ougi.genAIAbility(msg);
     }
 
-    if (!settingsOBJ.patrons || !settingsOBJ.patrons[msg.author.id]) {
-        if (!settingsOBJ.patreonAdLastSeen) settingsOBJ.patreonAdLastSeen = {};
-        if (spookyCommand !== "patreon") {
-            if ((settingsOBJ.interactionsCounter[msg.channel.id] != 0 && settingsOBJ.interactionsCounter[msg.channel.id] % 15 == 0)) {
-                await patreonCommand(msg, true);
-            }
-        }
+    if (!settingsOBJ.patrons || !settingsOBJ.patrons[msg.author.id] && spookyCommand !== "patreon" && (!isNaN(settingsOBJ.interactionsCounter.channels[msg.channel.id]) && settingsOBJ.interactionsCounter.channels[msg.channel.id] != 0 && settingsOBJ.interactionsCounter.channels[msg.channel.id] % 15 == 0)) {
+        await patreonCommand(msg, true);
     }
 };

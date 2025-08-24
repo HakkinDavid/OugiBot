@@ -150,22 +150,23 @@ client.once('ready', async () => {
 
 client.on('messageCreate', async (msg) => {
     if (!msg.author || msg.author.bot && msg.author.id !== '302050872383242240') return;
-    
+
     if (!TEASEABLE && msg.author.id !== davidUserID) return;
     if (!TEASEABLE && msg.content.startsWith(`${instanceID}::`)) msg.content = msg.content.replace(`${instanceID}::`, '');
-    
+
     if (!ougi.startup()) return;
 
     if (settingsOBJ?.ignored.includes(msg.author.id)) {
         if (msg.content === "I want to start using Ougi [BOT].") ougi.optback(msg);
         return;
     }
-    
+
     // Interactions counter
-    if (!settingsOBJ.interactionsCounter) settingsOBJ.interactionsCounter = {};
-    if (!settingsOBJ.interactionsCounter[msg.author.id]) settingsOBJ.interactionsCounter[msg.author.id] = 0;
-    if (!settingsOBJ.interactionsCounter[msg.channel.id]) settingsOBJ.interactionsCounter[msg.channel.id] = 0;
-    
+    if (!settingsOBJ.interactionsCounter) settingsOBJ.interactionsCounter = {
+        users: {},
+        channels: {}
+    };
+
     let repliedToOugi = false;
     if (msg.reference) {
         try {
@@ -208,8 +209,10 @@ client.on('messageCreate', async (msg) => {
         if (!isCommand && settingsOBJ.economy?.[guildID]?.channels.includes(msg.channel.id)) ougi.economy('xp', msg);
     }
     if (ourConcern) {
-        settingsOBJ.interactionsCounter[msg.author.id] += 1;
-        settingsOBJ.interactionsCounter[msg.channel.id] += 1;
+        if (!settingsOBJ.interactionsCounter.users[msg.author.id]) settingsOBJ.interactionsCounter.users[msg.author.id] = 0;
+        if (!settingsOBJ.interactionsCounter.channels[msg.channel.id]) settingsOBJ.interactionsCounter.channels[msg.channel.id] = 0;
+        settingsOBJ.interactionsCounter.users[msg.author.id] += 1;
+        settingsOBJ.interactionsCounter.channels[msg.channel.id] += 1;
     }
 });
 
