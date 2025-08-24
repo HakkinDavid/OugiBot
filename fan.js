@@ -223,7 +223,7 @@ client.on('messageCreate', async (msg) => {
         if ((!settingsOBJ.patrons || !settingsOBJ.patrons[msg.author.id]) && (settingsOBJ.interactionsCounter.channels[msg.channel.id] != 0 && settingsOBJ.interactionsCounter.channels[msg.channel.id] % 15 == 0)) {
             settingsOBJ.patreonAdLastSeen.users[msg.author.id] = now;
             settingsOBJ.patreonAdLastSeen.channels[msg.channel.id] = now;
-            setTimeout(async () => await ougi.patreonCommand(msg, true), 10000);
+            await ougi.patreonCommand(msg, true);
         }
         settingsOBJ.interactionsCounter.users[msg.author.id] += 1;
         settingsOBJ.interactionsCounter.channels[msg.channel.id] += 1;
