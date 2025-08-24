@@ -9,6 +9,18 @@ module.exports = async function(msg) {
 
     const expression = parts.slice(2).join(" ").trim();
 
+    function parseBracketKey(raw, currentTarget) {
+        let t = String(raw).trim();
+        if ((t.startsWith("'") && t.endsWith("'")) || (t.startsWith('"') && t.endsWith('"'))) {
+            t = t.slice(1, -1);
+        }
+        if (Array.isArray(currentTarget) && /^\d+$/.test(t)) {
+            const idx = Number(t);
+            return Number.isSafeInteger(idx) ? idx : t;
+        }
+        return t;
+    }
+
     function resolveExpression(expr) {
         // Separar rootVar de los accesadores
         const rootMatch = expr.match(/^([a-zA-Z_$][a-zA-Z0-9_$]*)/);
@@ -21,9 +33,13 @@ module.exports = async function(msg) {
         const regex = /(\.([a-zA-Z_$][a-zA-Z0-9_$]*)|\[([^\]]+)\])/g;
         let m;
         while ((m = regex.exec(remainder)) !== null) {
-            const prop = m[2] || m[3];
-            let key = prop;
-            if (!isNaN(key)) key = parseInt(key, 10);
+            let key;
+            if (m[2] !== undefined) {
+                const prop = m[2];
+                key = /^\d+$/.test(prop) ? prop : prop;
+            } else {
+                key = parseBracketKey(m[3], target);
+            }
             if (target && typeof target === 'object' && key in target) {
                 target = target[key];
             } else {
