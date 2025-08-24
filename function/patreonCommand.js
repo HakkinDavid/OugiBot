@@ -16,7 +16,7 @@ module.exports = async function (msg, compact = false) {
       .setFooter({ text: await ougi.text(msg, "patreonFooter") })
       .setTimestamp();
 
-      msg.channel.send({ embeds: [patreonEmbed] });
+    msg.channel.send({ embeds: [patreonEmbed] });
   }
 
 
