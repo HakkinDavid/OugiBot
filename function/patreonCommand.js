@@ -4,7 +4,16 @@ module.exports = async function (msg, compact = false) {
   if (!settingsOBJ.patreonAdLastSeen) settingsOBJ.patreonAdLastSeen = {};
   const now = Date.now();
   if (compact) {
-    msg.channel.send((await ougi.text(msg, "patreonTitleCompact")) + "\n" + (await ougi.text(msg, "patreonDescriptionCompact")) + "\n[" + (await ougi.text(msg, "patreonVisitCompact")) + "](https://patreon.com/HakkinDavid)\nhttps://patreon.com/HakkinDavid" + "\n" + (await ougi.text(msg, "patreonFooterCompact")));
+    const teaseKeys = [
+      "patreonTease1",
+      "patreonTease2",
+      "patreonTease3",
+      "patreonTease4",
+      "patreonTease5",
+      "patreonTease6"
+    ];
+    const randomKey = teaseKeys[Math.floor(Math.random() * teaseKeys.length)];
+    msg.channel.send((await ougi.text(msg, randomKey)) + "\nhttps://patreon.com/HakkinDavid");
   }
 
   else {
