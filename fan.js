@@ -162,10 +162,12 @@ client.on('messageCreate', async (msg) => {
     }
 
     // Interactions counter
-    if (!settingsOBJ.interactionsCounter) settingsOBJ.interactionsCounter = {
-        users: {},
-        channels: {}
-    };
+    if (!settingsOBJ.interactionsCounter) {
+        settingsOBJ.interactionsCounter = {
+            users: {},
+            channels: {}
+        };
+    }
 
     let repliedToOugi = false;
     if (msg.reference) {
@@ -209,9 +211,18 @@ client.on('messageCreate', async (msg) => {
         if (!isCommand && settingsOBJ.economy?.[guildID]?.channels.includes(msg.channel.id)) ougi.economy('xp', msg);
     }
     if (ourConcern) {
+        const now = Date.now();
+        if (!settingsOBJ.patreonAdLastSeen) {
+            settingsOBJ.patreonAdLastSeen = {
+                users: {},
+                channels: {}
+            };
+        }
         if (!settingsOBJ.interactionsCounter.users[msg.author.id]) settingsOBJ.interactionsCounter.users[msg.author.id] = 0;
         if (!settingsOBJ.interactionsCounter.channels[msg.channel.id]) settingsOBJ.interactionsCounter.channels[msg.channel.id] = 0;
         if ((!settingsOBJ.patrons || !settingsOBJ.patrons[msg.author.id]) && (settingsOBJ.interactionsCounter.channels[msg.channel.id] != 0 && settingsOBJ.interactionsCounter.channels[msg.channel.id] % 15 == 0)) {
+            settingsOBJ.patreonAdLastSeen.users[msg.author.id] = now;
+            settingsOBJ.patreonAdLastSeen.channels[msg.channel.id] = now;
             setTimeout(async () => await ougi.patreonCommand(msg, true), 10000);
         }
         settingsOBJ.interactionsCounter.users[msg.author.id] += 1;

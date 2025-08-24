@@ -1,8 +1,6 @@
 const { EmbedBuilder } = require("discord.js");
 
 module.exports = async function (msg, compact = false) {
-  if (!settingsOBJ.patreonAdLastSeen) settingsOBJ.patreonAdLastSeen = {};
-  const now = Date.now();
   if (compact) {
     const teaseKeys = [
       "patreonTease1",
@@ -28,8 +26,4 @@ module.exports = async function (msg, compact = false) {
 
     msg.channel.send({ embeds: [patreonEmbed] });
   }
-
-  settingsOBJ.patreonAdLastSeen[msg.channel.id] = now;
-  settingsOBJ.patreonAdLastSeen[msg.author.id] = now;
-
 };
