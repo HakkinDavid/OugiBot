@@ -115,7 +115,7 @@ console.error = (...args) => {
     logMessages.push(...args);
     if (!logMessages.at(-1)) return logMessages.pop();
 
-    global.criticalEmbed = new Discord.EmbedBuilder()
+    const criticalEmbed = new Discord.EmbedBuilder()
         .setAuthor({ name: "CONSOLE ERROR" })
         .setColor("#c20d00")
         .setFooter({ text: "errorLogEmbed by Ougi", iconURL: "https://github.com/HakkinDavid/OugiBot/blob/master/images/ougi.png?raw=true" })
@@ -162,12 +162,12 @@ client.on('messageCreate', async (msg) => {
     let repliedToOugi = false;
     if (msg.reference) {
         try {
-            global.refMsg = await msg.channel.messages.fetch(msg.reference.messageId);
+            const refMsg = await msg.channel.messages.fetch(msg.reference.messageId);
             repliedToOugi = refMsg.author.id === client.user.id;
         } catch { }
     }
 
-    global.lower = msg.content.toLowerCase();
+    const lower = msg.content.toLowerCase();
     if (lower.startsWith("ougi") || lower.startsWith("扇") || msg.mentions.has(client.user)) {
         return ougi.processCommand(msg);
     } else if (lower.startsWith("#ougi")) {
@@ -177,8 +177,8 @@ client.on('messageCreate', async (msg) => {
     }
 
     if (msg.channel.type === Discord.ChannelType.GuildText && msg.content.length > 0) {
-        global.guildID = msg.guild.id;
-        global.prefix = settingsOBJ.prefix[guildID] || '';
+        const guildID = msg.guild.id;
+        const prefix = settingsOBJ.prefix[guildID] || '';
         let isCommand = false;
 
         if (prefix && lower.startsWith(prefix)) {
@@ -192,7 +192,7 @@ client.on('messageCreate', async (msg) => {
     }
 
     if (msg.channel.type === Discord.ChannelType.DM && msg.content === "I want to opt out from using Ougi [BOT].") {
-        global.pseudoMSG = { ...msg, content: "ougi OPTOUTSTATEMENT" };
+        const pseudoMSG = { ...msg, content: "ougi OPTOUTSTATEMENT" };
         ougi.globalLog(pseudoMSG);
         ougi.optout(msg);
     }
@@ -204,8 +204,8 @@ client.on('messageCreate', async (msg) => {
         if (!msg?.author || msg.author.bot) return;
         if (!ougi.startup() || settingsOBJ.ignored.includes(msg.author.id)) return;
         if (msg.channel.type === Discord.ChannelType.GuildText) {
-            global.guildID = msg.guild.id;
-            global.blacklist = settingsOBJ.blacklist?.[guildID] || [];
+            const guildID = msg.guild.id;
+            const blacklist = settingsOBJ.blacklist?.[guildID] || [];
             if ((event === 'messageDelete' && blacklist.includes('snipe')) ||
                 (event === 'messageUpdate' && blacklist.includes('editsnipe'))) return;
         }
@@ -222,7 +222,7 @@ setInterval(async () => {
     if (process.env.BATTERY == 1) {
         exec("termux-battery-status | jq '.percentage'", (error, stdout, stderr) => {
             if (error || stderr) return ougi.globalLog(`Battery check error: ${error?.message || stderr}`);
-            global.battery = parseInt(stdout.trim());
+            const battery = parseInt(stdout.trim());
             ougi.globalLog(`Server battery: ${battery}%`);
             if (battery <= 25) client.users.cache.get(davidUserID)?.send(`Server battery: ${battery}%. Charge now!`);
         });
@@ -232,13 +232,13 @@ setInterval(async () => {
 /* ===== Intervalo para Recordatorios de Bump ===== */
 setInterval(async () => {
     if (!TEASEABLE || !ougi.startup()) return;
-    global.now = Date.now();
+    const now = Date.now();
     for (const [guildID, bumpData] of Object.entries(settingsOBJ.guildBump || {})) {
         if (bumpData.next_bump && bumpData.next_bump < now && !bumpData.reminded) {
             ougi.globalLog(`Reminded users to bump guild ${guildID}`);
-            global.message = (await ougi.text(settingsOBJ.lang[guildID] || "en", "bumpNow"))
+            const message = (await ougi.text(settingsOBJ.lang[guildID] || "en", "bumpNow"))
                 .replace("{timeStamp}", `<t:${Math.floor(now / 1000)}:t>`);
-            global.channel = client.channels.cache.get(bumpData.channel);
+            const channel = client.channels.cache.get(bumpData.channel);
             if (channel) await channel.send(`${message}${bumpData.role ? `\n<@&${bumpData.role}>` : ''}`);
             bumpData.reminded = true;
         }
