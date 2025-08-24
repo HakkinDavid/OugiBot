@@ -31,11 +31,6 @@ module.exports = async function (msg) {
     }
     settingsOBJ.ratelimit[msg.author.id] = now;
 
-    // Interactions counter
-    if (!settingsOBJ.interactionsCounter) settingsOBJ.interactionsCounter = {};
-    if (!settingsOBJ.interactionsCounter[msg.author.id]) settingsOBJ.interactionsCounter[msg.author.id] = 0;
-    if (!settingsOBJ.interactionsCounter[msg.channel.id]) settingsOBJ.interactionsCounter[msg.channel.id] = 0;
-
     // Ban check
     const userBan = settingsOBJ.banned[msg.author.id];
     if (userBan) {
@@ -149,7 +144,4 @@ module.exports = async function (msg) {
             }
         }
     }
-
-    settingsOBJ.interactionsCounter[msg.author.id] += 1;
-    settingsOBJ.interactionsCounter[msg.channel.id] += 1;
 };

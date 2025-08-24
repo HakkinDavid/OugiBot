@@ -149,6 +149,11 @@ client.once('ready', async () => {
 });
 
 client.on('messageCreate', async (msg) => {
+    // Interactions counter
+    if (!settingsOBJ.interactionsCounter) settingsOBJ.interactionsCounter = {};
+    if (!settingsOBJ.interactionsCounter[msg.author.id]) settingsOBJ.interactionsCounter[msg.author.id] = 0;
+    if (!settingsOBJ.interactionsCounter[msg.channel.id]) settingsOBJ.interactionsCounter[msg.channel.id] = 0;
+
     if (!msg.author || msg.author.bot && msg.author.id !== '302050872383242240') return;
 
     if (!TEASEABLE && msg.author.id !== davidUserID) return;
@@ -170,14 +175,19 @@ client.on('messageCreate', async (msg) => {
 
     const lower = msg.content.toLowerCase();
     if (lower.startsWith("ougi") || lower.startsWith("扇") || msg.mentions.has(client.user)) {
-        return ougi.processCommand(msg);
+        ougi.processCommand(msg);
     } else if (lower.startsWith("#ougi")) {
-        return ougi.rootCommands(msg);
+        ougi.rootCommands(msg);
     } else if (msg.channel.type === Discord.ChannelType.DM && msg.content.length > 0) {
-        return ougi.genAIAbility(msg);
-    }
-
-    if (msg.channel.type === Discord.ChannelType.GuildText && msg.content.length > 0) {
+        if (msg.content === "I want to opt out from using Ougi [BOT].") {
+            const pseudoMSG = { ...msg, content: "ougi OPTOUTSTATEMENT" };
+            ougi.globalLog(pseudoMSG);
+            ougi.optout(msg);
+        }
+        else {
+            ougi.genAIAbility(msg);
+        }
+    } else if (msg.channel.type === Discord.ChannelType.GuildText && msg.content.length > 0) {
         const guildID = msg.guild.id;
         const prefix = settingsOBJ.prefix[guildID] || '';
         let isCommand = false;
@@ -191,12 +201,8 @@ client.on('messageCreate', async (msg) => {
         if (!isCommand && repliedToOugi) ougi.genAIAbility(msg, repliedToOugi);
         if (!isCommand && settingsOBJ.economy?.[guildID]?.channels.includes(msg.channel.id)) ougi.economy('xp', msg);
     }
-
-    if (msg.channel.type === Discord.ChannelType.DM && msg.content === "I want to opt out from using Ougi [BOT].") {
-        const pseudoMSG = { ...msg, content: "ougi OPTOUTSTATEMENT" };
-        ougi.globalLog(pseudoMSG);
-        ougi.optout(msg);
-    }
+    settingsOBJ.interactionsCounter[msg.author.id] += 1;
+    settingsOBJ.interactionsCounter[msg.channel.id] += 1;
 });
 
 /* ===== Eventos de Sniping ===== */
