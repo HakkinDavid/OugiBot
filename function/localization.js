@@ -230,7 +230,8 @@ module.exports =
         "introductionAI": "Oh, hello there, you miserable user. What do you want? I'm busy and cannot be bothered with your silly questions.",
         "musicNoVC": "You are not in a voice channel.",
         "patreonTitle": "✨ Support Ougi on Patreon! ✨",
-        "patreonDescription": "Ougi has been around since 2019, bringing fun, chaos, and entertainment to your servers.\n\nIf you enjoy using Ougi and want to support its future development, consider becoming a patron. Every contribution helps keep the bot alive, growing, and full of surprises.\n\n[👉 Visit my Patreon here 👈](https://patreon.com/HakkinDavid)",
+        "patreonDescription": "Ougi has been around since 2019, bringing fun, chaos, and entertainment to your servers entirely for free. However, I cannot afford to continue paying Ougi's hosting from my pocket any longer. This is the reason behind Ougi having shutdown in different occasions for years.\n\nIf you enjoy using Ougi and want to support its future development, consider becoming a patron. Every contribution helps keep the bot alive, growing, and full of surprises.",
+        "patreonVisit": "Click here to donate, or copy the following link into your browser.",
         "patreonFooter": "Thank you for supporting Ougi 💖"
     },
     "es": {
