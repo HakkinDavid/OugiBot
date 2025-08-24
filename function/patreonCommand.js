@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require("discord.js");
 
-module.exports = async function (msg, ougi) {
+module.exports = async function (msg) {
 
   const patreonEmbed = new EmbedBuilder()
     .setTitle(await ougi.text(msg, "patreonTitle"))
