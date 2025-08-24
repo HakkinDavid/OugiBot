@@ -54,5 +54,11 @@ module.exports = async function(msg) {
         output = result.value;
     }
 
-    msg.channel.send('```json\n' + JSON.stringify(output, null, 4) + '\n```');
+    const jsonString = JSON.stringify(output, null, 4);
+    const wrapperOverhead = 9; // length of ```json\n + \n``` is 9
+    const chunkSize = 4000 - wrapperOverhead;
+    for (let i = 0; i < jsonString.length; i += chunkSize) {
+        const chunk = jsonString.slice(i, i + chunkSize);
+        msg.channel.send('```json\n' + chunk + '\n```');
+    }
 };
