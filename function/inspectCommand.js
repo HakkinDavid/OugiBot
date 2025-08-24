@@ -2,12 +2,12 @@
 module.exports = async function(msg) {
     const content = msg.content.trim();
     const parts = content.split(" ");
-    if (parts.length < 2) {
+    if (parts.length < 3) {
         msg.channel.send("Debes especificar la ruta de acceso al objeto.");
         return;
     }
 
-    const expression = parts.slice(1).join(" ").trim();
+    const expression = parts.slice(2).join(" ").trim();
 
     function resolveExpression(expr) {
         // Separar rootVar de los accesadores
