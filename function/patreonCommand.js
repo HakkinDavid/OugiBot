@@ -1,7 +1,7 @@
 const { EmbedBuilder } = require("discord.js");
 
 module.exports = async function (msg, compact = false) {
-
+  const now = Date.now();
   if (compact) {
     msg.channel.send((await ougi.text(msg, "patreonTitleCompact")) + "\n" + (await ougi.text(msg, "patreonDescriptionCompact")) + "\n[" + (await ougi.text(msg, "patreonVisitCompact")) + "](https://patreon.com/HakkinDavid)\nhttps://patreon.com/HakkinDavid" + "\n" + (await ougi.text(msg, "patreonFooterCompact")));
   }
@@ -19,5 +19,7 @@ module.exports = async function (msg, compact = false) {
     msg.channel.send({ embeds: [patreonEmbed] });
   }
 
+  settingsOBJ.patreonAdLastSeen[msg.channel.id] = now;
+  settingsOBJ.patreonAdLastSeen[msg.author.id] = now;
 
 };
