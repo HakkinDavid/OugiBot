@@ -54,10 +54,10 @@ async function (msg, replied_to_ougi) {
   // Actualizar el historial de interacciones del canal
   channelInteractions.push({ role: "user", content: userMessage });
   channelInteractions.push({ role: "assistant", content: spookyReply });
-  // Mantener solo los últimos 10 mensajes
-  if (channelInteractions.length > 10) {
-    // Mantener los últimos 10 (eliminar los más antiguos)
-    global.interactions[msg.channel.id] = channelInteractions.slice(-10);
+  // Mantener solo los últimos 5 mensajes
+  if (channelInteractions.length > 5) {
+    // Mantener los últimos 5 (eliminar los más antiguos)
+    global.interactions[msg.channel.id] = channelInteractions.slice(-5);
   }
 
   let embed = new Discord.EmbedBuilder()
