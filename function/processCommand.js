@@ -137,13 +137,13 @@ module.exports = async function (msg) {
     }
 
 if (!settingsOBJ.patrons || !settingsOBJ.patrons[msg.author.id]) {
+    if (!settingsOBJ.patreonAdLastSeen) settingsOBJ.patreonAdLastSeen = {};
     if (spookyCommand !== "patreon") {
         const adCooldown = 30 * 60 * 1000; // 30 minutos en ms
         const channelLastSeen = settingsOBJ.patreonAdLastSeen?.[msg.channel.id] || 0;
         const userLastSeen = settingsOBJ.patreonAdLastSeen?.[msg.author.id] || 0;
         if ((now - channelLastSeen > adCooldown) && (now - userLastSeen > adCooldown)) {
             await patreonCommand(msg);
-            if (!settingsOBJ.patreonAdLastSeen) settingsOBJ.patreonAdLastSeen = {};
             settingsOBJ.patreonAdLastSeen[msg.channel.id] = now;
             settingsOBJ.patreonAdLastSeen[msg.author.id] = now;
         }
