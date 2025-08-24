@@ -83,7 +83,7 @@ module.exports = async function text(msg, stringID, dynamic = false, raw = false
 
         localesCache[langCode][stringID] = returnableString;
         await ougi.writeFile(database.locales.file, JSON.stringify(localesCache, null, 4), console.error);
-        await ougi.backup(database.locales.file, localesChannel);
+        await ougi.backup(database.locales.file, channels.locales);
     }
 
     return returnableString;
