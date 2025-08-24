@@ -13,71 +13,72 @@ async function (msg, replied_to_ougi) {
 
   msg.content = msg.content.replace('<@629837958123356172>', 'ougi').replace('扇', 'ougi').replace('<@!629837958123356172>', 'ougi');
 
-  let previous_messages = [];
+  // Uso de interactions[msg.channel.id] en vez de previous_messages
+  if (!global.interactions[msg.channel.id]) global.interactions[msg.channel.id] = [];
+  let channelInteractions = global.interactions[msg.channel.id];
+
   let context = "";
-
-  if (replied_to_ougi) {
-    previous_messages = [{role: 'assistant', content: (await msg.channel.messages.fetch(msg.reference.messageId)).content}];
-  } else if (msg.channel.type === Discord.ChannelType.DM) {
-    previous_messages = (await msg.channel.messages.fetch({ limit: 2 })).map((x) => {
-      return {
-        role: (x.author.id === client.user.id ? 'assistant' : 'user'),
-        content: x.content
-      };
-    });
-  }
-
   if (msg.channel.type === Discord.ChannelType.GuildText) {
     context = (await ougi.text(msg, "contextTextChannel")).replace(/{guildName}/, msg.guild.toString()).replace(/{channelName}/, msg.channel.name);
-  }
-  else {
+  } else {
     context = (await ougi.text(msg, "contextDM"));
   }
 
-  let user_context = settingsOBJ.AI.description[msg.author.id];
-
+  //let user_context = settingsOBJ.AI.description[msg.author.id];
+  let userMessage = "[" + msg.author.username + "]:\n" + msg.content;
   let spookyReply = null;
 
-try {
-  spookyReply = await ougi.genAIText(
-    [
-      { role: 'system', content: (await ougi.text(msg, "whoAmI")) },
-      { role: 'system', content: (await ougi.text(msg, "instructions")) },
-      { role: 'system', content: (await ougi.text(msg, "userIsNamed")).replace(/{userName}/, msg.author.username) + (user_context ? "\n" + user_context : "") },
-      { role: 'system', content: context },
-      ... previous_messages,
-      { role: 'assistant', content: (await ougi.text(msg, "introductionAI")) },
-      { role: 'user', content: msg.content }
-    ]
-  );
-}
-catch (e) {
-  spookyReply = null;
-  console.error(e);
-}
+  // Construir mensajes para el modelo
+  let aiMessages = [
+    { role: 'system', content: (await ougi.text(msg, "whoAmI")) },
+    { role: 'system', content: (await ougi.text(msg, "instructions")) },
+    //{ role: 'system', content: (await ougi.text(msg, "userIsNamed")).replace(/{userName}/, msg.author.username) + (user_context ? "\n" + user_context : "") },
+    { role: 'system', content: context },
+    { role: 'assistant', content: (await ougi.text(msg, "introductionAI")) },
+    ...channelInteractions,
+    { role: 'user', content: userMessage }
+  ];
+
+  try {
+    spookyReply = await ougi.genAIText(aiMessages);
+  }
+  catch (e) {
+    spookyReply = null;
+    console.error(e);
+  }
 
   if (typeof spookyReply !== "string" || spookyReply.includes("OpenAI")) { ougi.judgementAbility(msg, replied_to_ougi); return; }
 
   spookyReply = await ougi.text(msg, spookyReply, true);
-  
+
+  // Actualizar el historial de interacciones del canal
+  channelInteractions.push({ role: "user", content: userMessage });
+  channelInteractions.push({ role: "assistant", content: spookyReply });
+  // Mantener solo los últimos 10 mensajes
+  if (channelInteractions.length > 10) {
+    // Mantener los últimos 10 (eliminar los más antiguos)
+    global.interactions[msg.channel.id] = channelInteractions.slice(-10);
+  }
+
   let embed = new Discord.EmbedBuilder()
-  .setTitle("Input for genAIAbility (" + msg.channel.type + " type channel)")
-  .setAuthor({name: msg.author.username, icon: msg.author.avatarURL({dynamic: true, size: 4096})})
-  .setColor("#FF008C")
-  .setFooter({text: "globalLogEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
-  .addFields({name: "Content", value: msg.content.slice(0, 1024)})
-  .addFields({name: "Reply", value: spookyReply});
-  
+    .setTitle("Input for genAIAbility (" + msg.channel.type + " type channel)")
+    .setAuthor({ name: msg.author.username, icon: msg.author.avatarURL({ dynamic: true, size: 4096 }) })
+    .setColor("#FF008C")
+    .setFooter({ text: "globalLogEmbed by Ougi", icon: client.user.avatarURL({ dynamic: true, size: 4096 }) })
+    .addFields({ name: "Content", value: msg.content.slice(0, 1024) })
+    .addFields({ name: "Reply", value: spookyReply });
+
   if (replied_to_ougi) { msg.reply(spookyReply).catch(console.error); }
   else { msg.channel.send(spookyReply).catch(console.error); }
-  client.channels.cache.get(consoleLogging).send({embeds: [embed]});
+  client.channels.cache.get(consoleLogging).send({ embeds: [embed] });
 
+  /*
   try {
     let updated_user_context = await ougi.genAIText(
       [
         { role: 'system', content: (await ougi.text(msg, "whoAmI")) },
         { role: 'system', content: (await ougi.text(msg, "userIsNamed")).replace(/{userName}/, msg.author.username) + (user_context ? "\n" + user_context : "") },
-        ... previous_messages,
+        ...channelInteractions,
         { role: 'user', content: msg.content },
         { role: 'system', content: (await ougi.text(msg, "userDescription")) }
       ]
@@ -90,4 +91,5 @@ catch (e) {
   catch (e) {
     console.error(e);
   }
+  */
 }

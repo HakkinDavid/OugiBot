@@ -97,6 +97,7 @@ global.knowledgeBase = null;
 
 global.ammo = {};
 global.reloadedAmmo = {};
+global.interactions = {};
 
 global.database = {
     settings: { id: channels.settings, file: './settings.txt', done: false },
