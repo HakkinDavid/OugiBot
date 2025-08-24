@@ -14,8 +14,8 @@ async function (msg, replied_to_ougi) {
   msg.content = msg.content.replace('<@629837958123356172>', 'ougi').replace('扇', 'ougi').replace('<@!629837958123356172>', 'ougi');
 
   // Uso de interactions[msg.channel.id] en vez de previous_messages
-  if (!global.interactions[msg.channel.id]) global.interactions[msg.channel.id] = [];
-  let channelInteractions = global.interactions[msg.channel.id];
+  if (!interactions[msg.channel.id]) interactions[msg.channel.id] = [];
+  let channelInteractions = interactions[msg.channel.id];
 
   let context = "";
   if (msg.channel.type === Discord.ChannelType.GuildText) {
@@ -57,7 +57,7 @@ async function (msg, replied_to_ougi) {
   // Mantener solo los últimos 5 mensajes
   if (channelInteractions.length > 5) {
     // Mantener los últimos 5 (eliminar los más antiguos)
-    global.interactions[msg.channel.id] = channelInteractions.slice(-5);
+    interactions[msg.channel.id] = channelInteractions.slice(-5);
   }
 
   let embed = new Discord.EmbedBuilder()
