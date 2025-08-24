@@ -236,7 +236,7 @@ module.exports =
         "patreonFooter": "Thank you for supporting Ougi 💖",
         "patreonFooterAlt": "Your donations keep Ougi online, thanks 💖",
         "patreonTease1": "Strange... you keep relying on me, yet you've never thought of supporting me. Curious. Patreon exists, you know.",
-        "patreonTease2": "Tch. Don't misunderstand— I don't *need* your help. But if you insist on keeping me around, Patreon is there.",
+        "patreonTease2": "Tch. Don't get me wrong— It's been fun. But if you insist on keeping me around, Patreon is there.",
         "patreonTease3": "Isn't it odd? You enjoy my presence, but you still don't contribute to it. Hm. Well, here's a hint.",
         "patreonTease4": "Heh. You think I'll just run forever without support? How naïve. Patreon is your only option... not that it matters to me.",
         "patreonTease5": "I wonder... are you the type who takes without giving? Hm. How unsightly. Patreon would change that.",
