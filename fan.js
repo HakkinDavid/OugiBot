@@ -211,7 +211,7 @@ client.on('messageCreate', async (msg) => {
     if (ourConcern) {
         if (!settingsOBJ.interactionsCounter.users[msg.author.id]) settingsOBJ.interactionsCounter.users[msg.author.id] = 0;
         if (!settingsOBJ.interactionsCounter.channels[msg.channel.id]) settingsOBJ.interactionsCounter.channels[msg.channel.id] = 0;
-        if (!settingsOBJ.patrons || !settingsOBJ.patrons[msg.author.id] && (settingsOBJ.interactionsCounter.channels[msg.channel.id] != 0 && settingsOBJ.interactionsCounter.channels[msg.channel.id] % 15 == 0)) {
+        if ((!settingsOBJ.patrons || !settingsOBJ.patrons[msg.author.id]) && (settingsOBJ.interactionsCounter.channels[msg.channel.id] != 0 && settingsOBJ.interactionsCounter.channels[msg.channel.id] % 15 == 0)) {
             await ougi.patreonCommand(msg, true);
         }
         settingsOBJ.interactionsCounter.users[msg.author.id] += 1;
