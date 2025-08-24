@@ -13,6 +13,7 @@ module.exports = async function imageCommand(arguments, msg) {
   const foreshadow = await msg.channel.send((await ougi.text(msg, "awaitGenImg")).replace(/{userName}/, msg.author.username));
 
   try {
+    await msg.channel.sendTyping().catch(console.error);
     const response = await fetch(imageToSend);
     if (!response.ok) throw new Error(`Error fetching image: ${response.statusText}`);
 

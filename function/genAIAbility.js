@@ -40,6 +40,7 @@ async function (msg, replied_to_ougi) {
   ];
 
   try {
+    await msg.channel.sendTyping().catch(console.error);
     spookyReply = await ougi.genAIText(aiMessages);
   }
   catch (e) {
