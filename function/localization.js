@@ -229,9 +229,9 @@ module.exports =
         "bumpNow": "Babe! It's {timeStamp} already. Time for your Disboard bump!",
         "introductionAI": "Oh, hello there, you miserable user. What do you want? I'm busy and cannot be bothered with your silly questions.",
         "musicNoVC": "You are not in a voice channel.",
-        "patreon_title": "✨ Support Ougi on Patreon! ✨",
-        "patreon_description": "Ougi has been around since 2019, bringing fun, chaos, and entertainment to your servers.\n\nIf you enjoy using Ougi and want to support its future development, consider becoming a patron. Every contribution helps keep the bot alive, growing, and full of surprises.\n\n[👉 Visit my Patreon here 👈](https://patreon.com/HakkinDavid)",
-        "patreon_footer": "Thank you for supporting Ougi 💖"
+        "patreonTitle": "✨ Support Ougi on Patreon! ✨",
+        "patreonDescription": "Ougi has been around since 2019, bringing fun, chaos, and entertainment to your servers.\n\nIf you enjoy using Ougi and want to support its future development, consider becoming a patron. Every contribution helps keep the bot alive, growing, and full of surprises.\n\n[👉 Visit my Patreon here 👈](https://patreon.com/HakkinDavid)",
+        "patreonFooter": "Thank you for supporting Ougi 💖"
     },
     "es": {
         "helpTitle": "Página de ayuda con Ougi",
