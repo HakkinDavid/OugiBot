@@ -74,6 +74,9 @@ async function (msg) {
       case "patron":
         ougi.patronCommand(msg)
       break;
+      case "inspect":
+        ougi.inspectCommand(msg)
+      break;
       default:
         ougi.undefinedCommand(arguments, msg)
       break;
