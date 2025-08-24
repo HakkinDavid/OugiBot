@@ -168,6 +168,7 @@ module.exports =
         "snipeHelpDesc": "Use this command to make Ougi show any recently deleted messages in this channel. You may browse the deleted messages by specifying a number (starting in 1 for the last deletion).",
         "editsnipeHelpDesc": "Use this command to make Ougi show the original content of any recently edited messages in this channel. You may browse the edited messages by specifying a number (starting in 1 for the last edit).",
         "diceTitle": "Dice resulted in a {num}!",
+        "diceRolling": "Dice is rolling on the floor! Wait a second...",
         "diceHelpDesc": "Use this command to get a random number from Ougi's virtual dice.",
         "insufficientPerms": "Ougi lacks one or more permissions in this channel to work properly. If you are an administrator, make sure to give Ougi the following permissions and try again.",
         "CREATE_INSTANT_INVITE": "Create instant invite",
@@ -232,7 +233,12 @@ module.exports =
         "patreonTitle": "✨ Support Ougi on Patreon! ✨",
         "patreonDescription": "Ougi has been around since 2019, bringing fun, chaos, and entertainment to your servers entirely for free. However, I cannot afford to continue paying Ougi's hosting from my pocket any longer. This is the reason behind Ougi having shutdown in different occasions for years.\n\nIf you enjoy using Ougi and want to support its future development, consider becoming a patron. Every contribution helps keep the bot alive, growing, and full of surprises.",
         "patreonVisit": "Click here to donate, or copy the following link into your browser.",
-        "patreonFooter": "Thank you for supporting Ougi 💖"
+        "patreonFooter": "Thank you for supporting Ougi 💖",
+        "userFetchFail": "Failed to fetch that user.",
+        "curlNoTarget": "No valid target detected for curl. Mention a user, channel, role, emoji, or provide an ID.",
+        "noDistinctRole": "This member has no distinctive role.",
+        "downloadIcon": "Download icon",
+        "curlError": "An unexpected error occurred while running curl."
     },
     "es": {
         "helpTitle": "Página de ayuda con Ougi",
