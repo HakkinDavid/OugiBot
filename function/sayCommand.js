@@ -25,7 +25,7 @@ async function (arguments, msg) {
     }
 
     var finalMessage = sayMessage.toString();
-    if (msg.channel.type != "dm") {
+    if (msg.channel.type !== Discord.ChannelType.DM) {
       while(finalMessage.includes("nigga") || finalMessage.includes("nigger") || finalMessage.includes("gay") || finalMessage.includes("cock") || finalMessage.includes("penis") || finalMessage.includes("n word")){
         finalMessage = finalMessage
         .replace("nigga", "unwhite")

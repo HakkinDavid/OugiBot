@@ -33,13 +33,13 @@ async function (arguments, msg, self) {
 
     msg.channel.send(emojiArray.join("")).then((message) => {
       if (emojiArray.includes("<a:random:742246590982651976>") && emojiArray.length <= 6) {
-        let lucky = client.setInterval(function () {
+        let lucky = setInterval(function () {
           let newEmoji = emojiArray.indexOf("<a:random:742246590982651976>");
           let thatEmoji = proArrayID[Math.floor(Math.random()*proArrayID.length)];
           emojiArray.splice(newEmoji, 1, thatEmoji);
           message.edit(emojiArray.join(""));
           if (!emojiArray.includes("<a:random:742246590982651976>")) {
-            client.clearInterval(lucky);
+            clearInterval(lucky);
           }
         }, 600);
       }

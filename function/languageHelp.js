@@ -8,20 +8,20 @@ async function (msg, guild) {
   if (guild) {
     embed = await ougi.helpPreset(msg, "guildlanguage");
     embed.setDescription(await ougi.text(msg, "guildLanguageHelpDesc") + " " + await ougi.text(msg, "possibleLangInput"))
-    if (msg.channel.type != "text") {
-      embed.addField(await ougi.text(msg, "onlyGuilds"), ":warning: " + await ougi.text(msg, "mustGuild"))
+    if (msg.channel.type !== Discord.ChannelType.GuildText) {
+      embed.addFields({name: await ougi.text(msg, "onlyGuilds"), value: ":warning: " + await ougi.text(msg, "mustGuild")})
     }
-    embed.addField(await ougi.text(msg, "specialPermission"), ":warning: " + await ougi.text(msg, "onlyOwner"))
-    .addField(await ougi.text(msg, "example"), "`ougi guildlanguage " + possibleLangs[anIndex] + "`")
-    .addField(await ougi.text(msg, "sameAs"), "`ougi guildlanguage " + possibleCodes[anIndex] + "`")
-    .addField(await ougi.text(msg, "output"), (await ougi.text(msg, "newLangGuild")).replace(/{langName}/gi, ougi.capitalize(possibleLangs[anIndex]) + " (" + possibleCodes[anIndex] + ")"));
+    embed.addFields({name: await ougi.text(msg, "specialPermission"), value: ":warning: " + await ougi.text(msg, "onlyOwner")})
+    .addFields({name: await ougi.text(msg, "example"), value: "`ougi guildlanguage " + possibleLangs[anIndex] + "`"})
+    .addFields({name: await ougi.text(msg, "sameAs"), value: "`ougi guildlanguage " + possibleCodes[anIndex] + "`"})
+    .addFields({name: await ougi.text(msg, "output"), value: (await ougi.text(msg, "newLangGuild")).replace(/{langName}/gi, ougi.capitalize(possibleLangs[anIndex]) + " (" + possibleCodes[anIndex] + ")")});
   }
   else {
     embed = await ougi.helpPreset(msg, "language");
     embed.setDescription(await ougi.text(msg, "languageHelpDesc") + " " + await ougi.text(msg, "possibleLangInput"))
-    .addField(await ougi.text(msg, "example"), "`ougi language " + possibleLangs[anIndex] + "`")
-    .addField(await ougi.text(msg, "sameAs"), "`ougi language " + possibleCodes[anIndex] + "`")
-    .addField(await ougi.text(msg, "output"), (await ougi.text(msg, "newLang")).replace(/{langName}/gi, ougi.capitalize(possibleLangs[anIndex]) + " (" + possibleCodes[anIndex] + ")"));
+    .addFields({name: await ougi.text(msg, "example"), value: "`ougi language " + possibleLangs[anIndex] + "`"})
+    .addFields({name: await ougi.text(msg, "sameAs"), value: "`ougi language " + possibleCodes[anIndex] + "`"})
+    .addFields({name: await ougi.text(msg, "output"), value: (await ougi.text(msg, "newLang")).replace(/{langName}/gi, ougi.capitalize(possibleLangs[anIndex]) + " (" + possibleCodes[anIndex] + ")")});
   }
-  msg.channel.send({embed}).catch(console.error);
+  msg.channel.send({embeds: [embed]}).catch(console.error);
 }

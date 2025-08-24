@@ -1,312 +1,136 @@
-module.exports =
+const { EmbedBuilder, ChannelType } = require('discord.js');
 
-async function (msg) {
-    while (msg.content.includes('  ')) {
-      msg.content = msg.content.replace('  ', ' ')
+module.exports = async function (msg) {
+    // Normalizar espacios y saltos de línea
+    msg.content = msg.content.replace(/\s+/g, ' ').replace(/\n+/g, ' ').trim();
+
+    const parts = msg.content.toLowerCase().split(' ');
+    const spookyCommand = parts[1];
+    const args = parts.slice(2);
+
+    const mustHavePerms = [
+        "AddReactions",
+        "ViewChannel",
+        "SendMessages",
+        "ManageMessages",
+        "EmbedLinks",
+        "AttachFiles",
+        "UseExternalEmojis",
+        "ManageWebhooks"
+    ];
+
+    // Rate-limit
+    const now = Date.now();
+    const lastTime = settingsOBJ.ratelimit[msg.author.id] || 0;
+    if (now - lastTime <= 1500) {
+        const waitTime = ((1500 - (now - lastTime)) / 1000).toFixed(1);
+        msg.channel.send((await ougi.text(msg, "ratelimited")).replace('{t}', `\`${waitTime}\``));
+        ougi.globalLog(`Rate limit applied to user ${msg.author.username} (${waitTime}s)`);
+        return;
     }
-    while (msg.content.includes('\n\n')) {
-      msg.content = msg.content.replace('\n\n', '\n')
-    }
-    while (msg.content.includes('\n')) {
-      msg.content = msg.content.replace('\n', ' ')
-    }
-    let spookyCake = msg.content;
-    let spookySlices = spookyCake.toLowerCase().split(" ");
-    let spookyCommand = spookySlices[1];
-    let arguments = spookySlices.slice(2);
-    let mustHavePerms = ["ADD_REACTIONS", "VIEW_CHANNEL", "SEND_MESSAGES", "MANAGE_MESSAGES", "EMBED_LINKS", "ATTACH_FILES", "USE_EXTERNAL_EMOJIS", "MANAGE_WEBHOOKS"];
+    settingsOBJ.ratelimit[msg.author.id] = now;
 
-    // ratelimits spammers
-    let ratelimit = (new Date).getTime();
-
-    if (settingsOBJ.ratelimit[msg.author.id] && !((ratelimit - settingsOBJ.ratelimit[msg.author.id]) > 1500)) {
-        msg.channel.send((await ougi.text(msg, "ratelimited")).replace(/{t}/, "`" + (1500 - (ratelimit - settingsOBJ.ratelimit[msg.author.id]))/1000) + "`");
-        ougi.globalLog("Rate limit applied to user " + msg.author.username + " (" + (1500 - (ratelimit - settingsOBJ.ratelimit[msg.author.id]))/1000 + "s)");
-        return
-    }
-
-    settingsOBJ.ratelimit[msg.author.id] = ratelimit;
-
-    // ignore those who i deem unworthy of using ougi
-    if (settingsOBJ.banned[msg.author.id]) {
-      if (!isNaN(settingsOBJ.banned[msg.author.id].until) && (settingsOBJ.banned[msg.author.id].until - (new Date).getTime()) <= 0) {
-        delete settingsOBJ.banned[msg.author.id];
-        msg.channel.send("Your ban sentence has expired.");
-      }
-      else {
-        let banEmbed = new Discord.MessageEmbed()
-        .setColor("#20064F")
-        .setTitle("It's a beautiful day outside...")
-        .setDescription("Yoinks! Your right to use Ougi has been forfeited because of an inappropriate usage.")
-        .addField("Ban expires until", new Date (settingsOBJ.banned[msg.author.id].until))
-        .addField("Reason", settingsOBJ.banned[msg.author.id].reason);
-        msg.channel.send(banEmbed);
-        return
-      }
-    }
-
-    /*Ignore if in blacklist*/
-    if (msg.channel.type === "text") {
-      let guildID = msg.guild.id;
-
-      if (settingsOBJ.blacklist.hasOwnProperty(guildID)){
-        let existent = settingsOBJ.blacklist[guildID];
-        for (i = 0; i < existent.length; i++) {
-          if (existent[i].toLowerCase() === spookySlices.slice(1).join(" ")) {
-            msg.channel.send("Sorry, that's blacklisted in " + msg.guild.toString() + ".").catch(console.error);
-            return
-          }
-          else if (existent[i].toLowerCase() === spookyCommand) {
-            msg.channel.send("Sorry, that's blacklisted in " + msg.guild.toString() + ".").catch(console.error);
-            return
-          }
+    // Ban check
+    const userBan = settingsOBJ.banned[msg.author.id];
+    if (userBan) {
+        const expired = !isNaN(userBan.until) && (userBan.until - now) <= 0;
+        if (expired) {
+            delete settingsOBJ.banned[msg.author.id];
+            await msg.channel.send("Your ban sentence has expired.");
+        } else {
+            const banEmbed = new EmbedBuilder()
+                .setColor("#20064F")
+                .setTitle("It's a beautiful day outside...")
+                .setDescription("Yoinks! Your right to use Ougi has been forfeited because of an inappropriate usage.")
+                .addFields(
+                    { name: "Ban expires until", value: `<t:${Math.floor(userBan.until / 1000)}:f>` },
+                    { name: "Reason", value: userBan.reason || "No reason provided" }
+                );
+            await msg.channel.send({ embeds: [banEmbed] });
+            return;
         }
-      }
     }
 
-    if (msg.channel.type === "text") {
-      ougi.guildLog(msg);
+    // Blacklist check
+    if (msg.channel.type === ChannelType.GuildText) {
+        const guildID = msg.guild.id;
+        const blacklist = settingsOBJ.blacklist?.[guildID] || [];
+        if (blacklist.some(item => item.toLowerCase() === spookyCommand || item.toLowerCase() === parts.slice(1).join(' '))) {
+            await msg.channel.send(`Sorry, that's blacklisted in ${msg.guild.toString()}.`).catch(console.error);
+            return;
+        }
+        ougi.guildLog(msg);
     }
 
     ougi.globalLog(msg);
-    if (!await ougi.checkPerms(msg, mustHavePerms)) {
-        return
+
+    // Check permissions
+    if (!await ougi.checkPerms(msg, mustHavePerms)) return;
+
+    // Comandos
+    const commandMap = {
+        help: () => ougi.helpCommand(args, msg), // ok
+        calc: () => ougi.calculateCommand(args, msg), // ok
+        say: () => ougi.sayCommand(args, msg), // ok
+        dice: () => ougi.diceCommand(msg), // ok
+        answer: () => ougi.answerCommand(msg), // ok
+        image: () => ougi.imageCommand(args, msg), // ok
+        curl: () => ougi.curlCommand(msg), // ok
+        embed: () => ougi.spookyEmbed(msg), // ok
+        news: () => ougi.newsCommand(args, msg), // ok
+        work: () => ougi.workCommand(msg),
+        balance: () => ougi.balanceCheck(args, msg),
+        covidstats: () => ougi.covidstats(args, msg),
+        healthcare: () => ougi.healthcare(msg),
+        md: () => ougi.medicalDefinition(args, msg),
+        stats: () => ougi.statsCommand(msg),
+        tweet: () => ougi.tweet(msg),
+        minesweeper: () => ougi.minesweeper(msg),
+        newspaper: () => ougi.newspaper(args, msg),
+        recipe: () => ougi.recipeCommand(args, msg),
+        react: () => ougi.reactCommand(args, msg),
+        learn: () => ougi.talkLearn(args, msg),
+        forget: () => ougi.talkForget(args, msg),
+        info: () => ougi.whoIsMe(args, msg),
+        acknowledgement: () => ougi.tos(msg),
+        translate: () => ougi.translateCommand(msg),
+        "emoji": () => ougi.customEmoji(args, msg),
+        "emoji-list": () => ougi.emojiList(args, msg),
+        snipe: () => ougi.shootSniper(args, msg, false),
+        editsnipe: () => ougi.shootSniper(args, msg, true),
+        speak: () => ougi.voice(msg),
+        reminder: () => ougi.remindMe(msg),
+        prefix: () => ougi.prefix(args, msg),
+        setlog: () => ougi.setLog(args, msg),
+        setnews: () => ougi.setNews(args, msg),
+        blacklist: () => ougi.rm(args, msg),
+        allow: () => ougi.allowCommand(args, msg),
+        language: () => ougi.lang(args, msg, false),
+        survey: () => ougi.feedback(msg, true),
+        results: () => ougi.results(msg),
+        guildlanguage: () => ougi.lang(args, msg, true),
+        "xp-channel": () => ougi.manageEconomy('channel', msg, args),
+        economy: () => ougi.manageEconomy('economy', msg, args),
+        seticon: () => ougi.economyIcons(args, msg),
+        remindbump: () => ougi.remindBump(args, msg)
+    };
+
+    // Música y URLs
+    const musicCommands = ["music", "skip", "stop", "remove", "lyrics", "play", "p"];
+    const urlPattern = /^https?:\/\/(www\.)?(youtube\.com|youtu\.be)/i;
+
+    if (commandMap[spookyCommand]) {
+        await commandMap[spookyCommand]();
+    } else if (urlPattern.test(spookyCommand)) {
+        msg.content = msg.content.replace("ougi", "ougi music");
+        await ougi.voiceCallMusic(msg).catch(console.error);
+    } else if (spookyCommand === "subscribe" && args.length === 0) {
+        await ougi.subscribeCommand(msg);
+    } else if (spookyCommand === "unsubscribe" && args.length === 0) {
+        await ougi.unsubscribeCommand(msg);
+    } else if (musicCommands.includes(spookyCommand)) {
+        await ougi.voiceCallMusic(msg).catch(console.error);
+    } else {
+        await ougi.genAIAbility(msg);
     }
-
-    /*---------------------*/
-
-    switch (spookyCommand) {
-      case undefined:
-        ougi.undefinedCommand(arguments, msg)
-      break;
-
-      case "help":
-        ougi.helpCommand(arguments, msg)
-      break;
-
-      case "multiply":
-        ougi.multiplyCommand(arguments, msg)
-      break;
-
-      case "add":
-        ougi.additionCommand(arguments, msg)
-      break;
-
-      case "say":
-        ougi.sayCommand(arguments, msg)
-      break;
-
-      case "dice":
-        ougi.dice(msg)
-      break;
-
-      case "answer":
-        ougi.answerCommand(msg)
-      break;
-
-      case "image":
-        ougi.imageCommand(arguments, msg)
-      break;
-
-      case "curl":
-        ougi.curl(msg)
-      break;
-
-      case "embed":
-        ougi.spookyEmbed(msg)
-      break;
-
-      case "news":
-        ougi.newsCommand(arguments, msg)
-      break;
-
-      case "work":
-        ougi.workCommand(msg)
-      break;
-
-      //case "crime":
-      //  ougi.crimeCommand(arguments, msg)
-      //break;
-
-      //case "rob":
-      //  ougi.robCommand(arguments, msg)
-      //break;
-
-      case "balance":
-        ougi.balanceCheck(arguments, msg)
-      break;
-
-      case "covidstats":
-        ougi.covidstats(arguments, msg)
-      break;
-
-      case "healthcare":
-        ougi.healthcare(msg)
-      break;
-
-      case "md":
-        ougi.medicalDefinition(arguments, msg)
-      break;
-
-      case "stats":
-        ougi.statsCommand(msg)
-      break;
-
-      case "tweet":
-        ougi.tweet(msg)
-      break;
-
-      case "minesweeper":
-        ougi.minesweeper(msg)
-      break;
-
-      case "newspaper":
-        ougi.newspaper(arguments, msg)
-      break;
-
-      case "recipe":
-        ougi.recipeCommand(arguments, msg)
-      break;
-
-      case "learn":
-        ougi.talkLearn(arguments, msg)
-      break;
-
-      case "forget":
-        ougi.talkForget(arguments, msg)
-      break;
-
-      case "info":
-        ougi.whoIsMe(arguments, msg)
-      break;
-
-      case "acknowledgement":
-        ougi.tos(msg)
-      break;
-
-      case "music":
-        ougi.voiceCallMusic(msg).catch(console.error)
-      break;
-
-      case "skip":
-        msg.content = "ougi music skip";
-        ougi.voiceCallMusic(msg).catch(console.error)
-      break;
-
-      case "stop":
-        msg.content = "ougi music stop";
-        ougi.voiceCallMusic(msg).catch(console.error)
-      break;
-
-      case "remove":
-        msg.content = "ougi music remove " + arguments.join(" ");
-        ougi.voiceCallMusic(msg).catch(console.error)
-      break;
-
-      case "lyrics":
-        ougi.lyrics(arguments, msg).catch(console.error)
-      break;
-
-      case "play":
-        ougi.voiceCallMusic(msg).catch(console.error)
-      break;
-
-      case "p":
-        ougi.voiceCallMusic(msg).catch(console.error)
-      break;
-
-      case "translate":
-        ougi.translateCommand(msg)
-      break;
-
-      case "emoji":
-        ougi.customEmoji(arguments, msg)
-      break;
-
-      case "emoji-list":
-        ougi.emojiList(arguments, msg)
-      break;
-
-      case "snipe":
-        ougi.shootSniper(arguments, msg, false)
-      break;
-
-      case "editsnipe":
-        ougi.shootSniper(arguments, msg, true)
-      break;
-
-      case "speak":
-        ougi.voice(msg)
-      break;
-
-      case "reminder":
-        ougi.remindMe(msg)
-      break;
-  /*----------------Mod Stuff--------------------*/
-      case "prefix":
-        ougi.prefix(arguments, msg)
-      break;
-
-      case "setlog":
-        ougi.setLog(arguments, msg)
-      break;
-
-      case "setnews":
-        ougi.setNews(arguments, msg)
-      break;
-
-      case "blacklist":
-        ougi.rm(arguments, msg)
-      break;
-
-      case "allow":
-        ougi.allowCommand(arguments, msg)
-      break;
-
-      case "language":
-        ougi.lang(arguments, msg, false)
-      break;
-
-      case "survey":
-        ougi.feedback(msg, true)
-      break;
-
-      case "results":
-        ougi.results(msg)
-      break;
-
-      case "guildlanguage":
-        ougi.lang(arguments, msg, true)
-      break;
-
-      case "xp-channel":
-        ougi.manageEconomy('channel', msg, arguments)
-      break;
-
-      case "economy":
-        ougi.manageEconomy('economy', msg, arguments)
-      break;
-
-      case "seticon":
-        ougi.economyIcons(arguments, msg)
-      break;
-  /*---------------------------------------------*/
-      default:
-        if (spookyCommand.toLowerCase().replace("https://", "").replace("www.", "").replace("youtu.be/", "youtube.com/watch?v=").startsWith("youtube.com/watch?v=")) {
-          msg.content = msg.content.replace("ougi", "ougi music");
-          ougi.voiceCallMusic(msg).catch(console.error)
-        }
-
-        else if (spookyCommand == "subscribe" && arguments.length == 0) {
-          ougi.subscribeCommand(msg)
-        }
-
-        else if (spookyCommand == "unsubscribe" && arguments.length == 0) {
-          ougi.unsubscribeCommand(msg)
-        }
-
-        else {
-          ougi.judgementAbility(msg)
-        }
-    }
-}
+};

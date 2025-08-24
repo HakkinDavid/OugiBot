@@ -1,12 +1,12 @@
 module.exports =
 
 async function (arguments, msg) {
-  if (msg.channel.type != "text") {
+  if (msg.channel.type !== Discord.ChannelType.GuildText) {
     msg.channel.send(await ougi.text(msg, "mustGuild"));
     return
   }
 
-  let elAdmin = msg.guild.ownerID;
+  let elAdmin = msg.guild.ownerId;
 
   if (elAdmin != msg.author.id) {
     msg.channel.send("You must be the server's owner to run this command.");
@@ -21,8 +21,8 @@ async function (arguments, msg) {
       if (settingsOBJ.logging.hasOwnProperty(guildID)){
         delete settingsOBJ.logging[guildID];
         msg.channel.send("Logging channel successfully disabled.");
-        await ougi.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), console.error);
-        await ougi.backup("./settings.txt", settingsChannel);
+        await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
+        await ougi.backup("./settings.txt", channels.settings);
         return
       }
       else {
@@ -47,6 +47,6 @@ async function (arguments, msg) {
   msg.channel.send("I'll start sending this server's commands log into <#"+ guildLogger +">.");
 
   settingsOBJ.logging[guildID] = guildLogger;
-  await ougi.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), console.error);
-  await ougi.backup("./settings.txt", settingsChannel);
+  await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
+  await ougi.backup("./settings.txt", channels.settings);
 }

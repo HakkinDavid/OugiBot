@@ -14,8 +14,8 @@ async function (msg) {
         msg.channel.send("You must include the user(s), a reason and ban expiration date.")
         return
     }
-    let spookyConstructor = new Discord.MessageEmbed()
-        .setFooter("banningEmbed by Ougi")
+    let spookyConstructor = new Discord.EmbedBuilder()
+        .setFooter({text: "banningEmbed by Ougi"})
         .setTimestamp()
         .setColor("#021959");
     for (i=0; breakChocolate.length > i; i++) {
@@ -52,6 +52,6 @@ async function (msg) {
         };
     }
     msg.channel.send("Banned users\n```" + users.join(", ") + " = " + JSON.stringify({reason, until}, null, 4) + "```");
-    await ougi.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), console.error);
-    await ougi.backup('./settings.txt', settingsChannel);
+    await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
+    await ougi.backup(database.settings.file, channels.settings);
 }

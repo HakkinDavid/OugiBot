@@ -1,13 +1,13 @@
 module.exports =
 
 async function (arguments, msg) {
-  if (msg.channel.type != "text") {
+  if (msg.channel.type !== Discord.ChannelType.GuildText) {
     msg.channel.send(await ougi.text(msg, "mustGuild"));
     return
   }
 
   let guildID = msg.guild.id;
-  let elAdmin = msg.guild.ownerID;
+  let elAdmin = msg.guild.ownerId;
 
   if (elAdmin != msg.author.id) {
     msg.channel.send(await ougi.text(msg, "mustOwn"));
@@ -56,9 +56,9 @@ async function (arguments, msg) {
       if(existent[i].toLowerCase() === trigger) {
         client.channels.cache.get(consoleLogging).send("Trigger to be removed from blacklist: `" + trigger + "` in `" + msg.guild.toString() + "` with guildID `" + guildID + "`");
         existent.splice(i, 1);
-        await ougi.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), console.error);
+        await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
         msg.channel.send(answer).catch(console.error);
-        await ougi.backup("./settings.txt", settingsChannel);
+        await ougi.backup("./settings.txt", channels.settings);
         return
       }
     }

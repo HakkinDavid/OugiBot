@@ -1,34 +1,39 @@
-module.exports =
+const { AttachmentBuilder, EmbedBuilder } = require('discord.js');
+const fetch = require('node-fetch');
 
-async function (arguments, msg) {
-    if (arguments.length < 1) {
-      msg.channel.send(await ougi.text(msg, "keywordRequired")).catch(console.error);
-      return;
-    }
-    let urls = await gis(arguments.join(" "), {
-        query: { safe: (msg.channel.nsfw ? "off" : "on") },
-        //userAgent: 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
-    });
+module.exports = async function imageCommand(arguments, msg) {
+  if (!arguments || arguments.length < 1) {
+    await msg.channel.send(await ougi.text(msg, "keywordRequired")).catch(console.error);
+    return;
+  }
 
-    for (i=0; urls.length > i; i++) {
-      if (!isImageUrl(urls[i].url)) {
-        urls.splice(i, 1);
-        i--
-      }
-    }
+  const prompt = arguments.join(" ");
+  const imageToSend = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1920&height=1080&nologo=true&private=true&safe=${msg.channel.nsfw ? "false" : "true"}&seed=${100 * Math.random() + 1}`;
 
-    if (urls.length === 0) {
-        msg.channel.send(await ougi.text(msg, "resultsZero")).catch(console.error);
-        return;
-    }
+  const foreshadow = await msg.channel.send((await ougi.text(msg, "awaitGenImg")).replace(/{userName}/, msg.author.username));
 
-    let imageToSend = urls[Math.floor(Math.random()*urls.length)];
+  try {
+    const response = await fetch(imageToSend);
+    if (!response.ok) throw new Error(`Error fetching image: ${response.statusText}`);
 
-    let spookyImage = new Discord.MessageEmbed()
-    .setImage(imageToSend.url)
-    .setFooter("imageEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
-    .setTimestamp()
-    .setColor(imageToSend.color);
-    msg.channel.send(spookyImage).catch(console.error);
-    client.channels.cache.get(consoleLogging).send(spookyImage);
-}
+    const imageBuffer = await response.buffer();
+    const imageAttachment = new AttachmentBuilder(imageBuffer, { name: "ougi-generated-image.png" });
+
+    const spookyImage = new EmbedBuilder()
+      .setTitle(await ougi.text(msg, "genImg"))
+      .setDescription(prompt)
+      .setImage("attachment://ougi-generated-image.png")
+      .setFooter({
+        text: `imageEmbed by Ougi, prompt by ${msg.author.username}`,
+        iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 })
+      })
+      .setTimestamp()
+      .setColor("#230347");
+
+    await msg.channel.send({ embeds: [spookyImage], files: [imageAttachment] });
+    await foreshadow.delete();
+  } catch (e) {
+    console.error(e);
+    await foreshadow.edit(await ougi.text(msg, "unableGenImg"));
+  }
+};

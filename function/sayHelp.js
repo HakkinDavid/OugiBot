@@ -3,15 +3,15 @@ module.exports =
 async function (msg) {
   var phrases = ["sike", "boo", "never gonna give you up"];
   var say = phrases[Math.floor(Math.random()*phrases.length)];
-  var embed = new Discord.MessageEmbed()
+  var embed = new Discord.EmbedBuilder()
   .setTitle("Ougi's `say` command")
-  .setAuthor("Ougi [BOT]", client.user.avatarURL({dynamic: true, size: 4096}))
+  .setAuthor({name: "Ougi [BOT]", icon: client.user.avatarURL({dynamic: true, size: 4096})})
   .setColor("#230347")
   .setDescription("Use this command to make Ougi send a message based on your words.")
-  .setFooter("helpEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
+  .setFooter({text: "helpEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true")
-  .addField(await ougi.text(msg, "example"), "`ougi say " + say + "`")
-  .addField(await ougi.text(msg, "output"), say)
+  .addFields({name: await ougi.text(msg, "example"), value: "`ougi say " + say + "`"})
+  .addFields({name: await ougi.text(msg, "output"), value: say})
 
-  msg.channel.send({embed}).catch(console.error);
+  msg.channel.send({embeds: [embed]}).catch(console.error);
 }

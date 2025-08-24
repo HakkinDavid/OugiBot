@@ -19,8 +19,8 @@ async function (msg) {
     msg.channel.send("You must include a title, a description, and optionally a type.")
     return
   }
-  let spookyConstructor = new Discord.MessageEmbed()
-    .setFooter("newsletterEmbed by Ougi")
+  let spookyConstructor = new Discord.EmbedBuilder()
+    .setFooter({text: "newsletterEmbed by Ougi"})
     .setTimestamp()
     .setColor("#F5F2F2")
     .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/news.png?raw=true");
@@ -81,9 +81,11 @@ async function (msg) {
   let names = [];
   let mod = 0;
   for (i=0; settingsOBJ.subscribers.length > i; i++) {
-    let aSub = await client.users.fetch(settingsOBJ.subscribers[i]);
+    let aSub = null;
+    try { aSub = await client.users.fetch(settingsOBJ.subscribers[i]); }
+    catch { console.log("Subscriber " + settingsOBJ.subscribers[i] + " is unreachable."); }
     if (aSub) {
-      aSub.send(spookyConstructor).catch(console.error);
+      aSub.send({embeds: [spookyConstructor]}).catch(console.error);
       names.push(aSub.username);
     }
     else {
@@ -91,9 +93,11 @@ async function (msg) {
     }
   }
   for (let getKey in settingsOBJ.guildNews) {
-    let newsDoor = await client.channels.fetch(settingsOBJ.guildNews[getKey]);
+    let newsDoor = null;
+    try { await client.channels.fetch(settingsOBJ.guildNews[getKey]); }
+    catch { console.log("Channel " + settingsOBJ.guildNews[getKey] + " in server " + getKey + " is unreachable."); }
     if (newsDoor) {
-      newsDoor.send(spookyConstructor).catch(console.error);
+      newsDoor.send({embeds: [spookyConstructor]}).catch(console.error);
       names.push(newsDoor.toString());
     }
     else {
@@ -103,7 +107,7 @@ async function (msg) {
   if (mod > 0) {
     ougi.globalLog("Skipped " + mod + " invalid IDs.")
   }
-  let newsArray = JSON.parse(ougi.readFile('./newsChannel.txt', 'utf-8', console.error));
+  let newsArray = ougi.readFile(database.news.file, 'utf-8', console.error);
   let thisArray = {
     title: embedName,
     desc: embedDesc,
@@ -112,9 +116,9 @@ async function (msg) {
   };
   newsArray.push(thisArray);
   let proArray = JSON.stringify(newsArray, null, 4);
-  let myEmbed = './newsChannel.txt';
-  await ougi.writeFile('./newsChannel.txt', proArray, console.error);
+  let myEmbed = database.news.file;
+  await ougi.writeFile(database.news.file, proArray, console.error);
 
-  await ougi.backup(myEmbed, newsChannel);
-  msg.channel.send("Sent this newsletter to:\n" + names.join('\n'), spookyConstructor);
+  await ougi.backup(myEmbed, channels.news);
+  msg.channel.send("Sent this newsletter to:\n" + names.join('\n'), {embeds: [spookyConstructor]});
 }

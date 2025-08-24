@@ -1,13 +1,13 @@
 module.exports =
 
 async function (arguments, msg) {
-  if (msg.channel.type != "text") {
+  if (msg.channel.type !== Discord.ChannelType.GuildText) {
     msg.channel.send(await ougi.text(msg, "mustGuild"));
     return
   }
 
   var guildID = msg.guild.id;
-  var elAdmin = msg.guild.ownerID;
+  var elAdmin = msg.guild.ownerId;
 
   if (elAdmin != msg.author.id) {
     msg.channel.send("You must be the server's owner to run this command.");
@@ -67,9 +67,9 @@ async function (arguments, msg) {
     msg.channel.send(answer).catch(console.error);
     client.channels.cache.get(consoleLogging).send("Trigger to be blacklisted: `" + trigger + "` in `" + msg.guild.toString() + "` with guildID `" + guildID + "`");
     settingsOBJ.blacklist[guildID] = existent;
-    await ougi.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), console.error);
+    await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
 
-    await ougi.backup("./settings.txt", settingsChannel);
+    await ougi.backup("./settings.txt", channels.settings);
     return
   }
 
@@ -80,7 +80,7 @@ async function (arguments, msg) {
   let arrayMaker = settingsOBJ.blacklist[guildID];
   arrayMaker.push(trigger);
   settingsOBJ.blacklist[guildID] = arrayMaker;
-  await ougi.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), console.error);
+  await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
 
-  await ougi.backup("./settings.txt", settingsChannel);
+  await ougi.backup("./settings.txt", channels.settings);
 }

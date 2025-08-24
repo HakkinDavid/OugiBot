@@ -45,21 +45,21 @@ function (msg) {
   let surveyDone = "\u200b";
   let mySurvey = settingsOBJ.surveysAvailable[surveyID];
   let upvoters = mySurvey.yes;
-  let embed = new Discord.MessageEmbed()
+  let embed = new Discord.EmbedBuilder()
   .setTitle('Survey unique notification')
   .setDescription("You're receiving this feedback notification since you upvoted the following survey at least once.\n<:unknown_emoji:731996283790950420> **Question:** *" + mySurvey.q + "*")
-  .addField("\u200b", notification)
+  .addFields({name: "\u200b", value: notification})
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/news.png?raw=true")
   .setColor(mySurvey.color)
   .setTimestamp()
-  .setAuthor("Ougi [BOT]", client.user.avatarURL({dynamic: true, size: 4096}))
-  .setFooter("surveyNotificationEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}));
+  .setAuthor({name: "Ougi [BOT]", icon: client.user.avatarURL({dynamic: true, size: 4096})})
+  .setFooter({text: "surveyNotificationEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})});
   let names = [];
   let mod = 0;
   for (i=0; upvoters.length > i; i++) {
     let anUpvoter = client.users.cache.get(upvoters[i]);
     if (anUpvoter != undefined) {
-      anUpvoter.send(embed).catch(console.error);
+      anUpvoter.send({embeds: [embed]}).catch(console.error);
       names.push(anUpvoter.username);
     }
     else {
@@ -69,5 +69,5 @@ function (msg) {
   if (mod > 0) {
     ougi.globalLog("Skipped " + mod + " invalid IDs.")
   }
-  msg.channel.send("Sent this newsletter to:\n" + names.join('\n'), embed);
+  msg.channel.send("Sent this newsletter to:\n" + names.join('\n'), {embeds: [embed]});
 }

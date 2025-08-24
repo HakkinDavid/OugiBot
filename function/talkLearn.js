@@ -89,12 +89,12 @@ async function (arguments, msg) {
     answer = answer + "\n\n```P.S. Since this response seems to include media, and because learn command is Ougi's main source of public replies, it will be audited by Ougi's developer (just to make sure nothing NSFW or illegal is stored).```";
   }
 
-  let embed = new Discord.MessageEmbed()
+  let embed = new Discord.EmbedBuilder()
   .setTitle("Input for talkLearn")
-  .addField("Response to be added", response)
-  .addField("With trigger", trigger)
+  .addFields({name: "Response to be added", value: response})
+  .addFields({name: "With trigger", value: trigger})
   .setColor("#FF008C")
-  .setFooter("globalLogEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}));
+  .setFooter({text: "globalLogEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})});
 
   if (knowledgeBase.hasOwnProperty(trigger)) {
     let existent = knowledgeBase[trigger];
@@ -107,26 +107,26 @@ async function (arguments, msg) {
     existent.push(response);
     msg.channel.send(answer).catch(console.error);
 
-    client.channels.cache.get(consoleLogging).send({embed});
+    client.channels.cache.get(consoleLogging).send({embeds: [embed]});
     knowledgeBase[trigger] = existent;
-    await ougi.writeFile('./responses.txt', JSON.stringify(knowledgeBase, null, 4), console.error);
+    await ougi.writeFile(database.backup.file, JSON.stringify(knowledgeBase, null, 4), console.error);
 
-    await ougi.backup("./responses.txt", backupChannel);
+    await ougi.backup("./responses.txt", channels.backup);
     if (potentialLinks.length > 0 && msg.author.id !== davidUserID) client.users.cache.get(davidUserID).send("User uploaded media.\n" + "**Trigger:** " + trigger + "\n**Response:** " + response);
     return
   }
 
   msg.channel.send(answer).catch(console.error);
 
-  client.channels.cache.get(consoleLogging).send({embed});
+  client.channels.cache.get(consoleLogging).send({embeds: [embed]});
 
   knowledgeBase[trigger] = [];
   let arrayMaker = knowledgeBase[trigger];
   arrayMaker.push(response);
   knowledgeBase[trigger] = arrayMaker;
-  await ougi.writeFile('./responses.txt', JSON.stringify(knowledgeBase, null, 4), console.error);
+  await ougi.writeFile(database.backup.file, JSON.stringify(knowledgeBase, null, 4), console.error);
 
-  await ougi.backup("./responses.txt", backupChannel);
+  await ougi.backup("./responses.txt", channels.backup);
   if (potentialLinks.length > 0 && msg.author.id !== davidUserID) client.users.cache.get(davidUserID).send("User uploaded media.\n" + "**Trigger:** " + trigger + "\n**Response:** " + response);
   return
 }

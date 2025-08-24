@@ -3,11 +3,11 @@ module.exports =
 async function (arguments, msg, guildExecution) {
   let preferencesID = msg.author.id;
   if (guildExecution) {
-    if (msg.channel.type != "text") {
+    if (msg.channel.type !== Discord.ChannelType.GuildText) {
       msg.channel.send(await ougi.text(msg, "mustGuild"));
       return
     }
-    if (msg.author.id != msg.guild.ownerID) {
+    if (msg.author.id != msg.guild.ownerId) {
       msg.channel.send(await ougi.text(msg, "mustOwn"));
       return
     }
@@ -35,12 +35,12 @@ async function (arguments, msg, guildExecution) {
     niceLang = isCode;
   }
   let finalCode = ougi.whereIs(ougi.langCodes, niceLang);
-  let langEmbed = new Discord.MessageEmbed()
+  let langEmbed = new Discord.EmbedBuilder()
   .setTitle((await ougi.text(msg, "newLang")).replace(/{langName}/gi, niceLang + " (" + finalCode + ")"))
-  .setAuthor("Ougi [BOT]", client.user.avatarURL({dynamic: true, size: 4096}))
+  .setAuthor({name: "Ougi [BOT]", icon: client.user.avatarURL({dynamic: true, size: 4096})})
   .setColor("#32A852")
   .setDescription(await ougi.text(msg, "langDesc"))
-  .setFooter("langEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
+  .setFooter({text: "langEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/world.png?raw=true");
   if (finalCode == 'default') {
     langEmbed.setTitle("Language preferences restored to default");
@@ -54,12 +54,12 @@ async function (arguments, msg, guildExecution) {
       langEmbed.setDescription("Ougi will use each user's language preferences.");
     }
   }
-  langEmbed.addField(":warning: " + await ougi.text(msg, "possibleDelay"), await ougi.text(msg, "delayWarning"))
-  msg.channel.send(langEmbed);
+  langEmbed.addFields({name: ":warning: " + await ougi.text(msg, "possibleDelay"), value: await ougi.text(msg, "delayWarning")})
+  msg.channel.send({embeds: [langEmbed]});
   settingsOBJ.lang[preferencesID] = finalCode;
   if (finalCode == 'default') {
     delete settingsOBJ.lang[preferencesID]
   }
-  await ougi.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), console.error);
-  await ougi.backup('./settings.txt', settingsChannel);
+  await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
+  await ougi.backup(database.settings.file, channels.settings);
 }

@@ -19,8 +19,8 @@ async function (input) {
     mindOBJ[identifier] = arrayMaker;
   }
 
-  await ougi.writeFile('./neuroNetworks.txt', JSON.stringify(mindOBJ, null, 4), console.error);
-  await ougi.backup('./neuroNetworks.txt', neuroChannel);
+  await ougi.writeFile(database.neuro.file, JSON.stringify(mindOBJ, null, 4), console.error);
+  await ougi.backup(database.neuro.file, channels.neuro);
   */
   return
 }

@@ -6,14 +6,14 @@ async function (msg, vcChannel) {
       vc[msg.guild.id][1].initiated = internalDate;
   }
   if (vc[msg.guild.id].length < 2) {
-    let queueEmbed = new Discord.MessageEmbed()
+    let queueEmbed = new Discord.EmbedBuilder()
     .setTitle("Queue is over!")
     .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/ougimusic.png?raw=true")
-    .setAuthor("Ougi [BOT]", client.user.avatarURL({dynamic: true, size: 4096}))
+    .setAuthor({name: "Ougi [BOT]", icon: client.user.avatarURL({dynamic: true, size: 4096})})
     .setColor("#230347")
-    .setFooter("queueEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
+    .setFooter({text: "queueEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
     .setTimestamp();
-    msg.channel.send(queueEmbed).catch(console.error);
+    msg.channel.send({embeds: [queueEmbed]}).catch(console.error);
     await vcChannel.leave();
     delete vc[msg.guild.id];
     return
@@ -35,14 +35,14 @@ async function (msg, vcChannel) {
     }
     await connection.play(await ytdl(anURL, { filter: 'audioonly', quality: 'highestaudio' }), { type: 'opus' });
     connection.on("error", async (error) => {
-      let queueEmbed = new Discord.MessageEmbed()
+      let queueEmbed = new Discord.EmbedBuilder()
       .setTitle("An error occured while playing this video. Seems like it's blocked for external use by YouTube.")
       .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/ougimusic.png?raw=true")
-      .setAuthor("Ougi [BOT]", client.user.avatarURL({dynamic: true, size: 4096}))
+      .setAuthor({name: "Ougi [BOT]", icon: client.user.avatarURL({dynamic: true, size: 4096})})
       .setColor("#230347")
-      .setFooter("queueEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
+      .setFooter({text: "queueEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
       .setTimestamp();
-      msg.channel.send(queueEmbed).catch(console.error);
+      msg.channel.send({embeds: [queueEmbed]}).catch(console.error);
       ougi.queue(msg, vcChannel);
     })
     setTimeout(async function () {
@@ -55,16 +55,16 @@ async function (msg, vcChannel) {
         ougi.queue(msg, vcChannel);
       }
     }, durationInMilliseconds + 2000);
-    let musicalEmbed = new Discord.MessageEmbed()
+    let musicalEmbed = new Discord.EmbedBuilder()
     .setTitle("Music with Ougi")
-    .setAuthor("Ougi [BOT]", client.user.avatarURL({dynamic: true, size: 4096}))
+    .setAuthor({name: "Ougi [BOT]", icon: client.user.avatarURL({dynamic: true, size: 4096})})
     .setColor("#230347")
     .setDescription("Now playing")
-    .setFooter("musicalEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
+    .setFooter({text: "musicalEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
     .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/ougimusic.png?raw=true")
     .setImage(videoImage)
     .setTimestamp()
-    .addField(videoTitle, "`" + durationInMinutes.join(":") + "`\nby " + videoAuthor + "\n[View in YouTube](" + anURL + " '" + videoTitle + "')");
-    msg.channel.send(musicalEmbed).catch(console.error);
+    .addFields({name: videoTitle, value: "`" + durationInMinutes.join(":") + "`\nby " + videoAuthor + "\n[View in YouTube](" + anURL + " '" + videoTitle + "')"});
+    msg.channel.send({embeds: [musicalEmbed]}).catch(console.error);
   });
 }

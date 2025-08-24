@@ -1,3 +1,5 @@
+const CryptoJS = require('crypto-js');
+
 module.exports =
 
 function (path, encoding = 'utf-8', callback = console.error) {
@@ -8,10 +10,14 @@ function (path, encoding = 'utf-8', callback = console.error) {
     }
     catch {
         if (raw === undefined || raw === null) {
-            return '{}'
+            return '{}';
         }
     }
-    let decrypted = CryptoJS.AES.decrypt(raw, process.env.CRYPT_KEY).toString(CryptoJS.enc.Utf8);
-
-    return decrypted;
+    try {
+        return JSON.parse(CryptoJS.AES.decrypt(raw, process.env.CRYPT_KEY).toString(CryptoJS.enc.Utf8));
+    }
+    catch {
+        console.error("The file at " + path + " is bad!");
+        return undefined;
+    }
 }

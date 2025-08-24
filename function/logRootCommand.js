@@ -8,7 +8,7 @@ async function (arguments, msg) {
     await ougi.writeFile(logFileName, emojiList.join('\n'), console.error);
     let attachment = new Discord.MessageAttachment(logFileName);
 
-    client.channels.cache.get(fileSpace).send("__**Emoji:**__ " + emojiList.length, attachment).catch(console.error);
+    client.channels.cache.get(channels.fileSpace).send("__**Emoji:**__ " + emojiList.length, attachment).catch(console.error);
     msg.channel.send("I've written a file containing every single emoji I can use.").catch(console.error);
   }
   else if (what == "guilds") {
@@ -17,7 +17,7 @@ async function (arguments, msg) {
     await ougi.writeFile(logFileName, guildsList.join('\n'), console.error);
     let attachment = new Discord.MessageAttachment(logFileName);
 
-    client.channels.cache.get(fileSpace).send("__**Guilds:**__ " + guildsList.length, attachment).catch(console.error);
+    client.channels.cache.get(channels.fileSpace).send("__**Guilds:**__ " + guildsList.length, attachment).catch(console.error);
     msg.channel.send("I've written a file containing every single guild I'm in.").catch(console.error);
   }
 }

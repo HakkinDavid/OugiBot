@@ -17,16 +17,16 @@ async function (msg) {
   var breakChocolate = thisMessage.split("::").slice(1);
   let icon = msg.author.avatarURL({dynamic: true, size: 4096});
   let embedColor = "#230347";
-  if (msg.channel.type == "text") {
+  if (msg.channel.type == Discord.ChannelType.GuildText) {
     icon = msg.guild.iconURL()
   }
   let difficulty = 5;
   let treasures = [];
   let fillers = [];
   let mine = [];
-  let minesweeperEmbed = new Discord.MessageEmbed()
+  let minesweeperEmbed = new Discord.EmbedBuilder()
     .setColor(embedColor)
-    .setFooter("minesweeperEmbed by Ougi & " + msg.author.username, client.user.avatarURL({dynamic: true, size: 4096}))
+    .setFooter({text: "minesweeperEmbed by Ougi & " + msg.author.username, icon: client.user.avatarURL({dynamic: true, size: 4096})})
     .setThumbnail(icon);
   for (i=0; breakChocolate.length > i; i++) {
     let material = breakChocolate[i];
@@ -94,5 +94,5 @@ async function (msg) {
     minebombs = minebombs.substring(0, minebombs.length-1);
   }
   minesweeperEmbed.setDescription(minebombs);
-  msg.channel.send(minesweeperEmbed);
+  msg.channel.send({embeds: [minesweeperEmbed]});
 }

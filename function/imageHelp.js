@@ -24,11 +24,11 @@ async function (msg) {
 
       let embed = await ougi.helpPreset(msg, "image");
       embed.setDescription(await ougi.text(msg, "imageHelpDesc"))
-      .addField(await ougi.text(msg, "example"), "`ougi image " + search +"`")
+      .addFields({name: await ougi.text(msg, "example"), value: "`ougi image " + search +"`"})
       .setImage(imageToSend)
-      .setFooter("helpEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
+      .setFooter({text: "helpEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
       .setTimestamp();
-      msg.channel.send(embed).catch(console.error);
-      client.channels.cache.get(consoleLogging).send(embed);
+      msg.channel.send({embeds: [embed]}).catch(console.error);
+      client.channels.cache.get(consoleLogging).send({embeds: [embed]});
   });
 }

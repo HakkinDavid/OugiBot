@@ -13,10 +13,10 @@ function(msg) {
   let spookyCommand = spookySlices[1];
   var arguments = spookySlices.slice(2);
   /*-----------------------------------*/
-  let ghostTweet = new Discord.MessageEmbed()
+  let ghostTweet = new Discord.EmbedBuilder()
     .setColor("#00acee")
     .setTimestamp()
-    .setFooter("Twitter", "https://github.com/HakkinDavid/OugiBot/blob/master/images/twittericon.png?raw=true");
+    .setFooter({text: "X", icon: "https://github.com/HakkinDavid/OugiBot/blob/master/images/xicon.png?raw=true"});
   if (arguments.length < 1) {
     msg.channel.send("Tweet must not be empty.");
     return
@@ -27,13 +27,13 @@ function(msg) {
       msg.channel.send("Author name must be a valid user mention.");
       return
     }
-    ghostTweet.setAuthor(client.users.cache.get(mentionedUser).username + " (@" + client.users.cache.get(mentionedUser).username + ")", client.users.cache.get(mentionedUser).avatarURL({dynamic: true, size: 4096}));
+    ghostTweet.setAuthor({name: client.users.cache.get(mentionedUser).username + " (@" + client.users.cache.get(mentionedUser).username + ")", icon: client.users.cache.get(mentionedUser).avatarURL({dynamic: true, size: 4096})});
     arguments.shift();
   }
   else {
-    ghostTweet.setAuthor(msg.author.username + " (@" + msg.author.username + ")", msg.author.avatarURL({dynamic: true, size: 4096}));
+    ghostTweet.setAuthor({name: msg.author.username + " (@" + msg.author.username + ")", icon: msg.author.avatarURL({dynamic: true, size: 4096})});
   }
   ghostTweet.setDescription(arguments.join(" ").slice(0, 2048));
   msg.delete().catch(O_o=>{});
-  msg.channel.send(ghostTweet).catch(console.error);
+  msg.channel.send({embeds: [ghostTweet]}).catch(console.error);
 }

@@ -49,28 +49,28 @@ function (arguments, msg, isEdit) {
     footerLogo = msg.guild.iconURL();
   }
 
-  let embed = new Discord.MessageEmbed()
+  let embed = new Discord.EmbedBuilder()
   .setColor("#7F0037")
-  .setAuthor("Ougi [BOT]", client.user.avatarURL({dynamic: true, size: 4096}))
+  .setAuthor({name: "Ougi [BOT]", icon: client.user.avatarURL({dynamic: true, size: 4096})})
   .setThumbnail(bullet.pfp)
-  .setFooter("Ougi " + action + " " + bullet.author + " (" + distance + " m)" + " with " + snipedWith + " (" + rarity + "). This channel has " + maxIndex + " snipeable messages.", footerLogo);
+  .setFooter({text: "Ougi " + action + " " + bullet.author + " (" + distance + " m)" + " with " + snipedWith + " (" + rarity + "). This channel has " + maxIndex + " snipeable messages.", icon: footerLogo});
   if (bullet.text != "") {
     if (bullet.text.length < 1024) {
-      embed.addField(bullet.author + " said <:quote:730061725755375667>", bullet.text)
+      embed.addFields({name: bullet.author + " said <:quote:730061725755375667>", value: bullet.text})
     }
     else {
-      embed.addField(bullet.author + " said <:quote:730061725755375667>", bullet.text.slice(0, 1024))
-      embed.addField("\u200b", bullet.text.slice(1024))
+      embed.addFields({name: bullet.author + " said <:quote:730061725755375667>", value: bullet.text.slice(0, 1024)})
+      embed.addFields({name: "\u200b", value: bullet.text.slice(1024)})
     }
   }
   else {
-    embed.addField(bullet.author + " shared a file", "\u200b")
+    embed.addFields({name: bullet.author + " shared a file", value: "\u200b"})
   }
 
   if (bullet.files.length > 0) {
-    embed.addField(bullet.files[0].name, "[Click here to view it on your browser](" + bullet.files[0].url + ")");
+    embed.addFields({name: bullet.files[0].name, value: "[Click here to view it on your browser](" + bullet.files[0].url + ")"});
     embed.setImage(bullet.files[0].url);
   }
 
-  msg.channel.send({embed}).catch(console.error);
+  msg.channel.send({embeds: [embed]}).catch(console.error);
 }

@@ -1,7 +1,7 @@
 module.exports =
 
 async function (msg) {
-    if (msg.channel.type !== "text") {
+    if (msg.channel.type !== Discord.ChannelType.GuildText) {
         msg.channel.send(await ougi.text(msg, "mustGuild"));
         return
     }
@@ -24,21 +24,21 @@ async function (msg) {
 
     settingsOBJ.economy[msg.guild.id].users[msg.author.id].worked = rn.getTime();
     
-    let embed = new Discord.MessageEmbed()
+    let embed = new Discord.EmbedBuilder()
     .setTitle(msg.author.username + " is working...")
     .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/loading.gif?raw=true")
     .setColor("#00D0D0");
 
-    msg.channel.send(embed).then(message => {
+    msg.channel.send({embeds: [embed]}).then(message => {
         setTimeout(
             function () {
                 message.delete();
-                let workEmbed = new Discord.MessageEmbed()
+                let workEmbed = new Discord.EmbedBuilder()
                 .setTitle("Here's your well deserved money " + msg.author.username + "!")
                 .setThumbnail(msg.author.avatarURL({dynamic: true, size: 4096}))
                 .setDescription("You've earned " + settingsOBJ.economy[msg.guild.id].currency + ougi.economy('add', msg, {reason: 'work'}))
                 .setColor("#281E87");
-                message.channel.send(workEmbed);
+                message.channel.send({embeds: [workEmbed]});
             }, Math.floor(Math.random()*10000)
         )
     });

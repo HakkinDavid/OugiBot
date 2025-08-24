@@ -1,11 +1,11 @@
 module.exports =
 
 async function (arguments, msg) {
-  let lyricsEmbed = new Discord.MessageEmbed()
+  let lyricsEmbed = new Discord.EmbedBuilder()
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/ougimusic.png?raw=true")
-  .setAuthor("Ougi [BOT]", client.user.avatarURL({dynamic: true, size: 4096}))
+  .setAuthor({name: "Ougi [BOT]", icon: client.user.avatarURL({dynamic: true, size: 4096})})
   .setColor("#230347")
-  .setFooter("lyricsEmbed by Ougi | Lyrics provided by KSoft.Si API", client.user.avatarURL({dynamic: true, size: 4096}));
+  .setFooter({text: "lyricsEmbed by Ougi | Lyrics provided by KSoft.Si API", icon: client.user.avatarURL({dynamic: true, size: 4096})});
 
   if (arguments.length < 1) {
     if (!msg.guild) {
@@ -33,13 +33,13 @@ async function (arguments, msg) {
           laLetra[i] = "\u200b";
         }
         if (i == 0) {
-          lyricsEmbed.addField("by " + track.artist.name, laLetra[i]);
+          lyricsEmbed.addFields({name: "by " + track.artist.name, value: laLetra[i]});
         }
         else {
-          lyricsEmbed.addField("\u200b", laLetra[i]);
+          lyricsEmbed.addFields({name: "\u200b", value: laLetra[i]});
         }
       }
-      msg.channel.send(lyricsEmbed).catch(console.error);
+      msg.channel.send({embeds: [lyricsEmbed]}).catch(console.error);
     }).catch(console.error);
   }
   else {
@@ -61,13 +61,13 @@ async function (arguments, msg) {
             laLetra[i] = laLetra[i].substring(0, 1024);
           }
           if (i == 0) {
-            lyricsEmbed.addField("by " + track.artist.name, laLetra[i]);
+            lyricsEmbed.addFields({name: "by " + track.artist.name, value: laLetra[i]});
           }
           else {
-            lyricsEmbed.addField("\u200b", laLetra[i]);
+            lyricsEmbed.addFields({name: "\u200b", value: laLetra[i]});
           }
         }
-        msg.channel.send(lyricsEmbed).catch(console.error);
+        msg.channel.send({embeds: [lyricsEmbed]}).catch(console.error);
       });
     }
     catch (e) {

@@ -9,15 +9,15 @@ function (msg) {
     members += g.memberCount-1;
     guilds++;
   });
-  let embed = new Discord.MessageEmbed()
-  .addField("Users in touch", "`" + members + "` users in total.")
-  .addField("Discord servers Ougi's in", "`" + guilds + "` Discord servers in total.")
-  .addField("Emoji available for Ougi's usage", "`" + emoji + "` emoji in total.")
-  .setAuthor("Ougi [BOT]", client.user.avatarURL({dynamic: true, size: 4096}))
-  .addField("\u200b", "Ougi was created by `" + client.users.cache.get(davidUserID).username + "`")
+  let embed = new Discord.EmbedBuilder()
+  .addFields({name: "Users in touch", value: "`" + members + "` users in total."})
+  .addFields({name: "Discord servers Ougi's in", value: "`" + guilds + "` Discord servers in total."})
+  .addFields({name: "Emoji available for Ougi's usage", value: "`" + emoji + "` emoji in total."})
+  .setAuthor({name: "Ougi [BOT]", icon: client.user.avatarURL({dynamic: true, size: 4096})})
+  .addFields({name: "\u200b", value: "Ougi was created by `" + client.users.cache.get(davidUserID).username + "`"})
   .setColor("#9C0049")
   .setThumbnail(client.users.cache.get(davidUserID).avatarURL({dynamic: true, size: 256}))
   .setTimestamp()
-  .setFooter("statsEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}));
-  msg.channel.send(embed)
+  .setFooter({text: "statsEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})});
+  msg.channel.send({embeds: [embed]})
 }

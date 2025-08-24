@@ -1,120 +1,49 @@
-module.exports =
+module.exports = async function (args, msg) {
+    const helpMap = {
+        say: () => ougi.sayHelp(msg),
+        answer: () => ougi.answerHelp(msg),
+        snipe: () => ougi.snipeHelp(msg, false),
+        editsnipe: () => ougi.snipeHelp(msg, true),
+        image: () => ougi.imageHelp(msg),
+        dice: () => ougi.diceHelp(msg),
+        music: () => ougi.musicHelp(msg),
+        skip: () => ougi.skipHelp(msg),
+        curl: () => ougi.curlHelp(msg),
+        lyrics: () => ougi.lyricsHelp(msg),
+        language: () => ougi.languageHelp(msg),
+        guildlanguage: () => ougi.languageHelp(msg, 1),
+        survey: () => ougi.surveyHelp(msg, 1),
+        embed: () => ougi.embedHelp(args, msg),
+        recipe: () => ougi.recipeHelp(msg),
+        stats: () => ougi.statsCommand(msg),
+        learn: () => ougi.learnHelp(msg),
+        tweet: () => ougi.tweetHelp(msg),
+        forget: () => ougi.forgetHelp(msg),
+        translate: () => ougi.translateHelp(msg),
+        'emoji-list': () => ougi.emojiListHelp(msg),
+        emoji: () => ougi.emojiHelp(msg),
+        blacklist: () => ougi.removeHelp(msg),
+        news: () => ougi.newsHelp(msg),
+        covidstats: () => ougi.covidstatsHelp(msg),
+        healthcare: () => ougi.healthcareHelp(msg),
+        md: () => ougi.medicalDefinitionHelp(msg),
+        allow: () => ougi.allowHelp(msg),
+        setlog: () => ougi.setlogHelp(msg),
+        setnews: () => ougi.setnewsHelp(msg),
+        newspaper: () => ougi.newspaperHelp(msg),
+        subscribe: () => ougi.subscribeHelp(msg),
+        unsubscribe: () => ougi.unsubscribeHelp(msg),
+        prefix: () => ougi.prefixHelp(msg),
+        acknowledgement: () => ougi.tos(msg),
+        info: () => ougi.whoIsMe(msg),
+        remindbump: () => ougi.remindbumpHelp(msg),
+        speak: () => ougi.speakHelp(msg)
+    };
 
-function (arguments, msg) {
-    switch (arguments[0]) {
-      case 'say':
-        ougi.sayHelp(msg)
-      break;
-      case 'answer':
-        ougi.answerHelp(msg)
-      break;
-      case 'snipe':
-        ougi.snipeHelp(msg, false)
-      break;
-      case 'editsnipe':
-        ougi.snipeHelp(msg, true)
-      break;
-      case 'image':
-        ougi.imageHelp(msg)
-      break;
-      case 'dice':
-        ougi.diceHelp(msg)
-      break;
-      case 'music':
-        ougi.musicHelp(msg)
-      break;
-      case 'skip':
-        ougi.skipHelp(msg)
-      break;
-      case 'curl':
-        ougi.curlHelp(msg)
-      break;
-      case 'lyrics':
-        ougi.lyricsHelp(msg)
-      break;
-      case 'language':
-        ougi.languageHelp(msg)
-      break;
-      case 'guildlanguage':
-        ougi.languageHelp(msg, 1)
-      break;
-      case 'survey':
-        ougi.surveyHelp(msg, 1)
-      break;
-      case 'embed':
-        ougi.embedHelp(arguments, msg)
-      break;
-      case 'recipe':
-        ougi.recipeHelp(msg)
-      break;
-      case 'stats':
-        ougi.statsCommand(msg)
-      break;
-      case 'learn':
-        ougi.learnHelp(msg)
-      break;
-      case 'tweet':
-        ougi.tweetHelp(msg)
-      break;
-      case 'forget':
-        ougi.forgetHelp(msg)
-      break;
-      case 'translate':
-        ougi.translateHelp(msg)
-      break;
-      case 'emoji-list':
-        ougi.emojiListHelp(msg)
-      break;
-      case 'emoji':
-        ougi.emojiHelp(msg)
-      break;
-      case 'blacklist':
-        ougi.removeHelp(msg)
-      break;
-      case 'news':
-        ougi.newsHelp(msg)
-      break;
-      case 'covidstats':
-        ougi.covidstatsHelp(msg)
-      break;
-      case 'healthcare':
-        ougi.healthcareHelp(msg)
-      break;
-      case 'md':
-        ougi.medicalDefinitionHelp(msg)
-      break;
-      case 'allow':
-        ougi.allowHelp(msg)
-      break;
-      case 'setlog':
-        ougi.setlogHelp(msg)
-      break;
-      case 'setnews':
-        ougi.setnewsHelp(msg)
-      break;
-      case 'newspaper':
-        ougi.newspaperHelp(msg)
-      break;
-      case 'subscribe':
-        ougi.subscribeHelp(msg)
-      break;
-      case 'unsubscribe':
-        ougi.unsubscribeHelp(msg)
-      break;
-      case 'prefix':
-        ougi.prefixHelp(msg)
-      break;
-      case 'acknowledgement':
-        ougi.tos(msg)
-      break;
-      case 'info':
-        ougi.whoIsMe(msg)
-      break;
-      case 'speak':
-        ougi.speakHelp(msg)
-      break;
-      default:
-        ougi.helpEmbed(msg)
-      break;
+    const command = args[0]?.toLowerCase();
+    if (command && helpMap[command]) {
+        await helpMap[command]();
+    } else {
+        await ougi.helpEmbed(msg);
     }
-}
+};

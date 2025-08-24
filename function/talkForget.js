@@ -90,25 +90,25 @@ async function (arguments, msg) {
       if (existent[i].toLowerCase() === response) {
         existent.splice(i, 1);
         msg.channel.send(answer).catch(console.error);
-        let embed = new Discord.MessageEmbed()
+        let embed = new Discord.EmbedBuilder()
         .setTitle("Input for talkForget")
-        .addField("Response to be deleted", response)
+        .addFields({name: "Response to be deleted", value: response})
         .setColor("#00FF73")
-        .setFooter("globalLogEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
+        .setFooter({text: "globalLogEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
 
         knowledgeBase[trigger] = existent;
         if (existent.length < 1) {
           delete knowledgeBase[trigger];
-          embed.addField("Trigger to be deleted", trigger);
+          embed.addFields({name: "Trigger to be deleted", value: trigger});
         }
         else {
-          embed.addField("From trigger", trigger)
+          embed.addFields({name: "From trigger", value: trigger})
         }
         
-        client.channels.cache.get(consoleLogging).send({embed});
-        await ougi.writeFile('./responses.txt', JSON.stringify(knowledgeBase, null, 4), console.error);
+        client.channels.cache.get(consoleLogging).send({embeds: [embed]});
+        await ougi.writeFile(database.backup.file, JSON.stringify(knowledgeBase, null, 4), console.error);
 
-        await ougi.backup("./responses.txt", backupChannel);
+        await ougi.backup("./responses.txt", channels.backup);
         return
       }
     }

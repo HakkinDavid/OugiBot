@@ -1,6 +1,6 @@
 module.exports =
 
-async function (msg) {
+async function (msg, replied_to_ougi) {
   while (msg.content.includes('  ')) {
     msg.content = msg.content.replace('  ', ' ')
   }
@@ -10,11 +10,11 @@ async function (msg) {
   while (msg.content.includes('\n')) {
     msg.content = msg.content.replace('\n', ' ')
   }
-  let embed = new Discord.MessageEmbed()
-  .setTitle("Input for judgementAbility (" + msg.channel.type.replace("dm", "DM").replace("text", "Text") + " channel)")
-  .setAuthor(msg.author.username, msg.author.avatarURL({dynamic: true, size: 4096}))
+  let embed = new Discord.EmbedBuilder()
+  .setTitle("Input for judgementAbility (" + msg.channel.type + " type channel)")
+  .setAuthor({name: msg.author.username, icon: msg.author.avatarURL({dynamic: true, size: 4096})})
   .setColor("#FF008C")
-  .setFooter("globalLogEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}));
+  .setFooter({text: "globalLogEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})});
 
   let stringsArray = Object.keys(knowledgeBase);
   let notSpookyDM = msg.content.toLowerCase();
@@ -26,31 +26,30 @@ async function (msg) {
   while (notSpookyDM.startsWith(" ")) {
     notSpookyDM = notSpookyDM.substring(1, notSpookyDM.length)
   }
-  embed.addField("Content", notSpookyDM.slice(0, 1024));
+  embed.addFields({name: "Content", value: notSpookyDM.slice(0, 1024)});
   
   let prevSimilarity = stringSimilarity.findBestMatch(notSpookyDM, stringsArray).bestMatch.rating;
   if (prevSimilarity * 100 < 90) {
     let msgTranslation = await ougi.text('en', notSpookyDM, true, true);
     notSpookyDM = msgTranslation.value;
     usedLang = msgTranslation.fromCode || msg;
-    embed.addField("Translated for processing", notSpookyDM.slice(0, 1024));
+    embed.addFields({name: "Translated for processing", value: notSpookyDM.slice(0, 1024)});
   }
 
   ougi.ideaCoreProcessor(notSpookyDM);
-  msg.channel.startTyping();
   ougi.sleep(500);
   let levenaryIdea = levenary(notSpookyDM, stringsArray);
   let myLevU = leven(notSpookyDM, levenaryIdea);
-  embed.addField("Levenshtein matching trigger found with " + myLevU + " Levenshtein distance units", levenaryIdea)
+  embed.addFields({name: "Levenshtein matching trigger found with " + myLevU + " Levenshtein distance units", value: levenaryIdea})
   let judgeThis = stringSimilarity.findBestMatch(notSpookyDM, stringsArray);
   let minSimilarity = 0.33;
   let similarity = judgeThis.bestMatch.rating;
   let comparisonThreshold = 0.25;
   let diceString = judgeThis.bestMatch.target;
-  embed.addField("Dice's Coefficient matching trigger found with " + similarity*100 + "% of similarity", diceString);
+  embed.addFields({name: "Dice's Coefficient matching trigger found with " + similarity*100 + "% of similarity", value: diceString});
   let compareLevDice = stringSimilarity.compareTwoStrings(levenaryIdea, diceString);
   let compareDiceLev = leven(levenaryIdea, diceString);
-  embed.addField("Levenshtein matching trigger and Dice's Coefficient matching trigger share", "► `" + compareDiceLev + "` Levenshtein distance units\n► `" + compareLevDice*100 + "%` similarity according to Dice's Coefficient");
+  embed.addFields({name: "Levenshtein matching trigger and Dice's Coefficient matching trigger share", value: "► `" + compareDiceLev + "` Levenshtein distance units\n► `" + compareLevDice*100 + "%` similarity according to Dice's Coefficient"});
   let tellLevAboutDice = leven(notSpookyDM, diceString);
   let thisString;
   if (compareLevDice > comparisonThreshold) {
@@ -66,31 +65,30 @@ async function (msg) {
   }
   let finalSimilarity = stringSimilarity.compareTwoStrings(notSpookyDM, thisString);
   let finalLevU = leven(notSpookyDM, thisString);
-  embed.addField("Ougi's judgementAbility chose the following trigger", thisString);
-  embed.addField("This trigger has", "► `" + finalSimilarity*100 + "%` of similarity\n► Current minimum is `" + minSimilarity*100 + "%`\n► `" + finalLevU + "` Levenshtein distance units")
+  embed.addFields({name: "Ougi's judgementAbility chose the following trigger", value: thisString});
+  embed.addFields({name: "This trigger has", value: "► `" + finalSimilarity*100 + "%` of similarity\n► Current minimum is `" + minSimilarity*100 + "%`\n► `" + finalLevU + "` Levenshtein distance units"})
   if (finalSimilarity >= minSimilarity){
     let options = knowledgeBase[thisString];
     let response = options[Math.floor(Math.random()*options.length)];
-    if (msg.channel.type !== "dm") {
+    if (msg.channel.type !== Discord.ChannelType.DM) {
       response = response
       .replace(/nigga|nigger/gi, "unwhiter")
       .replace(/cock|dick|penis/gi, "coke");
     }
     
-    embed.addField("Reply", response);
+    embed.addFields({name: "Reply", value: response});
     if (prevSimilarity * 100 < 90) {
       response = await ougi.text(usedLang, response, true);
-      embed.addField("Localized as", response);
+      embed.addFields({name: "Localized as", value: response});
     }
     
-    msg.channel.send(response).catch(console.error);
-    client.channels.cache.get(consoleLogging).send({embed});
+    if (replied_to_ougi) { msg.reply(response).catch(console.error); }
+    else { msg.channel.send(response).catch(console.error); }
+    client.channels.cache.get(consoleLogging).send({embeds: [embed]});
   }
   else {
-    embed.addField("Unsatisfied similarity minimum percentage", "Falling back to checkBadWords");
-    client.channels.cache.get(consoleLogging).send({embed});
-    ougi.checkBadWords(msg);
+    embed.addFields({name: "Unsatisfied similarity minimum percentage", value: "Falling back to checkBadWords"});
+    client.channels.cache.get(consoleLogging).send({embeds: [embed]});
+    ougi.checkBadWords(msg, replied_to_ougi);
   }
-  global.logsCount++;
-  msg.channel.stopTyping();
 }

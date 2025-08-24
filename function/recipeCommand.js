@@ -6,7 +6,7 @@ async function (arguments, msg) {
     if (settingsOBJ.lang.hasOwnProperty(msg.author.id)) {
         langCode = settingsOBJ.lang[msg.author.id]
     }
-    if (msg.channel.type == "text") {
+    if (msg.channel.type == Discord.ChannelType.GuildText) {
         if (settingsOBJ.lang.hasOwnProperty(msg.guild.id)) {
         langCode = settingsOBJ.lang[msg.guild.id];
         }
@@ -49,17 +49,17 @@ async function (arguments, msg) {
     
         let prettyRecipe = recipesOBJ[Math.floor(Math.random()*recipesOBJ.length)].recipe;
     
-        let embed = new Discord.MessageEmbed()
+        let embed = new Discord.EmbedBuilder()
         .setTitle(prettyRecipe.label)
         .setURL(prettyRecipe.url)
-        .setAuthor(prettyRecipe.source)
+        .setAuthor({name: prettyRecipe.source})
         .setThumbnail(prettyRecipe.image)
         .setDescription((await ougi.text(msg, "calories")).replace(/{num}/gi, "`" + prettyRecipe.calories + "`") + "\n**" + (await ougi.text(msg, "tags")) + "**\n" + (await ougi.text(msg, [ ... prettyRecipe.dietLabels, ... prettyRecipe.healthLabels ].join(", "), true)))
-        .addField(await ougi.text(msg, "ingredients"), await ougi.text(msg, prettyRecipe.ingredientLines.join("\n"), true))
+        .addFields({name: await ougi.text(msg, "ingredients"), value: await ougi.text(msg, prettyRecipe.ingredientLines.join("\n"), true)})
         .setColor("#6E2C00")
-        .setFooter("recipeEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
+        .setFooter({text: "recipeEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
         .setTimestamp();
     
-        msg.channel.send(embed);
+        msg.channel.send({embeds: [embed]});
     });
 }

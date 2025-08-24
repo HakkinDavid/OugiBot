@@ -1,12 +1,12 @@
 module.exports =
 
 async function (arguments, msg) {
-  if (msg.channel.type != "text") {
+  if (msg.channel.type !== Discord.ChannelType.GuildText) {
     msg.channel.send(await ougi.text(msg, "mustGuild"));
     return
   }
 
-  let elAdmin = msg.guild.ownerID;
+  let elAdmin = msg.guild.ownerId;
 
   if (elAdmin != msg.author.id) {
     msg.channel.send("You must be the server's owner to run this command.");
@@ -16,13 +16,13 @@ async function (arguments, msg) {
   let guildID = msg.guild.id;
   let guildNews = msg.channel.id;
 
-  if (arguments.length < 0) {
+  if (arguments.length > 0) {
     if (arguments[0] == "disable") {
       if (settingsOBJ.guildNews.hasOwnProperty(guildID)){
         delete settingsOBJ.guildNews[guildID];
         msg.channel.send("Newsletter channel successfully disabled.");
-        await ougi.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), console.error);
-        await ougi.backup("./settings.txt", settingsChannel);
+        await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
+        await ougi.backup("./settings.txt", channels.settings);
         return
       }
       else {
@@ -33,7 +33,7 @@ async function (arguments, msg) {
     else if (arguments[0].startsWith("<#") && arguments[0].endsWith(">")) {
       let channelMention = arguments[0];
       channelMention = channelMention.slice(2, -1);
-      if (!msg.guild.channels.has(channelMention)) {
+      if (!msg.guild.channels.cache.has(channelMention)) {
         msg.channel.send("Huh? Looks like you're using this command wrong. Refer to the following command for help.\n> ougi help setnews");
         return
       }
@@ -48,6 +48,6 @@ async function (arguments, msg) {
   msg.channel.send("I'll start sending updates and related information into <#"+ guildNews +">.");
 
   settingsOBJ.guildNews[guildID] = guildNews;
-  await ougi.writeFile('./settings.txt', JSON.stringify(settingsOBJ, null, 4), console.error);
-  await ougi.backup("./settings.txt", settingsChannel);
+  await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
+  await ougi.backup("./settings.txt", channels.settings);
 }

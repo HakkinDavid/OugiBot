@@ -41,7 +41,7 @@ async function (msg) {
     var serverIcon = msg.guild.iconURL();
   }
 
-  let spookyConstructor = new Discord.MessageEmbed();
+  let spookyConstructor = new Discord.EmbedBuilder();
   for (i=0; breakChocolate.length > i; i++) {
     let material = breakChocolate[i];
     if (material.endsWith(" ")) {
@@ -148,7 +148,7 @@ async function (msg) {
         msg.channel.send("Preset name must be between 1 and 100 characters long.");
         return
       }
-      let myLoad = JSON.parse(ougi.readFile("./embedPresets.txt"));
+      let myLoad = ougi.readFile("./embedPresets.txt");
       let aPreset = material + "::" + msg.author.id;
       if (myLoad.hasOwnProperty(aPreset)) {
         let gonnaPull = myLoad[aPreset].reverse();
@@ -164,7 +164,7 @@ async function (msg) {
       }
     }
     else if (material.startsWith("list")) {
-      let myLoad = JSON.parse(ougi.readFile("./embedPresets.txt"));
+      let myLoad = ougi.readFile("./embedPresets.txt");
       let aPreset = "::" + msg.author.id;
       let allPresets = Object.keys(myLoad);
       for (e=0; allPresets.length > e; e++) {
@@ -185,16 +185,16 @@ async function (msg) {
         msg.channel.send("Preset name must be between 1 and 100 characters long.");
         return
       }
-      let myLoad = JSON.parse(ougi.readFile("./embedPresets.txt"));
+      let myLoad = ougi.readFile("./embedPresets.txt");
       let aPreset = material + "::" + msg.author.id;
       if (myLoad.hasOwnProperty(aPreset)) {
         breakChocolate.splice(i, 1);
         delete myLoad[aPreset];
         let proArray = JSON.stringify(myLoad, null, 4);
-        let myEmbed = './embedPresets.txt';
-        await ougi.writeFile('./embedPresets.txt', proArray, console.error);
+        let myEmbed = database.embeds.file;
+        await ougi.writeFile(database.embeds.file, proArray, console.error);
 
-        await ougi.backup(myEmbed, embedsChannel);
+        await ougi.backup(myEmbed, channels.embeds);
         msg.channel.send("Deleted preset `" + material + "`.");
         i--;
       }
@@ -522,32 +522,32 @@ async function (msg) {
     }
   }
   if (footerArray[0] != undefined && footerArray[1] == undefined) {
-    spookyConstructor.setFooter(footerArray[0])
+    spookyConstructor.setFooter({text: footerArray[0]})
   }
   else if (footerArray[0] == undefined && footerArray[1] != undefined) {
-    spookyConstructor.setFooter("\u200b", footerArray[1])
+    spookyConstructor.setFooter({text: "\u200b", icon: footerArray[1]})
   }
   else if (footerArray[0] != undefined && footerArray[1] != undefined) {
-    spookyConstructor.setFooter(footerArray[0], footerArray[1])
+    spookyConstructor.setFooter({text: footerArray[0], icon: footerArray[1]})
   }
 
   if (authorArray[0] != undefined && authorArray[1] == undefined && authorArray[2] == undefined) {
-    spookyConstructor.setAuthor(authorArray[0])
+    spookyConstructor.setAuthor({name: authorArray[0]})
   }
   else if (authorArray[0] == undefined && authorArray[1] != undefined && authorArray[2] == undefined) {
-    spookyConstructor.setAuthor("\u200b", authorArray[1])
+    spookyConstructor.setAuthor({name: "\u200b", icon: authorArray[1]})
   }
   else if (authorArray[0] != undefined && authorArray[1] != undefined && authorArray[2] == undefined) {
-    spookyConstructor.setAuthor(authorArray[0], authorArray[1])
+    spookyConstructor.setAuthor({name: authorArray[0], icon: authorArray[1]})
   }
   else if (authorArray[0] != undefined && authorArray[1] == undefined && authorArray[2] != undefined) {
-    spookyConstructor.setAuthor(authorArray[0], undefined, authorArray[2])
+    spookyConstructor.setAuthor({name: authorArray[0], icon: undefined, url: authorArray[2]})
   }
   else if (authorArray[0] == undefined && authorArray[1] != undefined && authorArray[2] != undefined) {
-    spookyConstructor.setAuthor("\u200b", authorArray[1], authorArray[2])
+    spookyConstructor.setAuthor({name: "\u200b", icon: authorArray[1], url: authorArray[2]})
   }
   else if (authorArray[0] != undefined && authorArray[1] != undefined && authorArray[2] != undefined) {
-    spookyConstructor.setAuthor(authorArray[0], authorArray[1], authorArray[2])
+    spookyConstructor.setAuthor({name: authorArray[0], icon: authorArray[1], url: authorArray[2]})
   }
 
   for (i=0; fieldsArray.length > i || fieldsTitles.length > i; i++) {
@@ -568,18 +568,18 @@ async function (msg) {
 
   for (i=0; fieldsArray.length > i || fieldsTitles.length > i; i++) {
     if (fieldsArray[i] != undefined && fieldsTitles[i] != undefined) {
-      spookyConstructor.addField(fieldsTitles[i], fieldsArray[i])
+      spookyConstructor.addFields({name: fieldsTitles[i], value: fieldsArray[i]})
     }
     else if (fieldsArray[i] == undefined && fieldsTitles[i] != undefined) {
-      spookyConstructor.addField(fieldsTitles[i], "\u200b")
+      spookyConstructor.addFields({name: fieldsTitles[i], value: "\u200b"})
     }
     else if (fieldsArray[i] != undefined && fieldsTitles[i] == undefined) {
-      spookyConstructor.addField("\u200b", fieldsArray[i])
+      spookyConstructor.addFields({name: "\u200b", value: fieldsArray[i]})
     }
   }
 
   if (breakChocolate.length >= 1) {
-    msg.channel.send(spookyConstructor).then(
+    msg.channel.send({embeds: [spookyConstructor]}).then(
       setTimeout(
         function () {
           msg.delete().catch(O_o=>{})
@@ -593,15 +593,15 @@ async function (msg) {
       msg.channel.send("Your embed must not be empty.");
       return
     }
-    let pseudoArray = JSON.parse(ougi.readFile('./embedPresets.txt', 'utf-8', console.error));
+    let pseudoArray = ougi.readFile(database.embeds.file, 'utf-8', console.error);
     let personalizedPresetName = presetName + "::" + msg.author.id;
 
     pseudoArray[personalizedPresetName] = breakChocolate;
     let proArray = JSON.stringify(pseudoArray, null, 4);
-    let myEmbed = './embedPresets.txt';
-    await ougi.writeFile('./embedPresets.txt', proArray, console.error);
+    let myEmbed = database.embeds.file;
+    await ougi.writeFile(database.embeds.file, proArray, console.error);
 
-    await ougi.backup(myEmbed, embedsChannel);
+    await ougi.backup(myEmbed, channels.embeds);
     msg.channel.send("Saved preset as `" + presetName + "`, it's now available for you to use as template. Include `::load " + presetName + "` as command option whenever you want to use it.");
   }
 
@@ -610,7 +610,7 @@ async function (msg) {
       msg.channel.send("Your embed must not be empty.");
       return
     }
-    let pseudoArray = JSON.parse(ougi.readFile('./embedPresets.txt', 'utf-8', console.error));
+    let pseudoArray = ougi.readFile(database.embeds.file, 'utf-8', console.error);
     let circleOfSharing = [];
     for (i=0; i < sharedWith.length; i++) {
       circleOfSharing.push(client.users.cache.get(sharedWith[i]).username);
@@ -620,10 +620,10 @@ async function (msg) {
 
     let proArray = JSON.stringify(pseudoArray, null, 4);
 
-    let myEmbed = './embedPresets.txt';
-    await ougi.writeFile('./embedPresets.txt', proArray, console.error);
+    let myEmbed = database.embeds.file;
+    await ougi.writeFile(database.embeds.file, proArray, console.error);
 
-    await ougi.backup(myEmbed, embedsChannel);
+    await ougi.backup(myEmbed, channels.embeds);
     msg.channel.send("Shared preset as `" + msg.author.username + "'s preset` with `" + circleOfSharing.join("`, `") + "`. It's now available for them to use as template until it's overwritten by another share of yours. In order to keep it, they must load and save it under another name. Tell them to include `::load " + msg.author.username + "'s preset` as command option whenever they want to use it.");
   }
   if (listOfPresets.length >= 1) {

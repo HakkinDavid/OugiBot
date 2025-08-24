@@ -5,7 +5,7 @@ async function (msg) {
   let page = number[Math.floor(Math.random()*number.length)];
   let embed = await ougi.helpPreset(msg, "emoji-list");
   embed.setDescription(await ougi.text(msg, "emojiListHelpDesc"))
-  .addField(await ougi.text(msg, "example"), "`ougi emoji-list " + page + "`")
+  .addFields({name: await ougi.text(msg, "example"), value: "`ougi emoji-list " + page + "`"})
 
-  msg.channel.send({embed}).catch(console.error);
+  msg.channel.send({embeds: [embed]}).catch(console.error);
 }

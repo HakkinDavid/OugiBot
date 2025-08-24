@@ -1,15 +1,15 @@
 module.exports =
 
 async function (msg) {
-  if (msg.channel.type != "text") {
-    let embed = new Discord.MessageEmbed()
+  if (msg.channel.type !== Discord.ChannelType.GuildText) {
+    let embed = new Discord.EmbedBuilder()
     .setTitle("Ougi's `blacklist` command")
-    .setAuthor("Ougi [BOT]", client.user.avatarURL({dynamic: true, size: 4096}))
+    .setAuthor({name: "Ougi [BOT]", icon: client.user.avatarURL({dynamic: true, size: 4096})})
     .setColor("#230347")
-    .setFooter("helpEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
+    .setFooter({text: "helpEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
     .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true")
-    .addField("This is only available in Discord servers.", ":warning: You must be in a Discord server in order to preview information about this command.")
-    msg.channel.send({embed}).catch(console.error);
+    .addFields({name: "This is only available in Discord servers.", value: ":warning: You must be in a Discord server in order to preview information about this command."})
+    msg.channel.send({embeds: [embed]}).catch(console.error);
     return
   }
   let phrases = ["sike", "say a bad word", "snipe"];
@@ -19,18 +19,18 @@ async function (msg) {
     "Alright, I've blacklisted `" + remove + "` in " + msg.guild.toString() + ".",
   ];
   let answer = afterOptions[Math.floor(Math.random()*afterOptions.length)];
-  let embed = new Discord.MessageEmbed()
+  let embed = new Discord.EmbedBuilder()
   .setTitle("Ougi's `blacklist` command")
-  .setAuthor("Ougi [BOT]", client.user.avatarURL({dynamic: true, size: 4096}))
+  .setAuthor({name: "Ougi [BOT]", icon: client.user.avatarURL({dynamic: true, size: 4096})})
   .setColor("#230347")
   .setDescription("Use this command to blacklist a trigger in this Discord server, Ougi will start ignoring that input.")
-  .addField("Special permission required", ":warning: You must be the owner of whatever Discord server you run this command in.")
-  .setFooter("helpEmbed by Ougi", client.user.avatarURL({dynamic: true, size: 4096}))
+  .addFields({name: "Special permission required", value: ":warning: You must be the owner of whatever Discord server you run this command in."})
+  .setFooter({text: "helpEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true")
-  .addField(await ougi.text(msg, "example"), "`ougi blacklist " + remove + "`")
-  .addField(await ougi.text(msg, "output"), answer)
-  .addField("After that, if anyone executes the following", "`ougi " + remove + "`")
-  .addField(await ougi.text(msg, "output"), "Sorry, that's blacklisted in " + msg.guild.toString() + ".")
+  .addFields({name: await ougi.text(msg, "example"), value: "`ougi blacklist " + remove + "`"})
+  .addFields({name: await ougi.text(msg, "output"), value: answer})
+  .addFields({name: "After that, if anyone executes the following", value: "`ougi " + remove + "`"})
+  .addFields({name: await ougi.text(msg, "output"), value: "Sorry, that's blacklisted in " + msg.guild.toString() + "."})
 
-  msg.channel.send({embed}).catch(console.error);
+  msg.channel.send({embeds: [embed]}).catch(console.error);
 }
