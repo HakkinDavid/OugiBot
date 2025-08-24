@@ -138,12 +138,14 @@ module.exports = async function (msg) {
 
 if (!settingsOBJ.patrons || !settingsOBJ.patrons[msg.author.id]) {
     if (!settingsOBJ.patreonAdLastSeen) settingsOBJ.patreonAdLastSeen = {};
+    if (!settingsOBJ.interactionsCounter) settingsOBJ.interactionsCounter = {};
+    if (!settingsOBJ.interactionsCounter[msg.author.id]) settingsOBJ.interactionsCounter[msg.author.id] = 0;
+    if (!settingsOBJ.interactionsCounter[msg.channel.id]) settingsOBJ.interactionsCounter[msg.channel.id] = 0;
     if (spookyCommand !== "patreon") {
-        const adCooldown = 30 * 60 * 1000; // 30 minutos en ms
-        const channelLastSeen = settingsOBJ.patreonAdLastSeen?.[msg.channel.id] || 0;
-        const userLastSeen = settingsOBJ.patreonAdLastSeen?.[msg.author.id] || 0;
-        if ((now - channelLastSeen > adCooldown) && (now - userLastSeen > adCooldown)) {
-            await patreonCommand(msg);
+        if ((settingsOBJ.interactionsCounter[msg.author.id] != 0 && settingsOBJ.interactionsCounter[msg.author.id] % 20 == 0) || (settingsOBJ.interactionsCounter[msg.channel.id] != 0 && settingsOBJ.interactionsCounter[msg.channel.id] % 20 == 0)) {
+            await patreonCommand(msg, true);
+            settingsOBJ.interactionsCounter[msg.author.id] += 1;
+            settingsOBJ.interactionsCounter[msg.channel.id] += 1;
             settingsOBJ.patreonAdLastSeen[msg.channel.id] = now;
             settingsOBJ.patreonAdLastSeen[msg.author.id] = now;
         }
