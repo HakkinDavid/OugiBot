@@ -1,6 +1,6 @@
 const { EmbedBuilder, ChannelType } = require('discord.js');
 
-module.exports = async function curlCommand(msg) {
+module.exports = async function (msg) {
   let thisOBJ, titleCurl, mentioned, curlType, memberCurl, iconCurl;
   let colorCurl = "#43B581";
 
