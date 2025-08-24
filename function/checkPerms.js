@@ -18,7 +18,7 @@ module.exports =
         for (i = 0; missingPerms.length > i; i++) {
             missingPermsLocalized.push(await ougi.text(msg, missingPerms[i]))
         }
-        let permsString = (await ougi.text(msg, "insufficientPerms")) + "\n•`" + missingPermsLocalized.join("`\n•`") + "`";
+        let permsString = (await ougi.text(msg, "insufficientPerms")) + "\n•`" + missingPerms.join("`\n•`") + "`";
         ougi.globalLog("Missing permissions handled as:\n" + permsString);
         msg.channel.send(permsString);
         return false;
