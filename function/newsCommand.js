@@ -3,7 +3,7 @@ const { EmbedBuilder } = require('discord.js');
 module.exports = async function newsCommand(arguments, msg) {
   try {
     if (!arguments || arguments.length < 1) {
-      await msg.channel.send(await ougi.text(msg, "newsKeywordRequired"));
+      await msg.channel.send(await ougi.text(msg, "keywordRequired"));
       return;
     }
 
