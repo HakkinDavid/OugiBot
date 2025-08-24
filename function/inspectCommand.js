@@ -59,6 +59,8 @@ module.exports = async function(msg) {
     const chunkSize = 2000 - wrapperOverhead;
     for (let i = 0; i < jsonString.length; i += chunkSize) {
         const chunk = jsonString.slice(i, i + chunkSize);
-        msg.channel.send('```json\n' + chunk + '\n```');
+        setTimeout(() => {
+            msg.channel.send('```json\n' + chunk + '\n```');
+        }, i / chunkSize * 500); // 500ms delay between each message
     }
 };
