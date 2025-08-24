@@ -234,6 +234,7 @@ module.exports =
         "patreonDescription": "Ougi has been around since 2019, bringing fun, chaos, and entertainment to your servers entirely for free. However, I cannot afford to continue paying Ougi's hosting from my pocket any longer. This is the reason behind Ougi having shutdown in different occasions for years.\n\nIf you enjoy using Ougi and want to support its future development, consider becoming a patron. Every contribution helps keep the bot alive, growing, and full of surprises.",
         "patreonVisit": "Click here to donate, or copy the following link into your browser.",
         "patreonFooter": "Thank you for supporting Ougi 💖",
+        "patreonFooterAlt": "Your donations keep Ougi online 💖",
         "patreonTease1": "Strange... you keep relying on me, yet you've never thought of supporting me. Curious. Patreon exists, you know.",
         "patreonTease2": "Tch. Don't misunderstand— I don't *need* your help. But if you insist on keeping me around, Patreon is there.",
         "patreonTease3": "Isn't it odd? You enjoy my presence, but you still don't contribute to it. Hm. Well, here's a hint.",

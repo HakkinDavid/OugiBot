@@ -13,7 +13,7 @@ module.exports = async function (msg, compact = false) {
     const randomKey = teaseKeys[Math.floor(Math.random() * teaseKeys.length)];
     const tinyEmbed = new EmbedBuilder()
       .setTitle((await ougi.text(msg, randomKey)) + " https://patreon.com/HakkinDavid")
-      .setFooter({ text: await ougi.text(msg, "patreonFooter") })
+      .setFooter({ text: await ougi.text(msg, "patreonFooterAlt") })
       .setColor("#36465D");
 
     msg.channel.send({ embeds: [tinyEmbed] });
