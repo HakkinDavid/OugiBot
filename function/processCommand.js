@@ -1,4 +1,5 @@
 const { EmbedBuilder, ChannelType } = require('discord.js');
+const patreonCommand = require('./patreonCommand');
 
 module.exports = async function (msg) {
     // Normalizar espacios y saltos de línea
@@ -112,7 +113,8 @@ module.exports = async function (msg) {
         "xp-channel": () => ougi.manageEconomy('channel', msg, args),
         economy: () => ougi.manageEconomy('economy', msg, args),
         seticon: () => ougi.economyIcons(args, msg),
-        remindbump: () => ougi.remindBump(args, msg)
+        remindbump: () => ougi.remindBump(args, msg),
+        patreon: () => ougi.patreonCommand(msg)
     };
 
     // Música y URLs
@@ -133,4 +135,12 @@ module.exports = async function (msg) {
     } else {
         await ougi.genAIAbility(msg);
     }
+
+if (!settingsOBJ.patrons || !settingsOBJ.patrons[msg.author.id]) {
+    if (now - lastTime <= 60000 && spookyCommand != "patreon") {
+        if (Math.random() < 0.7) { // 70% de probabilidad de mostrar
+            await patreonCommand(msg);
+        }
+    }
+}
 };

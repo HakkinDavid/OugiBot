@@ -71,6 +71,9 @@ async function (msg) {
       case "ban":
         ougi.banCommand(msg)
       break;
+      case "patron":
+        ougi.patronCommand(msg)
+      break;
       default:
         ougi.undefinedCommand(arguments, msg)
       break;
