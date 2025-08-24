@@ -12,9 +12,9 @@ module.exports = async function (msg, compact = false) {
     ];
     const randomKey = teaseKeys[Math.floor(Math.random() * teaseKeys.length)];
     const tinyEmbed = new EmbedBuilder()
-      .setTitle(await ougi.text(msg, randomKey)) // usa la frase tsundere
+      .setTitle((await ougi.text(msg, randomKey)) + " https://patreon.com/HakkinDavid")
       .setURL("https://patreon.com/HakkinDavid")
-      .setColor("#0000F0"); // color neutro, casi imperceptible
+      .setColor("#36465D");
 
     msg.channel.send({ embeds: [tinyEmbed] });
   }
