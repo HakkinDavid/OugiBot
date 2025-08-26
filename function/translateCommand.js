@@ -43,13 +43,31 @@ async function (msg) {
     niceLang = isCode;
   }
   let finalCode = ougi.whereIs(ougi.langCodes, niceLang);
+
+  function splitIntoChunks(text, maxLength) {
+    let chunks = [];
+    for (let i = 0; i < text.length; i += maxLength) {
+      chunks.push(text.substring(i, i + maxLength));
+    }
+    return chunks;
+  }
+
   translate(phrase, {to: finalCode, client: 'gtx'}).then(res => {
     let embed = new Discord.EmbedBuilder()
     .setTitle("Ougi Translate")
     .setColor("#6254E7")
-    .addFields({name: "Input in " + ougi.langCodes[res.from.language.iso], value: phrase})
-    .addFields({name: "Translation to " + niceLang, value: res.text})
-    .setFooter({text: "Translated by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
+
+    let inputChunks = splitIntoChunks(phrase, 1024);
+    inputChunks.forEach((chunk, index) => {
+      embed.addFields({name: "Input in " + ougi.langCodes[res.from.language.iso] + (inputChunks.length > 1 ? ` (part ${index+1})` : ""), value: chunk});
+    });
+
+    let outputChunks = splitIntoChunks(res.text, 1024);
+    outputChunks.forEach((chunk, index) => {
+      embed.addFields({name: "Translation to " + niceLang + (outputChunks.length > 1 ? ` (part ${index+1})` : ""), value: chunk});
+    });
+
+    embed.setFooter({text: "Translated by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
     .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/ougitranslate.png?raw=true");
     msg.channel.send({embeds: [embed]}).catch(console.error);
   }).catch(err => {
