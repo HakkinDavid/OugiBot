@@ -28,7 +28,7 @@ module.exports = async function (arguments, msg) {
                 case 'ougi':
                 case '扇':
                 case client.user.toString():
-                case settingsOBJ.prefix[guildID]:
+                case settingsOBJ.prefix[msg.guildId]:
                     return 3;
                     break;
                 default:
