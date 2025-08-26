@@ -4,12 +4,25 @@ async function (msg) {
   let spookyCake = msg.content;
   let spookySlices = spookyCake.replace("\n", " ").split(" ");
   let arguments = spookySlices.slice(2);
+  let toLang;
+  let phrase;
   if (arguments.length <= 1) {
-    msg.channel.send("Please use a valid syntax for the translation. Refer to the following command if you are clueless.\n> ougi help translate").catch(console.error);
-    return
+    if (msg.reference) {
+      try {
+          const refMsg = await msg.channel.messages.fetch(msg.reference.messageId);
+          toLang = (arguments?.[0] ?? settingsOBJ.lang[msg.author.id]).toLowerCase().replace("-cn", "-CN").replace("-tw", "-TW");
+          phrase = refMsg.content;
+      } catch { }
+    }
+    else {
+      msg.channel.send("Please use a valid syntax for the translation. Refer to the following command if you are clueless.\n> ougi help translate").catch(console.error);
+      return
+    }
   }
-  let toLang = arguments[0].toLowerCase().replace("-cn", "-CN").replace("-tw", "-TW");
-  let phrase = arguments.slice(1).join(" ");
+  else {
+    toLang = arguments[0].toLowerCase().replace("-cn", "-CN").replace("-tw", "-TW");
+    phrase = arguments.slice(1).join(" ");
+  }
   if (toLang == "chinese") {
     toLang = "zh-CN"
   }
