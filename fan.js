@@ -253,7 +253,8 @@ client.on('messageReactionAdd', async (reaction, user) => {
         channel: reaction.message.channel,
         guild: reaction.message.guild,
         guildId: reaction.message.guildId,
-        mentions: {},
+        mentions: reaction.message.mentions,
+        client: reaction.message.client,
         reference: {messageId: reaction.message.id, guildId: reaction.message.guildId, channelId: reaction.message.channelId},
     };
 
