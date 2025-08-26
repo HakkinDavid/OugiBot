@@ -82,6 +82,8 @@ module.exports = async function (arguments, msg) {
         };
 
         await ougi.backup(database.settings.file, channels.settings);
+
+        msg.channel.send(await ougi.text(msg, "shortcutCreated"));
     }
     else if (subcommand === 'delete') {
         const emoji = arguments[1];
@@ -108,5 +110,7 @@ module.exports = async function (arguments, msg) {
         delete settingsOBJ.shortcuts[msg.guildId][emojiKey];
 
         await ougi.backup(database.settings.file, channels.settings);
+
+        msg.channel.send(await ougi.text(msg, "shortcutDeleted"));
     }
 }

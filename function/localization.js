@@ -253,7 +253,9 @@ module.exports =
         "shortcutCreateTitle": "Create shortcut",
         "shortcutCreateField": "Creates a shortcut. Accepts raw Unicode or custom emoji, command is any text that you would execute with Ougi, colon-wrapped shortcodes are rejected. The command to be executed should be specified without prefix.",
         "shortcutDeleteTitle": "Delete shortcut",
-        "shortcutDeleteField": "Deletes the shortcut for that emoji."
+        "shortcutDeleteField": "Deletes the shortcut for that emoji.",
+        "shortcutCreated": "Shortcut created, the chosen emoji will execute the command as requested under message reactions.",
+        "shortcutDeleted": "Shortcut deleted."
     },
     "es": {
         "helpTitle": "Página de ayuda con Ougi",
