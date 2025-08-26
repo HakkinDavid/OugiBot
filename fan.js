@@ -245,10 +245,17 @@ client.on('messageReactionAdd', async (reaction, user) => {
     const shortcut = settingsOBJ.shortcuts?.[guildId]?.[emojiKey];
     if (!shortcut) return;
 
-    const msg = reaction.message;
-    msg.content = 'ougi ' + shortcut.action;
-    msg.author = user;
-    msg.reference = {messageId: reaction.message.id, guildId: reaction.message.guildId, channelId: reaction.message.channelId};
+    const msg = {
+        id: 0,
+        content: 'ougi ' + shortcut.action,
+        author: user,
+        channelId: reaction.message.id,
+        channel: reaction.message.channel,
+        guild: reaction.message.guild,
+        guildId: reaction.message.guildId,
+        mentions: {},
+        reference: {messageId: reaction.message.id, guildId: reaction.message.guildId, channelId: reaction.message.channelId},
+    };
 
     await ougi.processCommand(msg);
 });
