@@ -246,7 +246,6 @@ client.on('messageReactionAdd', async (reaction, user) => {
     if (!shortcut) return;
 
     const msg = reaction.message;
-    msg.id = null;
     msg.content = 'ougi ' + shortcut.action;
     msg.author = user;
     msg.reference = {messageId: reaction.message.id, guildId: reaction.message.guildId, channelId: reaction.message.channelId};
