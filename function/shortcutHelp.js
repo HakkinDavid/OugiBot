@@ -1,5 +1,5 @@
 module.exports = async (msg) => {
-  const embed = ougi.helpPreset(msg, "shortcut");
+  const embed = await ougi.helpPreset(msg, "shortcut");
 
   embed.setDescription(await ougi.text(msg, "shortcutDesc"));
 
