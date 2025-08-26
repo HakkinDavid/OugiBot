@@ -10,11 +10,6 @@ function () {
     global.localesCache = ougi.readFile(database.locales.file);
     global.dynamicLocales = ougi.readFile(database.dynamicLocales.file);
     global.knowledgeBase = ougi.readFile(database.backup.file, 'utf-8');
-
-    if (!settingsOBJ.hasOwnProperty("guildBump")) {
-      console.log(colors.yellow("Settings OBJ guildBump property created."));
-      settingsOBJ.guildBump = {};
-    }
   }
   return true;
 }
