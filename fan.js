@@ -161,6 +161,8 @@ client.on('messageCreate', async (msg) => {
         return;
     }
 
+    if (msg.content.includes("@everyone")) return;
+
     // Interactions counter
     if (!settingsOBJ.interactionsCounter) {
         settingsOBJ.interactionsCounter = {
