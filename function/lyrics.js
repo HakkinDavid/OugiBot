@@ -12,16 +12,16 @@ async function (arguments, msg) {
       msg.channel.send("Huh?! This is not a Discord server. Take me into one!").catch(console.error);
       return
     }
-    if (vc[msg.guild.id] == undefined) {
+    if (vc[msg.guildId] == undefined) {
       msg.channel.send("Nothing is playing.");
       return
     }
-    if (vc[msg.guild.id].length < 2) {
+    if (vc[msg.guildId].length < 2) {
       msg.channel.send("Nothing is playing.");
       return
     }
     await ksoft.lyrics.get(
-      vc[msg.guild.id][1].title
+      vc[msg.guildId][1].title
     ).then(track => {
       lyricsEmbed.setTitle(track.name);
       while (track.lyrics.includes('  ')) {

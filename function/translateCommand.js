@@ -10,7 +10,7 @@ async function (msg) {
     if (msg.reference) {
       try {
           const refMsg = await msg.channel.messages.fetch(msg.reference.messageId);
-          toLang = (arguments?.[0] ?? settingsOBJ.lang[msg.author.id]).toLowerCase().replace("-cn", "-CN").replace("-tw", "-TW");
+          toLang = (arguments?.[0] ?? settingsOBJ.lang[msg.author.id] ?? settingsOBJ.lang[msg.guildId] ?? "en").toLowerCase().replace("-cn", "-CN").replace("-tw", "-TW");
           phrase = refMsg.content;
       } catch { }
     }

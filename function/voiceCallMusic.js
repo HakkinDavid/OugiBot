@@ -22,24 +22,24 @@ module.exports = async function(msg) {
     }
 
     // Inicializa cola si no existe
-    if (!vc[msg.guild.id]) vc[msg.guild.id] = { queue: [], loop: false, player: null };
+    if (!vc[msg.guildId]) vc[msg.guildId] = { queue: [], loop: false, player: null };
 
     const command = args[0].toLowerCase();
 
     if (command === "stop") {
-      const connection = getVoiceConnection(msg.guild.id);
+      const connection = getVoiceConnection(msg.guildId);
       if (connection) connection.destroy();
-      delete vc[msg.guild.id];
+      delete vc[msg.guildId];
       await msg.channel.send(await ougi.text(msg, "musicStopped"));
       return;
     }
 
     if (command === "skip") {
-      if (vc[msg.guild.id].queue.length <= 1) {
+      if (vc[msg.guildId].queue.length <= 1) {
         await msg.channel.send(await ougi.text(msg, "musicNothingToSkip"));
         return;
       }
-      vc[msg.guild.id].queue.shift(); // quita la actual
+      vc[msg.guildId].queue.shift(); // quita la actual
       playNext(msg, vcChannel);
       await msg.channel.send(await ougi.text(msg, "musicSkipped"));
       return;
@@ -56,7 +56,7 @@ module.exports = async function(msg) {
       return;
     }
 
-    vc[msg.guild.id].queue.push(info.videoDetails);
+    vc[msg.guildId].queue.push(info.videoDetails);
 
     const embed = new EmbedBuilder()
       .setTitle(await ougi.text(msg, "musicAdded"))
@@ -67,7 +67,7 @@ module.exports = async function(msg) {
 
     await msg.channel.send({ embeds: [embed] });
 
-    if (vc[msg.guild.id].queue.length === 1) {
+    if (vc[msg.guildId].queue.length === 1) {
       playNext(msg, vcChannel);
     }
 
@@ -79,7 +79,7 @@ module.exports = async function(msg) {
 
 // Función auxiliar para reproducir
 async function playNext(msg, vcChannel) {
-  const guildQueue = vc[msg.guild.id];
+  const guildQueue = vc[msg.guildId];
   if (!guildQueue || guildQueue.queue.length === 0) return;
 
   const song = guildQueue.queue[0];
@@ -94,10 +94,10 @@ async function playNext(msg, vcChannel) {
     });
   }
 
-  const connection = getVoiceConnection(msg.guild.id) ||
+  const connection = getVoiceConnection(msg.guildId) ||
     joinVoiceChannel({
       channelId: vcChannel.id,
-      guildId: vcChannel.guild.id,
+      guildId: vcChannel.guildId,
       adapterCreator: vcChannel.guild.voiceAdapterCreator,
     });
 

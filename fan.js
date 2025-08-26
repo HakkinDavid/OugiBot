@@ -180,10 +180,10 @@ client.on('messageCreate', async (msg) => {
     const lower = msg.content.toLowerCase();
     let ourConcern = false;
     if (lower.startsWith("ougi") || lower.startsWith("扇") || msg.mentions.has(client.user)) {
-        ougi.processCommand(msg);
+        await ougi.processCommand(msg);
         ourConcern = true;
     } else if (lower.startsWith("#ougi")) {
-        ougi.rootCommands(msg);
+        await ougi.rootCommands(msg);
         ourConcern = true;
     } else if (msg.channel.type === Discord.ChannelType.DM && msg.content.length > 0) {
         if (msg.content === "I want to opt out from using Ougi [BOT].") {
@@ -196,13 +196,13 @@ client.on('messageCreate', async (msg) => {
             ourConcern = true;
         }
     } else if (msg.channel.type === Discord.ChannelType.GuildText && msg.content.length > 0) {
-        const guildID = msg.guild.id;
+        const guildID = msg.guildId;
         const prefix = settingsOBJ.prefix[guildID] || '';
         let isCommand = false;
 
         if (prefix && lower.startsWith(prefix)) {
             msg.content = 'ougi ' + msg.content.slice(prefix.length).trim();
-            ougi.processCommand(msg);
+            await ougi.processCommand(msg);
             ourConcern = true;
             isCommand = true;
         }
@@ -230,13 +230,33 @@ client.on('messageCreate', async (msg) => {
     }
 });
 
+client.on('messageReactionAdd', async (reaction, user) => {
+    if (!user || user.bot || user.id === client.user.id) return;
+    if (!ougi.startup() || settingsOBJ.ignored.includes(user.id)) return;
+
+    const guildId = reaction.message.guildId;
+    if (!guildId) return;
+
+    // Normalize key: raw char for Unicode, ID for custom/app
+    const emojiKey = reaction.emoji.id ? reaction.emoji.id : reaction.emoji.name;
+
+    const shortcut = settingsOBJ.shortcuts?.[guildId]?.[emojiKey];
+    if (!shortcut) return;
+
+    const msg = reaction.message;
+    msg.content = 'ougi ' + shortcut.action;
+    msg.author = user;
+
+    await ougi.processCommand(msg);
+});
+
 /* ===== Eventos de Sniping ===== */
 ['messageDelete', 'messageUpdate'].forEach(event => {
-    client.on(event, async (msg, oldMsg) => {
+    client.on(event, async (msg) => {
         if (!msg?.author || msg.author.bot) return;
         if (!ougi.startup() || settingsOBJ.ignored.includes(msg.author.id)) return;
         if (msg.channel.type === Discord.ChannelType.GuildText) {
-            const guildID = msg.guild.id;
+            const guildID = msg.guildId;
             const blacklist = settingsOBJ.blacklist?.[guildID] || [];
             if ((event === 'messageDelete' && blacklist.includes('snipe')) ||
                 (event === 'messageUpdate' && blacklist.includes('editsnipe'))) return;

@@ -13,7 +13,7 @@ async function (arguments, msg) {
     return
   }
 
-  let guildID = msg.guild.id;
+  let guildID = msg.guildId;
   let prefix = arguments.join(" ");
 
   if (arguments.length < 1) {

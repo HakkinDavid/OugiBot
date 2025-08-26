@@ -1,7 +1,7 @@
 module.exports =
 
 async function (msg, options) {
-  let guildID = msg.guild.id;
+  let guildID = msg.guildId;
   if (settingsOBJ.logging.hasOwnProperty(guildID)){
     let guildLogger = settingsOBJ.logging[guildID];
 

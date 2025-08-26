@@ -245,7 +245,15 @@ module.exports =
         "curlNoTarget": "No valid target detected for curl. Mention a user, channel, role, emoji, or provide an ID.",
         "noDistinctRole": "This member has no distinctive role.",
         "downloadIcon": "Download icon",
-        "curlError": "An unexpected error occurred while running curl."
+        "curlError": "An unexpected error occurred while running curl.",
+        "mustEmoji": "You must provide a reaction emoji.",
+        "invalidOption": "Invalid option, it must be one of the following.",
+        "notExist": "That entry does not exist.",
+        "shortcutDesc": "Shortcuts trigger actions when a user reacts with the emoji on a message.",
+        "shortcutCreateTitle": "Create shortcut",
+        "shortcutCreateField": "`ougi shortcut create <emoji> <action>`\nNotes: accepts raw Unicode or custom/app emoji, action is any text, colon-wrapped shortcodes (`:smile:`) are rejected.",
+        "shortcutDeleteTitle": "Delete shortcut",
+        "shortcutDeleteField": "`ougi shortcut delete <emoji>`\nNotes: deletes the shortcut for that emoji."
     },
     "es": {
         "helpTitle": "Página de ayuda con Ougi",

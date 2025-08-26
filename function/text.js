@@ -7,8 +7,8 @@ module.exports = async function text(msg, stringID, dynamic = false, raw = false
 
     if (typeof msg === 'object') {
         if (settingsOBJ.lang[msg.author.id]) langCode = settingsOBJ.lang[msg.author.id];
-        if (msg.channel?.type === ChannelType.GuildText && settingsOBJ.lang[msg.guild.id]) {
-            langCode = settingsOBJ.lang[msg.guild.id];
+        if (msg.channel?.type === ChannelType.GuildText && settingsOBJ.lang[msg.guildId]) {
+            langCode = settingsOBJ.lang[msg.guildId];
         }
     } else if (typeof msg === 'string') {
         langCode = msg;

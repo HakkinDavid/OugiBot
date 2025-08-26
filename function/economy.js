@@ -1,7 +1,7 @@
 module.exports =
 
     function (action, msg, options) {
-        let guildID = msg.guild.id;
+        let guildID = msg.guildId;
         if (action === 'init' && ougi.isAdmin(msg) || !settingsOBJ.economy.hasOwnProperty(guildID)) {
             settingsOBJ.economy[guildID] = {
                 users: {},

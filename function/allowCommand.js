@@ -6,7 +6,7 @@ module.exports =
       return
     }
 
-    let guildID = msg.guild.id;
+    let guildID = msg.guildId;
     let elAdmin = msg.guild.ownerId;
 
     if (elAdmin != msg.author.id) {

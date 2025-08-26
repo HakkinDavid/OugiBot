@@ -6,7 +6,7 @@ async function (action, msg, options) {
         return
     }
 
-    let guildID = msg.guild.id;
+    let guildID = msg.guildId;
 
     if (!ougi.isAdmin(msg)) {
         msg.channel.send("You must be an administrator to perform this action.");

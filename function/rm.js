@@ -6,11 +6,11 @@ async function (arguments, msg) {
     return
   }
 
-  var guildID = msg.guild.id;
+  var guildID = msg.guildId;
   var elAdmin = msg.guild.ownerId;
 
   if (elAdmin != msg.author.id) {
-    msg.channel.send("You must be the server's owner to run this command.");
+    msg.channel.send(await ougi.text(msg, "mustOwn"));
     return
   }
 

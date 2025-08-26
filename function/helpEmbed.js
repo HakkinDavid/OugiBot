@@ -7,6 +7,8 @@ async function (msg) {
     `image`,
     `translate`,
     `dice`,
+    `patreon`,
+    `shortcut`,
     //`recipe`,
     `editsnipe`,
     `survey`,

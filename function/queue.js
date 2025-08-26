@@ -2,10 +2,10 @@ module.exports =
 
 async function (msg, vcChannel) {
   let internalDate = new Date().getTime();
-  if (vc[msg.guild.id].length >= 2) {
-      vc[msg.guild.id][1].initiated = internalDate;
+  if (vc[msg.guildId].length >= 2) {
+      vc[msg.guildId][1].initiated = internalDate;
   }
-  if (vc[msg.guild.id].length < 2) {
+  if (vc[msg.guildId].length < 2) {
     let queueEmbed = new Discord.EmbedBuilder()
     .setTitle("Queue is over!")
     .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/ougimusic.png?raw=true")
@@ -15,19 +15,19 @@ async function (msg, vcChannel) {
     .setTimestamp();
     msg.channel.send({embeds: [queueEmbed]}).catch(console.error);
     await vcChannel.leave();
-    delete vc[msg.guild.id];
+    delete vc[msg.guildId];
     return
   }
-  if (vc[msg.guild.id][0].loop) {
-    vc[msg.guild.id].push(vc[msg.guild.id][1]);
+  if (vc[msg.guildId][0].loop) {
+    vc[msg.guildId].push(vc[msg.guildId][1]);
   }
   await vcChannel.join().then(async (connection) => {
-    let anURL = "https://www.youtube.com/watch?v=" + vc[msg.guild.id][1].id;
-    let videoImage = vc[msg.guild.id][1].thumbnail;
-    let videoAuthor = vc[msg.guild.id][1].channel.name;
-    let videoTitle = vc[msg.guild.id][1].title;
-    let durationInMilliseconds = vc[msg.guild.id][1].duration * 1000;
-    let durationInMinutes = [Math.floor(vc[msg.guild.id][1].duration / 60), vc[msg.guild.id][1].duration - Math.floor(vc[msg.guild.id][1].duration / 60)*60];
+    let anURL = "https://www.youtube.com/watch?v=" + vc[msg.guildId][1].id;
+    let videoImage = vc[msg.guildId][1].thumbnail;
+    let videoAuthor = vc[msg.guildId][1].channel.name;
+    let videoTitle = vc[msg.guildId][1].title;
+    let durationInMilliseconds = vc[msg.guildId][1].duration * 1000;
+    let durationInMinutes = [Math.floor(vc[msg.guildId][1].duration / 60), vc[msg.guildId][1].duration - Math.floor(vc[msg.guildId][1].duration / 60)*60];
     for (i=0; durationInMinutes.length > i; i++) {
       if (durationInMinutes[i].toString().length < 2) {
         durationInMinutes[i] = "0" + durationInMinutes[i].toString()
@@ -46,12 +46,12 @@ async function (msg, vcChannel) {
       ougi.queue(msg, vcChannel);
     })
     setTimeout(async function () {
-      if (vc[msg.guild.id] == undefined || vc[msg.guild.id][1] == undefined) {
+      if (vc[msg.guildId] == undefined || vc[msg.guildId][1] == undefined) {
         return
       }
-      let thisDate = vc[msg.guild.id][1].initiated;
+      let thisDate = vc[msg.guildId][1].initiated;
       if (internalDate == thisDate) {
-        vc[msg.guild.id].splice(1, 1);
+        vc[msg.guildId].splice(1, 1);
         ougi.queue(msg, vcChannel);
       }
     }, durationInMilliseconds + 2000);

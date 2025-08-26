@@ -11,7 +11,7 @@ async function (arguments, msg, guildExecution) {
       msg.channel.send(await ougi.text(msg, "mustOwn"));
       return
     }
-    preferencesID = msg.guild.id;
+    preferencesID = msg.guildId;
   }
   let toLang = arguments.join(" ").replace("-cn", "-CN").replace("-tw", "-TW");
   if (toLang == "chinese" || toLang == "chinese-s" || toLang.includes("chinese") && toLang.includes("simplified")) {

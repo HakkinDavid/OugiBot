@@ -54,7 +54,7 @@ module.exports = async function (msg) {
 
     // Blacklist check
     if (msg.channel.type === ChannelType.GuildText) {
-        const guildID = msg.guild.id;
+        const guildID = msg.guildId;
         const blacklist = settingsOBJ.blacklist?.[guildID] || [];
         if (blacklist.some(item => item.toLowerCase() === spookyCommand || item.toLowerCase() === parts.slice(1).join(' '))) {
             await msg.channel.send(`Sorry, that's blacklisted in ${msg.guild.toString()}.`).catch(console.error);
@@ -114,7 +114,8 @@ module.exports = async function (msg) {
         economy: () => ougi.manageEconomy('economy', msg, args),
         seticon: () => ougi.economyIcons(args, msg),
         remindbump: () => ougi.remindBump(args, msg),
-        patreon: () => ougi.patreonCommand(msg)
+        patreon: () => ougi.patreonCommand(msg),
+        shortcut: () => ougi.shortcutCommand(args, msg)
     };
 
     // Música y URLs

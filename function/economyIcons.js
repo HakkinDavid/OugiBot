@@ -13,14 +13,14 @@ module.exports =
 
         switch (arguments[0]) {
             case "currency": {
-                settingsOBJ.economy[msg.guild.id].currency = arguments.slice(1).join(" ");
+                settingsOBJ.economy[msg.guildId].currency = arguments.slice(1).join(" ");
                 msg.channel.send("Currency icon updated.");
                 await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
                 await ougi.backup(database.settings.file, channels.settings);
             }
                 break;
             case "xp": {
-                settingsOBJ.economy[msg.guild.id].xp = arguments.slice(1).join(" ");
+                settingsOBJ.economy[msg.guildId].xp = arguments.slice(1).join(" ");
                 msg.channel.send("XP icon updated.");
                 await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
                 await ougi.backup(database.settings.file, channels.settings);

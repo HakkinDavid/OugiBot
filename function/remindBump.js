@@ -13,7 +13,7 @@ async function (arguments, msg) {
     return
   }
 
-  let guildID = msg.guild.id;
+  let guildID = msg.guildId;
   let guildBump = msg.channel.id;
   let guildBumpRole = null;
 

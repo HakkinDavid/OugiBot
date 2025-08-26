@@ -26,7 +26,7 @@ module.exports = async function(msg) {
   let args = cleanedContent.split(" ").slice(2);
 
   // Determine language
-  let langCode = (settingsOBJ.lang[msg.guild.id]) ?? 'en';
+  let langCode = (settingsOBJ.lang[msg.guildId]) ?? 'en';
   if (args.length > 1 && args[0].startsWith("::")) {
     const code = args[0].replace(/::/, "").toLowerCase();
     if (ougi.langCodes[code]) {
@@ -44,9 +44,9 @@ module.exports = async function(msg) {
   settingsOBJ.ratelimit[msg.author.id] = Date.now() + (5 * textToSpeak.length);
 
   // Join VC
-  const connection = getVoiceConnection(msg.guild.id) || joinVoiceChannel({
+  const connection = getVoiceConnection(msg.guildId) || joinVoiceChannel({
     channelId: memberVC.id,
-    guildId: memberVC.guild.id,
+    guildId: memberVC.guildId,
     adapterCreator: memberVC.guild.voiceAdapterCreator,
   });
   await entersState(connection, VoiceConnectionStatus.Ready, 10_000);
