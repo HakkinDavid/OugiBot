@@ -249,11 +249,11 @@ module.exports =
         "mustEmoji": "You must provide a reaction emoji.",
         "invalidOption": "Invalid option, it must be one of the following.",
         "notExist": "That entry does not exist.",
-        "shortcutDesc": "Shortcuts trigger actions when a user reacts with the emoji on a message.",
+        "shortcutDesc": "Shortcuts trigger the chosen Ougi command (with or without arguments) when a user reacts using the specified emoji on a message in this Discord server.",
         "shortcutCreateTitle": "Create shortcut",
-        "shortcutCreateField": "{c}\nNotes: accepts raw Unicode or custom/app emoji, action is any text, colon-wrapped shortcodes ({e}) are rejected.",
+        "shortcutCreateField": "Creates a shortcut. Accepts raw Unicode or custom emoji, command is any text that you would execute with Ougi, colon-wrapped shortcodes are rejected. The command to be executed should be specified without prefix.",
         "shortcutDeleteTitle": "Delete shortcut",
-        "shortcutDeleteField": "{c}\nNotes: deletes the shortcut for that emoji."
+        "shortcutDeleteField": "Deletes the shortcut for that emoji."
     },
     "es": {
         "helpTitle": "Página de ayuda con Ougi",
