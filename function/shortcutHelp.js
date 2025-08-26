@@ -14,5 +14,5 @@ module.exports = async (msg) => {
     }
   );
 
-  return embed;
+  msg.channel.send({ embeds: [embed] });
 };
