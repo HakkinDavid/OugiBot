@@ -251,9 +251,9 @@ module.exports =
         "notExist": "That entry does not exist.",
         "shortcutDesc": "Shortcuts trigger actions when a user reacts with the emoji on a message.",
         "shortcutCreateTitle": "Create shortcut",
-        "shortcutCreateField": "`ougi shortcut create <emoji> <action>`\nNotes: accepts raw Unicode or custom/app emoji, action is any text, colon-wrapped shortcodes (`:smile:`) are rejected.",
+        "shortcutCreateField": "{c}\nNotes: accepts raw Unicode or custom/app emoji, action is any text, colon-wrapped shortcodes ({e}) are rejected.",
         "shortcutDeleteTitle": "Delete shortcut",
-        "shortcutDeleteField": "`ougi shortcut delete <emoji>`\nNotes: deletes the shortcut for that emoji."
+        "shortcutDeleteField": "{c}\nNotes: deletes the shortcut for that emoji."
     },
     "es": {
         "helpTitle": "Página de ayuda con Ougi",
