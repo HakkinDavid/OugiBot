@@ -256,6 +256,12 @@ client.on('messageReactionAdd', async (reaction, user) => {
         mentions: reaction.message.mentions,
         client: reaction.message.client,
         reference: {messageId: reaction.message.id, guildId: reaction.message.guildId, channelId: reaction.message.channelId},
+        delete: () => {
+            return { catch: (__) => {} };
+        },
+        reply: (_) => {
+            return { catch: (__) => {} };
+        }
     };
 
     await ougi.processCommand(msg);
