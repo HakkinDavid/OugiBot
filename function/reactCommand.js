@@ -10,8 +10,8 @@ async function (arguments, msg) {
         return;
     }
     try {
-        (await msg. channel.messages.fetch(msg.reference. messageId)).react(arguments[0]);
-        msg.channel.send("I have reacted " + arguments[0] + "!");
+        (await msg.channel.messages.fetch(msg.reference.messageId)).react(arguments[0]);
+        if (msg.id !== msg.reference.messageId) msg.delete();
     }
     catch (e) {
         msg.reply("Sorry. Couldn't react to that message.");
