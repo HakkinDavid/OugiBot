@@ -8,7 +8,7 @@ module.exports =
         embed.setDescription(await ougi.text(msg, "raffleJoinHelpDesc"))
             .addFields({
                 name: await ougi.text(msg, "example"),
-                value: "`ougi raffle-join` (run this after reacting to a raffle message)"
+                value: "`ougi raffle-join`"
             })
             .addFields({
                 name: await ougi.text(msg, "output"),
