@@ -315,8 +315,10 @@ setInterval(async () => {
                     if (channel) {
                         const msg = await channel.messages.fetch(raffle.messageId);
                         raffle.winners = await ougi.pickWinners(raffle.participants, raffle.config.winnersCount);
-                        await msg.edit({ content: "The results are in!", embeds: [rafflesOBJ[msg.guildId].ongoingRaffles[raffleIdx].embed] });
+                        await msg.edit({ content: "The results are in!", embeds: [raffle.embed] });
                         await msg.reply(`**Winners**\n${winners.map(w => w.name + " (" + Discord.userMention(w.id) + ")").join("\n")}`);
+                        await ougi.writeFile(database.raffles.file, JSON.stringify(rafflesOBJ, null, 4), console.error);
+                        await ougi.backup(database.raffles.file, channels.raffles);
                     }
                 } catch (err) {
                     ougi.globalLog(`Raffle execution failed for guild ${guildId}: ${err}`);
