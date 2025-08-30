@@ -32,14 +32,14 @@ module.exports = async function (arguments, msg) {
     }
 
     // parse slices from message content after command
-    const content = msg.content.slice(msg.content.toLowerCase().indexOf("raffle") + "raffle".length).trim().toLowerCase();
+    const content = msg.content.slice(msg.content.toLowerCase().indexOf("raffle") + "raffle".length).trim();
     const parts = content.split('::').map(s => s.trim());
 
     // Parse slices into an object keyed by slice name
     const slices = {};
     for (const part of parts) {
         const lines = part.split('\n');
-        const key = lines[0].trim().toLowerCase();
+        const key = lines[0].split(/\s/)[0].trim().toLowerCase();
 
         let value;
         if (lines.length > 1) {
@@ -47,8 +47,8 @@ module.exports = async function (arguments, msg) {
             value = lines.slice(1).join('\n').trim();
         } else {
             // Single-line slice
-            const spaceIdx = part.indexOf(' ');
-            value = spaceIdx !== -1 ? part.slice(spaceIdx + 1).trim() : '';
+            const spaceIdx = lines[0].indexOf(' ');
+            value = spaceIdx !== -1 ? lines[0].slice(spaceIdx + 1).trim() : '';
         }
 
         slices[key] = value;
