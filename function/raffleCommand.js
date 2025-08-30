@@ -30,7 +30,7 @@ module.exports = async function (arguments, msg) {
     }
 
     // parse slices from message content after command
-    const content = arguments.join(" ").trim();
+    const content = msg.content.slice(msg.content.toLowerCase().indexOf("raffle") + "raffle".length).trim().toLowerCase();
     const parts = content.split('::').map(s => s.trim());
 
     // Parse slices into an object keyed by slice name
@@ -54,7 +54,7 @@ module.exports = async function (arguments, msg) {
                 const weight = parseInt(parts[parts.length - 1], 10);
                 if (!isNaN(weight)) {
                     const name = parts.slice(0, parts.length - 1).join(' ');
-                    participants.push({ name, weight: parseInt(weight), confirmed: false, id: null });
+                    participants.push({ name, weight, confirmed: false, id: null });
                 }
             }
         }
