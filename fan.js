@@ -288,6 +288,8 @@ setInterval(async () => {
     if (!TEASEABLE || !ougi.startup()) return;
     await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
     await ougi.backup(database.settings.file, channels.settings);
+    await ougi.writeFile(database.raffles.file, JSON.stringify(rafflesOBJ, null, 4), console.error);
+    await ougi.backup(database.raffles.file, channels.raffles);
 }, 300_000);
 
 /* ===== Intervalo para Recordatorios de Bump ===== */
