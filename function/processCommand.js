@@ -117,7 +117,7 @@ module.exports = async function (msg) {
         shortcut: () => ougi.shortcutCommand(args, msg),
         raffle: () => ougi.raffleCommand(args, msg),
         "raffle-register": () => ougi.raffleRegister(args, msg),
-        "raffle-join": () => ougi.raffleRegister(args, msg)
+        "raffle-join": () => ougi.raffleJoin(args, msg)
     };
 
     // Música y URLs
