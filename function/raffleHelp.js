@@ -10,7 +10,7 @@ module.exports =
             )
             .addFields({
                 name: await ougi.text(msg, "example"),
-                value: "`ougi raffle ::title Event Raffle ::list Alice 10\nBob 5 ::duration 10m ::winners 2`"
+                value: "`ougi raffle ::title Event Raffle ::list Alice 10\nBob 5 ::duration 10m ::winners 2 ::channel `" + msg.channel.toString() + "` `"
             })
             .addFields({
                 name: await ougi.text(msg, "output"),

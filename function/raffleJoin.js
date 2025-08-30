@@ -15,6 +15,8 @@ module.exports = async function (arguments, msg) {
 
     rafflesOBJ[msg.guildId].ongoingRaffles[raffleIdx].participants[participantIdx].confirmed = true;
     rafflesOBJ[msg.guildId].ongoingRaffles[raffleIdx].participants[participantIdx].id = msg.author.id;
+    await ougi.writeFile(database.raffles.file, JSON.stringify(rafflesOBJ, null, 4), console.error);
+
     await ougi.backup(database.raffles.file, channels.raffles);
     
     const channel = msg.guild.channels.cache.get(rafflesOBJ[msg.guildId].ongoingRaffles[raffleIdx].config.channelId);

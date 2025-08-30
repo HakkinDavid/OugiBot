@@ -310,12 +310,12 @@ setInterval(async () => {
         for (const raffle of guildData.ongoingRaffles || []) {
             if (raffle.config.endsAt <= now && !raffle.finished) {
                 raffle.finished = true;
-                await msg.edit({ content: "The results are in!", embeds: [rafflesOBJ[msg.guildId].ongoingRaffles[raffleIdx].embed] });
                 try {
                     const channel = client.channels.cache.get(raffle.config.channelId);
                     if (channel) {
                         const msg = await channel.messages.fetch(raffle.messageId);
                         raffle.winners = await ougi.pickWinners(raffle.participants, raffle.config.winnersCount);
+                        await msg.edit({ content: "The results are in!", embeds: [rafflesOBJ[msg.guildId].ongoingRaffles[raffleIdx].embed] });
                         await msg.reply(`**Winners**\n${winners.map(w => w.name + " (" + Discord.userMention(w.id) + ")").join("\n")}`);
                     }
                 } catch (err) {
