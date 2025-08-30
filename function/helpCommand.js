@@ -39,7 +39,10 @@ module.exports = async function (args, msg) {
         remindbump: () => ougi.remindbumpHelp(msg),
         speak: () => ougi.speakHelp(msg),
         patreon: () => ougi.patreonCommand(msg),
-        shortcut: () => ougi.shortcutHelp(msg)
+        shortcut: () => ougi.shortcutHelp(msg),
+        "raffle-join": () => ougi.raffleJoinHelp(msg),
+        "raffle-register": () => ougi.raffleRegisterHelp(msg),
+        raffle: () => ougi.raffleHelp(msg)
     };
 
     const command = args[0]?.toLowerCase();

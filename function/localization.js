@@ -255,7 +255,15 @@ module.exports =
         "shortcutDeleteTitle": "Delete shortcut",
         "shortcutDeleteField": "Deletes the shortcut for that emoji.",
         "shortcutCreated": "Shortcut created, the chosen emoji will execute the command as requested under message reactions.",
-        "shortcutDeleted": "Shortcut deleted."
+        "shortcutDeleted": "Shortcut deleted.",
+        "raffleHelpDesc": "Create and manage raffles in your server. Define a title, a participant list with weights, a duration, and the number of winners. Raffles will open for registration and close automatically when the time runs out.",
+        "raffleHelpOutput": "A raffle embed will be posted with the given title, participant count, duration, and winners. Members can then register and join according to the rules.",
+        "raffleRegisterHelpDesc": "Register a display name to be used in raffles. This name must match the participant list provided when creating a raffle.",
+        "raffleRegisterHelpOutput": "Your chosen name will be linked to your Discord account for raffle participation.",
+        "raffleJoinHelpDesc": "Confirm your participation in a raffle you reacted to. The bot will match your registered name against the raffle's participant list.",
+        "raffleJoinHelpOutput": "Your participation is confirmed. Your registered name is marked as active in the raffle.",
+        "note": "Note",
+        "raffleHelpClear": "You can also use the following command to remove raffles and free up space."
     },
     "es": {
         "helpTitle": "Página de ayuda con Ougi",
