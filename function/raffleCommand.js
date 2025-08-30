@@ -135,6 +135,5 @@ module.exports = async function (arguments, msg) {
     });
 
     await ougi.writeFile(database.raffles.file, JSON.stringify(rafflesOBJ, null, 4), console.error);
-
     await ougi.backup(database.raffles.file, channels.raffles);
 }
