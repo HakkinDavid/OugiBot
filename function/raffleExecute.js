@@ -3,7 +3,7 @@ module.exports = async function (raffleGuildId, raffleIdx) {
     if (!guildData) return;
 
     const raffle = guildData.ongoingRaffles?.[raffleIdx];
-    if (!raffle || raffle.finished) return;
+    if (!raffle) return;
 
     try {
         const channel = await client.channels.fetch(raffle.config.channelId);
