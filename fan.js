@@ -300,10 +300,10 @@ setInterval(async () => {
 setInterval(async () => {
     if (!TEASEABLE || !ougi.startup()) return;
     const now = Date.now();
-    for (const [msg.guildId, bumpData] of Object.entries(settingsOBJ.guildBump || {})) {
+    for (const [bumpGuild, bumpData] of Object.entries(settingsOBJ.guildBump || {})) {
         if (bumpData.next_bump && bumpData.next_bump < now && !bumpData.reminded) {
-            ougi.globalLog(`Reminded users to bump guild ${msg.guildId}`);
-            const message = (await ougi.text(settingsOBJ.lang[msg.guildId] || "en", "bumpNow"))
+            ougi.globalLog(`Reminded users to bump guild ${bumpGuild}`);
+            const message = (await ougi.text(settingsOBJ.lang[bumpGuild] || "en", "bumpNow"))
                 .replace("{timeStamp}", `<t:${Math.floor(now / 1000)}:t>`);
             const channel = client.channels.cache.get(bumpData.channel);
             if (channel) await channel.send(`${message}${bumpData.role ? `\n<@&${bumpData.role}>` : ''}`);
