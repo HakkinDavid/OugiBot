@@ -85,7 +85,8 @@ global.channels = {
     neuro: "759983614128947250",
     settings: "791151086077083688",
     locales: "820971831992647681",
-    dynamicLocales: "880322518139957299"
+    dynamicLocales: "880322518139957299",
+    raffles: "1411177261172002906"
 };
 
 global.vc = {};
@@ -94,6 +95,7 @@ global.mindOBJ = null;
 global.localesCache = null;
 global.dynamicLocales = null;
 global.knowledgeBase = null;
+global.rafflesOBJ = null;
 
 global.ammo = {};
 global.reloadedAmmo = {};
@@ -105,7 +107,8 @@ global.database = {
     embeds: { id: channels.embeds, file: './embedPresets.txt', done: false },
     news: { id: channels.news, file: './newsChannel.txt', done: false },
     locales: { id: channels.locales, file: './localesCache.txt', done: false },
-    dynamicLocales: { id: channels.dynamicLocales, file: './dynamicLocales.txt', done: false }
+    dynamicLocales: { id: channels.dynamicLocales, file: './dynamicLocales.txt', done: false },
+    raffles: { id: channels.raffles, file: './raffles.txt', done: false },
 };
 
 let logMessages = [];
@@ -280,20 +283,11 @@ client.on('messageReactionAdd', async (reaction, user) => {
     });
 });
 
-/* ===== Intervalos de Backup y Battery ===== */
+/* ===== Intervalos de Backup ===== */
 setInterval(async () => {
     if (!TEASEABLE || !ougi.startup()) return;
     await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
     await ougi.backup(database.settings.file, channels.settings);
-
-    if (process.env.BATTERY == 1) {
-        exec("termux-battery-status | jq '.percentage'", (error, stdout, stderr) => {
-            if (error || stderr) return ougi.globalLog(`Battery check error: ${error?.message || stderr}`);
-            const battery = parseInt(stdout.trim());
-            ougi.globalLog(`Server battery: ${battery}%`);
-            if (battery <= 25) client.users.cache.get(davidUserID)?.send(`Server battery: ${battery}%. Charge now!`);
-        });
-    }
 }, 300_000);
 
 /* ===== Intervalo para Recordatorios de Bump ===== */
@@ -308,6 +302,26 @@ setInterval(async () => {
             const channel = client.channels.cache.get(bumpData.channel);
             if (channel) await channel.send(`${message}${bumpData.role ? `\n<@&${bumpData.role}>` : ''}`);
             bumpData.reminded = true;
+        }
+    }
+
+    for (const [guildId, guildData] of Object.entries(rafflesOBJ || {})) {
+        if (guildData.licensedUntil < now) return;
+        for (const raffle of guildData.ongoingRaffles || []) {
+            if (raffle.config.endsAt <= now && !raffle.finished) {
+                raffle.finished = true;
+                await msg.edit({ content: "The results are in!", embeds: [rafflesOBJ[msg.guildId].ongoingRaffles[raffleIdx].embed] });
+                try {
+                    const channel = client.channels.cache.get(raffle.config.channelId);
+                    if (channel) {
+                        const msg = await channel.messages.fetch(raffle.messageId);
+                        raffle.winners = await ougi.pickWinners(raffle.participants, raffle.config.winnersCount);
+                        await msg.reply(`**Winners**\n${winners.map(w => w.name + " (" + Discord.userMention(w.id) + ")").join("\n")}`);
+                    }
+                } catch (err) {
+                    ougi.globalLog(`Raffle execution failed for guild ${guildId}: ${err}`);
+                }
+            }
         }
     }
 }, 60_000);

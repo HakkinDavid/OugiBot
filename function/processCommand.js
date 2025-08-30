@@ -114,7 +114,10 @@ module.exports = async function (msg) {
         seticon: () => ougi.economyIcons(args, msg),
         remindbump: () => ougi.remindBump(args, msg),
         patreon: () => ougi.patreonCommand(msg),
-        shortcut: () => ougi.shortcutCommand(args, msg)
+        shortcut: () => ougi.shortcutCommand(args, msg),
+        raffle: () => ougi.raffleCommand(args, msg),
+        "raffle-register": () => ougi.raffleRegister(args, msg),
+        "raffle-join": () => ougi.raffleRegister(args, msg)
     };
 
     // Música y URLs
