@@ -25,7 +25,7 @@ module.exports = async function (arguments, msg) {
     }
 
     if (rafflesOBJ[msg.guildId].ongoingRaffles.length >= rafflesOBJ[msg.guildId].allowedConcurrentRaffles) {
-        msg.channel.send(`You can only have up to ${rafflesOBJ[msg.guildId].allowedConcurrentRaffles} concurrent raffles. Clear them out with \`ougi raffle clear\`.`);
+        msg.channel.send(`Your current license supports up to ${rafflesOBJ[msg.guildId].allowedConcurrentRaffles} concurrent raffles. Clear them out with \`ougi raffle clear\` or consider upgrading your plan.`);
         return;
     }
 
@@ -36,10 +36,19 @@ module.exports = async function (arguments, msg) {
     // Parse slices into an object keyed by slice name
     const slices = {};
     for (const part of parts) {
-        const idx = part.indexOf(' ');
-        if (idx === -1) continue;
-        const key = part.slice(0, idx).toLowerCase();
-        const value = part.slice(idx + 1).trim();
+        const lines = part.split('\n');
+        const key = lines[0].trim().toLowerCase();
+
+        let value;
+        if (lines.length > 1) {
+            // Multiline slice
+            value = lines.slice(1).join('\n').trim();
+        } else {
+            // Single-line slice
+            const spaceIdx = part.indexOf(' ');
+            value = spaceIdx !== -1 ? part.slice(spaceIdx + 1).trim() : '';
+        }
+
         slices[key] = value;
     }
 
