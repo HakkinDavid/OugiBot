@@ -4,13 +4,13 @@ module.exports = async function (arguments, msg) {
     const messageId = msg.reference?.messageId;
     if (!messageId) return;
 
-    const raffleIdx = rafflesOBJ[msg.guildId].ongoingRaffles?.findIndex(r => r.messageId === messageId);
+    const raffleIdx = rafflesOBJ[msg.guildId].ongoingRaffles?.findIndex(r => r.messageId == messageId);
     if (!raffleIdx || raffleIdx == -1 || rafflesOBJ[msg.guildId].ongoingRaffles[raffleIdx].config.endsAt < Date.now()) return;
 
     const participantName = settingsOBJ.nicknames?.[msg.guildId]?.[msg.author.id];
     if (!participantName) return;
 
-    const participantIdx = rafflesOBJ[msg.guildId].ongoingRaffles[raffleIdx].participants.findIndex(p => p.name.toLowerCase() === participantName.toLowerCase());
+    const participantIdx = rafflesOBJ[msg.guildId].ongoingRaffles[raffleIdx].participants.findIndex(p => p.name.toLowerCase() == participantName.toLowerCase());
     if (!participantIdx || participantIdx == -1 || rafflesOBJ[msg.guildId].ongoingRaffles[raffleIdx].participants[participantIdx].confirmed) return;
 
     rafflesOBJ[msg.guildId].ongoingRaffles[raffleIdx].participants[participantIdx].confirmed = true;
