@@ -21,6 +21,8 @@ module.exports = async function (arguments, msg) {
     if (arguments[0] == "clear") {
         rafflesOBJ[msg.guildId].ongoingRaffles = [];
         msg.channel.send("Raffles have been cleared. You are allowed to run " + rafflesOBJ[msg.guildId].allowedConcurrentRaffles + " concurrent raffles.");
+        await ougi.writeFile(database.raffles.file, JSON.stringify(rafflesOBJ, null, 4), console.error);
+        await ougi.backup(database.raffles.file, channels.raffles);
         return;
     }
 
