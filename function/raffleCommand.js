@@ -43,6 +43,12 @@ module.exports = async function (arguments, msg) {
         slices[key] = value;
     }
 
+    // Validation: require ::list and ::title
+    if (!slices.list || !slices.title) {
+        msg.channel.send("Error: Missing required fields. Please provide at least `::list` (participants) and `::title`.");
+        return;
+    }
+
     // parse participants list
     let participants = [];
     if (slices.list) {
