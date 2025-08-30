@@ -3,9 +3,7 @@ const patreonCommand = require('./patreonCommand');
 
 module.exports = async function (msg) {
     // Normalizar espacios y saltos de línea
-    msg.content = msg.content.replace(/\s+/g, ' ').replace(/\n+/g, ' ').trim();
-
-    const parts = msg.content.toLowerCase().split(' ');
+    const parts = msg.content.toLowerCase().replace(/\s+/g, ' ').replace(/\n+/g, ' ').trim().split(' ');
     const spookyCommand = parts[1];
     const args = parts.slice(2);
 
