@@ -1,8 +1,5 @@
 module.exports = async function (arguments, msg) {
-    if (msg.channel.type !== Discord.ChannelType.GuildText) {
-        msg.channel.send(await ougi.text(msg, "mustGuild"));
-        return
-    }
+    if (!ougi.guildCheck(msg)) return;
 
     if (!ougi.adminCheck(msg)) return;
 

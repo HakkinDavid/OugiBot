@@ -1,10 +1,7 @@
 module.exports =
 
 async function (msg) {
-    if (msg.channel.type !== Discord.ChannelType.GuildText) {
-        msg.channel.send(await ougi.text(msg, "mustGuild"));
-        return
-    }
+    if (!ougi.guildCheck(msg)) return;
 
     if (!settingsOBJ.economy.hasOwnProperty(msg.guildId) || settingsOBJ.economy[msg.guildId].disabled) {
         msg.channel.send("Economy is not enabled in this Discord server.");

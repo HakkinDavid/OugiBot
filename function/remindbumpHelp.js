@@ -7,11 +7,7 @@ async function (msg) {
   .setColor("#230347")
   .setFooter({text: "helpEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true");
-  if (msg.channel.type !== Discord.ChannelType.GuildText) {
-    embed.addFields({name: "This is only available in Discord servers.", value: ":warning: You must be in a Discord server in order to preview information about this command."})
-    msg.channel.send({embeds: [embed]}).catch(console.error);
-    return
-  }
+  if (!ougi.guildCheck(msg)) return;
   embed.setDescription("Use this command to set a channel to remind users to bump this Discord server. If no channel is mentioned, Ougi will use the channel you run the command in. You may as well specify a role to ping!")
   .addFields({name: "Special permission required", value: ":warning: You must be the owner of whatever Discord server you run this command in."})
   .addFields({name: await ougi.text(msg, "example"), value: "`ougi remindbump `" + msg.channel.toString() + "` @role `"})
