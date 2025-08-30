@@ -4,12 +4,7 @@ module.exports = async function (arguments, msg) {
         return
     }
 
-    let elAdmin = msg.guild.ownerId;
-
-    if (elAdmin != msg.author.id) {
-        msg.channel.send(await ougi.text(msg, "mustOwn"));
-        return
-    }
+    if (!ougi.adminCheck(msg)) return;
 
     const subcommand = arguments[0].toLowerCase();
     if (subcommand !== 'create' && subcommand !== 'delete') {

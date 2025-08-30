@@ -1,9 +1,8 @@
 module.exports =
 
 async function (msg, options) {
-  let guildID = msg.guildId;
-  if (settingsOBJ.logging.hasOwnProperty(guildID)){
-    let guildLogger = settingsOBJ.logging[guildID];
+  if (settingsOBJ.logging.hasOwnProperty(msg.guildId)){
+    let guildLogger = settingsOBJ.logging[msg.guildId];
 
     let channelPointer = await client.channels.fetch(guildLogger);
 

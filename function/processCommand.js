@@ -54,8 +54,7 @@ module.exports = async function (msg) {
 
     // Blacklist check
     if (msg.channel.type === ChannelType.GuildText) {
-        const guildID = msg.guildId;
-        const blacklist = settingsOBJ.blacklist?.[guildID] || [];
+        const blacklist = settingsOBJ.blacklist?.[msg.guildId] || [];
         if (blacklist.some(item => item.toLowerCase() === spookyCommand || item.toLowerCase() === parts.slice(1).join(' '))) {
             await msg.channel.send(`Sorry, that's blacklisted in ${msg.guild.toString()}.`).catch(console.error);
             return;

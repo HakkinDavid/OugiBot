@@ -7,10 +7,7 @@ async function (arguments, msg, guildExecution) {
       msg.channel.send(await ougi.text(msg, "mustGuild"));
       return
     }
-    if (msg.author.id != msg.guild.ownerId) {
-      msg.channel.send(await ougi.text(msg, "mustOwn"));
-      return
-    }
+    if (!ougi.adminCheck(msg)) return;
     preferencesID = msg.guildId;
   }
   let toLang = arguments.join(" ").replace("-cn", "-CN").replace("-tw", "-TW");

@@ -6,20 +6,14 @@ async function (arguments, msg) {
     return
   }
 
-  let elAdmin = msg.guild.ownerId;
+  if (!ougi.adminCheck(msg)) return;
 
-  if (elAdmin != msg.author.id) {
-    msg.channel.send(await ougi.text(msg, "mustOwn"));
-    return
-  }
-
-  let guildID = msg.guildId;
   let guildLogger = msg.channel.id;
 
   if (arguments.length > 0) {
     if (arguments[0] == "disable") {
-      if (settingsOBJ.logging.hasOwnProperty(guildID)){
-        delete settingsOBJ.logging[guildID];
+      if (settingsOBJ.logging.hasOwnProperty(msg.guildId)){
+        delete settingsOBJ.logging[msg.guildId];
         msg.channel.send("Logging channel successfully disabled.");
         await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
         await ougi.backup("./settings.txt", channels.settings);
@@ -46,7 +40,7 @@ async function (arguments, msg) {
   }
   msg.channel.send("I'll start sending this server's commands log into <#"+ guildLogger +">.");
 
-  settingsOBJ.logging[guildID] = guildLogger;
+  settingsOBJ.logging[msg.guildId] = guildLogger;
   await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
   await ougi.backup("./settings.txt", channels.settings);
 }

@@ -6,21 +6,15 @@ async function (arguments, msg) {
     return
   }
 
-  let elAdmin = msg.guild.ownerId;
+  if (!ougi.adminCheck(msg)) return;
 
-  if (elAdmin != msg.author.id) {
-    msg.channel.send("You must be the server's owner to run this command.");
-    return
-  }
-
-  let guildID = msg.guildId;
   let guildBump = msg.channel.id;
   let guildBumpRole = null;
 
   if (arguments.length > 0) {
     if (arguments[0] == "disable") {
-      if (settingsOBJ.guildBump.hasOwnProperty(guildID)){
-        delete settingsOBJ.guildBump[guildID];
+      if (settingsOBJ.guildBump.hasOwnProperty(msg.guildId)){
+        delete settingsOBJ.guildBump[msg.guildId];
         msg.channel.send("Bump reminder channel successfully disabled.");
         await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
         await ougi.backup("./settings.txt", channels.settings);
@@ -39,12 +33,12 @@ async function (arguments, msg) {
 
   msg.channel.send("I'll remind " + (guildBumpRole ? "<@&" + guildBumpRole + ">" : "you all") + " to bump in <#"+ guildBump +">.");
 
-  if (!settingsOBJ.guildBump.hasOwnProperty(guildID)) {
+  if (!settingsOBJ.guildBump.hasOwnProperty(msg.guildId)) {
     ougi.globalLog("Initializing remindBump in " + msg.guild.toString() + ".");
-    settingsOBJ.guildBump[guildID] = {channel: guildBump, role: guildBumpRole, next_bump: null, reminded: false};
+    settingsOBJ.guildBump[msg.guildId] = {channel: guildBump, role: guildBumpRole, next_bump: null, reminded: false};
   }
-  settingsOBJ.guildBump[guildID].channel = guildBump;
-  settingsOBJ.guildBump[guildID].role = guildBumpRole;
+  settingsOBJ.guildBump[msg.guildId].channel = guildBump;
+  settingsOBJ.guildBump[msg.guildId].role = guildBumpRole;
   await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
   await ougi.backup("./settings.txt", channels.settings);
 }

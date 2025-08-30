@@ -6,13 +6,8 @@ module.exports =
       return
     }
 
-    let guildID = msg.guildId;
-    let elAdmin = msg.guild.ownerId;
-
-    if (elAdmin != msg.author.id) {
-      msg.channel.send(await ougi.text(msg, "mustOwn"));
-      return
-    }
+    
+    if (!ougi.adminCheck(msg)) return;
 
     if (arguments.length <= 0) {
       msg.channel.send(await ougi.text(msg, "oneCharWhitelist"));
@@ -50,11 +45,11 @@ module.exports =
     ];
     let answer = afterOptions[Math.floor(Math.random() * afterOptions.length)].replace(/{triggerName}/, "`" + trigger + "`").replace(/{guildName}/, msg.guild.toString());
 
-    if (settingsOBJ.blacklist.hasOwnProperty(guildID)) {
-      let existent = settingsOBJ.blacklist[guildID];
+    if (settingsOBJ.blacklist.hasOwnProperty(msg.guildId)) {
+      let existent = settingsOBJ.blacklist[msg.guildId];
       for (let i = 0; i < existent.length; i++) {
         if (existent[i].toLowerCase() === trigger) {
-          client.channels.cache.get(consoleLogging).send("Trigger to be removed from blacklist: `" + trigger + "` in `" + msg.guild.toString() + "` with guildID `" + guildID + "`");
+          client.channels.cache.get(consoleLogging).send("Trigger to be removed from blacklist: `" + trigger + "` in `" + msg.guild.toString() + "` with msg.guildId `" + msg.guildId + "`");
           existent.splice(i, 1);
           await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
           msg.channel.send(answer).catch(console.error);

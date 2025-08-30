@@ -6,14 +6,8 @@ async function (arguments, msg) {
     return
   }
 
-  let elAdmin = msg.guild.ownerId;
+  if (!ougi.adminCheck(msg)) return;
 
-  if (elAdmin != msg.author.id) {
-    msg.channel.send("You must be the server's owner to run this command.");
-    return
-  }
-
-  let guildID = msg.guildId;
   let prefix = arguments.join(" ");
 
   if (arguments.length < 1) {
@@ -22,7 +16,7 @@ async function (arguments, msg) {
   }
   msg.channel.send("Prefix for Ougi in " + msg.guild.toString() + " set as `" + prefix + "`.");
 
-  settingsOBJ.prefix[guildID] = prefix;
+  settingsOBJ.prefix[msg.guildId] = prefix;
   await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
   await ougi.backup("./settings.txt", channels.settings);
 }

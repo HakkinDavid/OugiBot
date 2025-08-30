@@ -198,8 +198,7 @@ client.on('messageCreate', async (msg) => {
             ourConcern = true;
         }
     } else if (msg.channel.type === Discord.ChannelType.GuildText && msg.content.length > 0) {
-        const guildID = msg.guildId;
-        const prefix = settingsOBJ.prefix[guildID] || '';
+        const prefix = settingsOBJ.prefix[msg.guildId] || '';
         let isCommand = false;
 
         if (prefix && lower.startsWith(prefix)) {
@@ -210,7 +209,7 @@ client.on('messageCreate', async (msg) => {
         }
 
         if (!isCommand && repliedToOugi) { ougi.genAIAbility(msg, repliedToOugi); ourConcern = true; }
-        if (!isCommand && settingsOBJ.economy?.[guildID]?.channels.includes(msg.channel.id)) ougi.economy('xp', msg);
+        if (!isCommand && settingsOBJ.economy?.[msg.guildId]?.channels.includes(msg.channel.id)) ougi.economy('xp', msg);
     }
     if (ourConcern) {
         const now = Date.now();
@@ -273,8 +272,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
         if (!msg?.author || msg.author.bot) return;
         if (!ougi.startup() || settingsOBJ.ignored.includes(msg.author.id)) return;
         if (msg.channel.type === Discord.ChannelType.GuildText) {
-            const guildID = msg.guildId;
-            const blacklist = settingsOBJ.blacklist?.[guildID] || [];
+            const blacklist = settingsOBJ.blacklist?.[msg.guildId] || [];
             if ((event === 'messageDelete' && blacklist.includes('snipe')) ||
                 (event === 'messageUpdate' && blacklist.includes('editsnipe'))) return;
         }
@@ -302,10 +300,10 @@ setInterval(async () => {
 setInterval(async () => {
     if (!TEASEABLE || !ougi.startup()) return;
     const now = Date.now();
-    for (const [guildID, bumpData] of Object.entries(settingsOBJ.guildBump || {})) {
+    for (const [msg.guildId, bumpData] of Object.entries(settingsOBJ.guildBump || {})) {
         if (bumpData.next_bump && bumpData.next_bump < now && !bumpData.reminded) {
-            ougi.globalLog(`Reminded users to bump guild ${guildID}`);
-            const message = (await ougi.text(settingsOBJ.lang[guildID] || "en", "bumpNow"))
+            ougi.globalLog(`Reminded users to bump guild ${msg.guildId}`);
+            const message = (await ougi.text(settingsOBJ.lang[msg.guildId] || "en", "bumpNow"))
                 .replace("{timeStamp}", `<t:${Math.floor(now / 1000)}:t>`);
             const channel = client.channels.cache.get(bumpData.channel);
             if (channel) await channel.send(`${message}${bumpData.role ? `\n<@&${bumpData.role}>` : ''}`);

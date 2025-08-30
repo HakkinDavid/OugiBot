@@ -6,7 +6,6 @@ async function (action, msg, options) {
         return
     }
 
-    let guildID = msg.guildId;
 
     if (!ougi.isAdmin(msg)) {
         msg.channel.send("You must be an administrator to perform this action.");
@@ -15,7 +14,7 @@ async function (action, msg, options) {
 
     switch (action) {
         case 'channel': {
-            if (!settingsOBJ.economy.hasOwnProperty(guildID)) {
+            if (!settingsOBJ.economy.hasOwnProperty(msg.guildId)) {
                 msg.channel.send("You must enable economy first.\n> ougi economy enable");
                 return
             }
@@ -33,7 +32,7 @@ async function (action, msg, options) {
                         expChannels.push(channelMention);
                     }
                     else if (options[i] === 'all') {
-                        expChannels = settingsOBJ.economy[guildID].channels;
+                        expChannels = settingsOBJ.economy[msg.guildId].channels;
                         break;
                     }
                 }
@@ -45,14 +44,14 @@ async function (action, msg, options) {
 
             switch (options[0]) {
                 case 'add': {
-                    settingsOBJ.economy[guildID].channels.push(... expChannels);
+                    settingsOBJ.economy[msg.guildId].channels.push(... expChannels);
                     msg.channel.send("I will start giving XP to users in these channels.");
                     await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
                     await ougi.backup(database.settings.file, channels.settings);
                 }
                 break;
                 case 'remove': {
-                    settingsOBJ.economy[guildID].channels = settingsOBJ.economy[guildID].channels.filter(channel => !expChannels.includes(channel));
+                    settingsOBJ.economy[msg.guildId].channels = settingsOBJ.economy[msg.guildId].channels.filter(channel => !expChannels.includes(channel));
                     msg.channel.send("I won't give XP to users in these channels.");
                     await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
                     await ougi.backup(database.settings.file, channels.settings);
@@ -67,22 +66,22 @@ async function (action, msg, options) {
         case 'economy': {
             switch (options[0]) {
                 case 'enable': {
-                    if (settingsOBJ.economy.hasOwnProperty(guildID) && !settingsOBJ.economy[guildID].disabled) {
+                    if (settingsOBJ.economy.hasOwnProperty(msg.guildId) && !settingsOBJ.economy[msg.guildId].disabled) {
                         msg.channel.send("Already enabled.");
                         return
                     }
-                    settingsOBJ.economy[guildID] ? settingsOBJ.economy[guildID].disabled = false : ougi.economy('init', msg);
+                    settingsOBJ.economy[msg.guildId] ? settingsOBJ.economy[msg.guildId].disabled = false : ougi.economy('init', msg);
                     msg.channel.send("Economy enabled.");
                     await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
                     await ougi.backup(database.settings.file, channels.settings);
                 }
                 break;
                 case 'disable': {
-                    if (!settingsOBJ.economy.hasOwnProperty(guildID) || settingsOBJ.economy[guildID].disabled) {
+                    if (!settingsOBJ.economy.hasOwnProperty(msg.guildId) || settingsOBJ.economy[msg.guildId].disabled) {
                         msg.channel.send("Already disabled.");
                         return
                     }
-                    settingsOBJ.economy[guildID].disabled = true;
+                    settingsOBJ.economy[msg.guildId].disabled = true;
                     msg.channel.send("Economy disabled.");
                     await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
                     await ougi.backup(database.settings.file, channels.settings);
@@ -96,7 +95,7 @@ async function (action, msg, options) {
                 }
                 break;
                 case 'cooldown':
-                    settingsOBJ.economy[guildID].cooldown = options[1];
+                    settingsOBJ.economy[msg.guildId].cooldown = options[1];
                     msg.channel.send("Cooldown for economy commands set.");
                     await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
                     await ougi.backup(database.settings.file, channels.settings);

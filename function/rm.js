@@ -6,20 +6,15 @@ async function (arguments, msg) {
     return
   }
 
-  var guildID = msg.guildId;
-  var elAdmin = msg.guild.ownerId;
 
-  if (elAdmin != msg.author.id) {
-    msg.channel.send(await ougi.text(msg, "mustOwn"));
-    return
-  }
+  if (!ougi.adminCheck(msg)) return;
 
   if (arguments.length <= 0) {
     msg.channel.send("Ara ara, provide a phrase or a command that is at least one character long in order to blacklist it.");
     return
   }
 
-  var trigger = arguments.join(" ");
+  let trigger = arguments.join(" ");
 
   if (msg.content.includes("@everyone") || msg.content.includes("@here")) {
     msg.channel.send("Ora ora ora ora! Remove that massive ping.");
@@ -55,8 +50,8 @@ async function (arguments, msg) {
   ];
   let answer = afterOptions[Math.floor(Math.random()*afterOptions.length)];
 
-  if (settingsOBJ.blacklist.hasOwnProperty(guildID)){
-    let existent = settingsOBJ.blacklist[guildID];
+  if (settingsOBJ.blacklist.hasOwnProperty(msg.guildId)){
+    let existent = settingsOBJ.blacklist[msg.guildId];
     for(i = 0; i < existent.length; i++) {
       if(existent[i].toLowerCase() === trigger) {
         msg.channel.send("Sorry, that trigger is already blacklisted in " + msg.guild.toString() + ".").catch(console.error);
@@ -65,8 +60,8 @@ async function (arguments, msg) {
     }
     existent.push(trigger);
     msg.channel.send(answer).catch(console.error);
-    client.channels.cache.get(consoleLogging).send("Trigger to be blacklisted: `" + trigger + "` in `" + msg.guild.toString() + "` with guildID `" + guildID + "`");
-    settingsOBJ.blacklist[guildID] = existent;
+    client.channels.cache.get(consoleLogging).send("Trigger to be blacklisted: `" + trigger + "` in `" + msg.guild.toString() + "` with msg.guildId `" + msg.guildId + "`");
+    settingsOBJ.blacklist[msg.guildId] = existent;
     await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
 
     await ougi.backup("./settings.txt", channels.settings);
@@ -74,12 +69,12 @@ async function (arguments, msg) {
   }
 
   msg.channel.send(answer).catch(console.error);
-  client.channels.cache.get(consoleLogging).send("Trigger to be blacklisted: `" + trigger + "` in `" + msg.guild.toString() + "` with guildID `" + guildID + "`");
+  client.channels.cache.get(consoleLogging).send("Trigger to be blacklisted: `" + trigger + "` in `" + msg.guild.toString() + "` with msg.guildId `" + msg.guildId + "`");
 
-  settingsOBJ.blacklist[guildID] = [];
-  let arrayMaker = settingsOBJ.blacklist[guildID];
+  settingsOBJ.blacklist[msg.guildId] = [];
+  let arrayMaker = settingsOBJ.blacklist[msg.guildId];
   arrayMaker.push(trigger);
-  settingsOBJ.blacklist[guildID] = arrayMaker;
+  settingsOBJ.blacklist[msg.guildId] = arrayMaker;
   await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
 
   await ougi.backup("./settings.txt", channels.settings);
