@@ -2,7 +2,7 @@ module.exports =
 
   async function (msg) {
     let embed = await ougi.helpPreset(msg, "allow");
-    if (!ougi.guildCheck(msg)) return;
+    if (!(await ougi.guildCheck(msg))) return;
     let phrases = ["sike", "say a bad word", "snipe"];
     let allow = phrases[Math.floor(Math.random() * phrases.length)];
     let afterOptions = [

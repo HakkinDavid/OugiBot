@@ -1,6 +1,6 @@
 module.exports = async function (arguments, msg) {
-    if (!ougi.guildCheck(msg)) return;
-    if (!ougi.adminCheck(msg)) return;
+    if (!(await ougi.guildCheck(msg))) return;
+    if (!(await ougi.adminCheck(msg))) return;
 
     if (!rafflesOBJ) return;
     if (!rafflesOBJ[msg.guildId]) {
@@ -18,6 +18,23 @@ module.exports = async function (arguments, msg) {
         return;
     }
 
+    // Handle preset list setting
+    if (arguments[0] == "list") {
+        if (arguments[1] == "clear") {
+            rafflesOBJ[msg.guildId].presetList = null;
+            msg.channel.send("Preset participant list has been cleared for this server.");
+        }
+        else {
+            // Extract the remainder of the message content after the command
+            let afterListCmd = msg.content.slice(msg.content.toLowerCase().indexOf("raffle") + "raffle".length).trim();
+            afterListCmd = afterListCmd.slice(afterListCmd.toLowerCase().indexOf("list") + "list".length).trim();
+            rafflesOBJ[msg.guildId].presetList = afterListCmd;
+            msg.channel.send("Preset participant list has been set for this server.");
+        }
+        await ougi.writeFile(database.raffles.file, JSON.stringify(rafflesOBJ, null, 4), console.error);
+        await ougi.backup(database.raffles.file, channels.raffles);
+        return;
+    }
     if (arguments[0] == "clear") {
         rafflesOBJ[msg.guildId].ongoingRaffles = [];
         msg.channel.send("Raffles have been cleared. You are allowed to run " + rafflesOBJ[msg.guildId].allowedConcurrentRaffles + " concurrent raffles.");
@@ -54,16 +71,21 @@ module.exports = async function (arguments, msg) {
         slices[key] = value;
     }
 
-    // Validation: require ::list and ::title
-    if (!slices.list || !slices.title) {
-        msg.channel.send("Error: Missing required fields. Please provide at least `::list` (participants) and `::title`.");
+    // Use presetList if ::list is not provided
+    let listStr = slices.list;
+    if ((!listStr || !listStr.trim()) && rafflesOBJ[msg.guildId].presetList) {
+        listStr = rafflesOBJ[msg.guildId].presetList;
+    }
+    // Validation: require at least a list and ::title
+    if ((!listStr || !listStr.trim()) || !slices.title) {
+        msg.channel.send("Error: Missing required fields. Please provide at least `::list` (participants) and `::title`.\nIf you want to set a preset list, use `ougi raffle list <your list>`.");
         return;
     }
 
     // parse participants list
     let participants = [];
-    if (slices.list) {
-        const lines = slices.list.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+    if (listStr) {
+        const lines = listStr.split('\n').map(l => l.trim()).filter(l => l.length > 0);
         for (const line of lines) {
             // expect format: name weight
             const parts = line.split(/\s+/);

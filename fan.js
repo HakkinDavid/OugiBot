@@ -257,12 +257,12 @@ client.on('messageReactionAdd', async (reaction, user) => {
         guildId: reaction.message.guildId,
         mentions: reaction.message.mentions,
         client: reaction.message.client,
-        reference: {messageId: reaction.message.id, guildId: reaction.message.guildId, channelId: reaction.message.channelId},
+        reference: { messageId: reaction.message.id, guildId: reaction.message.guildId, channelId: reaction.message.channelId },
         delete: () => {
-            return { catch: (__) => {} };
+            return { catch: (__) => { } };
         },
         reply: (_) => {
-            return { catch: (__) => {} };
+            return { catch: (__) => { } };
         }
     };
 
@@ -308,25 +308,13 @@ setInterval(async () => {
     }
 
     for (const [guildId, guildData] of Object.entries(rafflesOBJ || {})) {
-        if (guildData.licensedUntil < now) return;
-        for (const raffle of guildData.ongoingRaffles || []) {
+        if (guildData.licensedUntil < now) continue;
+
+        (guildData.ongoingRaffles || []).forEach((raffle, idx) => {
             if (raffle.config.endsAt <= now && !raffle.finished) {
-                raffle.finished = true;
-                try {
-                    const channel = client.channels.cache.get(raffle.config.channelId);
-                    if (channel) {
-                        const msg = await channel.messages.fetch(raffle.messageId);
-                        raffle.winners = await ougi.pickWinners(raffle.participants, raffle.config.winnersCount);
-                        await msg.edit({ content: "The results are in!", embeds: [raffle.embed] });
-                        await msg.reply(`**Winners**\n${raffle.winners.map(w => w.name + " (" + Discord.userMention(w.id) + ")").join("\n")}`);
-                        await ougi.writeFile(database.raffles.file, JSON.stringify(rafflesOBJ, null, 4), console.error);
-                        await ougi.backup(database.raffles.file, channels.raffles);
-                    }
-                } catch (err) {
-                    ougi.globalLog(`Raffle execution failed for guild ${guildId}: ${err}`);
-                }
+                ougi.raffleExecute(guildId, idx);
             }
-        }
+        });
     }
 }, 60_000);
 

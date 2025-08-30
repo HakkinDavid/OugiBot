@@ -1,7 +1,7 @@
 module.exports = async function (arguments, msg) {
-    if (!ougi.guildCheck(msg)) return;
+    if (!(await ougi.guildCheck(msg))) return;
 
-    if (!ougi.adminCheck(msg)) return;
+    if (!(await ougi.adminCheck(msg))) return;
 
     const subcommand = arguments[0].toLowerCase();
     if (subcommand !== 'create' && subcommand !== 'delete') {

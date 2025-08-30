@@ -1,5 +1,5 @@
 module.exports = async function (arguments, msg) {
-    if (!ougi.guildCheck(msg)) return;
+    if (!(await ougi.guildCheck(msg))) return;
 
     const messageId = msg.reference?.messageId;
     if (!messageId) return;
@@ -14,10 +14,9 @@ module.exports = async function (arguments, msg) {
         return;
     }
 
-    const participantName = settingsOBJ.nicknames?.[msg.guildId]?.[msg.author.id];
+    let participantName = settingsOBJ.nicknames?.[msg.guildId]?.[msg.author.id];
     if (!participantName) {
-        ougi.globalLog(`Raffle join failed: participantName not found for user: ${msg.author.id}`);
-        return;
+        participantName = msg.author.username;
     }
 
     const participantIdx = rafflesOBJ[msg.guildId].ongoingRaffles[raffleIdx].participants.findIndex(p => p.name.toLowerCase() == participantName.toLowerCase());

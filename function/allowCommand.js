@@ -1,10 +1,10 @@
 module.exports =
 
   async function (arguments, msg) {
-    if (!ougi.guildCheck(msg)) return;
+    if (!(await ougi.guildCheck(msg))) return;
 
     
-    if (!ougi.adminCheck(msg)) return;
+    if (!(await ougi.adminCheck(msg))) return;
 
     if (arguments.length <= 0) {
       msg.channel.send(await ougi.text(msg, "oneCharWhitelist"));

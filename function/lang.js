@@ -3,8 +3,8 @@ module.exports =
 async function (arguments, msg, guildExecution) {
   let preferencesID = msg.author.id;
   if (guildExecution) {
-    if (!ougi.guildCheck(msg)) return;
-    if (!ougi.adminCheck(msg)) return;
+    if (!(await ougi.guildCheck(msg))) return;
+    if (!(await ougi.adminCheck(msg))) return;
     preferencesID = msg.guildId;
   }
   let toLang = arguments.join(" ").replace("-cn", "-CN").replace("-tw", "-TW");

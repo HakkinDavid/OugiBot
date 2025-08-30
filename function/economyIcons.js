@@ -1,7 +1,7 @@
 module.exports =
 
     async function (arguments, msg) {
-        if (!ougi.guildCheck(msg)) return;
+        if (!(await ougi.guildCheck(msg))) return;
 
         if (!ougi.isAdmin(msg)) {
             msg.channel.send("You must be an administrator to perform this action.");

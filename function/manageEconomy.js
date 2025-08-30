@@ -1,7 +1,7 @@
 module.exports =
 
 async function (action, msg, options) {
-    if (!ougi.guildCheck(msg)) return;
+    if (!(await ougi.guildCheck(msg))) return;
 
 
     if (!ougi.isAdmin(msg)) {

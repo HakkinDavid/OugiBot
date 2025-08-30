@@ -15,6 +15,7 @@ module.exports =
         "improving": "Still improving!",
         "mustGuild": "You must be in a server to run this command.",
         "mustOwn": "You must be the server's owner to run this command.",
+        "mustOwnOrAdmin": "You must be the server's owner or be a registered admin of it to run this command.",
         "oneCharWhitelist": "Ara ara, provide a phrase or a command that is at least one character long in order to whitelist it.",
         "massivePing": "Ora ora ora ora! Remove that massive ping.",
         "avoidSpecialChar": "Avoid mentions or custom emoji please. What? Isn't that a mention or a custom emoji? Well, then don't include '<@' and '>' in the same message.",

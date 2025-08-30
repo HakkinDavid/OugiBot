@@ -1,7 +1,7 @@
 module.exports =
 
 async function (msg) {
-  if (!ougi.guildCheck(msg)) return;
+  if (!(await ougi.guildCheck(msg))) return;
   let phrases = ["sike", "say a bad word", "snipe"];
   let remove = phrases[Math.floor(Math.random()*phrases.length)];
   let afterOptions = [

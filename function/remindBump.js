@@ -1,9 +1,9 @@
 module.exports =
 
 async function (arguments, msg) {
-  if (!ougi.guildCheck(msg)) return;
+  if (!(await ougi.guildCheck(msg))) return;
 
-  if (!ougi.adminCheck(msg)) return;
+  if (!(await ougi.adminCheck(msg))) return;
 
   let guildBump = msg.channel.id;
   let guildBumpRole = null;

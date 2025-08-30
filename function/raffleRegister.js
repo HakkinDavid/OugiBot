@@ -1,5 +1,5 @@
 module.exports = async function (arguments, msg) {
-    if (!ougi.guildCheck(msg)) return;
+    if (!(await ougi.guildCheck(msg))) return;
 
     const participantName = msg.content.slice(msg.content.toLowerCase().indexOf("raffle-register") + "raffle-register".length).trim();
     if (!participantName.trim()) {

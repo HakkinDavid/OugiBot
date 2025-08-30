@@ -8,7 +8,7 @@ async function (msg) {
   .setColor("#230347")
   .setFooter({text: "helpEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true");
-  if (!ougi.guildCheck(msg)) return;
+  if (!(await ougi.guildCheck(msg))) return;
   embed.setDescription("Use this command to change Ougi's prefix inside your Discord server to anything you'd like.")
   .addFields({name: "Special permission required", value: ":warning: You must be the owner of whatever Discord server you run this command in."})
   .addFields({name: await ougi.text(msg, "example"), value: "`ougi prefix " + possiblePrefix[Math.floor(Math.random()*possiblePrefix.length)] + "`"});

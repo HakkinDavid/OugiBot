@@ -1,9 +1,9 @@
 module.exports =
 
 async function (arguments, msg) {
-  if (!ougi.guildCheck(msg)) return;
+  if (!(await ougi.guildCheck(msg))) return;
 
-  if (!ougi.adminCheck(msg)) return;
+  if (!(await ougi.adminCheck(msg))) return;
 
   if (arguments.length <= 0) {
     msg.channel.send("Ara ara, provide a phrase or a command that is at least one character long in order to blacklist it.");
