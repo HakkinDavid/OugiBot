@@ -118,7 +118,7 @@ module.exports = async function (msg) {
         "raffle-join": async () => ougi.raffleJoin(args, msg),
         "raffle-execute": async () => {
             if (!(await ougi.guildCheck(msg))) return;
-            if (!(await ougi.adminCheck(msg))) return;
+            if (!(await ougi.adminCheck(msg, true))) return;
             await ougi.raffleExecute(msg.guildId, rafflesOBJ[msg.guildId].ongoingRaffles?.findIndex(r => r.messageId == msg.reference.messageId));
         },
         "admin-register": async () => ougi.adminRegister(args, msg)
