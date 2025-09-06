@@ -1,7 +1,7 @@
 module.exports =
 
 async function generateText(input = []) {
-    console.log("Generating AI text for input\n" + input.join(" "));
+    console.log("Generating AI text for input\n" + JSON.stringify(input));
     const response = await fetch('https://text.pollinations.ai/', {
       method: 'POST',
       headers: {
