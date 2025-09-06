@@ -15,7 +15,7 @@ async function generateText(input = []) {
       })
     });
 
-    console.log("Data (raw)\n" + JSON.stringify(data));
+    console.log("Data (raw)\n" + JSON.stringify(response));
   
     const data = await response.json();
 
