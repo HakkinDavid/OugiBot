@@ -140,6 +140,6 @@ module.exports = async function (msg) {
     } else if (musicCommands.includes(spookyCommand)) {
         await ougi.voiceCallMusic(msg).catch(console.error);
     } else {
-        await ougi.genAIAbility(msg);
+        await ougi.judgementAbility(msg);
     }
 };
