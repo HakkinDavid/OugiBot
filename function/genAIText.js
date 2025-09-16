@@ -11,13 +11,11 @@ async function generateText(input = []) {
         messages: input,
         seed: 100 * Math.random() + 1,
         model: 'openai-fast',
-        jsonMode: true
+        jsonMode: false
       })
     });
-
-    console.log("Data (raw)\n" + JSON.stringify(response));
   
-    const data = await response.json();
+    const data = await response.text();
 
-    return ougi.getNestedString(data);
+    return data;
   }
