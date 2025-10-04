@@ -69,8 +69,7 @@ async function (msg, replied_to_ougi) {
     .addFields({ name: "Content", value: msg.content.slice(0, 1024) })
     .addFields({ name: "Reply", value: spookyReply });
 
-  if (replied_to_ougi) { msg.reply(spookyReply).catch(console.error); }
-  else { msg.channel.send(spookyReply).catch(console.error); }
+  msg.reply(spookyReply).catch(console.error);
   client.channels.cache.get(consoleLogging).send({ embeds: [embed] });
 
   /*
