@@ -1,5 +1,4 @@
 const { EmbedBuilder, ChannelType } = require('discord.js');
-const patreonCommand = require('./patreonCommand');
 
 module.exports = async function (msg) {
     // Normalizar espacios y saltos de línea
@@ -21,8 +20,8 @@ module.exports = async function (msg) {
     // Rate-limit
     const now = Date.now();
     const lastTime = settingsOBJ.ratelimit[msg.author.id] || 0;
-    if (now - lastTime <= 1500) {
-        const waitTime = ((1500 - (now - lastTime)) / 1000).toFixed(1);
+    if (now - lastTime <= 250 && (!settingsOBJ.patrons || !settingsOBJ.patrons[msg.author.id])) {
+        const waitTime = ((250 - (now - lastTime)) / 1000).toFixed(1);
         msg.channel.send((await ougi.text(msg, "ratelimited")).replace('{t}', `\`${waitTime}\``));
         ougi.globalLog(`Rate limit applied to user ${msg.author.username} (${waitTime}s)`);
         return;
