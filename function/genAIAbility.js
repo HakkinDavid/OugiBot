@@ -44,8 +44,8 @@ async function (msg, replied_to_ougi) {
     spookyReply = await ougi.genAIText(aiMessages);
   }
   catch (e) {
-    ougi.judgementAbility(msg, replied_to_ougi);
-    return;
+    spookyReply = null;
+    console.error(e);
   }
 
   if (typeof spookyReply !== "string" || spookyReply.includes("OpenAI")) { ougi.judgementAbility(msg, replied_to_ougi); return; }
