@@ -321,6 +321,7 @@ setInterval(async () => {
 /* ===== Manejo de Excepciones Globales ===== */
 process.on('uncaughtException', async (e) => {
     try {
+        console.log(e);
         let trimmed = JSON.stringify(e, Object.getOwnPropertyNames(e), 4).replace(/\\n/g, '\n');
         while (trimmed.length > 0) {
             await client.users.cache.get(davidUserID)?.send("```" + trimmed.slice(0, 1994) + "```");
