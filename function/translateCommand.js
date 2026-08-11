@@ -15,7 +15,7 @@ async function (msg) {
       } catch { }
     }
     else {
-      msg.channel.send({content: "Please use a valid syntax for the translation. Refer to the following command if you are clueless.\n> ougi help translate", flags: Discord.MessageFlags.Ephemeral}).catch(console.error);
+      msg.reply({content: "Please use a valid syntax for the translation. Refer to the following command if you are clueless.\n> ougi help translate", flags: Discord.MessageFlags.Ephemeral}).catch(console.error);
       return
     }
   }
@@ -36,7 +36,7 @@ async function (msg) {
   let isLang = ougi.whereIs(ougi.langCodes, niceLang);
   let isCode = ougi.langCodes[toLang];
   if (isLang == undefined && isCode == undefined) {
-    msg.channel.send({content: "Please provide a valid destination language for the translation. Refer to the following command if you are clueless.\n> ougi help translate", flags: Discord.MessageFlags.Ephemeral}).catch(console.error);
+    msg.reply({content: "Please provide a valid destination language for the translation. Refer to the following command if you are clueless.\n> ougi help translate", flags: Discord.MessageFlags.Ephemeral}).catch(console.error);
     return
   }
   if (isCode != undefined && isLang == undefined) {
@@ -69,7 +69,7 @@ async function (msg) {
 
     embed.setFooter({text: "Translated by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
     .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/ougitranslate.png?raw=true");
-    msg.channel.send({embeds: [embed], flags: Discord.MessageFlags.Ephemeral}).catch(console.error);
+    msg.reply({embeds: [embed], flags: Discord.MessageFlags.Ephemeral}).catch(console.error);
   }).catch(err => {
       console.error(err);
   });
