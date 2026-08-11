@@ -35,37 +35,58 @@ function readLegacyFile(filename) {
 async function runMigration() {
     // 1. Migrate settings.txt -> settings.db & economy.db
     console.log("\n📦 Migrating settings.txt...");
-    const settings = readLegacyFile('./settings.txt');
-    if (settings) {
-        dbManager.saveKV('settings', 'kv', 'settingsOBJ', settings);
-        console.log("  ✅ Saved settingsOBJ into settings.db");
+    const settings = readLegacyFile('./settings.txt') || {};
+    
+    // Guarantee full 20-key schema
+    if (!settings.banned) settings.banned = {};
+    if (!settings.ignored) settings.ignored = [];
+    if (!settings.ratelimit) settings.ratelimit = {};
+    if (!settings.prefix) settings.prefix = {};
+    if (!settings.blacklist) settings.blacklist = {};
+    if (!settings.economy) settings.economy = {};
+    if (!settings.logging) settings.logging = {};
+    if (!settings.lang) settings.lang = {};
+    if (!settings.guildNews) settings.guildNews = {};
+    if (!settings.subscribers) settings.subscribers = [];
+    if (!settings.surveys) settings.surveys = {};
+    if (!settings.surveysAvailable) settings.surveysAvailable = {};
+    if (!settings.AI) settings.AI = { description: {} };
+    if (!settings.guildBump) settings.guildBump = {};
+    if (!settings.patreonAdLastSeen) settings.patreonAdLastSeen = {};
+    if (!settings.interactionsCounter) settings.interactionsCounter = {};
+    if (!settings.patrons) settings.patrons = {};
+    if (!settings.shortcuts) settings.shortcuts = {};
+    if (!settings.nicknames) settings.nicknames = {};
+    if (!settings.guildAdmins) settings.guildAdmins = {};
 
-        // Migrate Economy data if present
-        if (settings.economy) {
-            const ecoDb = dbManager.getDb('economy');
-            const saveGuildEco = ecoDb.prepare(`INSERT INTO guild_economy (guild_id, config) VALUES (?, ?) ON CONFLICT(guild_id) DO UPDATE SET config=excluded.config`);
-            const saveUserEco = ecoDb.prepare(`INSERT INTO user_economy (guild_id, user_id, money, xp, level, worked) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(guild_id, user_id) DO UPDATE SET money=excluded.money, xp=excluded.xp, level=excluded.level, worked=excluded.worked`);
+    dbManager.saveKV('settings', 'kv', 'settingsOBJ', settings);
+    console.log("  ✅ Saved complete settingsOBJ into settings.db");
 
-            const ecoTransaction = ecoDb.transaction((economyData) => {
-                for (const [guildId, gData] of Object.entries(economyData)) {
-                    saveGuildEco.run(guildId, JSON.stringify({
-                        multiplier: gData.multiplier || 1,
-                        channels: gData.channels || [],
-                        currency: gData.currency || "$",
-                        xp: gData.xp || "XP",
-                        cooldown: gData.cooldown || 10
-                    }));
+    // Migrate Economy data if present
+    if (settings.economy) {
+        const ecoDb = dbManager.getDb('economy');
+        const saveGuildEco = ecoDb.prepare(`INSERT INTO guild_economy (guild_id, config) VALUES (?, ?) ON CONFLICT(guild_id) DO UPDATE SET config=excluded.config`);
+        const saveUserEco = ecoDb.prepare(`INSERT INTO user_economy (guild_id, user_id, money, xp, level, worked) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(guild_id, user_id) DO UPDATE SET money=excluded.money, xp=excluded.xp, level=excluded.level, worked=excluded.worked`);
 
-                    if (gData.users) {
-                        for (const [userId, uData] of Object.entries(gData.users)) {
-                            saveUserEco.run(guildId, userId, uData.money || 0, uData.xp || 0, uData.level || 0, uData.worked || 0);
-                        }
+        const ecoTransaction = ecoDb.transaction((economyData) => {
+            for (const [guildId, gData] of Object.entries(economyData)) {
+                saveGuildEco.run(guildId, JSON.stringify({
+                    multiplier: gData.multiplier || 1,
+                    channels: gData.channels || [],
+                    currency: gData.currency || "$",
+                    xp: gData.xp || "XP",
+                    cooldown: gData.cooldown || 10
+                }));
+
+                if (gData.users) {
+                    for (const [userId, uData] of Object.entries(gData.users)) {
+                        saveUserEco.run(guildId, userId, uData.money || 0, uData.xp || 0, uData.level || 0, uData.worked || 0);
                     }
                 }
-            });
-            ecoTransaction(settings.economy);
-            console.log("  ✅ Migrated guild & user economy records into economy.db");
-        }
+            }
+        });
+        ecoTransaction(settings.economy);
+        console.log("  ✅ Migrated guild & user economy records into economy.db");
     }
 
     // 2. Migrate responses.txt (Knowledge Base) -> responses.db
