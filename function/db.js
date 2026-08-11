@@ -11,35 +11,9 @@ class OugiDatabaseManager {
     getDb(name) {
         if (!this.databases[name]) {
             const dbPath = path.join(__dirname, '..', `${name}.db`);
-            
-            // Check if existing file is not a valid SQLite database (e.g., text JSON)
-            if (fs.existsSync(dbPath)) {
-                try {
-                    const fd = fs.openSync(dbPath, 'r');
-                    const buffer = Buffer.alloc(16);
-                    fs.readSync(fd, buffer, 0, 16, 0);
-                    fs.closeSync(fd);
-                    const header = buffer.toString('utf-8', 0, 15);
-                    if (header !== "SQLite format 3") {
-                        console.warn(`[DB] File ${name}.db is not SQLite format (found text content). Recreating database...`);
-                        fs.unlinkSync(dbPath);
-                    }
-                } catch (err) {
-                    console.warn(`[DB] Error inspecting ${name}.db:`, err);
-                }
-            }
-
-            try {
-                const db = new Database(dbPath);
-                db.pragma('journal_mode = WAL');
-                this.databases[name] = db;
-            } catch (err) {
-                console.error(`[DB] Failed to open ${name}.db, attempting corruption repair:`, err);
-                if (fs.existsSync(dbPath)) try { fs.unlinkSync(dbPath); } catch {}
-                const db = new Database(dbPath);
-                db.pragma('journal_mode = WAL');
-                this.databases[name] = db;
-            }
+            const db = new Database(dbPath);
+            db.pragma('journal_mode = WAL');
+            this.databases[name] = db;
         }
         return this.databases[name];
     }

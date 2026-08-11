@@ -3,23 +3,6 @@ const dbManager = require('./db')();
 
 module.exports = function () {
   if (!settingsOBJ || !localesCache || !dynamicLocales || !knowledgeBase) {
-    if (!fs.existsSync(database.settings.file) || !fs.existsSync(database.locales.file) || !fs.existsSync(database.dynamicLocales.file) || !fs.existsSync(database.backup.file)) {
-      return false;
-    }
-
-    // Auto-migrate flat files to SQLite if SQLite is empty
-    const settingsDb = dbManager.getDb('settings');
-    const existingSettings = settingsDb.prepare("SELECT value FROM kv WHERE key = 'settingsOBJ'").get();
-    
-    if (!existingSettings && fs.existsSync('./migrateToSqlite.js')) {
-      console.log("[Startup] SQLite empty, executing automated flat-file -> SQLite migration...");
-      try {
-        require('../migrateToSqlite');
-      } catch (err) {
-        console.error("[Startup] Auto-migration error:", err);
-      }
-    }
-
     global.settingsOBJ = dbManager.getKV('settings', 'kv', 'settingsOBJ') || {};
     global.localesCache = dbManager.loadLocalesCache() || {};
     global.dynamicLocales = dbManager.loadDynamicLocales() || {};

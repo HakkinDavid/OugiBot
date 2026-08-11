@@ -154,18 +154,12 @@ Audits all responses stored in `responses.txt` (`knowledgeBase`), extracts any e
 node auditresponses.js
 ```
 
-### 3. Cloud Database Upload Script (`uploadBackups.js`)
-Uploads all updated local database files directly to designated Discord backup channels so that production Ougi instances can fetch and synchronize fresh data on boot.
+### 3. Standalone Offline Database Migration Tool (`syncMigrateUpload.js`)
+An offline tool that pulls legacy text attachments from Discord production channels, converts and populates clean SQLite `.db` database files (`settings.db`, `responses.db`, `embedPresets.db`, `newsChannel.db`, `localesCache.db`, `dynamicLocales.db`, `raffles.db`, `economy.db`), uploads the generated SQLite `.db` files directly into Discord backup channels, and cleans up local temporary text files.
+
+The core bot runtime contains **zero migration code** and operates purely on SQLite.
 
 ```bash
-npm run upload-backups
-# Or: node uploadBackups.js
-```
-
-### 4. End-to-End Sync-Migrate-Upload Pipeline (`syncMigrateUpload.js`)
-Wipes any pre-existing local flat text files, pulls current live production channel attachments, downloads them, converts/migrates them to SQLite databases (`*.db`), re-uploads the updated files back to production channels, and cleans up local flat text files in a single operation.
-
-```bash
-npm run sync-migrate-upload
-# Or: node syncMigrateUpload.js
+npm run migrate
+# Equivalent to: node syncMigrateUpload.js
 ```

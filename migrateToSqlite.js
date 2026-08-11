@@ -13,15 +13,20 @@ function readLegacyFile(filename) {
         console.log(`⚠️ Legacy file ${filename} not found, skipping.`);
         return null;
     }
-    const raw = fs.readFileSync(filename, 'utf-8');
+    const raw = fs.readFileSync(filename, 'utf-8').trim();
+    if (!raw) {
+        console.log(`⚠️ Legacy file ${filename} is empty, skipping.`);
+        return null;
+    }
     try {
         return JSON.parse(raw);
     } catch {
         try {
             const decrypted = CryptoJS.AES.decrypt(raw, process.env.CRYPT_KEY).toString(CryptoJS.enc.Utf8);
+            if (!decrypted) return null;
             return JSON.parse(decrypted);
-        } catch (err) {
-            console.error(`❌ Failed to decrypt/parse ${filename}:`, err);
+        } catch {
+            console.log(`⚠️ Legacy file ${filename} could not be decrypted/parsed as JSON, skipping.`);
             return null;
         }
     }
