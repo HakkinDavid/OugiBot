@@ -160,7 +160,7 @@ class OugiDatabaseManager {
 
     saveKnowledgeBase(kb) {
         const db = this.getDb('responses');
-        const insert = db.prepare(`INSERT INTO responses (trigger, replies) VALUES (?, ?) ON CONFLICT(trigger) DO UPDATE SET replies=excluded.value`);
+        const insert = db.prepare(`INSERT INTO responses (trigger, replies) VALUES (?, ?) ON CONFLICT(trigger) DO UPDATE SET replies=excluded.replies`);
         const deleteStmt = db.prepare(`DELETE FROM responses WHERE trigger = ?`);
         const transaction = db.transaction((data) => {
             for (const [trigger, replies] of Object.entries(data)) {

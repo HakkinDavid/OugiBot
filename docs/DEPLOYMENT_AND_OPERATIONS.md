@@ -153,3 +153,10 @@ Audits all responses stored in `responses.txt` (`knowledgeBase`), extracts any e
 ```bash
 node auditresponses.js
 ```
+
+### 3. Cloud Database Upload Script (`uploadBackups.js`)
+Uploads all updated local database files directly to designated Discord backup channels so that production Ougi instances can fetch and synchronize fresh data on boot.
+
+```bash
+node uploadBackups.js
+```
