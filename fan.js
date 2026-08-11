@@ -143,12 +143,32 @@ client.once('ready', async () => {
     try {
         findRemoveSync('./', { extensions: ['.txt', '.mp3'] });
         await syncData();
+        await client.application?.commands.set([
+            {
+                name: 'Translate',
+                type: Discord.ApplicationCommandType.Message
+            }
+        ]).catch(console.error);
         client.channels.cache.get(consoleLogging)?.send(`**INSTANCE ID:** ${instanceID}\n**DEV:** ${process.env.DEV}\n**SILENT MODE:** ${!TEASEABLE}`).catch(console.error);
         console.log(`Instance ID: ${instanceID}`);
         ougi.startup();
     } catch (err) {
         console.error("Error en ougi.startup:", err);
     }
+});
+
+client.on('interactionCreate', async (interaction) => {
+    if (!interaction) return;
+    if (!TEASEABLE && interaction.user.id !== davidUserID) return;
+    if (!ougi.startup()) return;
+    if (settingsOBJ?.ignored?.includes(interaction.user.id)) {
+        if (interaction.isRepliable()) {
+            await interaction.reply({ content: "You are currently opted out from using Ougi.", flags: Discord.MessageFlags.Ephemeral }).catch(console.error);
+        }
+        return;
+    }
+
+    await ougi.processInteraction(interaction);
 });
 
 client.on('messageCreate', async (msg) => {
@@ -258,6 +278,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
         mentions: reaction.message.mentions,
         client: reaction.message.client,
         reference: { messageId: reaction.message.id, guildId: reaction.message.guildId, channelId: reaction.message.channelId },
+        isReactionShortcut: true,
         delete: () => {
             return { catch: (__) => { } };
         },
