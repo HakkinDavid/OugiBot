@@ -3,7 +3,6 @@ const { Client, GatewayIntentBits } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
-const dbManager = require('./function/db')();
 
 const client = new Client({
     intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent]
@@ -20,27 +19,16 @@ const channels = {
     economy: "1536866624253075527"
 };
 
-// Legacy input text files vs SQLite target output DB files
-const legacyFiles = {
-    settings: { id: channels.settings, file: './settings.txt' },
-    backup: { id: channels.backup, file: './responses.txt' },
-    embeds: { id: channels.embeds, file: './embedPresets.txt' },
-    news: { id: channels.news, file: './newsChannel.txt' },
-    locales: { id: channels.locales, file: './localesCache.txt' },
-    dynamicLocales: { id: channels.dynamicLocales, file: './dynamicLocales.txt' },
-    raffles: { id: channels.raffles, file: './raffles.txt' }
-};
-
-const sqliteDbFiles = {
-    settings: { id: channels.settings, file: './settings.db' },
-    backup: { id: channels.backup, file: './responses.db' },
-    embeds: { id: channels.embeds, file: './embedPresets.db' },
-    news: { id: channels.news, file: './newsChannel.db' },
-    locales: { id: channels.locales, file: './localesCache.db' },
-    dynamicLocales: { id: channels.dynamicLocales, file: './dynamicLocales.db' },
-    raffles: { id: channels.raffles, file: './raffles.db' },
-    economy: { id: channels.economy, file: './economy.db' }
-};
+const databaseMapping = [
+    { key: 'settings', channelId: channels.settings, txtFile: './settings.txt', dbFile: './settings.db' },
+    { key: 'backup', channelId: channels.backup, txtFile: './responses.txt', dbFile: './responses.db' },
+    { key: 'embeds', channelId: channels.embeds, txtFile: './embedPresets.txt', dbFile: './embedPresets.db' },
+    { key: 'news', channelId: channels.news, txtFile: './newsChannel.txt', dbFile: './newsChannel.db' },
+    { key: 'locales', channelId: channels.locales, txtFile: './localesCache.txt', dbFile: './localesCache.db' },
+    { key: 'dynamicLocales', channelId: channels.dynamicLocales, txtFile: './dynamicLocales.txt', dbFile: './dynamicLocales.db' },
+    { key: 'raffles', channelId: channels.raffles, txtFile: './raffles.txt', dbFile: './raffles.db' },
+    { key: 'economy', channelId: channels.economy, txtFile: null, dbFile: './economy.db' }
+];
 
 function downloadFile(url, dest) {
     return new Promise((resolve, reject) => {
@@ -59,32 +47,32 @@ function downloadFile(url, dest) {
     });
 }
 
+function isSqliteHeader(filepath) {
+    if (!fs.existsSync(filepath)) return false;
+    try {
+        const fd = fs.openSync(filepath, 'r');
+        const buffer = Buffer.alloc(16);
+        fs.readSync(fd, buffer, 0, 16, 0);
+        fs.closeSync(fd);
+        return buffer.toString('utf-8', 0, 15) === "SQLite format 3";
+    } catch {
+        return false;
+    }
+}
+
 client.once('ready', async () => {
     console.log("==========================================");
     console.log(`🌐 Logged in as ${client.user.tag}`);
-    console.log("🚀 Starting End-to-End Pipeline: PRE-CLEANUP -> PULL -> MIGRATE -> UPLOAD SQLITE DBs -> POST-CLEANUP");
+    console.log("🚀 Starting Smart Sync-Migrate-Upload Pipeline");
     console.log("==========================================");
 
-    // STEP 0: PRE-CLEANUP LOCAL FLAT FILES
-    console.log("\n🧹 STEP 0: Cleaning up pre-existing local flat files...");
-    for (const [key, data] of Object.entries(legacyFiles)) {
-        if (fs.existsSync(data.file)) {
-            try {
-                fs.unlinkSync(data.file);
-                console.log(`  🗑️ Deleted pre-existing local file: ${data.file}`);
-            } catch (err) {
-                console.error(`  ❌ Error deleting ${data.file}:`, err.message);
-            }
-        }
-    }
-
-    // STEP 1: PULL & DOWNLOAD PRODUCTION CHANNEL DATA
-    console.log("\n📥 STEP 1: Pulling fresh production data from Discord channels...");
-    for (const [key, data] of Object.entries(legacyFiles)) {
+    // STEP 1: PULL & DOWNLOAD PRODUCTION CHANNEL ATTACHMENTS
+    console.log("\n📥 STEP 1: Inspecting & Downloading production channel attachments...");
+    for (const item of databaseMapping) {
         try {
-            const channel = await client.channels.fetch(data.id).catch(() => null);
+            const channel = await client.channels.fetch(item.channelId).catch(() => null);
             if (!channel) {
-                console.log(`  ⚠️ Skipping channel ${data.id} for ${data.file} (Channel inaccessible)`);
+                console.log(`  ⚠️ Channel ${item.channelId} inaccessible for ${item.key}`);
                 continue;
             }
 
@@ -92,68 +80,83 @@ client.once('ready', async () => {
             const lastMsg = messages.find(m => m.attachments && m.attachments.size > 0);
 
             if (lastMsg && lastMsg.attachments.size > 0) {
-                const attachmentUrl = lastMsg.attachments.first().url;
-                console.log(`  ⬇️ Downloading ${data.file} from message ${lastMsg.id}...`);
-                await downloadFile(attachmentUrl, data.file);
-                console.log(`  ✅ Downloaded fresh ${data.file}`);
+                const attachment = lastMsg.attachments.first();
+                const tempDownload = `./temp_${item.key}_download`;
+                console.log(`  ⬇️ Downloading attachment from message ${lastMsg.id}...`);
+                await downloadFile(attachment.url, tempDownload);
+
+                if (isSqliteHeader(tempDownload)) {
+                    console.log(`  💾 Attachment for ${item.key} is ALREADY a valid SQLite .db file (${fs.statSync(tempDownload).size} bytes).`);
+                    fs.copyFileSync(tempDownload, item.dbFile);
+                    fs.unlinkSync(tempDownload);
+                } else {
+                    console.log(`  📄 Attachment for ${item.key} is a legacy text/encrypted file.`);
+                    if (item.txtFile) {
+                        fs.copyFileSync(tempDownload, item.txtFile);
+                    }
+                    fs.unlinkSync(tempDownload);
+                }
             } else {
-                console.log(`  ⚠️ No message with attachments found in channel ${data.id}`);
+                console.log(`  ⚠️ No attachment found in channel ${item.channelId} for ${item.key}`);
             }
         } catch (err) {
-            console.error(`  ❌ Error pulling ${data.file}:`, err.message);
+            console.error(`  ❌ Error pulling ${item.key}:`, err.message);
         }
     }
 
-    // STEP 2: MIGRATE TO SQLITE
-    console.log("\n⚙️ STEP 2: Executing Migration to SQLite Databases...");
+    // STEP 2: MIGRATE ANY LEGACY .TXT FILES INTO SQLITE
+    console.log("\n⚙️ STEP 2: Executing Migration for any legacy text files...");
     try {
         require('./migrateToSqlite');
-        console.log("  ✅ Migration to SQLite complete!");
+        console.log("  ✅ Migration check complete!");
     } catch (err) {
-        console.error("  ❌ Migration failed:", err);
+        console.error("  ❌ Migration error:", err);
     }
 
-    // STEP 3: UPLOAD ACTUAL SQLITE .DB FILES BACK TO CHANNELS
-    console.log("\n📤 STEP 3: Uploading Fresh SQLite (.db) Files back to Production Discord Channels...");
-    for (const [key, data] of Object.entries(sqliteDbFiles)) {
-        if (!fs.existsSync(data.file)) {
-            console.log(`  ⚠️ Skipping upload for ${data.file} (File not found locally)`);
+    // STEP 3: UPLOAD VALID SQLITE DBs TO CHANNELS
+    console.log("\n📤 STEP 3: Uploading populated SQLite (.db) database files to Discord...");
+    for (const item of databaseMapping) {
+        if (!fs.existsSync(item.dbFile)) {
+            console.log(`  ⚠️ File ${item.dbFile} does not exist locally, skipping upload.`);
             continue;
         }
 
+        const fileSize = fs.statSync(item.dbFile).size;
+        console.log(`  📊 Database ${item.dbFile}: ${fileSize} bytes.`);
+
         try {
-            const channel = await client.channels.fetch(data.id).catch(() => null);
+            const channel = await client.channels.fetch(item.channelId).catch(() => null);
             if (!channel) {
-                console.log(`  ❌ Inaccessible backup channel ${data.id} for ${data.file}`);
+                console.log(`  ❌ Inaccessible backup channel ${item.channelId} for ${item.dbFile}`);
                 continue;
             }
 
-            console.log(`  📤 Uploading SQLite Database ${data.file} to channel ${data.id}...`);
+            console.log(`  📤 Uploading ${item.dbFile} (${(fileSize / 1024).toFixed(1)} KB) to channel ${item.channelId}...`);
             await channel.send({
-                content: `🗄️ **OugiBot SQLite Database Backup (${data.file})** — ${new Date().toISOString()}`,
-                files: [data.file]
+                content: `🗄️ **OugiBot SQLite Database Backup (${item.dbFile})** — ${new Date().toISOString()} (${(fileSize / 1024).toFixed(1)} KB)`,
+                files: [item.dbFile]
             });
-            console.log(`  ✅ Uploaded SQLite database ${data.file}`);
+            console.log(`  ✅ Successfully uploaded ${item.dbFile}`);
         } catch (err) {
-            console.error(`  ❌ Error uploading ${data.file}:`, err.message);
+            console.error(`  ❌ Error uploading ${item.dbFile}:`, err.message);
         }
     }
 
-    // STEP 4: POST-CLEANUP LOCAL FLAT FILES
-    console.log("\n🧹 STEP 4: Cleaning up local legacy flat text files...");
-    for (const [key, data] of Object.entries(legacyFiles)) {
-        if (fs.existsSync(data.file)) {
+    // STEP 4: CLEAN UP TEMPORARY .TXT FILES
+    console.log("\n🧹 STEP 4: Cleaning up temporary text files...");
+    for (const item of databaseMapping) {
+        if (item.txtFile && fs.existsSync(item.txtFile)) {
             try {
-                fs.unlinkSync(data.file);
-                console.log(`  🗑️ Deleted local legacy copy: ${data.file}`);
+                fs.unlinkSync(item.txtFile);
+                console.log(`  🗑️ Deleted temporary text file: ${item.txtFile}`);
             } catch (err) {
-                console.error(`  ❌ Failed to delete ${data.file}:`, err.message);
+                console.error(`  ❌ Failed to delete ${item.txtFile}:`, err.message);
             }
         }
     }
 
     console.log("\n==========================================");
-    console.log("✨ Complete Pipeline (PRE-CLEANUP -> PULL -> MIGRATE -> UPLOAD SQLITE DBs -> POST-CLEANUP) Finished!");
+    console.log("✨ Smart Sync-Migrate-Upload Pipeline Finished Successfully!");
     console.log("==========================================");
 
     client.destroy();
