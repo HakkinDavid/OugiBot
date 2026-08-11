@@ -43,8 +43,7 @@ module.exports = async function gamblingCommands(args, msg, subCommand) {
             .setDescription(`The coin landed on **${outcome.toUpperCase()}**!\nYou ${won ? `WON **${bet} ${currencySymbol}**! 🎉` : `LOST **${bet} ${currencySymbol}**! 💀`}\nNew balance: **${userEco.money} ${currencySymbol}**`)
             .setColor(won ? "#00FF00" : "#FF0000");
 
-        await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
-        await ougi.backup(database.settings.file, channels.settings);
+        ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
         msg.channel.send({ embeds: [embed] });
         return;
     }
@@ -73,8 +72,7 @@ module.exports = async function gamblingCommands(args, msg, subCommand) {
             .setDescription(`[ ${reel1} | ${reel2} | ${reel3} ]\n\n${winnings > 0 ? `JACKPOT! You won **${winnings} ${currencySymbol}**! 🎉` : `No match! You lost **${bet} ${currencySymbol}**. 💀`}\nNew balance: **${userEco.money} ${currencySymbol}**`)
             .setColor(winnings > 0 ? "#FFD700" : "#FF0000");
 
-        await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
-        await ougi.backup(database.settings.file, channels.settings);
+        ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
         msg.channel.send({ embeds: [embed] });
         return;
     }
@@ -93,8 +91,7 @@ module.exports = async function gamblingCommands(args, msg, subCommand) {
             .setDescription(`You rolled a **${userRoll}/100** (Needed > 55 to win).\nYou ${won ? `WON **${bet} ${currencySymbol}**! 🎉` : `LOST **${bet} ${currencySymbol}**! 💀`}\nNew balance: **${userEco.money} ${currencySymbol}**`)
             .setColor(won ? "#00FF00" : "#FF0000");
 
-        await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
-        await ougi.backup(database.settings.file, channels.settings);
+        ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
         msg.channel.send({ embeds: [embed] });
     }
 };

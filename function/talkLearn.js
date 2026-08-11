@@ -109,9 +109,7 @@ async function (arguments, msg) {
 
     client.channels.cache.get(consoleLogging).send({embeds: [embed]});
     knowledgeBase[trigger] = existent;
-    await ougi.writeFile(database.backup.file, JSON.stringify(knowledgeBase, null, 4), console.error);
-
-    await ougi.backup("./responses.txt", channels.backup);
+    ougi.db().saveKnowledgeBase(knowledgeBase);
     if (potentialLinks.length > 0 && msg.author.id !== davidUserID) client.users.cache.get(davidUserID).send("User uploaded media.\n" + "**Trigger:** " + trigger + "\n**Response:** " + response);
     return
   }
@@ -124,9 +122,7 @@ async function (arguments, msg) {
   let arrayMaker = knowledgeBase[trigger];
   arrayMaker.push(response);
   knowledgeBase[trigger] = arrayMaker;
-  await ougi.writeFile(database.backup.file, JSON.stringify(knowledgeBase, null, 4), console.error);
-
-  await ougi.backup("./responses.txt", channels.backup);
+  ougi.db().saveKnowledgeBase(knowledgeBase);
   if (potentialLinks.length > 0 && msg.author.id !== davidUserID) client.users.cache.get(davidUserID).send("User uploaded media.\n" + "**Trigger:** " + trigger + "\n**Response:** " + response);
   return
 }

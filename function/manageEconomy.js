@@ -43,15 +43,13 @@ async function (action, msg, options) {
                 case 'add': {
                     settingsOBJ.economy[msg.guildId].channels.push(... expChannels);
                     msg.channel.send("I will start giving XP to users in these channels.");
-                    await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
-                    await ougi.backup(database.settings.file, channels.settings);
+                    ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
                 }
                 break;
                 case 'remove': {
                     settingsOBJ.economy[msg.guildId].channels = settingsOBJ.economy[msg.guildId].channels.filter(channel => !expChannels.includes(channel));
                     msg.channel.send("I won't give XP to users in these channels.");
-                    await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
-                    await ougi.backup(database.settings.file, channels.settings);
+                    ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
                 }
                 break;
                 default:
@@ -69,8 +67,7 @@ async function (action, msg, options) {
                     }
                     settingsOBJ.economy[msg.guildId] ? settingsOBJ.economy[msg.guildId].disabled = false : ougi.economy('init', msg);
                     msg.channel.send("Economy enabled.");
-                    await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
-                    await ougi.backup(database.settings.file, channels.settings);
+                    ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
                 }
                 break;
                 case 'disable': {
@@ -80,22 +77,19 @@ async function (action, msg, options) {
                     }
                     settingsOBJ.economy[msg.guildId].disabled = true;
                     msg.channel.send("Economy disabled.");
-                    await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
-                    await ougi.backup(database.settings.file, channels.settings);
+                    ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
                 }
                 break;
                 case 'reset': {
                     ougi.economy('init', msg);
                     msg.channel.send("Economy reseted.");
-                    await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
-                    await ougi.backup(database.settings.file, channels.settings);
+                    ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
                 }
                 break;
                 case 'cooldown':
                     settingsOBJ.economy[msg.guildId].cooldown = options[1];
                     msg.channel.send("Cooldown for economy commands set.");
-                    await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
-                    await ougi.backup(database.settings.file, channels.settings);
+                    ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
                 break;
                 default:
                     msg.channel.send("You seem to be using this command wrong.");

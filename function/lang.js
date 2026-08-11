@@ -54,6 +54,5 @@ async function (arguments, msg, guildExecution) {
   if (finalCode == 'default') {
     delete settingsOBJ.lang[preferencesID]
   }
-  await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
-  await ougi.backup(database.settings.file, channels.settings);
+  ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
 }

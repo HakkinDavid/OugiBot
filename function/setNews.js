@@ -12,8 +12,7 @@ async function (arguments, msg) {
       if (settingsOBJ.guildNews.hasOwnProperty(msg.guildId)){
         delete settingsOBJ.guildNews[msg.guildId];
         msg.channel.send("Newsletter channel successfully disabled.");
-        await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
-        await ougi.backup("./settings.txt", channels.settings);
+        ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
         return
       }
       else {
@@ -39,6 +38,5 @@ async function (arguments, msg) {
   msg.channel.send("I'll start sending updates and related information into <#"+ guildNews +">.");
 
   settingsOBJ.guildNews[msg.guildId] = guildNews;
-  await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
-  await ougi.backup("./settings.txt", channels.settings);
+  ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
 }

@@ -54,6 +54,5 @@ async function (msg) {
     }
 
     msg.channel.send("Registered patrons\n```" + users.map(u => u + " = " + JSON.stringify(settingsOBJ.patrons[u], null, 4)).join("\n") + "```");
-    await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
-    await ougi.backup(database.settings.file, channels.settings);
+    ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
 }

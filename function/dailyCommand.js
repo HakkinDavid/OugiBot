@@ -28,8 +28,7 @@ module.exports = async function dailyCommand(args, msg) {
     userEco.money = (userEco.money || 0) + dailyReward;
     userEco.lastDaily = now;
 
-    await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
-    await ougi.backup(database.settings.file, channels.settings);
+    ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
 
     const currencySymbol = settingsOBJ.economy[guildId].currency || "$";
 

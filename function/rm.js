@@ -58,9 +58,7 @@ async function (arguments, msg) {
     msg.channel.send(answer).catch(console.error);
     client.channels.cache.get(consoleLogging).send("Trigger to be blacklisted: `" + trigger + "` in `" + msg.guild.toString() + "` with msg.guildId `" + msg.guildId + "`");
     settingsOBJ.blacklist[msg.guildId] = existent;
-    await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
-
-    await ougi.backup("./settings.txt", channels.settings);
+    ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
     return
   }
 
@@ -71,7 +69,5 @@ async function (arguments, msg) {
   let arrayMaker = settingsOBJ.blacklist[msg.guildId];
   arrayMaker.push(trigger);
   settingsOBJ.blacklist[msg.guildId] = arrayMaker;
-  await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
-
-  await ougi.backup("./settings.txt", channels.settings);
+  ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
 }

@@ -17,8 +17,7 @@ module.exports = async function (raffleGuildId, raffleIdx) {
             `**Winners**\n${raffle.winners.map(w => `${w.name} (${Discord.userMention(w.id)})`).join("\n")}`
         );
 
-        await ougi.writeFile(database.raffles.file, JSON.stringify(rafflesOBJ, null, 4), console.error);
-        await ougi.backup(database.raffles.file, channels.raffles);
+        ougi.db().saveKV('raffles', 'kv', 'rafflesOBJ', rafflesOBJ);
     } catch (err) {
         ougi.globalLog(`Raffle execution failed for guild ${raffleGuildId}: ${err}`);
     }

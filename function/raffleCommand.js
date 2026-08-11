@@ -31,15 +31,13 @@ module.exports = async function (arguments, msg) {
             rafflesOBJ[msg.guildId].presetList = afterListCmd;
             msg.channel.send("Preset participant list has been set for this server.");
         }
-        await ougi.writeFile(database.raffles.file, JSON.stringify(rafflesOBJ, null, 4), console.error);
-        await ougi.backup(database.raffles.file, channels.raffles);
+        ougi.db().saveKV('raffles', 'kv', 'rafflesOBJ', rafflesOBJ);
         return;
     }
     if (arguments[0] == "clear") {
         rafflesOBJ[msg.guildId].ongoingRaffles = [];
         msg.channel.send("Raffles have been cleared. You are allowed to run " + rafflesOBJ[msg.guildId].allowedConcurrentRaffles + " concurrent raffles.");
-        await ougi.writeFile(database.raffles.file, JSON.stringify(rafflesOBJ, null, 4), console.error);
-        await ougi.backup(database.raffles.file, channels.raffles);
+        ougi.db().saveKV('raffles', 'kv', 'rafflesOBJ', rafflesOBJ);
         return;
     }
 
@@ -167,6 +165,5 @@ module.exports = async function (arguments, msg) {
         finished: false
     });
 
-    await ougi.writeFile(database.raffles.file, JSON.stringify(rafflesOBJ, null, 4), console.error);
-    await ougi.backup(database.raffles.file, channels.raffles);
+    ougi.db().saveKV('raffles', 'kv', 'rafflesOBJ', rafflesOBJ);
 }

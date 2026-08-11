@@ -12,15 +12,13 @@ module.exports =
             case "currency": {
                 settingsOBJ.economy[msg.guildId].currency = arguments.slice(1).join(" ");
                 msg.channel.send("Currency icon updated.");
-                await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
-                await ougi.backup(database.settings.file, channels.settings);
+                ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
             }
                 break;
             case "xp": {
                 settingsOBJ.economy[msg.guildId].xp = arguments.slice(1).join(" ");
                 msg.channel.send("XP icon updated.");
-                await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
-                await ougi.backup(database.settings.file, channels.settings);
+                ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
             }
                 break;
             default:

@@ -33,6 +33,5 @@ module.exports = async function (arguments, msg) {
     // Confirmation message
     const actionText = action === "add" ? "Added administrators:" : "Removed administrators:";
     msg.channel.send(`${actionText}\n\`\`\`${mentionedUsers.join("\n")}\`\`\`\nCurrent administrators:\n\`\`\`${settingsOBJ.guildAdmins[msg.guildId].join("\n")}\`\`\``);
-    await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
-    await ougi.backup(database.settings.file, channels.settings);
+    ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
 }

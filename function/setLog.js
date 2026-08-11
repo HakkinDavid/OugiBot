@@ -12,8 +12,7 @@ async function (arguments, msg) {
       if (settingsOBJ.logging.hasOwnProperty(msg.guildId)){
         delete settingsOBJ.logging[msg.guildId];
         msg.channel.send("Logging channel successfully disabled.");
-        await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
-        await ougi.backup("./settings.txt", channels.settings);
+        ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
         return
       }
       else {
@@ -38,6 +37,5 @@ async function (arguments, msg) {
   msg.channel.send("I'll start sending this server's commands log into <#"+ guildLogger +">.");
 
   settingsOBJ.logging[msg.guildId] = guildLogger;
-  await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
-  await ougi.backup("./settings.txt", channels.settings);
+  ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
 }

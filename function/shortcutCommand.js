@@ -73,9 +73,7 @@ module.exports = async function (arguments, msg) {
             "animated": animated
         };
 
-        await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
-
-        await ougi.backup(database.settings.file, channels.settings);
+        ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
 
         msg.channel.send(await ougi.text(msg, "shortcutCreated"));
     }
@@ -103,9 +101,7 @@ module.exports = async function (arguments, msg) {
 
         delete settingsOBJ.shortcuts[msg.guildId][emojiKey];
 
-        await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
-
-        await ougi.backup(database.settings.file, channels.settings);
+        ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
 
         msg.channel.send(await ougi.text(msg, "shortcutDeleted"));
     }

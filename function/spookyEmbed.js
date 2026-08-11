@@ -191,7 +191,6 @@ async function (msg) {
       let aPreset = material + "::" + msg.author.id;
       dbManager.deleteEmbedPreset(aPreset);
       breakChocolate.splice(i, 1);
-      await ougi.backup(database.embeds.file, channels.embeds);
       msg.channel.send("Deleted preset `" + material + "`.");
       i--;
     }
@@ -589,7 +588,6 @@ async function (msg) {
     let personalizedPresetName = presetName + "::" + msg.author.id;
     dbManager.saveEmbedPreset(personalizedPresetName, breakChocolate);
 
-    await ougi.backup(database.embeds.file, channels.embeds);
     msg.channel.send("Saved preset as `" + presetName + "`, it's now available for you to use as template. Include `::load " + presetName + "` as command option whenever you want to use it.");
   }
 
@@ -606,7 +604,6 @@ async function (msg) {
       dbManager.saveEmbedPreset(everyPresetShare, breakChocolate);
     }
 
-    await ougi.backup(database.embeds.file, channels.embeds);
     msg.channel.send("Shared preset as `" + msg.author.username + "'s preset` with `" + circleOfSharing.join("`, `") + "`. It's now available for them to use as template until it's overwritten by another share of yours. In order to keep it, they must load and save it under another name. Tell them to include `::load " + msg.author.username + "'s preset` as command option whenever they want to use it.");
   }
   if (listOfPresets.length >= 1) {

@@ -271,3 +271,21 @@ const dbManager = new OugiDatabaseManager();
 module.exports = function () {
     return dbManager;
 };
+
+module.exports.saveSettings = function () {
+    if (global.settingsOBJ) {
+        dbManager.saveKV('settings', 'kv', 'settingsOBJ', global.settingsOBJ);
+    }
+};
+
+module.exports.saveRaffles = function () {
+    if (global.rafflesOBJ) {
+        dbManager.saveKV('raffles', 'kv', 'rafflesOBJ', global.rafflesOBJ);
+    }
+};
+
+module.exports.saveKB = function () {
+    if (global.knowledgeBase) {
+        dbManager.saveKnowledgeBase(global.knowledgeBase);
+    }
+};

@@ -60,8 +60,8 @@ module.exports = async function text(msg, stringID, dynamic = false, raw = false
         }
 
         dynamicLocales[langCode][stringID] = { value: returnableString, fromCode };
-        await ougi.writeFile(database.dynamicLocales.file, JSON.stringify(dynamicLocales, null, 4), console.error);
-        await ougi.backup(database.dynamicLocales.file, channels.dynamicLocales);
+        let dbManager = require('./db')();
+        dbManager.saveKV('dynamicLocales', 'kv', 'dynamicLocales', dynamicLocales);
         return raw ? { value: returnableString, fromCode, stringEmoji, stringDiscordEmoji } : returnableString;
     }
 
@@ -82,8 +82,8 @@ module.exports = async function text(msg, stringID, dynamic = false, raw = false
         }
 
         localesCache[langCode][stringID] = returnableString;
-        await ougi.writeFile(database.locales.file, JSON.stringify(localesCache, null, 4), console.error);
-        await ougi.backup(database.locales.file, channels.locales);
+        let dbManager = require('./db')();
+        dbManager.saveKV('localesCache', 'kv', 'localesCache', localesCache);
     }
 
     return returnableString;

@@ -116,6 +116,5 @@ async function (msg) {
   };
   dbManager.addNews(thisArray);
 
-  await ougi.backup(database.news.file, channels.news);
   msg.channel.send("Sent this newsletter to:\n" + names.join('\n'), {embeds: [spookyConstructor]});
 }

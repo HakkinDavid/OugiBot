@@ -33,9 +33,7 @@ module.exports = async function (arguments, msg) {
     rafflesOBJ[msg.guildId].ongoingRaffles[raffleIdx].participants[participantIdx].confirmed = true;
     ougi.globalLog(`Raffle join: participant confirmed set to true for participantIdx: ${participantIdx}, participantName: ${participantName}`);
     rafflesOBJ[msg.guildId].ongoingRaffles[raffleIdx].participants[participantIdx].id = msg.author.id;
-    await ougi.writeFile(database.raffles.file, JSON.stringify(rafflesOBJ, null, 4), console.error);
-
-    await ougi.backup(database.raffles.file, channels.raffles);
+    ougi.db().saveKV('raffles', 'kv', 'rafflesOBJ', rafflesOBJ);
     
     const channel = msg.guild.channels.cache.get(rafflesOBJ[msg.guildId].ongoingRaffles[raffleIdx].config.channelId);
     if (!channel) {

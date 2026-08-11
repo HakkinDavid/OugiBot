@@ -100,8 +100,7 @@ module.exports = async function storytellCommand(args, msg) {
       }
     }
 
-    await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
-    await ougi.backup(database.settings.file, channels.settings);
+    ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
 
     const endEmbed = new EmbedBuilder()
       .setTitle("🎭 Storytelling Session Concluded!")
