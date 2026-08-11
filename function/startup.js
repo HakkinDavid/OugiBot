@@ -20,11 +20,11 @@ module.exports = function () {
       }
     }
 
-    global.settingsOBJ = dbManager.getKV('settings', 'kv', 'settingsOBJ') || ougi.readFile(database.settings.file) || {};
-    global.localesCache = ougi.readFile(database.locales.file) || {};
-    global.dynamicLocales = ougi.readFile(database.dynamicLocales.file) || {};
-    global.knowledgeBase = dbManager.loadKnowledgeBase() || ougi.readFile(database.backup.file, 'utf-8') || {};
-    global.rafflesOBJ = ougi.readFile(database.raffles.file) || {};
+    global.settingsOBJ = dbManager.getKV('settings', 'kv', 'settingsOBJ') || {};
+    global.localesCache = dbManager.loadLocalesCache() || {};
+    global.dynamicLocales = dbManager.loadDynamicLocales() || {};
+    global.knowledgeBase = dbManager.loadKnowledgeBase() || {};
+    global.rafflesOBJ = dbManager.loadRaffles() || {};
 
     if (!global.settingsOBJ.lang) global.settingsOBJ.lang = {};
     if (!global.settingsOBJ.prefix) global.settingsOBJ.prefix = {};

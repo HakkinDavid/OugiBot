@@ -186,6 +186,84 @@ class OugiDatabaseManager {
         });
         transaction(kb);
     }
+
+    loadLocalesCache() {
+        const db = this.getDb('localesCache');
+        const rows = db.prepare('SELECT lang, string_id, translation FROM locales').all();
+        if (rows.length === 0) return null;
+        const cache = {};
+        for (const row of rows) {
+            if (!cache[row.lang]) cache[row.lang] = {};
+            cache[row.lang][row.string_id] = row.translation;
+        }
+        return cache;
+    }
+
+    loadDynamicLocales() {
+        const db = this.getDb('dynamicLocales');
+        const rows = db.prepare('SELECT lang, string_id, value, from_code FROM dynamic_locales').all();
+        if (rows.length === 0) return null;
+        const cache = {};
+        for (const row of rows) {
+            if (!cache[row.lang]) cache[row.lang] = {};
+            cache[row.lang][row.string_id] = { value: row.value, fromCode: row.from_code };
+        }
+        return cache;
+    }
+
+    loadRaffles() {
+        const db = this.getDb('raffles');
+        const rows = db.prepare('SELECT guild_id, data FROM raffles').all();
+        if (rows.length === 0) return null;
+        const raffles = {};
+        for (const row of rows) {
+            try {
+                raffles[row.guild_id] = JSON.parse(row.data);
+            } catch {}
+        }
+        return raffles;
+    }
+
+    loadEmbedPresets() {
+        const db = this.getDb('embedPresets');
+        const rows = db.prepare('SELECT preset_key, data FROM presets').all();
+        const presets = {};
+        for (const row of rows) {
+            try {
+                presets[row.preset_key] = JSON.parse(row.data);
+            } catch {}
+        }
+        return presets;
+    }
+
+    saveEmbedPreset(presetKey, data) {
+        const db = this.getDb('embedPresets');
+        const stmt = db.prepare('INSERT INTO presets (preset_key, data) VALUES (?, ?) ON CONFLICT(preset_key) DO UPDATE SET data=excluded.data');
+        stmt.run(presetKey, JSON.stringify(data));
+    }
+
+    deleteEmbedPreset(presetKey) {
+        const db = this.getDb('embedPresets');
+        const stmt = db.prepare('DELETE FROM presets WHERE preset_key = ?');
+        stmt.run(presetKey);
+    }
+
+    loadNews() {
+        const db = this.getDb('newsChannel');
+        const rows = db.prepare("SELECT value FROM kv WHERE key = 'newsList'").get();
+        if (!rows) return [];
+        try {
+            return JSON.parse(rows.value);
+        } catch {
+            return [];
+        }
+    }
+
+    addNews(newsItem) {
+        const list = this.loadNews();
+        list.push(newsItem);
+        this.saveKV('newsChannel', 'kv', 'newsList', list);
+    }
 }
 
 const dbManager = new OugiDatabaseManager();

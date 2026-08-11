@@ -107,18 +107,15 @@ async function (msg) {
   if (mod > 0) {
     ougi.globalLog("Skipped " + mod + " invalid IDs.")
   }
-  let newsArray = ougi.readFile(database.news.file, 'utf-8', console.error);
+  let dbManager = require('./db')();
   let thisArray = {
     title: embedName,
     desc: embedDesc,
     type: embedType,
     sent: new Date().toDateString()
   };
-  newsArray.push(thisArray);
-  let proArray = JSON.stringify(newsArray, null, 4);
-  let myEmbed = database.news.file;
-  await ougi.writeFile(database.news.file, proArray, console.error);
+  dbManager.addNews(thisArray);
 
-  await ougi.backup(myEmbed, channels.news);
+  await ougi.backup(database.news.file, channels.news);
   msg.channel.send("Sent this newsletter to:\n" + names.join('\n'), {embeds: [spookyConstructor]});
 }
