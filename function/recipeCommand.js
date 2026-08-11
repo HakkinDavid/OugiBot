@@ -1,65 +1,48 @@
-module.exports =
+const axios = require('axios');
+const { EmbedBuilder } = require('discord.js');
 
-async function (arguments, msg) {
-    let searchParams = arguments.join(" ");
-    let langCode = undefined;
-    if (settingsOBJ.lang.hasOwnProperty(msg.author.id)) {
-        langCode = settingsOBJ.lang[msg.author.id]
-    }
-    if (msg.channel.type == Discord.ChannelType.GuildText) {
-        if (settingsOBJ.lang.hasOwnProperty(msg.guildId)) {
-        langCode = settingsOBJ.lang[msg.guildId];
-        }
-    }
-    if (langCode !== undefined && langCode !== 'en') {
-        await translate(searchParams, {client: 'gtx', from: langCode.replace('mx', 'es'), to: "en"}).then(res => {
-            if (res.from.language.iso != "en") {
-              searchParams = res.text;
-            }
-        }).catch(err => {
-            console.error(err);
-        });
-    }
-    const options = {
-        method: 'GET',
-        url: 'https://edamam-recipe-search.p.rapidapi.com/search',
-        qs: {
-            q: searchParams
-        },
-        headers: {
-          'x-rapidapi-key': process.env.RAPIDAPI,
-          'x-rapidapi-host': 'edamam-recipe-search.p.rapidapi.com',
-          useQueryString: true
-        }
-      };
-      
-    await request(options, async (error, response, body) => {
-        if (error) {
-            console.error(error);
-            return;
-        }
+module.exports = async function (arguments, msg) {
+  if (!arguments.length) {
+    msg.channel.send(await ougi.text(msg, "keywordRequired")).catch(console.error);
+    return;
+  }
 
-        body = JSON.parse(body);
-        
-        let recipesOBJ = body.hits;
-        if (recipesOBJ.length === 0) {
-            msg.channel.send(await ougi.text(msg, "resultsZero"));
-            return;
-        }
-    
-        let prettyRecipe = recipesOBJ[Math.floor(Math.random()*recipesOBJ.length)].recipe;
-    
-        let embed = new Discord.EmbedBuilder()
-        .setTitle(prettyRecipe.label)
-        .setURL(prettyRecipe.url)
-        .setAuthor({name: prettyRecipe.source})
-        .setThumbnail(prettyRecipe.image)
-        .setDescription((await ougi.text(msg, "calories")).replace(/{num}/gi, "`" + prettyRecipe.calories + "`") + "\n**" + (await ougi.text(msg, "tags")) + "**\n" + (await ougi.text(msg, [ ... prettyRecipe.dietLabels, ... prettyRecipe.healthLabels ].join(", "), true)))
-        .addFields({name: await ougi.text(msg, "ingredients"), value: await ougi.text(msg, prettyRecipe.ingredientLines.join("\n"), true)})
-        .setColor("#6E2C00")
-        .setFooter({text: "recipeEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
-        .setTimestamp();
-    
-        msg.channel.send({embeds: [embed]});
-    });
-}
+  const query = arguments.join(" ");
+
+  try {
+    const res = await axios.get(`https://www.themealdb.com/api/json/v1/1/search.php?s=${encodeURIComponent(query)}`);
+    const meals = res.data?.meals;
+
+    if (!meals || meals.length === 0) {
+      msg.channel.send(await ougi.text(msg, "resultsZero")).catch(console.error);
+      return;
+    }
+
+    const meal = meals[Math.floor(Math.random() * meals.length)];
+
+    const ingredients = [];
+    for (let i = 1; i <= 20; i++) {
+      const ingredient = meal[`strIngredient${i}`];
+      const measure = meal[`strMeasure${i}`];
+      if (ingredient && ingredient.trim()) {
+        ingredients.push(`• ${measure ? measure.trim() + ' ' : ''}${ingredient.trim()}`);
+      }
+    }
+
+    const embed = new EmbedBuilder()
+      .setTitle(meal.strMeal)
+      .setURL(meal.strSource || meal.strYoutube || "https://www.themealdb.com/")
+      .setAuthor({ name: meal.strCategory || "Recipe" })
+      .setThumbnail(meal.strMealThumb)
+      .setDescription(`**Category:** ${meal.strCategory} | **Cuisine:** ${meal.strArea}\n\n**Instructions:**\n${meal.strInstructions?.slice(0, 1000)}...`)
+      .addFields({ name: await ougi.text(msg, "ingredients"), value: ingredients.join("\n").slice(0, 1024) || "N/A" })
+      .setColor("#6E2C00")
+      .setFooter({ text: "recipeEmbed by Ougi (powered by TheMealDB)", iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) })
+      .setTimestamp();
+
+    await msg.channel.send({ embeds: [embed] });
+  } catch (error) {
+    console.error("Error in recipeCommand:", error);
+    msg.channel.send(await ougi.text(msg, "resultsZero")).catch(console.error);
+  }
+};

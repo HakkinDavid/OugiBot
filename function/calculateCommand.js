@@ -1,4 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
+const math = require('mathjs');
 
 module.exports = async function calculateCommand(args, msg) {
     if (!args.length) {
@@ -11,9 +12,14 @@ module.exports = async function calculateCommand(args, msg) {
 
     let result;
     try {
-        // Evaluación segura básica usando Function constructor
-        result = Function(`"use strict"; return (${expression})`)();
-        if (typeof result !== 'number' || !isFinite(result)) throw new Error('Invalid calculation');
+        // Evaluacion segura usando mathjs (previene arbitrario JS execution)
+        result = math.evaluate(expression);
+        if (typeof result === 'function' || typeof result === 'undefined') {
+            throw new Error('Invalid calculation');
+        }
+        if (typeof result === 'object' && result.isResultSet) {
+            result = result.entries.join(', ');
+        }
     } catch (err) {
         const invalidText = await ougi.text(msg, "mathCommand_invalidExpression");
         msg.channel.send(invalidText).catch(console.error);
@@ -31,4 +37,4 @@ module.exports = async function calculateCommand(args, msg) {
 
     msg.channel.send({ embeds: [embed] }).catch(console.error);
     client.channels.cache.get(consoleLogging)?.send(`**Replied**\n> ${responsePrefix}${result}`);
-}
+};

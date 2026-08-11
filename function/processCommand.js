@@ -64,22 +64,27 @@ module.exports = async function (msg) {
     // Check permissions
     if (!await ougi.checkPerms(msg, mustHavePerms)) return;
 
-    // Comandos
+    // Comandos Map
     const commandMap = {
-        help: async () => ougi.helpCommand(args, msg), // ok
-        calc: async () => ougi.calculateCommand(args, msg), // ok
-        say: async () => ougi.sayCommand(args, msg), // ok
-        dice: async () => ougi.diceCommand(msg), // ok
-        answer: async () => ougi.answerCommand(msg), // ok
-        image: async () => ougi.imageCommand(args, msg), // ok
-        curl: async () => ougi.curlCommand(msg), // ok
-        embed: async () => ougi.spookyEmbed(msg), // ok
-        news: async () => ougi.newsCommand(args, msg), // ok
+        help: async () => ougi.helpCommand(args, msg),
+        calc: async () => ougi.calculateCommand(args, msg),
+        say: async () => ougi.sayCommand(args, msg),
+        dice: async () => ougi.diceCommand(msg),
+        answer: async () => ougi.answerCommand(msg),
+        image: async () => ougi.imageCommand(args, msg),
+        curl: async () => ougi.curlCommand(msg),
+        embed: async () => ougi.spookyEmbed(msg),
+        news: async () => ougi.newsCommand(args, msg),
         work: async () => ougi.workCommand(msg),
+        daily: async () => ougi.dailyCommand(args, msg),
+        pay: async () => ougi.payCommand(args, msg),
+        leaderboard: async () => ougi.leaderboardCommand(args, msg),
+        slots: async () => ougi.gamblingCommands(args, msg, 'slots'),
+        coinflip: async () => ougi.gamblingCommands(args, msg, 'coinflip'),
+        gamble: async () => ougi.gamblingCommands(args, msg, 'gamble'),
+        storytell: async () => ougi.storytellCommand(args, msg),
         balance: async () => ougi.balanceCheck(args, msg),
-        covidstats: async () => ougi.covidstats(args, msg),
-        healthcare: async () => ougi.healthcare(msg),
-        md: async () => ougi.medicalDefinition(args, msg),
+        bal: async () => ougi.balanceCheck(args, msg),
         stats: async () => ougi.statsCommand(msg),
         tweet: async () => ougi.tweet(msg),
         minesweeper: async () => ougi.minesweeper(msg),
@@ -96,6 +101,7 @@ module.exports = async function (msg) {
         snipe: async () => ougi.shootSniper(args, msg, false),
         editsnipe: async () => ougi.shootSniper(args, msg, true),
         speak: async () => ougi.voice(msg),
+        lyrics: async () => ougi.lyrics(args, msg),
         reminder: async () => ougi.remindMe(msg),
         prefix: async () => ougi.prefix(args, msg),
         setlog: async () => ougi.setLog(args, msg),
@@ -118,13 +124,12 @@ module.exports = async function (msg) {
         "raffle-execute": async () => {
             if (!(await ougi.guildCheck(msg))) return;
             if (!(await ougi.adminCheck(msg, true))) return;
-            await ougi.raffleExecute(msg.guildId, rafflesOBJ[msg.guildId].ongoingRaffles?.findIndex(r => r.messageId == msg.reference.messageId));
+            await ougi.raffleExecute(msg.guildId, rafflesOBJ[msg.guildId]?.ongoingRaffles?.findIndex(r => r.messageId == msg.reference?.messageId));
         },
         "admin-register": async () => ougi.adminRegister(args, msg)
     };
 
-    // Música y URLs
-    const musicCommands = ["music", "skip", "stop", "remove", "lyrics", "play", "p"];
+    const musicCommands = ["music", "skip", "stop", "remove", "play", "p"];
     const urlPattern = /^https?:\/\/(www\.)?(youtube\.com|youtu\.be)/i;
 
     if (commandMap[spookyCommand]) {

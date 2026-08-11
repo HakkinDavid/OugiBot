@@ -1,78 +1,66 @@
-module.exports =
+const axios = require('axios');
+const cheerio = require('cheerio');
+const { EmbedBuilder } = require('discord.js');
 
-async function (arguments, msg) {
-  let lyricsEmbed = new Discord.EmbedBuilder()
-  .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/ougimusic.png?raw=true")
-  .setAuthor({name: "Ougi [BOT]", icon: client.user.avatarURL({dynamic: true, size: 4096})})
-  .setColor("#230347")
-  .setFooter({text: "lyricsEmbed by Ougi | Lyrics provided by KSoft.Si API", icon: client.user.avatarURL({dynamic: true, size: 4096})});
+module.exports = async function (arguments, msg) {
+  let lyricsEmbed = new EmbedBuilder()
+    .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/ougimusic.png?raw=true")
+    .setAuthor({ name: "Ougi [BOT]", iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) })
+    .setColor("#230347")
+    .setFooter({ text: "lyricsEmbed by Ougi | Lyrics via Genius", iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) });
 
-  if (arguments.length < 1) {
-    if (!msg.guild) {
-      msg.channel.send("Huh?! This is not a Discord server. Take me into one!").catch(console.error);
-      return
+  let searchQuery = arguments.join(" ");
+
+  if (!searchQuery) {
+    if (!msg.guild || !vc[msg.guildId] || !vc[msg.guildId].queue.length) {
+      msg.channel.send("Nothing is playing. Please specify a song title to search for lyrics.").catch(console.error);
+      return;
     }
-    if (vc[msg.guildId] == undefined) {
-      msg.channel.send("Nothing is playing.");
-      return
-    }
-    if (vc[msg.guildId].length < 2) {
-      msg.channel.send("Nothing is playing.");
-      return
-    }
-    await ksoft.lyrics.get(
-      vc[msg.guildId][1].title
-    ).then(track => {
-      lyricsEmbed.setTitle(track.name);
-      while (track.lyrics.includes('  ')) {
-        track.lyrics = track.lyrics.replace('  ', ' ')
-      }
-      let laLetra = track.lyrics.split("\n\n");
-      for (i=0; laLetra.length > i && i < 25; i++) {
-        if (laLetra[i].length < 1) {
-          laLetra[i] = "\u200b";
-        }
-        if (i == 0) {
-          lyricsEmbed.addFields({name: "by " + track.artist.name, value: laLetra[i]});
-        }
-        else {
-          lyricsEmbed.addFields({name: "\u200b", value: laLetra[i]});
-        }
-      }
-      msg.channel.send({embeds: [lyricsEmbed]}).catch(console.error);
-    }).catch(console.error);
+    searchQuery = vc[msg.guildId].queue[0].title;
   }
-  else {
-    try {
-      await ksoft.lyrics.get(
-        arguments.join(" ")
-      ).then(track => {
-        lyricsEmbed.setTitle(track.name);
-        while (track.lyrics.includes('  ')) {
-          track.lyrics = track.lyrics.replace('  ', ' ')
-        }
-        let laLetra = track.lyrics.split("\n\n");
-        for (i=0; laLetra.length > i && i < 25; i++) {
-          if (laLetra[i].length < 1) {
-            laLetra[i] = "\u200b";
-          }
-          else if (laLetra[i].length > 1024) {
-            laLetra.splice(i, 0, laLetra[i].slice(1024));
-            laLetra[i] = laLetra[i].substring(0, 1024);
-          }
-          if (i == 0) {
-            lyricsEmbed.addFields({name: "by " + track.artist.name, value: laLetra[i]});
-          }
-          else {
-            lyricsEmbed.addFields({name: "\u200b", value: laLetra[i]});
-          }
-        }
-        msg.channel.send({embeds: [lyricsEmbed]}).catch(console.error);
+
+  try {
+    const searchUrl = `https://genius.com/api/search/multi?q=${encodeURIComponent(searchQuery)}`;
+    const searchRes = await axios.get(searchUrl);
+    const sections = searchRes.data?.response?.sections || [];
+    const songSection = sections.find(s => s.type === 'song');
+    const songHit = songSection?.hits?.[0]?.result;
+
+    if (!songHit) {
+      msg.channel.send("Lyrics aren't available right now for that song.").catch(console.error);
+      return;
+    }
+
+    const songTitle = songHit.full_title;
+    const songPageUrl = songHit.url;
+
+    const pageRes = await axios.get(songPageUrl);
+    const $ = cheerio.load(pageRes.data);
+    let lyrics = $('[class^="Lyrics__Container"]').text().trim();
+    if (!lyrics) {
+      lyrics = $('.lyrics').text().trim();
+    }
+
+    if (!lyrics) {
+      msg.channel.send("Could not extract lyrics.").catch(console.error);
+      return;
+    }
+
+    lyricsEmbed.setTitle(songTitle);
+
+    const paragraphs = lyrics.split(/(?=\[[^\]]+\])/);
+    for (let i = 0; i < paragraphs.length && i < 25; i++) {
+      const paragraph = paragraphs[i].trim();
+      if (!paragraph) continue;
+      lyricsEmbed.addFields({
+        name: i === 0 ? "Lyrics" : "\u200b",
+        value: paragraph.slice(0, 1024)
       });
     }
-    catch (e) {
-      console.error(e);
-      msg.channel.send("Lyrics aren't available right now.");
-    }
+
+    await msg.channel.send({ embeds: [lyricsEmbed] });
+  } catch (e) {
+    console.error("Error in lyricsCommand:", e);
+    msg.channel.send("Lyrics aren't available right now.").catch(console.error);
   }
-}
+};

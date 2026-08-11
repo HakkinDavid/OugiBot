@@ -56,9 +56,6 @@ async function (msg) {
       case "haunt":
         ougi.hauntRootCommand(arguments, msg)
       break;
-      case "tweet":
-        ougi.tweetRootCommand(msg)
-      break;
       case "newsletter":
         ougi.newsletter(msg)
       break;

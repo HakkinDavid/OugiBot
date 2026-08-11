@@ -29,7 +29,6 @@ Default Prefix: `ougi ` (or `扇`, mention `@Ougi`, or custom guild prefix). Roo
 
 ### `info` / `whoIsMe`
 - **Description**: Displays user information, profile metadata, account creation date, and server join date.
-- **Parameters**: `[@user]` *(optional)* - Target user mention or ID. Default is command author.
 
 ### `stats`
 - **Description**: Displays runtime statistics of OugiBot (Uptime, Node.js version, Memory usage, Active guilds, Cached users).
@@ -46,30 +45,23 @@ Default Prefix: `ougi ` (or `扇`, mention `@Ougi`, or custom guild prefix). Roo
 
 ### `learn <trigger> :: <response>`
 - **Description**: Teaches OugiBot a new response to a specific trigger phrase.
-- **Parameters**: 
-  - `<trigger>`: Trigger phrase (min 3 chars).
-  - `<response>`: Response string (min 3 chars).
-- **Permissions**: Public (media links are flagged for developer audit).
 - **Example**: `ougi learn hello spooky :: Welcome to our realm!`
 
 ### `forget <trigger> :: <response>`
 - **Description**: Removes a previously learned response from OugiBot's knowledge base.
-- **Parameters**: `<trigger> :: <response>` - Exact trigger and response to remove.
 
 ### `answer <question>`
 - **Description**: Asks Ougi a yes-or-no question. Uses localized random responses.
 
 ### `image <keywords>`
-- **Description**: Generates an AI image using keyword prompts.
-- **Note**: NSFW prompts require execution in NSFW-flagged text channels.
+- **Description**: Generates an AI image using Pollinations AI ($0 cost). NSFW prompts require execution in NSFW-flagged text channels.
 
 ---
 
 ## 🔊 Voice, Music & Text-To-Speech (TTS)
 
 ### `music` / `play` / `p <url | search terms>`
-- **Description**: Connects Ougi to the user's current voice channel and streams audio from YouTube.
-- **Parameters**: YouTube video URL or search query string.
+- **Description**: Connects Ougi to the user's current voice channel and streams audio from YouTube using `@discordjs/voice` and `play-dl` ($0 cost).
 
 ### `skip`
 - **Description**: Skips the currently playing YouTube track in the guild music queue.
@@ -78,25 +70,44 @@ Default Prefix: `ougi ` (or `扇`, mention `@Ougi`, or custom guild prefix). Roo
 - **Description**: Stops music playback, clears the guild queue, and disconnects Ougi from the voice channel.
 
 ### `lyrics [song title]`
-- **Description**: Fetches song lyrics via KSoft API for currently playing or specified song.
+- **Description**: Searches and displays song lyrics via Genius API scraper ($0 cost).
 
 ### `speak <phrase> [:: lang]`
-- **Description**: Makes Ougi join the user's voice channel and speak the provided phrase using Text-To-Speech.
-- **Parameters**: `<phrase> [:: lang_code]` (e.g., `ougi speak Hello world :: en`).
+- **Description**: Makes Ougi join the user's voice channel and speak the provided phrase using `google-tts-api`.
 
 ---
 
 ## 🪙 Economy, Gambling & Server Raffles
 
 ### `work`
-- **Description**: Perform a work task to earn server currency ($) based on active server multiplier.
+- **Description**: Perform a work task to earn server currency ($) with a 1-hour cooldown timer.
+
+### `daily`
+- **Description**: Claims daily currency bonus every 24 hours (`ougi daily`).
+
+### `pay <@user> <amount>`
+- **Description**: Transfers server currency to another member (`ougi pay @User 100`).
 
 ### `balance` / `bal`
 - **Description**: Check current currency balance, level, XP, inventory, and badges.
 
+### `leaderboard`
+- **Description**: Displays server top balance ($) and level/XP rankings (`ougi leaderboard`).
+
+### `slots <bet>`
+- **Description**: Play the slot machine for a chance to win multiplier payouts.
+
+### `coinflip <bet> <heads|tails>`
+- **Description**: Bet currency on a coin flip outcome.
+
+### `gamble <bet>`
+- **Description**: Roll high (>55/100) to double your bet.
+
+### `storytell`
+- **Description**: Server-public RPG roleplay session where participants take turns building a scenario, and Ougi judges final rewards or penalties!
+
 ### `economy <option>`
 - **Description**: Guild economy management. Configure multipliers, enable/disable economy, reset user balances.
-- **Permissions**: Administrator / Guild Owner.
 
 ### `xp-channel <add | remove> <#channel>`
 - **Description**: Enable or disable XP gain for text messages sent in specific text channels.
@@ -104,20 +115,8 @@ Default Prefix: `ougi ` (or `扇`, mention `@Ougi`, or custom guild prefix). Roo
 ### `seticon <symbol>`
 - **Description**: Sets custom currency icon/symbol for the guild economy.
 
-### `dice`
-- **Description**: Rolls a virtual dice and returns a random number (1-6).
-
-### `minesweeper`
-- **Description**: Generates a playable Discord spoiler-based Minesweeper grid.
-
 ### `raffle ::title <name> ::list <participants> ::duration <time> ::winners <count>`
-- **Description**: Creates a cryptographically secure weighted server raffle.
-- **Parameters**:
-  - `::title <title>`: Raffle title.
-  - `::list <name weight>`: Participant names and weights.
-  - `::duration <time>`: Duration (e.g. `1h 30m` or `45m`).
-  - `::winners <n>`: Number of winners to draw.
-- **Permissions**: Administrator.
+- **Description**: Creates a weighted server raffle (Patreon license enabled).
 
 ### `raffle-register <display_name>`
 - **Description**: Registers a participant display name to link with Discord account for server raffles.
@@ -146,31 +145,16 @@ Default Prefix: `ougi ` (or `扇`, mention `@Ougi`, or custom guild prefix). Roo
 
 ### `embed <options>`
 - **Description**: Advanced interactive custom embed builder with preset loading/saving.
-- **Command Options (`::option`)**:
-  - `::title <text>`: Set embed title.
-  - `::description <text>`: Set description text.
-  - `::field <text>` / `::subtitle <text>`: Add field value and title.
-  - `::color <hex|rgb|name>`: Set embed sidebar color.
-  - `::image <url|file|guild|myself|ougi>`: Set embed image.
-  - `::thumbnail <url|file|guild|myself|ougi>`: Set thumbnail.
-  - `::author <text|@user>` / `::avatar <url|file>`: Author metadata.
-  - `::footer <text>` / `::icon <url|file>`: Footer metadata.
-  - `::save <preset_name>`: Save embed structure as a reusable preset.
-  - `::load <preset_name>`: Load a saved preset template.
-  - `::share <@user>`: Share saved preset template with another user.
-  - `::list`: List user's saved embed presets.
-  - `::delete <preset_name>`: Delete a saved preset.
 
 ### `shortcut <create | delete> <emoji> <command>`
 - **Description**: Maps an emoji reaction to trigger an Ougi command execution automatically.
-- **Permissions**: Manage Server / Administrator.
 
 ---
 
 ## 🔍 Utilities, Search & Web Services
 
 ### `calc <expression>`
-- **Description**: Evaluates mathematical expressions.
+- **Description**: Evaluates mathematical expressions safely using `mathjs` sandbox (preventing code execution).
 
 ### `curl <@user | #channel | @role | emoji | ID>`
 - **Description**: Inspects detailed Discord API metadata for users, channels, roles, or emojis.
@@ -182,16 +166,7 @@ Default Prefix: `ougi ` (or `扇`, mention `@Ougi`, or custom guild prefix). Roo
 - **Description**: Generates a formatted front-page newspaper embed of current world events.
 
 ### `recipe <food_item>`
-- **Description**: Searches recipe ingredients, preparation steps, and calorie info.
-
-### `covidstats [country]`
-- **Description**: Displays COVID-19 pandemic statistics (confirmed, critical, deaths, recovered).
-
-### `healthcare`
-- **Description**: Provides WHO-aligned healthcare safety advice.
-
-### `md <concept>`
-- **Description**: Retrieves medical definition of health/pandemic terms.
+- **Description**: Searches recipe ingredients and instructions using free TheMealDB API.
 
 ### `translate <text>`
 - **Description**: Translates input text into user/guild target language using Google Translate.
@@ -200,12 +175,11 @@ Default Prefix: `ougi ` (or `扇`, mention `@Ougi`, or custom guild prefix). Roo
 
 ## ⏰ Reminders, Bumps & Surveys
 
-### `reminder <time> :: <message>`
-- **Description**: Sets a personal reminder timer.
+### `reminder <duration> :: <message>`
+- **Description**: Sets a personal reminder supporting human durations (`10m`, `2h`, `1d`).
 
 ### `remindbump <channel> [@role]`
 - **Description**: Sets up an automated Disboard bump reminder every 2 hours in the specified channel.
-- **Permissions**: Administrator.
 
 ### `survey`
 - **Description**: Checks for pending community feedback surveys.
@@ -222,10 +196,9 @@ Default Prefix: `ougi ` (or `扇`, mention `@Ougi`, or custom guild prefix). Roo
 
 ### `prefix <new_prefix | reset>`
 - **Description**: Changes or resets custom server prefix for OugiBot commands.
-- **Permissions**: Administrator / Server Owner.
 
 ### `language <lang_code>` / `guildlanguage <lang_code>`
-- **Description**: Sets user (`language`) or guild-wide (`guildlanguage`) default language (e.g. `en`, `es`, `fr`, `de`, `ja`, etc.).
+- **Description**: Sets user (`language`) or guild-wide (`guildlanguage`) default language.
 
 ### `setlog <#channel | disable>`
 - **Description**: Designates a server audit logging channel for bot command usage.
@@ -240,10 +213,10 @@ Default Prefix: `ougi ` (or `扇`, mention `@Ougi`, or custom guild prefix). Roo
 - **Description**: Whitelists a previously blacklisted command.
 
 ### `admin-register <@user>`
-- **Description**: Registers a guild member as an OugiBot Administrator for bot management.
+- **Description**: Registers a guild member as an OugiBot Administrator. Members with Discord `Administrator` or `ManageServer` permissions are automatically granted admin access.
 
 ### `snipe [index]`
-- **Description**: Displays recently deleted messages in the current text channel.
+- **Description**: Displays recently deleted messages in the current text channel (buffer capped at 10 messages with 1-hour expiration).
 
 ### `editsnipe [index]`
 - **Description**: Displays original content of recently edited messages in the current channel.
@@ -252,7 +225,7 @@ Default Prefix: `ougi ` (or `扇`, mention `@Ougi`, or custom guild prefix). Roo
 
 ## 👑 Bot Owner / Root Commands (#ougi)
 
-*Accessible strictly by bot owner (`davidUserID` = `"265257341967007758"`).*
+*Accessible strictly by bot author (`davidUserID` = `"265257341967007758"`).*
 
 | Root Command | Description |
 | :--- | :--- |
@@ -262,7 +235,6 @@ Default Prefix: `ougi ` (or `扇`, mention `@Ougi`, or custom guild prefix). Roo
 | `#ougi shutdown` | Forces emergency shutdown (`vibeCheckReallyHard`). |
 | `#ougi notifysurvey` | Broadcasts new survey notification to subscribers. |
 | `#ougi haunt <server_id>` | Remote server diagnostic inspection. |
-| `#ougi tweet <content>` | Posts a tweet via Twitter API (`twit`). |
 | `#ougi newsletter <message>` | Broadcasts announcement to all subscribed users. |
 | `#ougi switch <feature> <on|off>` | Toggles global system feature flags. |
 | `#ougi survey` | Opens global survey creation workflow. |
