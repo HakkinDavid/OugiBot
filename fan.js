@@ -86,7 +86,8 @@ global.channels = {
     settings: "791151086077083688",
     locales: "820971831992647681",
     dynamicLocales: "880322518139957299",
-    raffles: "1411177261172002906"
+    raffles: "1411177261172002906",
+    economy: "1536866624253075527"
 };
 
 global.vc = {};
@@ -102,13 +103,14 @@ global.reloadedAmmo = {};
 global.interactions = {};
 
 global.database = {
-    settings: { id: channels.settings, file: './settings.txt', done: false },
-    backup: { id: channels.backup, file: './responses.txt', done: false },
-    embeds: { id: channels.embeds, file: './embedPresets.txt', done: false },
-    news: { id: channels.news, file: './newsChannel.txt', done: false },
-    locales: { id: channels.locales, file: './localesCache.txt', done: false },
-    dynamicLocales: { id: channels.dynamicLocales, file: './dynamicLocales.txt', done: false },
-    raffles: { id: channels.raffles, file: './raffles.txt', done: false },
+    settings: { id: channels.settings, file: './settings.db', done: false },
+    backup: { id: channels.backup, file: './responses.db', done: false },
+    embeds: { id: channels.embeds, file: './embedPresets.db', done: false },
+    news: { id: channels.news, file: './newsChannel.db', done: false },
+    locales: { id: channels.locales, file: './localesCache.db', done: false },
+    dynamicLocales: { id: channels.dynamicLocales, file: './dynamicLocales.db', done: false },
+    raffles: { id: channels.raffles, file: './raffles.db', done: false },
+    economy: { id: channels.economy, file: './economy.db', done: false }
 };
 
 let logMessages = [];
@@ -307,10 +309,11 @@ client.on('messageReactionAdd', async (reaction, user) => {
 /* ===== Intervalos de Backup ===== */
 setInterval(async () => {
     if (!TEASEABLE || !ougi.startup()) return;
-    await ougi.writeFile(database.settings.file, JSON.stringify(settingsOBJ, null, 4), console.error);
-    await ougi.backup(database.settings.file, channels.settings);
-    await ougi.writeFile(database.raffles.file, JSON.stringify(rafflesOBJ, null, 4), console.error);
-    await ougi.backup(database.raffles.file, channels.raffles);
+    for (const [key, data] of Object.entries(database)) {
+        if (fs.existsSync(data.file)) {
+            await ougi.backup(data.file, data.id);
+        }
+    }
 }, 300_000);
 
 /* ===== Intervalo para Recordatorios de Bump ===== */

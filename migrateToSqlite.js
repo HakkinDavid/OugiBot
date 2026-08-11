@@ -135,6 +135,15 @@ async function runMigration() {
         console.log(`  ✅ Migrated ${Object.keys(raffles).length} guild raffles records into raffles.db`);
     }
 
+    // 7. Migrate newsChannel.txt -> newsChannel.db
+    console.log("\n📦 Migrating newsChannel.txt...");
+    const newsData = readLegacyFile('./newsChannel.txt');
+    if (newsData) {
+        const newsDb = dbManager.getDb('newsChannel');
+        dbManager.saveKV('newsChannel', 'kv', 'newsData', newsData);
+        console.log("  ✅ Migrated newsChannel records into newsChannel.db");
+    }
+
     console.log("\n==========================================");
     console.log("✨ Migration Completed Successfully!");
     console.log("==========================================");

@@ -21,17 +21,19 @@ const channels = {
     settings: "791151086077083688",
     locales: "820971831992647681",
     dynamicLocales: "880322518139957299",
-    raffles: "1411177261172002906"
+    raffles: "1411177261172002906",
+    economy: "1536866624253075527"
 };
 
 const database = {
-    settings: { id: channels.settings, file: './settings.txt' },
-    backup: { id: channels.backup, file: './responses.txt' },
-    embeds: { id: channels.embeds, file: './embedPresets.txt' },
-    news: { id: channels.news, file: './newsChannel.txt' },
-    locales: { id: channels.locales, file: './localesCache.txt' },
-    dynamicLocales: { id: channels.dynamicLocales, file: './dynamicLocales.txt' },
-    raffles: { id: channels.raffles, file: './raffles.txt' }
+    settings: { id: channels.settings, file: './settings.db' },
+    backup: { id: channels.backup, file: './responses.db' },
+    embeds: { id: channels.embeds, file: './embedPresets.db' },
+    news: { id: channels.news, file: './newsChannel.db' },
+    locales: { id: channels.locales, file: './localesCache.db' },
+    dynamicLocales: { id: channels.dynamicLocales, file: './dynamicLocales.db' },
+    raffles: { id: channels.raffles, file: './raffles.db' },
+    economy: { id: channels.economy, file: './economy.db' }
 };
 
 client.once('ready', async () => {

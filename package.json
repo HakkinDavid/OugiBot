@@ -53,7 +53,10 @@
   },
   "scripts": {
     "start": "git pull && node fan.js",
-    "silent": "node fan.js silent"
+    "silent": "node fan.js silent",
+    "migrate": "node migrateToSqlite.js",
+    "sync-migrate-upload": "node syncMigrateUpload.js",
+    "upload-backups": "node uploadBackups.js"
   },
   "keywords": [],
   "author": "HakkinDavid",

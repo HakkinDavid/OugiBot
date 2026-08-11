@@ -158,5 +158,14 @@ node auditresponses.js
 Uploads all updated local database files directly to designated Discord backup channels so that production Ougi instances can fetch and synchronize fresh data on boot.
 
 ```bash
-node uploadBackups.js
+npm run upload-backups
+# Or: node uploadBackups.js
+```
+
+### 4. End-to-End Sync-Migrate-Upload Pipeline (`syncMigrateUpload.js`)
+Wipes any pre-existing local flat text files, pulls current live production channel attachments, downloads them, converts/migrates them to SQLite databases (`*.db`), re-uploads the updated files back to production channels, and cleans up local flat text files in a single operation.
+
+```bash
+npm run sync-migrate-upload
+# Or: node syncMigrateUpload.js
 ```

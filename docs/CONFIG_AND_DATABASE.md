@@ -235,13 +235,14 @@ To prevent data loss on ephemerally hosted platforms (such as Heroku or containe
 
 | Database Identifier | File Path | Discord Channel ID | Function |
 | :--- | :--- | :--- | :--- |
-| `settings` | `./settings.txt` | `791151086077083688` | Guild configs, user langs, economy |
-| `backup` | `./responses.txt` | `726927738094485534` | Knowledge base responses |
-| `embeds` | `./embedPresets.txt` | `740187317238497340` | Saved custom embed presets |
-| `news` | `./newsChannel.txt` | `751697345737129994` | News broadcast channel list |
-| `locales` | `./localesCache.txt` | `820971831992647681` | Static string translation cache |
-| `dynamicLocales` | `./dynamicLocales.txt` | `880322518139957299` | Dynamic phrase translation cache |
-| `raffles` | `./raffles.txt` | `1411177261172002906` | Weighted raffle configurations |
+| `settings` | `./settings.db` | `791151086077083688` | Guild configs, user langs, prefixes |
+| `backup` | `./responses.db` | `726927738094485534` | Knowledge base responses |
+| `embeds` | `./embedPresets.db` | `740187317238497340` | Saved custom embed presets |
+| `news` | `./newsChannel.db` | `751697345737129994` | News broadcast channel list |
+| `locales` | `./localesCache.db` | `820971831992647681` | Static string translation cache |
+| `dynamicLocales` | `./dynamicLocales.db` | `880322518139957299` | Dynamic phrase translation cache |
+| `raffles` | `./raffles.db` | `1411177261172002906` | Weighted raffle configurations |
+| `economy` | `./economy.db` | `1536866624253075527` | Guild economy & user balance/XP records |
 
 ### Background Synchronization Intervals
 - **Data Backup Interval (every 5 minutes / 300,000 ms in `fan.js`)**: Writes local state to disk and uploads file attachments to respective Discord backup channels via `ougi.backup()`.

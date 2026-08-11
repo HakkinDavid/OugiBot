@@ -126,6 +126,19 @@ class OugiDatabaseManager {
                 subscribed_at INTEGER
             );
         `);
+
+        // 10. News Channel Table
+        const newsDb = this.getDb('newsChannel');
+        newsDb.exec(`
+            CREATE TABLE IF NOT EXISTS news_channels (
+                guild_id TEXT PRIMARY KEY,
+                channel_id TEXT
+            );
+            CREATE TABLE IF NOT EXISTS kv (
+                key TEXT PRIMARY KEY,
+                value TEXT
+            );
+        `);
     }
 
     // KV Save / Load for Settings

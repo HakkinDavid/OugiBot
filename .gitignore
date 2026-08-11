@@ -8,3 +8,5 @@ node_modules
 *.txt
 *.mp3
 *.db
+*.db-shm
+*.db-wal
