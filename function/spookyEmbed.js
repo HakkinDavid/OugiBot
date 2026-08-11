@@ -191,15 +191,9 @@ async function (msg) {
       let aPreset = material + "::" + msg.author.id;
       dbManager.deleteEmbedPreset(aPreset);
       breakChocolate.splice(i, 1);
-
-        await ougi.backup(myEmbed, channels.embeds);
-        msg.channel.send("Deleted preset `" + material + "`.");
-        i--;
-      }
-      else {
-        msg.channel.send("None of your presets is called `" + material + "`.");
-        return
-      }
+      await ougi.backup(database.embeds.file, channels.embeds);
+      msg.channel.send("Deleted preset `" + material + "`.");
+      i--;
     }
     else if (material.startsWith("author ")) {
       material = material.substring(7);
