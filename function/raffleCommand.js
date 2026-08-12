@@ -134,7 +134,7 @@ module.exports = async function (arguments, msg) {
             { name: 'Winners', value: winnersCount.toString(), inline: true },
             { name: 'Participants', value: participants.length.toString(), inline: true },
         ],
-        description: mention ? `${mention}` : '',
+        description: mention ? `${mention}` : 'Good luck!',
         color: 0x00FF00,
         footer: {
             text: "Cryptosecure raffles powered by Ougi. Bring us to your Discord!"
