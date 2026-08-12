@@ -5,13 +5,10 @@ const fs = require('fs');
 class OugiDatabaseManager {
     constructor() {
         this.databases = {};
-        this.initialized = false;
+        this.init();
     }
 
     getDb(name) {
-        if (!this.initialized) {
-            this.init();
-        }
         if (!this.databases[name]) {
             const dbPath = path.join(__dirname, '..', `${name}.db`);
             const db = new Database(dbPath);
@@ -22,9 +19,6 @@ class OugiDatabaseManager {
     }
 
     init() {
-        if (this.initialized) return;
-        this.initialized = true;
-
         // 1. Settings Table
         const settingsDb = this.getDb('settings');
         settingsDb.exec(`
@@ -881,21 +875,6 @@ class OugiDatabaseManager {
                 }
             }
         } catch { }
-    }
-
-    closeAll() {
-        for (const [name, db] of Object.entries(this.databases)) {
-            try {
-                db.close();
-            } catch (e) { }
-        }
-        this.databases = {};
-        this.initialized = false;
-    }
-
-    reconnectAll() {
-        this.closeAll();
-        this.init();
     }
 }
 
