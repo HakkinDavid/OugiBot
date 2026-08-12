@@ -123,6 +123,7 @@ client.once('ready', async () => {
     try {
         findRemoveSync('./', { extensions: ['.txt', '.db', '.db-wal', '.db-shm', '.mp3'] });
         await syncData();
+        ougi.db().init();
         await client.application?.commands.set([
             {
                 name: 'Translate',
