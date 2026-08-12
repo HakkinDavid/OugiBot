@@ -22,8 +22,16 @@ module.exports = async function (arguments, msg) {
             ougi.db().addGuildAdmin(msg.guildId, id);
         }
     } else if (action === "remove") {
-        // Remove each mentioned user ID if present
+        // Remove each mentioned user ID if present (excluding self and guild owner)
         for (const id of mentionedUsers) {
+            if (id === msg.author.id) {
+                msg.channel.send("⚠️ You cannot remove yourself from administrator list.");
+                continue;
+            }
+            if (id === msg.guild?.ownerId) {
+                msg.channel.send("⚠️ Guild Owner cannot be removed from administrator list.");
+                continue;
+            }
             ougi.db().removeGuildAdmin(msg.guildId, id);
         }
     }
@@ -31,5 +39,7 @@ module.exports = async function (arguments, msg) {
     // Confirmation message
     const actionText = action === "add" ? "Added administrators:" : "Removed administrators:";
     const currentAdmins = ougi.db().getGuildAdmins(msg.guildId);
-    msg.channel.send(`${actionText}\n\`\`\`${mentionedUsers.join("\n")}\`\`\`\nCurrent administrators:\n\`\`\`${currentAdmins.join("\n")}\`\`\``);
+    const adminsDisplay = currentAdmins.length > 0 ? `\`\`\`\n${currentAdmins.join("\n")}\n\`\`\`` : "`None (Server Owner & Members with Administrator permission retain implicit admin access)`";
+
+    msg.channel.send(`${actionText}\n\`\`\`\n${mentionedUsers.join("\n")}\n\`\`\`\nCurrent custom administrators:\n${adminsDisplay}\n*(Note: Guild Owner <@${msg.guild?.ownerId}> and users with Discord Administrator permissions are always authorized).*`);
 }

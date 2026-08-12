@@ -24,7 +24,9 @@ async function (msg) {
         else {
             embed.addFields({name: "Content", value: crypted_content});
         }
-        embed.addFields({name: "Channel info", value: "Type: `" + msg.channel.type + "`\nID: `" + msg.channel.id + "`"});
+        const chType = msg.channel?.type ?? "DM/Unknown";
+        const chId = msg.channel?.id ?? "N/A";
+        embed.addFields({name: "Channel info", value: "Type: `" + chType + "`\nID: `" + chId + "`"});
     }
 
     client.channels.cache.get(consoleLogging).send({embeds: [embed]});

@@ -1,4 +1,5 @@
 module.exports = function (msg, isEdit) {
+  if (msg.author?.bot) return;
   let channelID = msg.channel.id;
   let now = Date.now();
   let thisArray = {

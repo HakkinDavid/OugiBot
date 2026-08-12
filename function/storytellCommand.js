@@ -80,7 +80,9 @@ module.exports = async function storytellCommand(args, msg) {
     let aiResult = "";
     try {
       aiResult = await ougi.genAIText(aiPrompt);
-    } catch {
+    } catch { }
+
+    if (!aiResult || typeof aiResult !== 'string') {
       aiResult = "Ougi judged your adventure! Outcome: Glorious Reward! REWARD: 200";
     }
 

@@ -40,28 +40,15 @@ module.exports = async function (msgOrInteraction) {
     toLang = selectedLangFromMenu ?? ougi.db().getLang(requester.id) ?? ougi.db().getLang(guildId);
 
     if (!toLang) {
+      const popularCodes = ['en', 'es', 'fr', 'de', 'ja', 'zh-CN', 'zh-TW', 'pt', 'it', 'ru', 'ko', 'nl', 'tl', 'ar', 'vi', 'tr', 'hi', 'id', 'pl', 'sv', 'uk', 'th', 'he', 'el', 'cs'];
+      const dynamicOptions = popularCodes
+        .filter(code => ougi.langCodes[code] && code !== 'mx' && code !== 'default' && code !== 'auto')
+        .map(code => ({ label: ougi.langCodes[code], value: code }));
+
       const selectMenu = new Discord.StringSelectMenuBuilder()
         .setCustomId(`ougi_translate_select_lang:${targetMsg.id}`)
         .setPlaceholder('Select your default target language...')
-        .addOptions([
-          { label: 'English', value: 'en' },
-          { label: 'Spanish', value: 'es' },
-          { label: 'Mexican Spanish', value: 'mx' },
-          { label: 'French', value: 'fr' },
-          { label: 'German', value: 'de' },
-          { label: 'Japanese', value: 'ja' },
-          { label: 'Chinese (Simplified)', value: 'zh-CN' },
-          { label: 'Chinese (Traditional)', value: 'zh-TW' },
-          { label: 'Portuguese', value: 'pt' },
-          { label: 'Italian', value: 'it' },
-          { label: 'Russian', value: 'ru' },
-          { label: 'Korean', value: 'ko' },
-          { label: 'Dutch', value: 'nl' },
-          { label: 'Tagalog / Filipino', value: 'tl' },
-          { label: 'Arabic', value: 'ar' },
-          { label: 'Vietnamese', value: 'vi' },
-          { label: 'Turkish', value: 'tr' }
-        ]);
+        .addOptions(dynamicOptions);
 
       const row = new Discord.ActionRowBuilder().addComponents(selectMenu);
       return msgOrInteraction.reply({

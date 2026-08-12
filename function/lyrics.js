@@ -20,8 +20,9 @@ module.exports = async function (arguments, msg) {
   }
 
   try {
+    const headers = { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' };
     const searchUrl = `https://genius.com/api/search/multi?q=${encodeURIComponent(searchQuery)}`;
-    const searchRes = await axios.get(searchUrl);
+    const searchRes = await axios.get(searchUrl, { headers });
     const sections = searchRes.data?.response?.sections || [];
     const songSection = sections.find(s => s.type === 'song');
     const songHit = songSection?.hits?.[0]?.result;
@@ -34,9 +35,13 @@ module.exports = async function (arguments, msg) {
     const songTitle = songHit.full_title;
     const songPageUrl = songHit.url;
 
-    const pageRes = await axios.get(songPageUrl);
+    const pageRes = await axios.get(songPageUrl, { headers });
     const $ = cheerio.load(pageRes.data);
-    let lyrics = $('[class^="Lyrics__Container"]').text().trim();
+    $('br').replaceWith('\n');
+    let lyrics = $('[data-lyrics-container="true"]').text().trim();
+    if (!lyrics) {
+      lyrics = $('[class^="Lyrics__Container"]').text().trim();
+    }
     if (!lyrics) {
       lyrics = $('.lyrics').text().trim();
     }

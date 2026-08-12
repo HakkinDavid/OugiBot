@@ -22,6 +22,10 @@ module.exports = async function (arguments, msg) {
             // Extract the remainder of the message content after the command
             let afterListCmd = msg.content.slice(msg.content.toLowerCase().indexOf("raffle") + "raffle".length).trim();
             afterListCmd = afterListCmd.slice(afterListCmd.toLowerCase().indexOf("list") + "list".length).trim();
+            if (!afterListCmd) {
+                msg.channel.send("Usage: `ougi raffle list <participant nicknames, each with a number of entries>` or `ougi raffle list clear`.");
+                return;
+            }
             guildRaffles.presetList = afterListCmd;
             msg.channel.send("Preset participant list has been set for this server.");
         }
@@ -130,7 +134,7 @@ module.exports = async function (arguments, msg) {
     const embed = {
         title: title,
         fields: [
-            { name: 'Duration', value: slices.duration, inline: true },
+            { name: 'Duration', value: slices.duration || `${durationMinutes}m`, inline: true },
             { name: 'Winners', value: winnersCount.toString(), inline: true },
             { name: 'Participants', value: participants.length.toString(), inline: true },
         ],

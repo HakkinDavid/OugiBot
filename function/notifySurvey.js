@@ -55,9 +55,11 @@ function (msg) {
   .setFooter({text: "surveyNotificationEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})});
   let names = [];
   let mod = 0;
-  for (i=0; upvoters.length > i; i++) {
-    let anUpvoter = client.users.cache.get(upvoters[i]);
-    if (anUpvoter != undefined) {
+  for (let i = 0; upvoters.length > i; i++) {
+    let anUpvoter = null;
+    try { anUpvoter = await client.users.fetch(upvoters[i]); }
+    catch { }
+    if (anUpvoter) {
       anUpvoter.send({embeds: [embed]}).catch(console.error);
       names.push(anUpvoter.username);
     }
@@ -68,5 +70,5 @@ function (msg) {
   if (mod > 0) {
     ougi.globalLog("Skipped " + mod + " invalid IDs.")
   }
-  msg.channel.send("Sent this newsletter to:\n" + names.join('\n'), {embeds: [embed]});
+  msg.channel.send({ content: "Sent this notification to:\n" + names.join('\n'), embeds: [embed] });
 }

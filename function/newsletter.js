@@ -96,7 +96,7 @@ async function (msg) {
   const guildNewsChannels = ougi.db().getAllNewsChannels();
   for (let getKey in guildNewsChannels) {
     let newsDoor = null;
-    try { await client.channels.fetch(guildNewsChannels[getKey]); }
+    try { newsDoor = await client.channels.fetch(guildNewsChannels[getKey]); }
     catch { console.log("Channel " + guildNewsChannels[getKey] + " in server " + getKey + " is unreachable."); }
     if (newsDoor) {
       newsDoor.send({embeds: [spookyConstructor]}).catch(console.error);
@@ -118,5 +118,5 @@ async function (msg) {
   };
   dbManager.addNews(thisArray);
 
-  msg.channel.send("Sent this newsletter to:\n" + names.join('\n'), {embeds: [spookyConstructor]});
+  msg.channel.send({ content: "Sent this newsletter to:\n" + names.join('\n'), embeds: [spookyConstructor] });
 }

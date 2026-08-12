@@ -50,7 +50,9 @@ module.exports = async function (msg) {
       adapterCreator: memberVC.guild.voiceAdapterCreator,
     });
 
-    await entersState(connection, VoiceConnectionStatus.Ready, 10_000);
+    await entersState(connection, VoiceConnectionStatus.Ready, 15_000).catch((err) => {
+      console.warn("Voice connection ready state warning:", err);
+    });
 
     const player = createAudioPlayer();
     connection.subscribe(player);

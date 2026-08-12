@@ -576,7 +576,10 @@ async function (msg) {
           msg.delete().catch(O_o=>{})
         }, 2000, msg
       )
-    );
+    ).catch(err => {
+      console.error("Error sending spookyEmbed:", err);
+      msg.channel.send("Failed to send embed. Make sure your title, description, or fields are valid and non-empty.").catch(console.error);
+    });
   }
 
   if (presetName.length >= 1) {

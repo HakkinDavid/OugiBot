@@ -127,6 +127,7 @@ async function playNext(msg, vcChannel) {
         guildQueue.player.play(resource);
     } catch (err) {
         console.error("Stream error in playNext:", err);
+        msg.channel.send(`⚠️ Unable to play **${song.title}** (stream unavailable or restricted). Skipping...`).catch(() => {});
         guildQueue.queue.shift();
         playNext(msg, vcChannel);
     }

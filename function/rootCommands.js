@@ -74,6 +74,9 @@ async function (msg) {
       case "inspect":
         ougi.inspectCommand(msg)
       break;
+      case "raffle-license":
+        ougi.raffleLicenseCommand ? ougi.raffleLicenseCommand(msg) : require('./raffleLicenseCommand')(msg)
+      break;
       default:
         ougi.undefinedCommand(arguments, msg)
       break;

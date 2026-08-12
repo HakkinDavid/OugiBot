@@ -116,7 +116,7 @@ module.exports =
     if (survey.url != null) {
       embed.addFields({ name: "\u200b", value: "Feeling generous enough to spend a couple extra minutes? I'd be so glad to hear your thoughts in [this survey](" + survey.url + ")." });
     }
-    msg.channel.send("This is what users will get:", { embeds: [embed] }).then(async (sentMSG) => {
+    msg.channel.send({ content: "This is what users will get:", embeds: [embed] }).then(async (sentMSG) => {
       await sentMSG.react(client.emojis.cache.get('818120409219334144'))
         .catch(console.error);
       await sentMSG.react(client.emojis.cache.get('818120425757999144'))

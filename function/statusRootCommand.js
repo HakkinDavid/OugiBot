@@ -47,7 +47,16 @@ async function (msg) {
   if (actname == "") {
     actname = "void"
   }
-  client.user.setPresence({activity: { name: actname, type: kind.toUpperCase() }, status:state}).catch(console.error);
+  const typeMap = {
+    PLAYING: Discord.ActivityType.Playing,
+    STREAMING: Discord.ActivityType.Streaming,
+    LISTENING: Discord.ActivityType.Listening,
+    WATCHING: Discord.ActivityType.Watching,
+    CUSTOM: Discord.ActivityType.Custom,
+    COMPETING: Discord.ActivityType.Competing
+  };
+  const activityType = typeMap[kind.toUpperCase()] ?? Discord.ActivityType.Playing;
+  client.user.setPresence({ activities: [{ name: actname, type: activityType }], status: state }).catch(console.error);
   client.channels.cache.get(consoleLogging).send("I'm " + kind + " " + actname);
   msg.channel.send("Alright, switched! I'm " + kind + " " + actname).catch(console.error);
 }

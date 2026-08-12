@@ -567,6 +567,8 @@ class OugiDatabaseManager {
 
     getPatron(userId) { return global.settingsOBJ?.patrons?.[userId] ?? null; }
 
+    isPatron(userId) { return Boolean(global.settingsOBJ?.patrons?.[userId]); }
+
     upsertPatron(userId, data) {
         if (!global.settingsOBJ.patrons) global.settingsOBJ.patrons = {};
         global.settingsOBJ.patrons[userId] = Object.assign(global.settingsOBJ.patrons[userId] || {}, data);

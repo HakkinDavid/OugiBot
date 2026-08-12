@@ -18,7 +18,7 @@ async function (msg) {
     let recurrence;
     let since;
 
-    for (i = 0; breakChocolate.length > i; i++) {
+    for (let i = 0; breakChocolate.length > i; i++) {
         while (breakChocolate[i].startsWith(" ")) {
             breakChocolate[i] = breakChocolate[i].slice(1);
         }
@@ -45,7 +45,7 @@ async function (msg) {
         return
     }
 
-    for (i = 0; users.length > i; i++) {
+    for (let i = 0; users.length > i; i++) {
         ougi.db().upsertPatron(users[i], { amount, recurrence, since });
     }
 
