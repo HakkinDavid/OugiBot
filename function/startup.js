@@ -9,27 +9,34 @@ module.exports = function () {
     global.knowledgeBase = dbManager.loadKnowledgeBase() || {};
     global.rafflesOBJ = dbManager.loadRaffles() || {};
 
+    let missingProps = [];
+
     // Complete 20-key OugiBot settingsOBJ schema initialization
-    if (!global.settingsOBJ.banned) global.settingsOBJ.banned = {};
-    if (!global.settingsOBJ.ignored) global.settingsOBJ.ignored = [];
-    if (!global.settingsOBJ.ratelimit) global.settingsOBJ.ratelimit = {};
-    if (!global.settingsOBJ.prefix) global.settingsOBJ.prefix = {};
-    if (!global.settingsOBJ.blacklist) global.settingsOBJ.blacklist = {};
-    if (!global.settingsOBJ.economy) global.settingsOBJ.economy = {};
-    if (!global.settingsOBJ.logging) global.settingsOBJ.logging = {};
-    if (!global.settingsOBJ.lang) global.settingsOBJ.lang = {};
-    if (!global.settingsOBJ.guildNews) global.settingsOBJ.guildNews = {};
-    if (!global.settingsOBJ.subscribers) global.settingsOBJ.subscribers = [];
-    if (!global.settingsOBJ.surveys) global.settingsOBJ.surveys = {};
-    if (!global.settingsOBJ.surveysAvailable) global.settingsOBJ.surveysAvailable = {};
-    if (!global.settingsOBJ.AI) global.settingsOBJ.AI = { description: {} };
-    if (!global.settingsOBJ.guildBump) global.settingsOBJ.guildBump = {};
-    if (!global.settingsOBJ.patreonAdLastSeen) global.settingsOBJ.patreonAdLastSeen = {};
-    if (!global.settingsOBJ.interactionsCounter) global.settingsOBJ.interactionsCounter = {};
-    if (!global.settingsOBJ.patrons) global.settingsOBJ.patrons = {};
-    if (!global.settingsOBJ.shortcuts) global.settingsOBJ.shortcuts = {};
-    if (!global.settingsOBJ.nicknames) global.settingsOBJ.nicknames = {};
-    if (!global.settingsOBJ.guildAdmins) global.settingsOBJ.guildAdmins = {};
+    if (!global.settingsOBJ.banned) missingProps.push("Missing settingsOBJ.banned");
+    if (!global.settingsOBJ.ignored) missingProps.push("Missing settingsOBJ.ignored");
+    if (!global.settingsOBJ.ratelimit) missingProps.push("Missing settingsOBJ.ratelimit");
+    if (!global.settingsOBJ.prefix) missingProps.push("Missing settingsOBJ.prefix");
+    if (!global.settingsOBJ.blacklist) missingProps.push("Missing settingsOBJ.blacklist");
+    if (!global.settingsOBJ.economy) missingProps.push("Missing settingsOBJ.economy");
+    if (!global.settingsOBJ.logging) missingProps.push("Missing settingsOBJ.logging");
+    if (!global.settingsOBJ.lang) missingProps.push("Missing settingsOBJ.lang");
+    if (!global.settingsOBJ.guildNews) missingProps.push("Missing settingsOBJ.guildNews");
+    if (!global.settingsOBJ.subscribers) missingProps.push("Missing settingsOBJ.subscribers");
+    if (!global.settingsOBJ.surveys) missingProps.push("Missing settingsOBJ.surveys");
+    if (!global.settingsOBJ.surveysAvailable) missingProps.push("Missing settingsOBJ.surveysAvailable");
+    if (!global.settingsOBJ.AI) missingProps.push("Missing global.settingsOBJ.AI");
+    if (!global.settingsOBJ.guildBump) missingProps.push("Missing settingsOBJ.guildBump");
+    if (!global.settingsOBJ.patreonAdLastSeen) missingProps.push("Missing settingsOBJ.patreonAdLastSeen");
+    if (!global.settingsOBJ.interactionsCounter) missingProps.push("Missing settingsOBJ.interactionsCounter");
+    if (!global.settingsOBJ.patrons) missingProps.push("Missing settingsOBJ.patrons");
+    if (!global.settingsOBJ.shortcuts) missingProps.push("Missing settingsOBJ.shortcuts");
+    if (!global.settingsOBJ.nicknames) missingProps.push("Missing settingsOBJ.nicknames");
+    if (!global.settingsOBJ.guildAdmins) missingProps.push("Missing settingsOBJ.guildAdmins");
+
+    if (missingProps.length > 0) {
+        console.error(missingProps.join("\n"));
+        return false;
+    }
   }
   return true;
 };
