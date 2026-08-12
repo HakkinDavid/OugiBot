@@ -4,58 +4,47 @@ module.exports = async function (interaction) {
     if (!interaction) return;
 
     // Rate-limit
-    const now = Date.now();
     const userId = interaction.user.id;
-    const lastTime = settingsOBJ.ratelimit[userId] || 0;
-    if (now - lastTime <= 250 && (!settingsOBJ.patrons || !settingsOBJ.patrons[userId])) {
-        const waitTime = ((250 - (now - lastTime)) / 1000).toFixed(1);
-        const limitMsg = (await ougi.text(interaction, "ratelimited")).replace('{t}', `\`${waitTime}\``);
+    const rateLimitResult = ougi.db().checkRateLimit(userId);
+    if (rateLimitResult.ratelimited) {
+        const limitMsg = (await ougi.text(interaction, "ratelimited")).replace('{t}', `\`${rateLimitResult.waitTime}\``);
         if (interaction.replied || interaction.deferred) {
             await interaction.followUp({ content: limitMsg, flags: MessageFlags.Ephemeral }).catch(console.error);
         } else {
             await interaction.reply({ content: limitMsg, flags: MessageFlags.Ephemeral }).catch(console.error);
         }
-        ougi.globalLog(`Rate limit applied to user ${interaction.user.username} (${waitTime}s)`);
+        ougi.globalLog(`Rate limit applied to user ${interaction.user.username} (${rateLimitResult.waitTime}s)`);
         return;
     }
-    settingsOBJ.ratelimit[userId] = now;
 
     // Ban check
-    const userBan = settingsOBJ.banned[userId];
-    if (userBan) {
-        const expired = !isNaN(userBan.until) && (userBan.until - now) <= 0;
-        if (expired) {
-            delete settingsOBJ.banned[userId];
+    const userBan = ougi.db().checkBan(userId);
+    if (userBan && userBan.active) {
+        const banEmbed = new EmbedBuilder()
+            .setColor("#20064F")
+            .setTitle("It's a beautiful day outside...")
+            .setDescription("Yoinks! Your right to use Ougi has been forfeited because of an inappropriate usage.")
+            .addFields(
+                { name: "Ban expires until", value: `<t:${Math.floor(userBan.until / 1000)}:f>` },
+                { name: "Reason", value: userBan.reason || "No reason provided" }
+            );
+        if (interaction.replied || interaction.deferred) {
+            await interaction.followUp({ embeds: [banEmbed], flags: MessageFlags.Ephemeral }).catch(console.error);
         } else {
-            const banEmbed = new EmbedBuilder()
-                .setColor("#20064F")
-                .setTitle("It's a beautiful day outside...")
-                .setDescription("Yoinks! Your right to use Ougi has been forfeited because of an inappropriate usage.")
-                .addFields(
-                    { name: "Ban expires until", value: `<t:${Math.floor(userBan.until / 1000)}:f>` },
-                    { name: "Reason", value: userBan.reason || "No reason provided" }
-                );
-            if (interaction.replied || interaction.deferred) {
-                await interaction.followUp({ embeds: [banEmbed], flags: MessageFlags.Ephemeral }).catch(console.error);
-            } else {
-                await interaction.reply({ embeds: [banEmbed], flags: MessageFlags.Ephemeral }).catch(console.error);
-            }
-            return;
+            await interaction.reply({ embeds: [banEmbed], flags: MessageFlags.Ephemeral }).catch(console.error);
         }
+        return;
     }
 
     // Blacklist check
-    if (interaction.guildId) {
-        const blacklist = settingsOBJ.blacklist?.[interaction.guildId] || [];
-        if (blacklist.some(item => item.toLowerCase() === 'translate')) {
-            const blMsg = `Sorry, translation is blacklisted in this server.`;
-            if (interaction.replied || interaction.deferred) {
-                await interaction.followUp({ content: blMsg, flags: MessageFlags.Ephemeral }).catch(console.error);
-            } else {
-                await interaction.reply({ content: blMsg, flags: MessageFlags.Ephemeral }).catch(console.error);
-            }
-            return;
+    if (interaction.guildId && ougi.db().isBlacklisted(interaction.guildId, 'translate')) {
+        const blMsg = `Sorry, translation is blacklisted in this server.`;
+        if (interaction.replied || interaction.deferred) {
+            await interaction.followUp({ content: blMsg, flags: MessageFlags.Ephemeral }).catch(console.error);
+        } else {
+            await interaction.reply({ content: blMsg, flags: MessageFlags.Ephemeral }).catch(console.error);
         }
+        return;
     }
 
     if (interaction.isMessageContextMenuCommand()) {

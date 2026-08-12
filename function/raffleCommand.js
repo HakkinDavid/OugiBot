@@ -2,18 +2,12 @@ module.exports = async function (arguments, msg) {
     if (!(await ougi.guildCheck(msg))) return;
     if (!(await ougi.adminCheck(msg))) return;
 
-    if (!rafflesOBJ) return;
-    if (!rafflesOBJ[msg.guildId]) {
-        rafflesOBJ[msg.guildId] = {
-            ongoingRaffles: [],
-            allowedConcurrentRaffles: 1,
-            allowedParticipants: 100,
-            licensedUntil: Date.now() + 1 * 60 * 60 * 1000,
-        };
+    const { data: guildRaffles, isNew } = ougi.db().getOrCreateGuildRaffles(msg.guildId);
+    if (isNew) {
         msg.channel.send("Inited raffles configuration for this server. Provisional license expires in 1 hour.");
     }
 
-    if (rafflesOBJ[msg.guildId].licensedUntil < Date.now()) {
+    if (guildRaffles.licensedUntil < Date.now()) {
         msg.channel.send("Your raffles license has expired. Renew by supporting the bot on Patreon or PayPal.\n`ougi patreon`");
         return;
     }
@@ -21,28 +15,28 @@ module.exports = async function (arguments, msg) {
     // Handle preset list setting
     if (arguments[0] == "list") {
         if (arguments[1] == "clear") {
-            rafflesOBJ[msg.guildId].presetList = null;
+            guildRaffles.presetList = null;
             msg.channel.send("Preset participant list has been cleared for this server.");
         }
         else {
             // Extract the remainder of the message content after the command
             let afterListCmd = msg.content.slice(msg.content.toLowerCase().indexOf("raffle") + "raffle".length).trim();
             afterListCmd = afterListCmd.slice(afterListCmd.toLowerCase().indexOf("list") + "list".length).trim();
-            rafflesOBJ[msg.guildId].presetList = afterListCmd;
+            guildRaffles.presetList = afterListCmd;
             msg.channel.send("Preset participant list has been set for this server.");
         }
         ougi.db().saveRaffles();
         return;
     }
     if (arguments[0] == "clear") {
-        rafflesOBJ[msg.guildId].ongoingRaffles = [];
-        msg.channel.send("Raffles have been cleared. You are allowed to run " + rafflesOBJ[msg.guildId].allowedConcurrentRaffles + " concurrent raffles.");
+        guildRaffles.ongoingRaffles = [];
+        msg.channel.send("Raffles have been cleared. You are allowed to run " + guildRaffles.allowedConcurrentRaffles + " concurrent raffles.");
         ougi.db().saveRaffles();
         return;
     }
 
-    if (rafflesOBJ[msg.guildId].ongoingRaffles.length >= rafflesOBJ[msg.guildId].allowedConcurrentRaffles) {
-        msg.channel.send(`Your current license supports up to ${rafflesOBJ[msg.guildId].allowedConcurrentRaffles} concurrent raffles. Clear them out with \`ougi raffle clear\` or consider upgrading your plan.`);
+    if (guildRaffles.ongoingRaffles.length >= guildRaffles.allowedConcurrentRaffles) {
+        msg.channel.send(`Your current license supports up to ${guildRaffles.allowedConcurrentRaffles} concurrent raffles. Clear them out with \`ougi raffle clear\` or consider upgrading your plan.`);
         return;
     }
 
@@ -71,8 +65,8 @@ module.exports = async function (arguments, msg) {
 
     // Use presetList if ::list is not provided
     let listStr = slices.list;
-    if ((!listStr || !listStr.trim()) && rafflesOBJ[msg.guildId].presetList) {
-        listStr = rafflesOBJ[msg.guildId].presetList;
+    if ((!listStr || !listStr.trim()) && guildRaffles.presetList) {
+        listStr = guildRaffles.presetList;
     }
     // Validation: require at least a list and ::title
     if ((!listStr || !listStr.trim()) || !slices.title) {
@@ -97,8 +91,8 @@ module.exports = async function (arguments, msg) {
         }
     }
 
-    if (participants.length > rafflesOBJ[msg.guildId].allowedParticipants) {
-        msg.channel.send(`Participant count exceeds the allowed limit of ${rafflesOBJ[msg.guildId].allowedParticipants}.`);
+    if (participants.length > guildRaffles.allowedParticipants) {
+        msg.channel.send(`Participant count exceeds the allowed limit of ${guildRaffles.allowedParticipants}.`);
         return;
     }
 
@@ -149,7 +143,7 @@ module.exports = async function (arguments, msg) {
 
     const sentMsg = await targetChannel.send({ embeds: [embed] });
 
-    rafflesOBJ[msg.guildId].ongoingRaffles.push({
+    guildRaffles.ongoingRaffles.push({
         messageId: sentMsg.id,
         embed: embed,
         participants,

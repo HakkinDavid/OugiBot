@@ -38,12 +38,11 @@ function (msg) {
     msg.channel.send("You must include a survey ID and a description that's 1 to 1024 characters long.")
     return
   }
-  if (!settingsOBJ.surveysAvailable.hasOwnProperty(surveyID)) {
+  let mySurvey = ougi.db().getSurvey(surveyID);
+  if (!mySurvey) {
     msg.channel.send("Not a survey ID yet.");
-    return
+    return;
   }
-  let surveyDone = "\u200b";
-  let mySurvey = settingsOBJ.surveysAvailable[surveyID];
   let upvoters = mySurvey.yes;
   let embed = new Discord.EmbedBuilder()
   .setTitle('Survey unique notification')

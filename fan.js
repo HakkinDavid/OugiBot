@@ -90,28 +90,7 @@ global.channels = {
     economy: "1536866624253075527"
 };
 
-global.vc = {};
-global.settingsOBJ = null;
-global.mindOBJ = null;
-global.localesCache = null;
-global.dynamicLocales = null;
-global.knowledgeBase = null;
-global.rafflesOBJ = null;
-
-global.ammo = {};
-global.reloadedAmmo = {};
-global.interactions = {};
-
-global.database = {
-    settings: { id: channels.settings, file: './settings.db', done: false },
-    backup: { id: channels.backup, file: './responses.db', done: false },
-    embeds: { id: channels.embeds, file: './embedPresets.db', done: false },
-    news: { id: channels.news, file: './newsChannel.db', done: false },
-    locales: { id: channels.locales, file: './localesCache.db', done: false },
-    dynamicLocales: { id: channels.dynamicLocales, file: './dynamicLocales.db', done: false },
-    raffles: { id: channels.raffles, file: './raffles.db', done: false },
-    economy: { id: channels.economy, file: './economy.db', done: false }
-};
+ougi.db().unloadAll();
 
 let logMessages = [];
 global.errorBackup = console.error;

@@ -10,7 +10,7 @@ async function (arguments, msg) {
 
   if (arguments.length > 0) {
     if (arguments[0] == "disable") {
-      if (settingsOBJ.guildBump.hasOwnProperty(msg.guildId)){
+      if (ougi.db().getBumpConfig(msg.guildId)){
         ougi.db().deleteBumpConfig(msg.guildId);
         msg.channel.send("Bump reminder channel successfully disabled.");
         return

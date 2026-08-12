@@ -11,16 +11,18 @@ module.exports = async function newsCommand(arguments, msg) {
     let langCode = null;
     let actualLangCode = null;
 
-    if (settingsOBJ.lang?.[msg.author.id]) {
-      actualLangCode = settingsOBJ.lang[msg.author.id]
+    const userLang = ougi.db().getLang(msg.author.id);
+    if (userLang) {
+      actualLangCode = userLang
         .replace(/mx/gi, "es")
         .replace(/default|auto/gi, "en")
         .replace(/zh\-CN|zh\-TW/gi, "zh");
       langCode = actualLangCode;
     }
 
-    if (!langCode && msg.channel.type === 0 && settingsOBJ.lang?.[msg.guildId]) {
-      actualLangCode = settingsOBJ.lang[msg.guildId]
+    const guildLang = ougi.db().getLang(msg.guildId);
+    if (!langCode && msg.channel.type === 0 && guildLang) {
+      actualLangCode = guildLang
         .replace(/mx/gi, "es")
         .replace(/default|auto/gi, "en")
         .replace(/zh\-CN|zh\-TW/gi, "zh");

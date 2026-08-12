@@ -18,7 +18,7 @@ async function (msg, replied_to_ougi) {
       .setColor("#FF008C")
       .setFooter({text: "globalLogEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})});
     
-      let stringsArray = Object.keys(knowledgeBase);
+      let stringsArray = ougi.db().getKBTriggers();
       let notSpookyDM = msg.content.toLowerCase();
       let usedLang;
       notSpookyDM = notSpookyDM.replace('<@629837958123356172>', 'ougi').replace('扇', 'ougi').replace('<@!629837958123356172>', 'ougi');
@@ -70,7 +70,7 @@ async function (msg, replied_to_ougi) {
       embed.addFields({name: "Ougi's judgementAbility chose the following trigger", value: thisString});
       embed.addFields({name: "This trigger has", value: "► `" + finalSimilarity*100 + "%` of similarity\n► Current minimum is `" + minSimilarity*100 + "%`\n► `" + finalLevU + "` Levenshtein distance units"})
       if (finalSimilarity >= minSimilarity){
-        let options = knowledgeBase[thisString];
+        let options = ougi.db().getKBReplies(thisString);
         let response = options[Math.floor(Math.random()*options.length)];
         if (msg.channel.type !== Discord.ChannelType.DM) {
           response = response

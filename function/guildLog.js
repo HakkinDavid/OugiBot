@@ -1,8 +1,8 @@
 module.exports =
 
 async function (msg, options) {
-  if (settingsOBJ.logging.hasOwnProperty(msg.guildId)){
-    let guildLogger = settingsOBJ.logging[msg.guildId];
+  let guildLogger = ougi.db().getLogChannel(msg.guildId);
+  if (guildLogger) {
 
     let channelPointer = await client.channels.fetch(guildLogger);
 

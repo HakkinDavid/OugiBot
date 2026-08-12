@@ -18,7 +18,7 @@ module.exports = async function (arguments, msg) {
                 case 'ougi':
                 case '扇':
                 case client.user.toString():
-                case settingsOBJ.prefix[msg.guildId]:
+                case ougi.db().getPrefix(msg.guildId):
                     return 3;
                 default:
                     return 2;

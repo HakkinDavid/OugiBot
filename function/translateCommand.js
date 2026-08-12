@@ -37,7 +37,7 @@ module.exports = async function (msgOrInteraction) {
       return;
     }
 
-    toLang = selectedLangFromMenu ?? settingsOBJ.lang?.[requester.id] ?? settingsOBJ.lang?.[guildId];
+    toLang = selectedLangFromMenu ?? ougi.db().getLang(requester.id) ?? ougi.db().getLang(guildId);
 
     if (!toLang) {
       const selectMenu = new Discord.StringSelectMenuBuilder()
@@ -82,7 +82,7 @@ module.exports = async function (msgOrInteraction) {
       if (msg.reference) {
         try {
           targetMsg = await msg.channel.messages.fetch(msg.reference.messageId);
-          toLang = (arguments?.[0] ?? settingsOBJ.lang?.[msg.author.id] ?? settingsOBJ.lang?.[msg.guildId] ?? "en");
+          toLang = (arguments?.[0] ?? ougi.db().getLang(msg.author.id) ?? ougi.db().getLang(msg.guildId) ?? "en");
           phrase = targetMsg.content;
         } catch { }
       } else {

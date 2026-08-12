@@ -18,24 +18,19 @@ module.exports = async function (msg) {
     ];
 
     // Rate-limit
-    const now = Date.now();
-    const lastTime = settingsOBJ.ratelimit[msg.author.id] || 0;
-    if (now - lastTime <= 250 && (!settingsOBJ.patrons || !settingsOBJ.patrons[msg.author.id])) {
-        const waitTime = ((250 - (now - lastTime)) / 1000).toFixed(1);
-        msg.channel.send((await ougi.text(msg, "ratelimited")).replace('{t}', `\`${waitTime}\``));
-        ougi.globalLog(`Rate limit applied to user ${msg.author.username} (${waitTime}s)`);
+    const rateLimitResult = ougi.db().checkRateLimit(msg.author.id);
+    if (rateLimitResult.ratelimited) {
+        msg.channel.send((await ougi.text(msg, "ratelimited")).replace('{t}', `\`${rateLimitResult.waitTime}\``));
+        ougi.globalLog(`Rate limit applied to user ${msg.author.username} (${rateLimitResult.waitTime}s)`);
         return;
     }
-    settingsOBJ.ratelimit[msg.author.id] = now;
 
     // Ban check
-    const userBan = settingsOBJ.banned[msg.author.id];
+    const userBan = ougi.db().checkBan(msg.author.id);
     if (userBan) {
-        const expired = !isNaN(userBan.until) && (userBan.until - now) <= 0;
-        if (expired) {
-            delete settingsOBJ.banned[msg.author.id];
+        if (userBan.expired) {
             await msg.channel.send("Your ban sentence has expired.");
-        } else {
+        } else if (userBan.active) {
             const banEmbed = new EmbedBuilder()
                 .setColor("#20064F")
                 .setTitle("It's a beautiful day outside...")
@@ -51,8 +46,7 @@ module.exports = async function (msg) {
 
     // Blacklist check
     if (msg.channel.type === ChannelType.GuildText) {
-        const blacklist = settingsOBJ.blacklist?.[msg.guildId] || [];
-        if (blacklist.some(item => item.toLowerCase() === spookyCommand || item.toLowerCase() === parts.slice(1).join(' '))) {
+        if (ougi.db().isBlacklisted(msg.guildId, spookyCommand) || ougi.db().isBlacklisted(msg.guildId, parts.slice(1).join(' '))) {
             await msg.channel.send(`Sorry, that's blacklisted in ${msg.guild.toString()}.`).catch(console.error);
             return;
         }
@@ -124,7 +118,8 @@ module.exports = async function (msg) {
         "raffle-execute": async () => {
             if (!(await ougi.guildCheck(msg))) return;
             if (!(await ougi.adminCheck(msg, true))) return;
-            await ougi.raffleExecute(msg.guildId, rafflesOBJ[msg.guildId]?.ongoingRaffles?.findIndex(r => r.messageId == msg.reference?.messageId));
+            const guildRaffles = ougi.db().getGuildRaffles(msg.guildId);
+            await ougi.raffleExecute(msg.guildId, guildRaffles?.ongoingRaffles?.findIndex(r => r.messageId == msg.reference?.messageId));
         },
         "admin-register": async () => ougi.adminRegister(args, msg)
     };

@@ -22,7 +22,7 @@ module.exports = async function (msg) {
   const cleanedContent = msg.content.replace(/\s+/g, ' ').trim();
   let args = cleanedContent.split(" ").slice(2);
 
-  let langCode = (settingsOBJ.lang[msg.guildId]) ?? 'en';
+  let langCode = (ougi.db().getLang(msg.guildId)) ?? 'en';
   if (args.length > 1 && args[0].startsWith("::")) {
     const code = args[0].replace(/::/, "").toLowerCase();
     if (ougi.langCodes[code]) {

@@ -4,45 +4,47 @@ module.exports = async function (arguments, msg) {
     const messageId = msg.reference?.messageId;
     if (!messageId) return;
 
-    const raffleIdx = rafflesOBJ[msg.guildId].ongoingRaffles?.findIndex(r => r.messageId == messageId);
-    if (raffleIdx === -1) {
+    const guildRaffles = ougi.db().getGuildRaffles(msg.guildId);
+    if (!guildRaffles) return;
+
+    const raffleIdx = guildRaffles.ongoingRaffles?.findIndex(r => r.messageId == messageId);
+    if (raffleIdx === undefined || raffleIdx === -1) {
         ougi.globalLog(`Raffle join failed: raffleIdx not found for messageId: ${messageId}`);
         return;
     }
-    if (rafflesOBJ[msg.guildId].ongoingRaffles[raffleIdx].config.endsAt < Date.now()) {
+    const currentRaffle = guildRaffles.ongoingRaffles[raffleIdx];
+    if (currentRaffle.config.endsAt < Date.now()) {
         ougi.globalLog(`Raffle join failed: raffle has ended for raffleIdx: ${raffleIdx}, messageId: ${messageId}`);
         return;
     }
 
-    let participantName = settingsOBJ.nicknames?.[msg.guildId]?.[msg.author.id];
-    if (!participantName) {
-        participantName = msg.author.username;
-    }
+    const nicknames = ougi.db().getNicknames(msg.guildId);
+    let participantName = nicknames[msg.author.id] || msg.author.username;
 
-    const participantIdx = rafflesOBJ[msg.guildId].ongoingRaffles[raffleIdx].participants.findIndex(p => p.name.toLowerCase() == participantName.toLowerCase());
+    const participantIdx = currentRaffle.participants.findIndex(p => p.name.toLowerCase() == participantName.toLowerCase());
     if (
         participantIdx === -1 ||
-        rafflesOBJ[msg.guildId].ongoingRaffles[raffleIdx].participants[participantIdx].confirmed
+        currentRaffle.participants[participantIdx].confirmed
     ) {
         ougi.globalLog(`Raffle join failed: participantIdx not found or already confirmed. participantIdx: ${participantIdx}, confirmed: ${
-            participantIdx !== -1 ? rafflesOBJ[msg.guildId].ongoingRaffles[raffleIdx].participants[participantIdx].confirmed : 'N/A'
+            participantIdx !== -1 ? currentRaffle.participants[participantIdx].confirmed : 'N/A'
         }, participantName: ${participantName}`);
         return;
     }
 
-    rafflesOBJ[msg.guildId].ongoingRaffles[raffleIdx].participants[participantIdx].confirmed = true;
+    currentRaffle.participants[participantIdx].confirmed = true;
     ougi.globalLog(`Raffle join: participant confirmed set to true for participantIdx: ${participantIdx}, participantName: ${participantName}`);
-    rafflesOBJ[msg.guildId].ongoingRaffles[raffleIdx].participants[participantIdx].id = msg.author.id;
+    currentRaffle.participants[participantIdx].id = msg.author.id;
     ougi.db().saveRaffles();
     
-    const channel = msg.guild.channels.cache.get(rafflesOBJ[msg.guildId].ongoingRaffles[raffleIdx].config.channelId);
+    const channel = msg.guild.channels.cache.get(currentRaffle.config.channelId);
     if (!channel) {
-        ougi.globalLog(`Raffle join failed: channel not found for channelId: ${rafflesOBJ[msg.guildId].ongoingRaffles[raffleIdx].config.channelId}`);
+        ougi.globalLog(`Raffle join failed: channel not found for channelId: ${currentRaffle.config.channelId}`);
         return;
     }
     try {
         const originalMessage = await channel.messages.fetch(messageId);
-        await originalMessage.edit({ content: `${msg.author} has joined!`, embeds: [rafflesOBJ[msg.guildId].ongoingRaffles[raffleIdx].embed] });
+        await originalMessage.edit({ content: `${msg.author} has joined!`, embeds: [currentRaffle.embed] });
     } catch (error) {
         ougi.globalLog(`Raffle joining failed for raffle ${messageId}: ${error}`);
     }

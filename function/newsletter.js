@@ -80,10 +80,11 @@ async function (msg) {
   }
   let names = [];
   let mod = 0;
-  for (i=0; settingsOBJ.subscribers.length > i; i++) {
+  const subscribers = ougi.db().getSubscribers();
+  for (i = 0; subscribers.length > i; i++) {
     let aSub = null;
-    try { aSub = await client.users.fetch(settingsOBJ.subscribers[i]); }
-    catch { console.log("Subscriber " + settingsOBJ.subscribers[i] + " is unreachable."); }
+    try { aSub = await client.users.fetch(subscribers[i]); }
+    catch { console.log("Subscriber " + subscribers[i] + " is unreachable."); }
     if (aSub) {
       aSub.send({embeds: [spookyConstructor]}).catch(console.error);
       names.push(aSub.username);
@@ -92,10 +93,11 @@ async function (msg) {
       mod++
     }
   }
-  for (let getKey in settingsOBJ.guildNews) {
+  const guildNewsChannels = ougi.db().getAllNewsChannels();
+  for (let getKey in guildNewsChannels) {
     let newsDoor = null;
-    try { await client.channels.fetch(settingsOBJ.guildNews[getKey]); }
-    catch { console.log("Channel " + settingsOBJ.guildNews[getKey] + " in server " + getKey + " is unreachable."); }
+    try { await client.channels.fetch(guildNewsChannels[getKey]); }
+    catch { console.log("Channel " + guildNewsChannels[getKey] + " in server " + getKey + " is unreachable."); }
     if (newsDoor) {
       newsDoor.send({embeds: [spookyConstructor]}).catch(console.error);
       names.push(newsDoor.toString());

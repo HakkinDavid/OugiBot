@@ -1,5 +1,5 @@
 module.exports = async function (raffleGuildId, raffleIdx) {
-    const guildData = rafflesOBJ[raffleGuildId];
+    const guildData = ougi.db().getGuildRaffles(raffleGuildId);
     if (!guildData) return;
 
     const raffle = guildData.ongoingRaffles?.[raffleIdx];

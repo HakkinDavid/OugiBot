@@ -9,7 +9,7 @@ async function (arguments, msg) {
 
   if (arguments.length > 0) {
     if (arguments[0] == "disable") {
-      if (settingsOBJ.logging.hasOwnProperty(msg.guildId)){
+      if (ougi.db().getLogChannel(msg.guildId)){
         ougi.db().deleteLogChannel(msg.guildId);
         msg.channel.send("Logging channel successfully disabled.");
         return

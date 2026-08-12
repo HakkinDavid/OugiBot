@@ -14,7 +14,7 @@ module.exports = async function (msg, silent = false) {
     }
 
     // Check registered custom admins
-    if (Array.isArray(settingsOBJ.guildAdmins?.[msg.guildId]) && settingsOBJ.guildAdmins[msg.guildId].includes(msg.author.id)) {
+    if (ougi.db().getGuildAdmins(msg.guildId).includes(msg.author.id)) {
         return true;
     }
 

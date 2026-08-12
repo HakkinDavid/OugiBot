@@ -4,11 +4,14 @@ const translate = require('@vitalets/google-translate-api');
 
 module.exports = async function text(msg, stringID, dynamic = false, raw = false) {
     let langCode = 'en';
+    const dbManager = ougi.db();
 
     if (typeof msg === 'object') {
-        if (settingsOBJ.lang[msg.author.id]) langCode = settingsOBJ.lang[msg.author.id];
-        if (msg.channel?.type === ChannelType.GuildText && settingsOBJ.lang[msg.guildId]) {
-            langCode = settingsOBJ.lang[msg.guildId];
+        const userLang = dbManager.getLang(msg.author.id);
+        if (userLang) langCode = userLang;
+        if (msg.channel?.type === ChannelType.GuildText) {
+            const guildLang = dbManager.getLang(msg.guildId);
+            if (guildLang) langCode = guildLang;
         }
     } else if (typeof msg === 'string') {
         langCode = msg;
@@ -21,19 +24,22 @@ module.exports = async function text(msg, stringID, dynamic = false, raw = false
         const potentialLinks = returnableString.match(/https?:\/\//gi) || [];
         if (potentialLinks.length > 0) return raw ? { value: returnableString } : returnableString;
 
-        dynamicLocales[langCode] = dynamicLocales[langCode] || {};
-        if (dynamicLocales[langCode][stringID]) {
-            returnableString = dynamicLocales[langCode][stringID].value;
-            if (raw) return { value: returnableString, fromCode: dynamicLocales[langCode][stringID].fromCode };
+        const cachedDynamic = dbManager.getDynamicLocale(langCode, stringID);
+        if (cachedDynamic) {
+            returnableString = cachedDynamic.value;
+            if (raw) return { value: returnableString, fromCode: cachedDynamic.fromCode };
             return returnableString;
         }
 
-        const keyedTranslations = Object.keys(dynamicLocales[langCode]);
-        const mostSimilar = stringSimilarity.findBestMatch(stringID, keyedTranslations).bestMatch;
-        if (mostSimilar.rating * 100 > 75) {
-            returnableString = dynamicLocales[langCode][mostSimilar.target].value;
-            if (raw) return { value: returnableString, fromCode: dynamicLocales[langCode][mostSimilar.target].fromCode };
-            return returnableString;
+        const langPhrases = dbManager.getDynamicLocalesForLang(langCode);
+        const keyedTranslations = Object.keys(langPhrases);
+        if (keyedTranslations.length > 0) {
+            const mostSimilar = stringSimilarity.findBestMatch(stringID, keyedTranslations).bestMatch;
+            if (mostSimilar.rating * 100 > 75) {
+                returnableString = langPhrases[mostSimilar.target].value;
+                if (raw) return { value: returnableString, fromCode: langPhrases[mostSimilar.target].fromCode };
+                return returnableString;
+            }
         }
 
         const stringEmoji = returnableString.match(/<:[A-Za-z0-9_]+:[0-9]+>/g) || [];
@@ -59,8 +65,6 @@ module.exports = async function text(msg, stringID, dynamic = false, raw = false
             console.error(err);
         }
 
-        dynamicLocales[langCode][stringID] = { value: returnableString, fromCode };
-        let dbManager = require('./db')();
         dbManager.saveDynamicLocale(langCode, stringID, returnableString, fromCode);
         return raw ? { value: returnableString, fromCode, stringEmoji, stringDiscordEmoji } : returnableString;
     }
@@ -70,9 +74,8 @@ module.exports = async function text(msg, stringID, dynamic = false, raw = false
 
     if (returnableString === null && ougi.localization.en[stringID]) {
         if (langCode === 'mx') langCode = 'es';
-        localesCache[langCode] = localesCache[langCode] || {};
-
-        if (localesCache[langCode][stringID]) return localesCache[langCode][stringID];
+        const cachedStatic = dbManager.getStaticLocale(langCode, stringID);
+        if (cachedStatic) return cachedStatic;
 
         try {
             const res = await translate(ougi.localization.en[stringID], { to: langCode, client: 'gtx' });
@@ -81,8 +84,6 @@ module.exports = async function text(msg, stringID, dynamic = false, raw = false
             console.error(err);
         }
 
-        localesCache[langCode][stringID] = returnableString;
-        let dbManager = require('./db')();
         dbManager.saveStaticLocale(langCode, stringID, returnableString);
     }
 

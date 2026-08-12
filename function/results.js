@@ -14,12 +14,12 @@ async function (msg, shouldEnd) {
   let arguments = spookySlices.slice(2);
   /*-----------------------------------*/
   let thisSurvey = arguments.join(" ");
-  if (!settingsOBJ.surveysAvailable.hasOwnProperty(thisSurvey)) {
+  let mySurvey = ougi.db().getSurvey(thisSurvey);
+  if (!mySurvey) {
     msg.channel.send("Not a survey ID yet.");
-    return
+    return;
   }
   let surveyDone = "\u200b";
-  let mySurvey = settingsOBJ.surveysAvailable[thisSurvey];
   let upvotes = mySurvey.yes.length;
   let downvotes = mySurvey.no.length;
   let total = upvotes + downvotes;
@@ -33,7 +33,7 @@ async function (msg, shouldEnd) {
   .setAuthor({name: "Ougi [BOT]", icon: client.user.avatarURL({dynamic: true, size: 4096})})
   .setFooter({text: "surveyResultsEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})});
   if (shouldEnd && msg.author.id == davidUserID) {
-    if (settingsOBJ.surveysAvailable[thisSurvey].ended == null) {
+    if (mySurvey.ended == null) {
       ougi.db().endSurvey(thisSurvey);
       surveyDone = "Survey has ended!";
     }

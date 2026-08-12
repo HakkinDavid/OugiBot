@@ -8,26 +8,15 @@ async function (msg, intentional) {
   if (gamble < 1 && !intentional) {
     return
   }
-  let surveyRegistry = settingsOBJ.surveys;
-  let surveysAvailable = settingsOBJ.surveysAvailable;
-  let takeableSurvey, surveyOBJ;
-  if (!surveyRegistry.hasOwnProperty(msg.author.id)) {
-    surveyRegistry[msg.author.id] = [];
-  }
-  for (let survey in surveysAvailable) {
-    if (surveysAvailable[survey].ended == null && !surveyRegistry[msg.author.id].includes(survey)) {
-      takeableSurvey = survey;
-    }
-  }
-  if (takeableSurvey == null || settingsOBJ.surveysAvailable[takeableSurvey].yes.includes(msg.author.id) || settingsOBJ.surveysAvailable[takeableSurvey].no.includes(msg.author.id)) {
+  const surveyResult = ougi.db().findTakeableSurvey(msg.author.id);
+  if (!surveyResult) {
     if (intentional) {
       msg.channel.send("There aren't any new surveys for you.");
     }
-    return
+    return;
   }
-  else {
-    surveyOBJ = surveysAvailable[takeableSurvey];
-  }
+  const takeableSurvey = surveyResult.surveyId;
+  const surveyOBJ = surveyResult.surveyOBJ;
   /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
   let embed = new Discord.EmbedBuilder()
   .setTitle("Enjoying Ougi so far?")

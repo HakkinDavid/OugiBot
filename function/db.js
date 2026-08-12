@@ -165,6 +165,31 @@ class OugiDatabaseManager {
         `);
     }
 
+    unloadAll() {
+        global.vc = {};
+        global.settingsOBJ = null;
+        global.mindOBJ = null;
+        global.localesCache = null;
+        global.dynamicLocales = null;
+        global.knowledgeBase = null;
+        global.rafflesOBJ = null;
+
+        global.ammo = {};
+        global.reloadedAmmo = {};
+        global.interactions = {};
+
+        global.database = {
+            settings: { id: channels.settings, file: './settings.db', done: false },
+            backup: { id: channels.backup, file: './responses.db', done: false },
+            embeds: { id: channels.embeds, file: './embedPresets.db', done: false },
+            news: { id: channels.news, file: './newsChannel.db', done: false },
+            locales: { id: channels.locales, file: './localesCache.db', done: false },
+            dynamicLocales: { id: channels.dynamicLocales, file: './dynamicLocales.db', done: false },
+            raffles: { id: channels.raffles, file: './raffles.db', done: false },
+            economy: { id: channels.economy, file: './economy.db', done: false }
+        };
+    }
+
     // KV Save / Load for Settings
     saveKV(dbName, tableName, key, value) {
         if (dbName === 'settings' && key === 'settingsOBJ') {
@@ -268,7 +293,7 @@ class OugiDatabaseManager {
         for (const row of rows) {
             try {
                 presets[row.preset_key] = JSON.parse(row.data);
-            } catch {}
+            } catch { }
         }
         return presets;
     }
@@ -695,12 +720,148 @@ class OugiDatabaseManager {
         return true;
     }
 
+    getKBTriggers() {
+        return Object.keys(global.knowledgeBase || {});
+    }
+
+    getKBReplies(trigger) {
+        return global.knowledgeBase?.[trigger] ?? [];
+    }
+
+    // ─── Additional read helpers ──────────────────────────────────────────────
+
+    getSubscribers() {
+        return global.settingsOBJ?.subscribers ?? [];
+    }
+
+    getAllNewsChannels() {
+        return global.settingsOBJ?.guildNews ?? {};
+    }
+
+    getAllRaffles() {
+        return global.rafflesOBJ ?? {};
+    }
+
+    getGuildRaffles(guildId) {
+        return global.rafflesOBJ?.[guildId] ?? null;
+    }
+
+    getOrCreateGuildRaffles(guildId) {
+        if (!global.rafflesOBJ) global.rafflesOBJ = {};
+        let isNew = false;
+        if (!global.rafflesOBJ[guildId]) {
+            global.rafflesOBJ[guildId] = {
+                ongoingRaffles: [],
+                allowedConcurrentRaffles: 1,
+                allowedParticipants: 100,
+                licensedUntil: Date.now() + 1 * 60 * 60 * 1000,
+            };
+            isNew = true;
+        }
+        return { data: global.rafflesOBJ[guildId], isNew };
+    }
+
+    getStaticLocale(lang, stringId) {
+        return global.localesCache?.[lang]?.[stringId] ?? null;
+    }
+
+    getDynamicLocale(lang, stringId) {
+        return global.dynamicLocales?.[lang]?.[stringId] ?? null;
+    }
+
+    getDynamicLocalesForLang(lang) {
+        return global.dynamicLocales?.[lang] ?? {};
+    }
+
+    // ─── Rate-limit, Ban, & Blacklist High-Level Helpers ──────────────────────
+
+    checkRateLimit(userId) {
+        const now = Date.now();
+        const lastTime = global.settingsOBJ?.ratelimit?.[userId] || 0;
+        const isPatron = Boolean(global.settingsOBJ?.patrons?.[userId]);
+        if (now - lastTime <= 250 && !isPatron) {
+            const waitTime = ((250 - (now - lastTime)) / 1000).toFixed(1);
+            return { ratelimited: true, waitTime };
+        }
+        if (!global.settingsOBJ.ratelimit) global.settingsOBJ.ratelimit = {};
+        global.settingsOBJ.ratelimit[userId] = now;
+        return { ratelimited: false, waitTime: "0" };
+    }
+
+    checkBan(userId, now = Date.now()) {
+        const userBan = global.settingsOBJ?.banned?.[userId];
+        if (!userBan) return null;
+        const expired = !isNaN(userBan.until) && (userBan.until - now) <= 0;
+        if (expired) {
+            delete global.settingsOBJ.banned[userId];
+            this.saveKV('settings', 'kv', 'settingsOBJ', global.settingsOBJ);
+            return { active: false, expired: true };
+        }
+        return { active: true, expired: false, reason: userBan.reason, until: userBan.until };
+    }
+
+    isBlacklisted(guildId, commandOrContent) {
+        const blacklist = global.settingsOBJ?.blacklist?.[guildId] || [];
+        if (!Array.isArray(blacklist)) return false;
+        if (typeof commandOrContent === 'string') {
+            return blacklist.some(item => item.toLowerCase() === commandOrContent.toLowerCase());
+        }
+        return false;
+    }
+
+    // ─── Survey Helpers ────────────────────────────────────────────────────────
+
+    findTakeableSurvey(userId) {
+        const surveyRegistry = global.settingsOBJ?.surveys || {};
+        const surveysAvailable = global.settingsOBJ?.surveysAvailable || {};
+        const userSurveys = surveyRegistry[userId] || [];
+
+        for (const [surveyId, surveyOBJ] of Object.entries(surveysAvailable)) {
+            if (surveyOBJ.ended == null && !userSurveys.includes(surveyId)) {
+                if (!surveyOBJ.yes.includes(userId) && !surveyOBJ.no.includes(userId)) {
+                    return { surveyId, surveyOBJ };
+                }
+            }
+        }
+        return null;
+    }
+
+    // ─── Startup Validation ───────────────────────────────────────────────────
+
+    ensureLoadedAndValid() {
+        if (!global.settingsOBJ || !global.localesCache || !global.dynamicLocales || !global.knowledgeBase) {
+            global.settingsOBJ = this.getKV('settings', 'kv', 'settingsOBJ') || {};
+            global.localesCache = this.loadLocalesCache() || {};
+            global.dynamicLocales = this.loadDynamicLocales() || {};
+            global.knowledgeBase = this.loadKnowledgeBase() || {};
+            global.rafflesOBJ = this.loadRaffles() || {};
+        }
+
+        const missingProps = [];
+        const requiredKeys = [
+            'banned', 'ignored', 'ratelimit', 'prefix', 'blacklist', 'logging',
+            'lang', 'guildNews', 'subscribers', 'surveys', 'surveysAvailable',
+            'AI', 'guildBump', 'patreonAdLastSeen', 'interactionsCounter',
+            'patrons', 'shortcuts', 'nicknames', 'guildAdmins'
+        ];
+
+        for (const key of requiredKeys) {
+            if (!global.settingsOBJ[key]) missingProps.push(`Missing settingsOBJ.${key}`);
+        }
+
+        if (missingProps.length > 0) {
+            console.error(missingProps.join("\n"));
+            return false;
+        }
+        return true;
+    }
+
     checkpointAll() {
         for (const db of Object.values(this.databases)) {
             try {
                 db.pragma('wal_checkpoint(TRUNCATE)');
                 db.pragma('journal_mode = DELETE');
-            } catch (e) {}
+            } catch (e) { }
         }
         // Auto-remove any lingering sidecar journal files
         try {
@@ -710,10 +871,10 @@ class OugiDatabaseManager {
                 if (file.endsWith('.db-wal') || file.endsWith('.db-shm')) {
                     try {
                         fs.unlinkSync(path.join(rootDir, file));
-                    } catch {}
+                    } catch { }
                 }
             }
-        } catch {}
+        } catch { }
     }
 }
 

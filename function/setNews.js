@@ -9,7 +9,7 @@ async function (arguments, msg) {
 
   if (arguments.length > 0) {
     if (arguments[0] == "disable") {
-      if (settingsOBJ.guildNews.hasOwnProperty(msg.guildId)){
+      if (ougi.db().getNewsChannel(msg.guildId)){
         ougi.db().deleteNewsChannel(msg.guildId);
         msg.channel.send("Newsletter channel successfully disabled.");
         return

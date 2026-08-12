@@ -24,7 +24,6 @@ async function (msg, replied_to_ougi) {
     context = (await ougi.text(msg, "contextDM"));
   }
 
-  //let user_context = settingsOBJ.AI.description[msg.author.id];
   let userMessage = "[" + msg.author.username + "]:\n" + msg.content;
   let spookyReply = null;
 
@@ -71,23 +70,4 @@ async function (msg, replied_to_ougi) {
 
   msg.reply(spookyReply).catch(console.error);
   client.channels.cache.get(consoleLogging).send({ embeds: [embed] });
-
-  /*
-  try {
-    let updated_user_context = await ougi.genAIText(
-      [
-        { role: 'system', content: (await ougi.text(msg, "whoAmI")) },
-        { role: 'system', content: (await ougi.text(msg, "userIsNamed")).replace(/{userName}/, msg.author.username) + (user_context ? "\n" + user_context : "") },
-        ...channelInteractions,
-        { role: 'user', content: msg.content },
-        { role: 'system', content: (await ougi.text(msg, "userDescription")) }
-      ]
-    );
-
-    ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
-  }
-  catch (e) {
-    console.error(e);
-  }
-  */
 }
