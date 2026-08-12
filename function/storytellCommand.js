@@ -39,7 +39,7 @@ module.exports = async function storytellCommand(args, msg) {
 
   const startEmbed = new EmbedBuilder()
     .setTitle("📖 Interactive Storytelling RPG Session!")
-    .setDescription(`**Scenario:**\n*"${scenario}"*\n\n**Instructions:**\nEach participant gets **1 turn** to type a sentence continuing the story. You have **5 minutes** between responses before Ougi judges your collective fate!`)
+    .setDescription(`**Scenario:**\n*"${scenario}"*\n\n**Instructions:**\nEach participant gets **1 turn** to type a sentence continuing the story. You have **1 minute** between responses before Ougi judges your collective fate! Have a heads up with **5 minutes since this message was sent**.`)
     .setColor("#9B59B6")
     .setFooter({ text: "Type your story turn directly into this channel!", iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) })
     .setTimestamp();
@@ -60,7 +60,7 @@ module.exports = async function storytellCommand(args, msg) {
     m.react('📝').catch(() => {});
 
     // Reset 5-minute timer for next turn
-    collector.resetTimer({ time: 5 * 60 * 1000 });
+    collector.resetTimer({ time: 1 * 60 * 1000 });
   });
 
     collector.on('end', async () => {
