@@ -2,12 +2,13 @@ const path = require('path');
 const dbManager = require('./db')();
 
 module.exports = function () {
-  if (!settingsOBJ || !localesCache || !dynamicLocales || !knowledgeBase) {
-    global.settingsOBJ = dbManager.getKV('settings', 'kv', 'settingsOBJ') || {};
-    global.localesCache = dbManager.loadLocalesCache() || {};
-    global.dynamicLocales = dbManager.loadDynamicLocales() || {};
-    global.knowledgeBase = dbManager.loadKnowledgeBase() || {};
-    global.rafflesOBJ = dbManager.loadRaffles() || {};
+    if (!settingsOBJ || !localesCache || !dynamicLocales || !knowledgeBase) {
+        global.settingsOBJ = dbManager.getKV('settings', 'kv', 'settingsOBJ') || {};
+        global.localesCache = dbManager.loadLocalesCache() || {};
+        global.dynamicLocales = dbManager.loadDynamicLocales() || {};
+        global.knowledgeBase = dbManager.loadKnowledgeBase() || {};
+        global.rafflesOBJ = dbManager.loadRaffles() || {};
+    }
 
     let missingProps = [];
 
@@ -37,6 +38,5 @@ module.exports = function () {
         console.error(missingProps.join("\n"));
         return false;
     }
-  }
-  return true;
+    return true;
 };
