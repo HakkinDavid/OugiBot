@@ -142,7 +142,7 @@ async function syncData() {
 /* ===== Eventos del Cliente ===== */
 client.once('ready', async () => {
     try {
-        findRemoveSync('./', { extensions: ['.txt', '.mp3'] });
+        findRemoveSync('./', { extensions: ['.txt', '.db', '.mp3'] });
         await syncData();
         await client.application?.commands.set([
             {
