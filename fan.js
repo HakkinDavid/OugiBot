@@ -27,6 +27,13 @@ global.Voice = require('@discordjs/voice').Voice;
 global.path = require('node:path');
 global.colors = require('@colors/colors/safe');
 
+try {
+    findRemoveSync('./', { extensions: ['.txt', '.db', '.db-wal', '.db-shm', '.mp3'] });
+}
+catch (e) {
+    console.error(e);
+}
+
 /* ===== Cliente ===== */
 global.client = new Discord.Client({
     intents: [
@@ -121,7 +128,6 @@ async function syncData() {
 /* ===== Eventos del Cliente ===== */
 client.once('ready', async () => {
     try {
-        findRemoveSync('./', { extensions: ['.txt', '.db', '.db-wal', '.db-shm', '.mp3'] });
         await syncData();
         await client.application?.commands.set([
             {
