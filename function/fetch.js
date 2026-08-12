@@ -1,5 +1,6 @@
 const fs = require('fs');
 const https = require('https');
+const path = require('node:path');
 
 function isSqliteHeader(filepath) {
   if (!fs.existsSync(filepath)) return false;
@@ -16,17 +17,40 @@ function isSqliteHeader(filepath) {
 
 function downloadFile(url, dest) {
   return new Promise((resolve, reject) => {
-    const file = fs.createWriteStream(dest);
+    const tempDest = `${dest}.tmp`;
+    const file = fs.createWriteStream(tempDest);
     https.get(url, (response) => {
       if (response.statusCode !== 200) {
+        fs.unlink(tempDest, () => {});
         return reject(new Error(`Failed to download ${url}: Status ${response.statusCode}`));
       }
       response.pipe(file);
       file.on('finish', () => {
-        file.close(resolve);
+        file.close(() => {
+          try {
+            if (isSqliteHeader(tempDest)) {
+              try {
+                const dbName = path.basename(dest, '.db');
+                if (global.ougi && typeof global.ougi.db === 'function') {
+                  const dbManager = global.ougi.db();
+                  if (dbManager && typeof dbManager.closeDb === 'function') {
+                    dbManager.closeDb(dbName);
+                  }
+                }
+              } catch {}
+              fs.renameSync(tempDest, dest);
+              resolve();
+            } else {
+              fs.unlink(tempDest, () => {});
+              reject(new Error(`Downloaded file ${tempDest} is not a valid SQLite database.`));
+            }
+          } catch (e) {
+            reject(e);
+          }
+        });
       });
     }).on('error', (err) => {
-      fs.unlink(dest, () => reject(err));
+      fs.unlink(tempDest, () => reject(err));
     });
   });
 }
@@ -57,3 +81,4 @@ module.exports = async function (channelID, filename, data_obj_name = undefined)
     console.error("Error fetching attachment in fetch.js:", err);
   }
 };
+

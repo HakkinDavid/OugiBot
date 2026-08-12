@@ -18,6 +18,15 @@ class OugiDatabaseManager {
         return this.databases[name];
     }
 
+    closeDb(name) {
+        if (this.databases[name]) {
+            try {
+                this.databases[name].close();
+            } catch { }
+            delete this.databases[name];
+        }
+    }
+
     init() {
         // 1. Settings Table
         const settingsDb = this.getDb('settings');
@@ -206,26 +215,34 @@ class OugiDatabaseManager {
     }
 
     getKV(dbName, tableName, key, parseJson = true) {
-        const db = this.getDb(dbName);
-        const stmt = db.prepare(`SELECT value FROM ${tableName} WHERE key = ?`);
-        const row = stmt.get(key);
-        if (!row) return null;
-        return parseJson ? JSON.parse(row.value) : row.value;
+        try {
+            const db = this.getDb(dbName);
+            const stmt = db.prepare(`SELECT value FROM ${tableName} WHERE key = ?`);
+            const row = stmt.get(key);
+            if (!row) return null;
+            return parseJson ? JSON.parse(row.value) : row.value;
+        } catch {
+            return null;
+        }
     }
 
     // Responses (Knowledge Base) helpers
     loadKnowledgeBase() {
-        const db = this.getDb('responses');
-        const rows = db.prepare(`SELECT trigger, replies FROM responses`).all();
-        const kb = {};
-        for (const row of rows) {
-            try {
-                kb[row.trigger] = JSON.parse(row.replies);
-            } catch {
-                kb[row.trigger] = [];
+        try {
+            const db = this.getDb('responses');
+            const rows = db.prepare(`SELECT trigger, replies FROM responses`).all();
+            const kb = {};
+            for (const row of rows) {
+                try {
+                    kb[row.trigger] = JSON.parse(row.replies);
+                } catch {
+                    kb[row.trigger] = [];
+                }
             }
+            return kb;
+        } catch {
+            return null;
         }
-        return kb;
     }
 
     saveKnowledgeBase(kb) {
@@ -245,15 +262,19 @@ class OugiDatabaseManager {
     }
 
     loadLocalesCache() {
-        const db = this.getDb('localesCache');
-        const rows = db.prepare('SELECT lang, string_id, translation FROM locales').all();
-        if (rows.length === 0) return null;
-        const cache = {};
-        for (const row of rows) {
-            if (!cache[row.lang]) cache[row.lang] = {};
-            cache[row.lang][row.string_id] = row.translation;
+        try {
+            const db = this.getDb('localesCache');
+            const rows = db.prepare('SELECT lang, string_id, translation FROM locales').all();
+            if (rows.length === 0) return null;
+            const cache = {};
+            for (const row of rows) {
+                if (!cache[row.lang]) cache[row.lang] = {};
+                cache[row.lang][row.string_id] = row.translation;
+            }
+            return cache;
+        } catch {
+            return null;
         }
-        return cache;
     }
 
     saveStaticLocale(lang, stringId, translation) {
@@ -262,15 +283,19 @@ class OugiDatabaseManager {
     }
 
     loadDynamicLocales() {
-        const db = this.getDb('dynamicLocales');
-        const rows = db.prepare('SELECT lang, string_id, value, from_code FROM dynamic_locales').all();
-        if (rows.length === 0) return null;
-        const cache = {};
-        for (const row of rows) {
-            if (!cache[row.lang]) cache[row.lang] = {};
-            cache[row.lang][row.string_id] = { value: row.value, fromCode: row.from_code };
+        try {
+            const db = this.getDb('dynamicLocales');
+            const rows = db.prepare('SELECT lang, string_id, value, from_code FROM dynamic_locales').all();
+            if (rows.length === 0) return null;
+            const cache = {};
+            for (const row of rows) {
+                if (!cache[row.lang]) cache[row.lang] = {};
+                cache[row.lang][row.string_id] = { value: row.value, fromCode: row.from_code };
+            }
+            return cache;
+        } catch {
+            return null;
         }
-        return cache;
     }
 
     saveDynamicLocale(lang, stringId, value, fromCode) {
@@ -827,12 +852,18 @@ class OugiDatabaseManager {
     // ─── Startup Validation ───────────────────────────────────────────────────
 
     ensureLoadedAndValid() {
-        if (!global.settingsOBJ || !global.localesCache || !global.dynamicLocales || !global.knowledgeBase) {
-            global.settingsOBJ = this.getKV('settings', 'kv', 'settingsOBJ') || {};
-            global.localesCache = this.loadLocalesCache() || {};
-            global.dynamicLocales = this.loadDynamicLocales() || {};
-            global.knowledgeBase = this.loadKnowledgeBase() || {};
-            global.rafflesOBJ = this.loadRaffles() || {};
+        if (global.isSyncing) return false;
+
+        try {
+            if (!global.settingsOBJ || !global.localesCache || !global.dynamicLocales || !global.knowledgeBase) {
+                global.settingsOBJ = this.getKV('settings', 'kv', 'settingsOBJ') || {};
+                global.localesCache = this.loadLocalesCache() || {};
+                global.dynamicLocales = this.loadDynamicLocales() || {};
+                global.knowledgeBase = this.loadKnowledgeBase() || {};
+                global.rafflesOBJ = this.loadRaffles() || {};
+            }
+        } catch {
+            return false;
         }
 
         const missingProps = [];

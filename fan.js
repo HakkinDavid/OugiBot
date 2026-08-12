@@ -120,10 +120,16 @@ console.error = (...args) => {
 
 /* ===== Sincronización de Base de Datos ===== */
 async function syncData() {
-    for (const [key, data] of Object.entries(database)) {
-        if (!data.done) await ougi.fetch(data.id, data.file, key);
+    global.isSyncing = true;
+    try {
+        for (const [key, data] of Object.entries(database)) {
+            if (!data.done) await ougi.fetch(data.id, data.file, key);
+        }
+    } finally {
+        global.isSyncing = false;
     }
 }
+
 
 /* ===== Eventos del Cliente ===== */
 client.once('ready', async () => {
