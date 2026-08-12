@@ -3,6 +3,7 @@ const { Client, GatewayIntentBits } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
+const dbManager = require('./function/db')();
 
 const client = new Client({
     intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent]
@@ -63,11 +64,11 @@ function isSqliteHeader(filepath) {
 client.once('ready', async () => {
     console.log("==========================================");
     console.log(`🌐 Logged in as ${client.user.tag}`);
-    console.log("🚀 Starting Smart Sync-Migrate-Upload Pipeline");
+    console.log("🚀 Starting Production Data Sync & SQLite Migration Pipeline");
     console.log("==========================================");
 
-    // STEP 1: PULL & DOWNLOAD PRODUCTION CHANNEL ATTACHMENTS
-    console.log("\n📥 STEP 1: Inspecting & Downloading production channel attachments...");
+    // STEP 1: PULL & DOWNLOAD BEST PRODUCTION ATTACHMENTS (Skipping 4KB empty placeholders)
+    console.log("\n📥 STEP 1: Locating & Downloading best production attachments from Discord...");
     for (const item of databaseMapping) {
         try {
             const channel = await client.channels.fetch(item.channelId).catch(() => null);
@@ -76,45 +77,56 @@ client.once('ready', async () => {
                 continue;
             }
 
-            const messages = await channel.messages.fetch({ limit: 5 });
-            const lastMsg = messages.find(m => m.attachments && m.attachments.size > 0);
+            const messages = await channel.messages.fetch({ limit: 100 });
+            let bestAttachment = null;
 
-            if (lastMsg && lastMsg.attachments.size > 0) {
-                const attachment = lastMsg.attachments.first();
+            for (const msg of messages.values()) {
+                if (msg.attachments.size > 0) {
+                    for (const att of msg.attachments.values()) {
+                        // Ignore empty 4KB database placeholders if larger backup exists
+                        if (!bestAttachment || att.size > bestAttachment.size) {
+                            bestAttachment = { url: att.url, size: att.size, name: att.name, msgId: msg.id };
+                        }
+                    }
+                }
+            }
+
+            if (bestAttachment) {
                 const tempDownload = `./temp_${item.key}_download`;
-                console.log(`  ⬇️ Downloading attachment from message ${lastMsg.id}...`);
-                await downloadFile(attachment.url, tempDownload);
+                console.log(`  ⬇️ Found best attachment (${(bestAttachment.size / 1024).toFixed(1)} KB) in message ${bestAttachment.msgId}...`);
+                await downloadFile(bestAttachment.url, tempDownload);
 
-                if (isSqliteHeader(tempDownload)) {
-                    console.log(`  💾 Attachment for ${item.key} is ALREADY a valid SQLite .db file (${fs.statSync(tempDownload).size} bytes).`);
+                if (isSqliteHeader(tempDownload) && bestAttachment.size > 4096) {
+                    console.log(`  💾 Attachment for ${item.key} is a populated SQLite .db file (${bestAttachment.size} bytes).`);
                     fs.copyFileSync(tempDownload, item.dbFile);
                     fs.unlinkSync(tempDownload);
                 } else {
-                    console.log(`  📄 Attachment for ${item.key} is a legacy text/encrypted file.`);
+                    console.log(`  📄 Attachment for ${item.key} is a legacy text/encrypted data file.`);
                     if (item.txtFile) {
                         fs.copyFileSync(tempDownload, item.txtFile);
                     }
                     fs.unlinkSync(tempDownload);
                 }
             } else {
-                console.log(`  ⚠️ No attachment found in channel ${item.channelId} for ${item.key}`);
+                console.log(`  ⚠️ No valid attachments found in channel ${item.channelId} for ${item.key}`);
             }
         } catch (err) {
             console.error(`  ❌ Error pulling ${item.key}:`, err.message);
         }
     }
 
-    // STEP 2: MIGRATE ANY LEGACY .TXT FILES INTO SQLITE
-    console.log("\n⚙️ STEP 2: Executing Migration for any legacy text files...");
+    // STEP 2: MIGRATE LEGACY .TXT DATA INTO SQLITE DATABASES
+    console.log("\n⚙️ STEP 2: Executing Migration for downloaded legacy text files...");
     try {
         require('./migrateToSqlite');
-        console.log("  ✅ Migration check complete!");
+        console.log("  ✅ Migration complete!");
     } catch (err) {
         console.error("  ❌ Migration error:", err);
     }
 
-    // STEP 3: UPLOAD VALID SQLITE DBs TO CHANNELS
-    console.log("\n📤 STEP 3: Uploading populated SQLite (.db) database files to Discord...");
+    // STEP 3: UPLOAD POPULATED SQLITE DBs BACK TO DISCORD BACKUP CHANNELS
+    console.log("\n📤 STEP 3: Checkpointing WAL journals & Uploading populated SQLite (.db) database files back to Discord...");
+    dbManager.checkpointAll();
     for (const item of databaseMapping) {
         if (!fs.existsSync(item.dbFile)) {
             console.log(`  ⚠️ File ${item.dbFile} does not exist locally, skipping upload.`);
@@ -143,7 +155,7 @@ client.once('ready', async () => {
     }
 
     // STEP 4: CLEAN UP TEMPORARY .TXT FILES
-    console.log("\n🧹 STEP 4: Cleaning up temporary text files...");
+    console.log("\n🧹 STEP 4: Cleaning up temporary legacy text files...");
     for (const item of databaseMapping) {
         if (item.txtFile && fs.existsSync(item.txtFile)) {
             try {
@@ -156,7 +168,7 @@ client.once('ready', async () => {
     }
 
     console.log("\n==========================================");
-    console.log("✨ Smart Sync-Migrate-Upload Pipeline Finished Successfully!");
+    console.log("✨ Sync-Migrate-Upload Pipeline Finished Successfully!");
     console.log("==========================================");
 
     client.destroy();

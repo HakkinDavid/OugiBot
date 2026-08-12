@@ -264,6 +264,14 @@ class OugiDatabaseManager {
         list.push(newsItem);
         this.saveKV('newsChannel', 'kv', 'newsList', list);
     }
+
+    checkpointAll() {
+        for (const db of Object.values(this.databases)) {
+            try {
+                db.pragma('wal_checkpoint(TRUNCATE)');
+            } catch (e) {}
+        }
+    }
 }
 
 const dbManager = new OugiDatabaseManager();
