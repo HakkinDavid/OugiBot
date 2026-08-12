@@ -124,7 +124,7 @@ module.exports = async function (msg) {
         "admin-register": async () => ougi.adminRegister(args, msg)
     };
 
-    const musicCommands = ["music", "skip", "stop", "remove", "play", "p"];
+    const musicCommands = ["music", "skip", "stop", "play", "p"];
     const urlPattern = /^https?:\/\/(www\.)?(youtube\.com|youtu\.be)/i;
 
     if (commandMap[spookyCommand]) {
