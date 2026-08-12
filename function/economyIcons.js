@@ -5,24 +5,25 @@ module.exports =
 
         if (!ougi.isAdmin(msg)) {
             msg.channel.send("You must be an administrator to perform this action.");
-            return
+            return;
         }
 
+        const db = ougi.db();
+        const guildEco = db.getGuildEconomy(msg.guildId);
+
         switch (arguments[0]) {
-            case "currency": {
-                settingsOBJ.economy[msg.guildId].currency = arguments.slice(1).join(" ");
+            case "currency":
+                guildEco.currency = arguments.slice(1).join(" ");
+                db.saveGuildEconomy(msg.guildId, guildEco);
                 msg.channel.send("Currency icon updated.");
-                ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
-            }
                 break;
-            case "xp": {
-                settingsOBJ.economy[msg.guildId].xp = arguments.slice(1).join(" ");
+            case "xp":
+                guildEco.xp_label = arguments.slice(1).join(" ");
+                db.saveGuildEconomy(msg.guildId, guildEco);
                 msg.channel.send("XP icon updated.");
-                ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
-            }
                 break;
             default:
-                msg.channel.send("Please specify what icon you wish to update.")
+                msg.channel.send("Please specify what icon you wish to update.");
                 break;
         }
     }

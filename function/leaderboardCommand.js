@@ -6,33 +6,27 @@ module.exports = async function leaderboardCommand(args, msg) {
         return;
     }
 
-    ougi.economy('init', msg);
-
+    const db = ougi.db();
     const guildId = msg.guildId;
-    const usersData = settingsOBJ.economy[guildId].users || {};
-    const currencySymbol = settingsOBJ.economy[guildId].currency || "$";
+    const guildEco = db.getGuildEconomy(guildId);
+    const topUsers = db.getLeaderboard(guildId, 10);
 
-    const sortedUsers = Object.entries(usersData)
-        .map(([id, data]) => ({ id, money: data.money || 0, xp: data.xp || 0, level: data.level || 0 }))
-        .sort((a, b) => b.money - a.money)
-        .slice(0, 10);
-
-    if (sortedUsers.length === 0) {
+    if (topUsers.length === 0) {
         msg.channel.send("No economy records found for this server yet.");
         return;
     }
 
     const leaderboardLines = [];
-    for (let i = 0; i < sortedUsers.length; i++) {
-        const entry = sortedUsers[i];
-        let userTag = `<@${entry.id}>`;
+    for (let i = 0; i < topUsers.length; i++) {
+        const entry = topUsers[i];
+        let userTag = `<@${entry.user_id}>`;
         try {
-            const fetched = await msg.client.users.fetch(entry.id);
+            const fetched = await msg.client.users.fetch(entry.user_id);
             userTag = fetched.username;
         } catch { }
 
         const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `**#${i + 1}**`;
-        leaderboardLines.push(`${medal} **${userTag}** — ${entry.money} ${currencySymbol} *(Lvl ${entry.level})*`);
+        leaderboardLines.push(`${medal} **${userTag}** — ${entry.money} ${guildEco.currency} *(Lvl ${entry.level})*`);
     }
 
     const embed = new EmbedBuilder()
@@ -44,3 +38,4 @@ module.exports = async function leaderboardCommand(args, msg) {
 
     msg.channel.send({ embeds: [embed] });
 };
+

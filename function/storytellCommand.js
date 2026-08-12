@@ -63,7 +63,7 @@ module.exports = async function storytellCommand(args, msg) {
     collector.resetTimer({ time: 5 * 60 * 1000 });
   });
 
-  collector.on('end', async () => {
+    collector.on('end', async () => {
     delete activeSessions[channelId];
 
     if (session.turns.length === 0) {
@@ -86,21 +86,19 @@ module.exports = async function storytellCommand(args, msg) {
 
     const isReward = !aiResult.toLowerCase().includes("penalty");
     const rewardAmount = isReward ? 200 : 100;
-    const currencySymbol = settingsOBJ.economy[msg.guildId]?.currency || "$";
+    const db = ougi.db();
+    const guildEco = db.getGuildEconomy(msg.guildId);
+    const currencySymbol = guildEco.currency;
 
     for (const userId of session.participants) {
-      if (!settingsOBJ.economy[msg.guildId].users[userId]) {
-        settingsOBJ.economy[msg.guildId].users[userId] = { money: 0, level: 0, xp: 0, inventory: [], badges: [], worked: 0 };
-      }
-      const uEco = settingsOBJ.economy[msg.guildId].users[userId];
+      const user = db.getUser(msg.guildId, userId);
       if (isReward) {
-        uEco.money = (uEco.money || 0) + rewardAmount;
+        user.money = (user.money || 0) + rewardAmount;
       } else {
-        uEco.money = Math.max(0, (uEco.money || 0) - rewardAmount);
+        user.money = Math.max(0, (user.money || 0) - rewardAmount);
       }
+      db.saveUser(msg.guildId, userId, user);
     }
-
-    ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
 
     const endEmbed = new EmbedBuilder()
       .setTitle("🎭 Storytelling Session Concluded!")

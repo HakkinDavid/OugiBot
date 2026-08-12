@@ -61,7 +61,7 @@ module.exports = async function text(msg, stringID, dynamic = false, raw = false
 
         dynamicLocales[langCode][stringID] = { value: returnableString, fromCode };
         let dbManager = require('./db')();
-        dbManager.saveKV('dynamicLocales', 'kv', 'dynamicLocales', dynamicLocales);
+        dbManager.saveDynamicLocale(langCode, stringID, returnableString, fromCode);
         return raw ? { value: returnableString, fromCode, stringEmoji, stringDiscordEmoji } : returnableString;
     }
 
@@ -83,7 +83,7 @@ module.exports = async function text(msg, stringID, dynamic = false, raw = false
 
         localesCache[langCode][stringID] = returnableString;
         let dbManager = require('./db')();
-        dbManager.saveKV('localesCache', 'kv', 'localesCache', localesCache);
+        dbManager.saveStaticLocale(langCode, stringID, returnableString);
     }
 
     return returnableString;

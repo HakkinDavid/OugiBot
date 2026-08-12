@@ -40,13 +40,16 @@ async function runMigration() {
     console.log("\n📦 Migrating settings.txt...");
     const settings = readLegacyFile('./settings.txt');
     if (settings && Object.keys(settings).length > 0) {
-        // Guarantee full 20-key schema
+        // Extract economy before saving settingsOBJ (economy now lives in economy.db)
+        const legacyEconomy = settings.economy || {};
+        delete settings.economy;
+
+        // Guarantee full 19-key schema (economy removed)
         if (!settings.banned) settings.banned = {};
         if (!settings.ignored) settings.ignored = [];
         if (!settings.ratelimit) settings.ratelimit = {};
         if (!settings.prefix) settings.prefix = {};
         if (!settings.blacklist) settings.blacklist = {};
-        if (!settings.economy) settings.economy = {};
         if (!settings.logging) settings.logging = {};
         if (!settings.lang) settings.lang = {};
         if (!settings.guildNews) settings.guildNews = {};
@@ -63,33 +66,35 @@ async function runMigration() {
         if (!settings.guildAdmins) settings.guildAdmins = {};
 
         dbManager.saveKV('settings', 'kv', 'settingsOBJ', settings);
-        console.log("  ✅ Saved complete settingsOBJ into settings.db");
+        console.log("  ✅ Saved settingsOBJ (without economy) into settings.db");
 
-        // Migrate Economy data if present
-        if (settings.economy) {
-            const ecoDb = dbManager.getDb('economy');
-            const saveGuildEco = ecoDb.prepare(`INSERT INTO guild_economy (guild_id, config) VALUES (?, ?) ON CONFLICT(guild_id) DO UPDATE SET config=excluded.config`);
-            const saveUserEco = ecoDb.prepare(`INSERT INTO user_economy (guild_id, user_id, money, xp, level, worked) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(guild_id, user_id) DO UPDATE SET money=excluded.money, xp=excluded.xp, level=excluded.level, worked=excluded.worked`);
-
-            const ecoTransaction = ecoDb.transaction((economyData) => {
+        // Migrate Economy data into normalized economy.db
+        if (Object.keys(legacyEconomy).length > 0) {
+            const ecoTransaction = dbManager.getDb('economy').transaction((economyData) => {
                 for (const [guildId, gData] of Object.entries(economyData)) {
-                    saveGuildEco.run(guildId, JSON.stringify({
+                    dbManager.saveGuildEconomy(guildId, {
                         multiplier: gData.multiplier || 1,
                         channels: gData.channels || [],
-                        currency: gData.currency || "$",
-                        xp: gData.xp || "XP",
-                        cooldown: gData.cooldown || 10
-                    }));
-
+                        currency: gData.currency || '$',
+                        xp_label: gData.xp || 'XP',
+                        cooldown: gData.cooldown || 10,
+                        disabled: !!gData.disabled
+                    });
                     if (gData.users) {
                         for (const [userId, uData] of Object.entries(gData.users)) {
-                            saveUserEco.run(guildId, userId, uData.money || 0, uData.xp || 0, uData.level || 0, uData.worked || 0);
+                            dbManager.saveUser(guildId, userId, {
+                                money: uData.money || 0,
+                                xp: uData.xp || 0,
+                                level: uData.level || 0,
+                                worked: uData.worked || 0,
+                                last_daily: uData.lastDaily || 0
+                            });
                         }
                     }
                 }
             });
-            ecoTransaction(settings.economy);
-            console.log("  ✅ Migrated guild & user economy records into economy.db");
+            ecoTransaction(legacyEconomy);
+            console.log("  ✅ Migrated guild & user economy records into economy.db (normalized schema)");
         }
     } else {
         console.log("  ℹ️ No valid legacy settings.txt found, preserving existing settings.db");
@@ -160,19 +165,12 @@ async function runMigration() {
         console.log("  ℹ️ No valid legacy dynamicLocales.txt found, preserving existing dynamicLocales.db");
     }
 
-    // 6. Migrate raffles.txt -> raffles.db
+    // 6. Migrate raffles.txt -> raffles.db (KV blob strategy)
     console.log("\n📦 Migrating raffles.txt...");
     const raffles = readLegacyFile('./raffles.txt');
     if (raffles && Object.keys(raffles).length > 0) {
-        const rafflesDb = dbManager.getDb('raffles');
-        const stmt = rafflesDb.prepare(`INSERT INTO raffles (guild_id, data) VALUES (?, ?) ON CONFLICT(guild_id) DO UPDATE SET data=excluded.data`);
-        const transaction = rafflesDb.transaction((data) => {
-            for (const [guildId, val] of Object.entries(data)) {
-                stmt.run(guildId, JSON.stringify(val));
-            }
-        });
-        transaction(raffles);
-        console.log(`  ✅ Migrated ${Object.keys(raffles).length} guild raffles records into raffles.db`);
+        dbManager.saveKV('raffles', 'kv', 'rafflesOBJ', raffles);
+        console.log(`  ✅ Migrated rafflesOBJ (${Object.keys(raffles).length} guilds) as KV blob into raffles.db`);
     } else {
         console.log("  ℹ️ No valid legacy raffles.txt found, preserving existing raffles.db");
     }

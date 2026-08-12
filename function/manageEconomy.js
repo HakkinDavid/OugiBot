@@ -3,102 +3,107 @@ module.exports =
 async function (action, msg, options) {
     if (!(await ougi.guildCheck(msg))) return;
 
-
     if (!ougi.isAdmin(msg)) {
         msg.channel.send("You must be an administrator to perform this action.");
-        return
+        return;
     }
+
+    const db = ougi.db();
+    const guildId = msg.guildId;
 
     switch (action) {
         case 'channel': {
-            if (!settingsOBJ.economy.hasOwnProperty(msg.guildId)) {
+            const guildEco = db.getGuildEconomy(guildId);
+            if (guildEco.disabled) {
                 msg.channel.send("You must enable economy first.\n> ougi economy enable");
-                return
+                return;
             }
             let expChannels = [];
 
             if (options.length > 1) {
-                for (i=1; options.length > i; i++) {
+                for (let i = 1; options.length > i; i++) {
                     if (options[i].startsWith("<#") && options[i].endsWith(">")) {
-                        let channelMention = options[i];
-                        channelMention = channelMention.slice(2, -1);
+                        let channelMention = options[i].slice(2, -1);
                         if (!msg.guild.channels.cache.has(channelMention)) {
                             msg.channel.send("Huh? Looks like you're using this command wrong. Refer to the following command for help.\n> ougi help xp-channel");
-                            return
+                            return;
                         }
                         expChannels.push(channelMention);
                     }
                     else if (options[i] === 'all') {
-                        expChannels = settingsOBJ.economy[msg.guildId].channels;
+                        expChannels = guildEco.channels;
                         break;
                     }
                 }
-            }
-            else {
+            } else {
                 msg.channel.send("Huh? Looks like you're using this command wrong. Refer to the following command for help.\n> ougi help xp-channel");
-                return
+                return;
             }
 
             switch (options[0]) {
-                case 'add': {
-                    settingsOBJ.economy[msg.guildId].channels.push(... expChannels);
+                case 'add':
+                    guildEco.channels.push(...expChannels);
+                    db.saveGuildEconomy(guildId, guildEco);
                     msg.channel.send("I will start giving XP to users in these channels.");
-                    ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
-                }
-                break;
-                case 'remove': {
-                    settingsOBJ.economy[msg.guildId].channels = settingsOBJ.economy[msg.guildId].channels.filter(channel => !expChannels.includes(channel));
+                    break;
+                case 'remove':
+                    guildEco.channels = guildEco.channels.filter(ch => !expChannels.includes(ch));
+                    db.saveGuildEconomy(guildId, guildEco);
                     msg.channel.send("I won't give XP to users in these channels.");
-                    ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
-                }
-                break;
+                    break;
                 default:
                     msg.channel.send("You seem to be using this command wrong.");
-                break;
+                    break;
             }
+            break;
         }
-        break;
         case 'economy': {
             switch (options[0]) {
                 case 'enable': {
-                    if (settingsOBJ.economy.hasOwnProperty(msg.guildId) && !settingsOBJ.economy[msg.guildId].disabled) {
+                    const guildEco = db.getGuildEconomy(guildId);
+                    if (!guildEco.disabled) {
                         msg.channel.send("Already enabled.");
-                        return
+                        return;
                     }
-                    settingsOBJ.economy[msg.guildId] ? settingsOBJ.economy[msg.guildId].disabled = false : ougi.economy('init', msg);
+                    guildEco.disabled = false;
+                    db.saveGuildEconomy(guildId, guildEco);
                     msg.channel.send("Economy enabled.");
-                    ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
+                    break;
                 }
-                break;
                 case 'disable': {
-                    if (!settingsOBJ.economy.hasOwnProperty(msg.guildId) || settingsOBJ.economy[msg.guildId].disabled) {
+                    const guildEco = db.getGuildEconomy(guildId);
+                    if (guildEco.disabled) {
                         msg.channel.send("Already disabled.");
-                        return
+                        return;
                     }
-                    settingsOBJ.economy[msg.guildId].disabled = true;
+                    guildEco.disabled = true;
+                    db.saveGuildEconomy(guildId, guildEco);
                     msg.channel.send("Economy disabled.");
-                    ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
+                    break;
                 }
-                break;
                 case 'reset': {
-                    ougi.economy('init', msg);
-                    msg.channel.send("Economy reseted.");
-                    ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
+                    db.saveGuildEconomy(guildId, {
+                        multiplier: 1, channels: [], currency: '$',
+                        xp_label: 'XP', cooldown: 10, disabled: false
+                    });
+                    msg.channel.send("Economy reset.");
+                    break;
                 }
-                break;
-                case 'cooldown':
-                    settingsOBJ.economy[msg.guildId].cooldown = options[1];
+                case 'cooldown': {
+                    const guildEco = db.getGuildEconomy(guildId);
+                    guildEco.cooldown = parseInt(options[1], 10) || 10;
+                    db.saveGuildEconomy(guildId, guildEco);
                     msg.channel.send("Cooldown for economy commands set.");
-                    ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
-                break;
+                    break;
+                }
                 default:
                     msg.channel.send("You seem to be using this command wrong.");
-                break;
+                    break;
             }
+            break;
         }
-        break;
         default:
             msg.channel.send("You seem to be using this command wrong.");
-        break;
+            break;
     }
 }

@@ -69,34 +69,58 @@ class OugiDatabaseManager {
             );
         `);
 
-        // 6. Raffles Table
+        // 6. Raffles Table — KV blob strategy (matches runtime access pattern)
         const rafflesDb = this.getDb('raffles');
         rafflesDb.exec(`
-            CREATE TABLE IF NOT EXISTS raffles (
-                guild_id TEXT PRIMARY KEY,
-                data TEXT
+            CREATE TABLE IF NOT EXISTS kv (
+                key TEXT PRIMARY KEY,
+                value TEXT
             );
         `);
 
-        // 7. Economy Table
+        // 7. Economy Tables — fully normalized
         const economyDb = this.getDb('economy');
         economyDb.exec(`
             CREATE TABLE IF NOT EXISTS guild_economy (
-                guild_id TEXT PRIMARY KEY,
-                config TEXT
+                guild_id    TEXT PRIMARY KEY,
+                multiplier  REAL DEFAULT 1,
+                channels    TEXT DEFAULT '[]',
+                currency    TEXT DEFAULT '$',
+                xp_label    TEXT DEFAULT 'XP',
+                cooldown    INTEGER DEFAULT 10,
+                disabled    INTEGER DEFAULT 0
             );
             CREATE TABLE IF NOT EXISTS user_economy (
-                guild_id TEXT,
-                user_id TEXT,
-                money INTEGER DEFAULT 0,
-                xp INTEGER DEFAULT 0,
-                level INTEGER DEFAULT 0,
-                worked INTEGER DEFAULT 0,
-                last_work INTEGER DEFAULT 0,
-                last_daily INTEGER DEFAULT 0,
-                inventory TEXT DEFAULT '[]',
-                badges TEXT DEFAULT '[]',
+                guild_id    TEXT,
+                user_id     TEXT,
+                money       INTEGER DEFAULT 0,
+                xp          INTEGER DEFAULT 0,
+                level       INTEGER DEFAULT 0,
+                worked      INTEGER DEFAULT 0,
+                last_daily  INTEGER DEFAULT 0,
                 PRIMARY KEY (guild_id, user_id)
+            );
+            CREATE TABLE IF NOT EXISTS user_inventory (
+                guild_id    TEXT,
+                user_id     TEXT,
+                item_id     TEXT,
+                quantity    INTEGER DEFAULT 1,
+                PRIMARY KEY (guild_id, user_id, item_id)
+            );
+            CREATE TABLE IF NOT EXISTS user_badges (
+                guild_id    TEXT,
+                user_id     TEXT,
+                badge_id    TEXT,
+                earned_at   INTEGER,
+                PRIMARY KEY (guild_id, user_id, badge_id)
+            );
+            CREATE TABLE IF NOT EXISTS shop_items (
+                guild_id    TEXT,
+                item_id     TEXT,
+                name        TEXT,
+                price       INTEGER,
+                role_id     TEXT,
+                PRIMARY KEY (guild_id, item_id)
             );
         `);
 
@@ -148,7 +172,7 @@ class OugiDatabaseManager {
                 console.error("[CRITICAL SAFEGUARD] Attempted to save invalid settingsOBJ into settings.db, operation aborted!");
                 return;
             }
-            const requiredKeys = ['banned', 'ignored', 'ratelimit', 'prefix', 'blacklist', 'economy', 'logging', 'lang', 'guildNews', 'subscribers', 'surveys', 'surveysAvailable', 'AI', 'guildBump', 'patreonAdLastSeen', 'interactionsCounter', 'patrons', 'shortcuts', 'nicknames', 'guildAdmins'];
+            const requiredKeys = ['banned', 'ignored', 'ratelimit', 'prefix', 'blacklist', 'logging', 'lang', 'guildNews', 'subscribers', 'surveys', 'surveysAvailable', 'AI', 'guildBump', 'patreonAdLastSeen', 'interactionsCounter', 'patrons', 'shortcuts', 'nicknames', 'guildAdmins'];
             const missingKeys = requiredKeys.filter(k => !(k in value));
             if (missingKeys.length > 0) {
                 console.error(`[CRITICAL SAFEGUARD] settingsOBJ is missing ${missingKeys.length} schema keys (${missingKeys.join(', ')}). Save operation aborted to prevent truncation!`);
@@ -211,6 +235,11 @@ class OugiDatabaseManager {
         return cache;
     }
 
+    saveStaticLocale(lang, stringId, translation) {
+        const db = this.getDb('localesCache');
+        db.prepare(`INSERT INTO locales (lang, string_id, translation) VALUES (?, ?, ?) ON CONFLICT(lang, string_id) DO UPDATE SET translation=excluded.translation`).run(lang, stringId, translation);
+    }
+
     loadDynamicLocales() {
         const db = this.getDb('dynamicLocales');
         const rows = db.prepare('SELECT lang, string_id, value, from_code FROM dynamic_locales').all();
@@ -223,17 +252,13 @@ class OugiDatabaseManager {
         return cache;
     }
 
+    saveDynamicLocale(lang, stringId, value, fromCode) {
+        const db = this.getDb('dynamicLocales');
+        db.prepare(`INSERT INTO dynamic_locales (lang, string_id, value, from_code) VALUES (?, ?, ?, ?) ON CONFLICT(lang, string_id) DO UPDATE SET value=excluded.value, from_code=excluded.from_code`).run(lang, stringId, value, fromCode || null);
+    }
+
     loadRaffles() {
-        const db = this.getDb('raffles');
-        const rows = db.prepare('SELECT guild_id, data FROM raffles').all();
-        if (rows.length === 0) return null;
-        const raffles = {};
-        for (const row of rows) {
-            try {
-                raffles[row.guild_id] = JSON.parse(row.data);
-            } catch {}
-        }
-        return raffles;
+        return this.getKV('raffles', 'kv', 'rafflesOBJ') || {};
     }
 
     loadEmbedPresets() {
@@ -275,6 +300,108 @@ class OugiDatabaseManager {
         const list = this.loadNews();
         list.push(newsItem);
         this.saveKV('newsChannel', 'kv', 'newsList', list);
+    }
+
+    // ─── Economy ──────────────────────────────────────────────────────────────
+
+    getGuildEconomy(guildId) {
+        const db = this.getDb('economy');
+        let row = db.prepare('SELECT * FROM guild_economy WHERE guild_id = ?').get(guildId);
+        if (!row) {
+            db.prepare(`INSERT OR IGNORE INTO guild_economy (guild_id) VALUES (?)`).run(guildId);
+            row = db.prepare('SELECT * FROM guild_economy WHERE guild_id = ?').get(guildId);
+        }
+        return {
+            guild_id: row.guild_id,
+            multiplier: row.multiplier,
+            channels: JSON.parse(row.channels || '[]'),
+            currency: row.currency,
+            xp_label: row.xp_label,
+            cooldown: row.cooldown,
+            disabled: !!row.disabled
+        };
+    }
+
+    saveGuildEconomy(guildId, config) {
+        const db = this.getDb('economy');
+        db.prepare(`
+            INSERT INTO guild_economy (guild_id, multiplier, channels, currency, xp_label, cooldown, disabled)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(guild_id) DO UPDATE SET
+                multiplier=excluded.multiplier,
+                channels=excluded.channels,
+                currency=excluded.currency,
+                xp_label=excluded.xp_label,
+                cooldown=excluded.cooldown,
+                disabled=excluded.disabled
+        `).run(
+            guildId,
+            config.multiplier ?? 1,
+            JSON.stringify(config.channels ?? []),
+            config.currency ?? '$',
+            config.xp_label ?? 'XP',
+            config.cooldown ?? 10,
+            config.disabled ? 1 : 0
+        );
+    }
+
+    getUser(guildId, userId) {
+        const db = this.getDb('economy');
+        let row = db.prepare('SELECT * FROM user_economy WHERE guild_id = ? AND user_id = ?').get(guildId, userId);
+        if (!row) {
+            db.prepare(`INSERT OR IGNORE INTO user_economy (guild_id, user_id) VALUES (?, ?)`).run(guildId, userId);
+            row = db.prepare('SELECT * FROM user_economy WHERE guild_id = ? AND user_id = ?').get(guildId, userId);
+        }
+        return { guild_id: row.guild_id, user_id: row.user_id, money: row.money, xp: row.xp, level: row.level, worked: row.worked, last_daily: row.last_daily };
+    }
+
+    saveUser(guildId, userId, data) {
+        const db = this.getDb('economy');
+        db.prepare(`
+            INSERT INTO user_economy (guild_id, user_id, money, xp, level, worked, last_daily)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(guild_id, user_id) DO UPDATE SET
+                money=excluded.money, xp=excluded.xp, level=excluded.level,
+                worked=excluded.worked, last_daily=excluded.last_daily
+        `).run(guildId, userId, data.money ?? 0, data.xp ?? 0, data.level ?? 0, data.worked ?? 0, data.last_daily ?? 0);
+    }
+
+    getUserInventory(guildId, userId) {
+        return this.getDb('economy').prepare('SELECT item_id, quantity FROM user_inventory WHERE guild_id = ? AND user_id = ?').all(guildId, userId);
+    }
+
+    addInventoryItem(guildId, userId, itemId, qty = 1) {
+        this.getDb('economy').prepare(`
+            INSERT INTO user_inventory (guild_id, user_id, item_id, quantity) VALUES (?, ?, ?, ?)
+            ON CONFLICT(guild_id, user_id, item_id) DO UPDATE SET quantity=quantity + excluded.quantity
+        `).run(guildId, userId, itemId, qty);
+    }
+
+    getUserBadges(guildId, userId) {
+        return this.getDb('economy').prepare('SELECT badge_id, earned_at FROM user_badges WHERE guild_id = ? AND user_id = ?').all(guildId, userId);
+    }
+
+    addBadge(guildId, userId, badgeId) {
+        this.getDb('economy').prepare(`INSERT OR IGNORE INTO user_badges (guild_id, user_id, badge_id, earned_at) VALUES (?, ?, ?, ?)`).run(guildId, userId, badgeId, Date.now());
+    }
+
+    getShopItems(guildId) {
+        return this.getDb('economy').prepare('SELECT item_id, name, price, role_id FROM shop_items WHERE guild_id = ?').all(guildId);
+    }
+
+    addShopItem(guildId, itemId, name, price, roleId = null) {
+        this.getDb('economy').prepare(`
+            INSERT INTO shop_items (guild_id, item_id, name, price, role_id) VALUES (?, ?, ?, ?, ?)
+            ON CONFLICT(guild_id, item_id) DO UPDATE SET name=excluded.name, price=excluded.price, role_id=excluded.role_id
+        `).run(guildId, itemId, name, price, roleId);
+    }
+
+    removeShopItem(guildId, itemId) {
+        this.getDb('economy').prepare('DELETE FROM shop_items WHERE guild_id = ? AND item_id = ?').run(guildId, itemId);
+    }
+
+    getLeaderboard(guildId, limit = 10) {
+        return this.getDb('economy').prepare('SELECT user_id, money, xp, level FROM user_economy WHERE guild_id = ? ORDER BY money DESC LIMIT ?').all(guildId, limit);
     }
 
     checkpointAll() {

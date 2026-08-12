@@ -18,7 +18,6 @@ module.exports = function () {
     if (!global.settingsOBJ.ratelimit) missingProps.push("Missing settingsOBJ.ratelimit");
     if (!global.settingsOBJ.prefix) missingProps.push("Missing settingsOBJ.prefix");
     if (!global.settingsOBJ.blacklist) missingProps.push("Missing settingsOBJ.blacklist");
-    if (!global.settingsOBJ.economy) missingProps.push("Missing settingsOBJ.economy");
     if (!global.settingsOBJ.logging) missingProps.push("Missing settingsOBJ.logging");
     if (!global.settingsOBJ.lang) missingProps.push("Missing settingsOBJ.lang");
     if (!global.settingsOBJ.guildNews) missingProps.push("Missing settingsOBJ.guildNews");

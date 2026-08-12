@@ -1,59 +1,61 @@
 module.exports =
 
     function (action, msg, options) {
-        if (action === 'init' && ougi.isAdmin(msg) || !settingsOBJ.economy.hasOwnProperty(msg.guildId)) {
-            settingsOBJ.economy[msg.guildId] = {
-                users: {},
-                multiplier: 1,
-                channels: [],
-                shop: {},
-                levels: {},
-                badges: {},
-                currency: "$",
-                xp: "XP",
-                cooldown: 10
-            }
+        const db = ougi.db();
+        const guildId = msg.guildId;
+        const userId = msg.author.id;
+
+        // Ensure guild economy config exists
+        const guildEco = db.getGuildEconomy(guildId);
+
+        if (action === 'init' && ougi.isAdmin(msg)) {
+            // Re-initialize guild economy to defaults
+            db.saveGuildEconomy(guildId, {
+                multiplier: 1, channels: [], currency: '$',
+                xp_label: 'XP', cooldown: 10, disabled: false
+            });
+            return;
         }
-        if (!settingsOBJ.economy[msg.guildId].users.hasOwnProperty(msg.author.id) || action === 'reset_user') {
-            settingsOBJ.economy[msg.guildId].users[msg.author.id] = {
-                money: 0,
-                inventory: [],
-                level: 0,
-                xp: 0,
-                badges: [],
-                worked: 0
-            };
-            if (action === 'reset_user') return;
+
+        if (guildEco.disabled) return;
+
+        if (action === 'reset_user') {
+            db.saveUser(guildId, userId, { money: 0, xp: 0, level: 0, worked: 0, last_daily: 0 });
+            return;
         }
-        if (settingsOBJ.economy[msg.guildId].disabled) return;
+
+        // Ensure user row exists
+        const user = db.getUser(guildId, userId);
+
         switch (action) {
             case 'xp': {
-                let experience = Math.floor(msg.content.length / (Math.random() * settingsOBJ.economy[msg.guildId].multiplier + 1));
-                settingsOBJ.economy[msg.guildId].users[msg.author.id].xp += experience;
-                let nextLevel = 512 * (settingsOBJ.economy[msg.guildId].users[msg.author.id].level + 1);
-                while (settingsOBJ.economy[msg.guildId].users[msg.author.id].xp >= nextLevel) {
-                    settingsOBJ.economy[msg.guildId].users[msg.author.id].xp -= nextLevel;
-                    settingsOBJ.economy[msg.guildId].users[msg.author.id].level++;
+                let experience = Math.floor(msg.content.length / (Math.random() * guildEco.multiplier + 1));
+                user.xp += experience;
+                let nextLevel = 512 * (user.level + 1);
+                while (user.xp >= nextLevel) {
+                    user.xp -= nextLevel;
+                    user.level++;
                     let income = Math.floor(Math.random() * nextLevel / 25);
-                    settingsOBJ.economy[msg.guildId].users[msg.author.id].money += income;
+                    user.money += income;
                     ougi.guildLog(msg, { type: 'economy', income, reason: 'levelup' });
-                    nextLevel = 512 * (settingsOBJ.economy[msg.guildId].users[msg.author.id].level + 1);
+                    nextLevel = 512 * (user.level + 1);
                 }
-            }
+                db.saveUser(guildId, userId, user);
                 break;
+            }
             case 'add': {
-                let income = Math.floor(Math.random() * settingsOBJ.economy[msg.guildId].multiplier * 10 + (settingsOBJ.economy[msg.guildId].users[msg.author.id].xp / 100 * settingsOBJ.economy[msg.guildId].multiplier));
-                settingsOBJ.economy[msg.guildId].users[msg.author.id].money += income;
+                let income = Math.floor(Math.random() * guildEco.multiplier * 10 + (user.xp / 100 * guildEco.multiplier));
+                user.money += income;
+                db.saveUser(guildId, userId, user);
                 ougi.guildLog(msg, { type: 'economy', income, reason: options.reason });
                 return income;
             }
-                break;
             case 'remove': {
-                let income = -Math.floor(Math.random() * settingsOBJ.economy[msg.guildId].multiplier * (settingsOBJ.economy[msg.guildId].users[msg.author.id].xp / 100 + settingsOBJ.economy[msg.guildId].multiplier));
-                settingsOBJ.economy[msg.guildId].users[msg.author.id].money += income;
+                let income = -Math.floor(Math.random() * guildEco.multiplier * (user.xp / 100 + guildEco.multiplier));
+                user.money += income;
+                db.saveUser(guildId, userId, user);
                 ougi.guildLog(msg, { type: 'economy', income, reason: options.reason });
                 return income;
             }
-                break;
         }
     }
