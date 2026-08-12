@@ -2,6 +2,7 @@ module.exports =
 
 async function (msg) {
   let commandsArray = [
+    `help`,
     `say`,
     `answer`,
     `image`,
@@ -19,10 +20,13 @@ async function (msg) {
     `lyrics`,
     `curl`,
     `snipe`,
+    `react`,
+    `reminder`,
     `remindbump`,
     `raffle`,
     `raffle-register`,
     `raffle-join`,
+    `raffle-execute`,
     `news`,
     `stats`,
     `embed`,
