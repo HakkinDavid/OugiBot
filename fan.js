@@ -309,6 +309,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
 /* ===== Intervalos de Backup ===== */
 setInterval(async () => {
     if (!TEASEABLE || !ougi.startup()) return;
+    ougi.db().checkpointAll();
     for (const [key, data] of Object.entries(database)) {
         if (fs.existsSync(data.file)) {
             await ougi.backup(data.file, data.id);

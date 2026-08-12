@@ -42,6 +42,9 @@ client.once('ready', async () => {
     console.log("🚀 Starting Cloud Upload to Discord Backup Channels");
     console.log("==========================================");
 
+    const dbManager = require('./function/db')();
+    dbManager.checkpointAll();
+
     for (const [key, data] of Object.entries(database)) {
         if (!fs.existsSync(data.file)) {
             console.log(`⚠️ File ${data.file} does not exist locally, skipping upload.`);
