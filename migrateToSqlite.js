@@ -33,6 +33,9 @@ function readLegacyFile(filename) {
 }
 
 async function runMigration() {
+    // Ensure journal_mode = DELETE and clean up any stale sidecar files prior to migration
+    dbManager.checkpointAll();
+
     // 1. Migrate settings.txt -> settings.db & economy.db
     console.log("\n📦 Migrating settings.txt...");
     const settings = readLegacyFile('./settings.txt');
