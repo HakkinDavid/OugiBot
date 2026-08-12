@@ -138,7 +138,6 @@ async function syncData() {
         if (!data.done) await ougi.fetch(data.id, data.file, key);
     }
 }
-setInterval(syncData, 30_000);
 
 /* ===== Eventos del Cliente ===== */
 client.once('ready', async () => {
@@ -244,6 +243,15 @@ client.on('messageCreate', async (msg) => {
                 channels: {}
             };
         }
+        if (!settingsOBJ.interactionsCounter) {
+            settingsOBJ.interactionsCounter = {
+                users: {},
+                channels: {}
+            };
+        }
+        if (!settingsOBJ.interactionsCounter.users) settingsOBJ.interactionsCounter.users = {};
+        if (!settingsOBJ.interactionsCounter.channels) settingsOBJ.interactionsCounter.channels = {};
+
         if (!settingsOBJ.interactionsCounter.users[msg.author.id]) settingsOBJ.interactionsCounter.users[msg.author.id] = 0;
         if (!settingsOBJ.interactionsCounter.channels[msg.channel.id]) settingsOBJ.interactionsCounter.channels[msg.channel.id] = 0;
         if ((!settingsOBJ.patrons || !settingsOBJ.patrons[msg.author.id]) && (settingsOBJ.interactionsCounter.channels[msg.channel.id] != 0 && settingsOBJ.interactionsCounter.channels[msg.channel.id] % 15 == 0)) {
