@@ -7,7 +7,7 @@ This guide outlines code conventions, architectural patterns, state modification
 ## 📐 Code Conventions & Architecture Rules
 
 ### 1. Function File Resolution
-OugiBot uses `require-all` in [`fan.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/fan.js) to dynamically bind all files in [`function/`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function) to `global.ougi.<filename>`:
+OugiBot uses `require-all` in [`fan.js`](../fan.js) to dynamically bind all files in [`function/`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function) to `global.ougi.<filename>`:
 
 - File names **must** use camelCase (e.g. `myNewCommand.js`).
 - The exported function is accessible anywhere in the project via `ougi.myNewCommand(...)`.
@@ -48,7 +48,7 @@ module.exports = async function (args, msg) {
 
 ### Step 2: Register Command in Router (`function/processCommand.js`)
 
-Open [`function/processCommand.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/processCommand.js) and add `coinflip` to `commandMap`:
+Open [`function/processCommand.js`](../function/processCommand.js) and add `coinflip` to `commandMap`:
 
 ```javascript
 const commandMap = {
@@ -59,7 +59,7 @@ const commandMap = {
 
 ### Step 3: Add Command Localization (`function/localization.js`)
 
-Add localization strings to [`function/localization.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/localization.js):
+Add localization strings to [`function/localization.js`](../function/localization.js):
 
 ```javascript
 "en": {

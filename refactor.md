@@ -37,44 +37,44 @@ Replace `ougi.readFile` / `ougi.writeFile` flat file storage with a unified SQLi
 
 ### 2. Voice & Music Subsystem Rebuild
 
-- **[NEW] [`function/voiceEngine.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/voiceEngine.js)**: Replaces broken voice/music implementation from scratch using `@discordjs/voice` and `@distube/ytdl-core` / `play-dl`.
+- **[NEW] [`function/voiceEngine.js`](../function/voiceEngine.js)**: Replaces broken voice/music implementation from scratch using `@discordjs/voice` and `@distube/ytdl-core` / `play-dl`.
   - Supports `ougi play <url | query>`, `ougi skip`, `ougi stop`, `ougi queue`.
   - Implements queue management, connection error auto-recovery, and idle disconnect timers.
-- **[MODIFY] [`function/voice.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/voice.js)**: Rebuild TTS (`ougi speak`) using `google-tts-api` (100% free) with `@discordjs/voice` audio resource pipeline.
+- **[MODIFY] [`function/voice.js`](../function/voice.js)**: Rebuild TTS (`ougi speak`) using `google-tts-api` (100% free) with `@discordjs/voice` audio resource pipeline.
 
 ---
 
 ### 3. Third-Party API Sanitization & Replacements
 
-- **[MODIFY] [`function/lyrics.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/lyrics.js)**: Replace defunct KSoft.Si API with free Genius lyrics scraper / public Genius API.
-- **[MODIFY] [`function/recipeCommand.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/recipeCommand.js)**: Replace RapidAPI (`edamam-recipe-search.p.rapidapi.com`) with free TheMealDB API (`https://www.themealdb.com/api/json/v1/1/search.php?s=...`).
-- **[DELETE] [`function/covidstats.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/covidstats.js)**, **[`function/covidstatsHelp.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/covidstatsHelp.js)**, **[`function/healthcare.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/healthcare.js)**, **[`function/healthcareHelp.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/healthcareHelp.js)**, **[`function/medicalDefinition.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/medicalDefinition.js)**, **[`function/medicalDefinitionHelp.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/medicalDefinitionHelp.js)**: Completely remove deprecated COVID-19 commands.
-- **[DELETE] [`function/tweetRootCommand.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/tweetRootCommand.js)**: Remove broken Twitter API v1.1 posting command.
-- **[PRESERVE] [`function/tweet.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/tweet.js)**: Retain local fake Twitter/X embed generator (`ougi tweet`).
-- **[MODIFY] [`function/newsCommand.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/newsCommand.js)** & **[`function/newspaper.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/newspaper.js)**: Ensure free NewsAPI tier is handled gracefully with error fallbacks.
-- **[PRESERVE] [`function/imageCommand.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/imageCommand.js)**: Retain Pollinations AI free image generation (`https://image.pollinations.ai/`).
+- **[MODIFY] [`function/lyrics.js`](../function/lyrics.js)**: Replace defunct KSoft.Si API with free Genius lyrics scraper / public Genius API.
+- **[MODIFY] [`function/recipeCommand.js`](../function/recipeCommand.js)**: Replace RapidAPI (`edamam-recipe-search.p.rapidapi.com`) with free TheMealDB API (`https://www.themealdb.com/api/json/v1/1/search.php?s=...`).
+- **[DELETE] [`function/covidstats.js`](../function/covidstats.js)**, **[`function/covidstatsHelp.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/covidstatsHelp.js)**, **[`function/healthcare.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/healthcare.js)**, **[`function/healthcareHelp.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/healthcareHelp.js)**, **[`function/medicalDefinition.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/medicalDefinition.js)**, **[`function/medicalDefinitionHelp.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/medicalDefinitionHelp.js)**: Completely remove deprecated COVID-19 commands.
+- **[DELETE] [`function/tweetRootCommand.js`](../function/tweetRootCommand.js)**: Remove broken Twitter API v1.1 posting command.
+- **[PRESERVE] [`function/tweet.js`](../function/tweet.js)**: Retain local fake Twitter/X embed generator (`ougi tweet`).
+- **[MODIFY] [`function/newsCommand.js`](../function/newsCommand.js)** & **[`function/newspaper.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/newspaper.js)**: Ensure free NewsAPI tier is handled gracefully with error fallbacks.
+- **[PRESERVE] [`function/imageCommand.js`](../function/imageCommand.js)**: Retain Pollinations AI free image generation (`https://image.pollinations.ai/`).
 
 ---
 
 ### 4. Security & Memory Leak Fixes
 
-- **[MODIFY] [`function/calculateCommand.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/calculateCommand.js)**: Remove unsafe `Function("return (" + expression + ")")()` execution (`eval()`). Implement sandboxed math expression evaluator using math token parsing (e.g. `mathjs` or safe regex tokenization).
-- **[MODIFY] [`function/loadSniper.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/loadSniper.js)** & **[`function/shootSniper.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/shootSniper.js)**: Cap snipe buffer to a maximum of 10 messages per channel and add a 1-hour auto-expiration timer to prevent memory leaks.
-- **[MODIFY] [`function/genAIAbility.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/genAIAbility.js)**: Cap channel interaction history (`interactions[channelId]`) and prune idle channels.
+- **[MODIFY] [`function/calculateCommand.js`](../function/calculateCommand.js)**: Remove unsafe `Function("return (" + expression + ")")()` execution (`eval()`). Implement sandboxed math expression evaluator using math token parsing (e.g. `mathjs` or safe regex tokenization).
+- **[MODIFY] [`function/loadSniper.js`](../function/loadSniper.js)** & **[`function/shootSniper.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/shootSniper.js)**: Cap snipe buffer to a maximum of 10 messages per channel and add a 1-hour auto-expiration timer to prevent memory leaks.
+- **[MODIFY] [`function/genAIAbility.js`](../function/genAIAbility.js)**: Cap channel interaction history (`interactions[channelId]`) and prune idle channels.
 
 ---
 
 ### 5. Economy Subsystem Completion
 
-Complete the 5+ year WIP Economy system in [`function/economy.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/economy.js) and associated modules:
+Complete the 5+ year WIP Economy system in [`function/economy.js`](../function/economy.js) and associated modules:
 
-- **[MODIFY] [`function/workCommand.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/workCommand.js)**: Add configurable cooldown timer (e.g. 1 hour) with localized cooldown messaging.
-- **[NEW] [`function/dailyCommand.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/dailyCommand.js)**: Claim daily currency bonus (`ougi daily`) every 24 hours.
-- **[NEW] [`function/payCommand.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/payCommand.js)**: Transfer currency between server members (`ougi pay @user <amount>`).
-- **[NEW] [`function/leaderboardCommand.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/leaderboardCommand.js)**: Displays top balance ($) and XP/Level rankings per guild (`ougi leaderboard`).
-- **[NEW] [`function/shopCommand.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/shopCommand.js)**: Server shop manager to list, buy, and sell custom items or roles (`ougi shop`, `ougi buy`, `ougi sell`).
-- **[NEW] [`function/gamblingCommands.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/gamblingCommands.js)**: Mini-games (`ougi slots <bet>`, `ougi coinflip <bet> <heads|tails>`, `ougi gamble <bet>`).
-- **[NEW] [`function/storytellCommand.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/storytellCommand.js)**: Server-public RPG roleplay session (`ougi storytell`):
+- **[MODIFY] [`function/workCommand.js`](../function/workCommand.js)**: Add configurable cooldown timer (e.g. 1 hour) with localized cooldown messaging.
+- **[NEW] [`function/dailyCommand.js`](../function/dailyCommand.js)**: Claim daily currency bonus (`ougi daily`) every 24 hours.
+- **[NEW] [`function/payCommand.js`](../function/payCommand.js)**: Transfer currency between server members (`ougi pay @user <amount>`).
+- **[NEW] [`function/leaderboardCommand.js`](../function/leaderboardCommand.js)**: Displays top balance ($) and XP/Level rankings per guild (`ougi leaderboard`).
+- **[NEW] [`function/shopCommand.js`](../function/shopCommand.js)**: Server shop manager to list, buy, and sell custom items or roles (`ougi shop`, `ougi buy`, `ougi sell`).
+- **[NEW] [`function/gamblingCommands.js`](../function/gamblingCommands.js)**: Mini-games (`ougi slots <bet>`, `ougi coinflip <bet> <heads|tails>`, `ougi gamble <bet>`).
+- **[NEW] [`function/storytellCommand.js`](../function/storytellCommand.js)**: Server-public RPG roleplay session (`ougi storytell`):
   - Initiates a funny random scenario leading to either a glorious reward or a penalty.
   - Grants 1 turn per active participant with a 5-minute inactivity window.
   - Ougi (via AI / judgement engine) evaluates the story conclusion and distributes rewards/penalties!
@@ -83,11 +83,11 @@ Complete the 5+ year WIP Economy system in [`function/economy.js`](file:///Users
 
 ### 6. Raffles, Reminders & Administration
 
-- **[PRESERVE] [`function/raffleCommand.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/raffleCommand.js)**: Retain Patreon subscription licensing time-limits as core to the business model.
-- **[MODIFY] [`function/remindMe.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/remindMe.js)**: Finish incomplete stub code to support human relative durations (`10m`, `2h`, `1d`), persisting active timers in SQLite database across bot restarts.
-- **[MODIFY] [`function/remindBump.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/remindBump.js)**: Fix Disboard bump detection logic and scheduled reminders.
-- **[MODIFY] [`function/adminCheck.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/adminCheck.js)**: Automatically grant admin status to members with Discord `Administrator` or `ManageGuild` permissions while retaining `admin-register` for custom delegations.
-- **[MODIFY] [`function/rootCommands.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/rootCommands.js)**: Enforce strict bot author check (`davidUserID` = `"265257341967007758"`) for all `#ougi` root operations.
+- **[PRESERVE] [`function/raffleCommand.js`](../function/raffleCommand.js)**: Retain Patreon subscription licensing time-limits as core to the business model.
+- **[MODIFY] [`function/remindMe.js`](../function/remindMe.js)**: Finish incomplete stub code to support human relative durations (`10m`, `2h`, `1d`), persisting active timers in SQLite database across bot restarts.
+- **[MODIFY] [`function/remindBump.js`](../function/remindBump.js)**: Fix Disboard bump detection logic and scheduled reminders.
+- **[MODIFY] [`function/adminCheck.js`](../function/adminCheck.js)**: Automatically grant admin status to members with Discord `Administrator` or `ManageGuild` permissions while retaining `admin-register` for custom delegations.
+- **[MODIFY] [`function/rootCommands.js`](../function/rootCommands.js)**: Enforce strict bot author check (`davidUserID` = `"265257341967007758"`) for all `#ougi` root operations.
 
 ---
 

@@ -8,11 +8,11 @@ Welcome to the comprehensive technical documentation for **OugiBot** (also known
 
 | Document | Description |
 | :--- | :--- |
-| [**Architecture & System Design**](file:///Users/hakkindavid/Documents/GitHub/OugiBot/docs/ARCHITECTURE.md) | High-level system architecture, Discord.js v14 refactor, global state lifecycle, event routing, dynamic translation engine, and AI/NLP pipeline. |
+| [**Architecture & System Design**](../docs/ARCHITECTURE.md) | High-level system architecture, Discord.js v14 refactor, global state lifecycle, event routing, dynamic translation engine, and AI/NLP pipeline. |
 | [**Command Reference**](file:///Users/hakkindavid/Documents/GitHub/OugiBot/docs/COMMAND_REFERENCE.md) | Exhaustive, categorized reference of all bot commands (User, Admin, Owner/Root), parameters, permissions, aliases, and usage examples. |
 | [**Configuration & Database**](file:///Users/hakkindavid/Documents/GitHub/OugiBot/docs/CONFIG_AND_DATABASE.md) | In-depth breakdown of flat-file storage, AES-256 state encryption, Discord Channel Backup architecture, `.env` parameters, and data structures. |
 | [**Modules & Function Directory**](file:///Users/hakkindavid/Documents/GitHub/OugiBot/docs/MODULES_AND_FUNCTIONS.md) | Complete directory and API mapping of all 140+ function files in `function/`, organized by system responsibility. |
-| [**Deployment & Operations**](file:///Users/hakkindavid/Documents/GitHub/OugiBot/docs/DEPLOYMENT_AND_OPERATIONS.md) | Operational guide covering Node.js requirements, Heroku deployment via `Procfile`, PM2, Winston logging, error webhooks, and maintenance scripts. |
+| [**Deployment & Operations**](../docs/DEPLOYMENT_AND_OPERATIONS.md) | Operational guide covering Node.js requirements, Heroku deployment via `Procfile`, PM2, Winston logging, error webhooks, and maintenance scripts. |
 | [**Development Guide**](file:///Users/hakkindavid/Documents/GitHub/OugiBot/docs/DEVELOPMENT_GUIDE.md) | Guidelines for developers contributing to OugiBot, code conventions, state management patterns, and instructions for adding commands or languages. |
 
 ---

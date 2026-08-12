@@ -209,7 +209,7 @@ A JSON array of ~1,000 curated words used for NLP dictionary lookup and word gam
 
 ## 🔒 AES-256 Encryption Mechanics
 
-All file persistence logic is abstracted in [`function/readFile.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/readFile.js) and [`function/writeFile.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/writeFile.js).
+All file persistence logic is abstracted in [`function/readFile.js`](../function/readFile.js) and [`function/writeFile.js`](file:///Users/hakkindavid/Documents/GitHub/OugiBot/function/writeFile.js).
 
 ### Reading (`ougi.readFile`)
 1. Reads raw file contents using `fs.readFileSync(path, 'utf-8')`.
