@@ -2,7 +2,7 @@ module.exports =
 
   async function (filename, where) {
 
-    if (process.env.DEV) {
+    if (process.env.DEV == 1) {
         console.log(`Skipping upload for ${filename} (reason: DEV)`);
         return;
     }
