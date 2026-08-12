@@ -205,7 +205,7 @@ client.on('messageCreate', async (msg) => {
             ourConcern = true;
         }
     } else if (msg.channel.type === Discord.ChannelType.GuildText && msg.content.length > 0) {
-        const prefix = ougi.db().getPrefix(msg.guildId) || '';
+        const prefix = ougi.db().getPrefix(msg.guildId);
         let isCommand = false;
 
         if (prefix && lower.startsWith(prefix)) {

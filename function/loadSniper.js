@@ -1,5 +1,11 @@
 module.exports = function (msg, isEdit) {
   if (msg.author?.bot) return;
+  const lower = msg.content?.toLowerCase();
+  const prefixes = ["ougi", "#ougi", "扇"];
+  if (msg.channel.type === Discord.ChannelType.GuildText) {
+    prefixes.push(ougi.db().getPrefix(msg.guildId));
+  }
+  if (prefixes.some((v) => lower.startsWith(v))) return;
   let channelID = msg.channel.id;
   let now = Date.now();
   let thisArray = {
