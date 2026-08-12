@@ -32,12 +32,6 @@ function downloadFile(url, dest) {
 }
 
 module.exports = async function (channelID, filename, data_obj_name = undefined) {
-  // If local SQLite database file already exists and is valid, do not overwrite it on boot
-  if (fs.existsSync(filename) && isSqliteHeader(filename) && fs.statSync(filename).size > 4096) {
-    console.log("[OK] Existing database file " + filename + " found locally.");
-    if (data_obj_name && database[data_obj_name]) database[data_obj_name].done = true;
-    return;
-  }
 
   const channel = client.channels.cache.get(channelID);
   if (!channel) {
