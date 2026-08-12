@@ -42,18 +42,12 @@ module.exports =
     ];
     let answer = afterOptions[Math.floor(Math.random() * afterOptions.length)].replace(/{triggerName}/, "`" + trigger + "`").replace(/{guildName}/, msg.guild.toString());
 
-    if (settingsOBJ.blacklist.hasOwnProperty(msg.guildId)) {
-      let existent = settingsOBJ.blacklist[msg.guildId];
-      for (let i = 0; i < existent.length; i++) {
-        if (existent[i].toLowerCase() === trigger) {
-          client.channels.cache.get(consoleLogging).send("Trigger to be removed from blacklist: `" + trigger + "` in `" + msg.guild.toString() + "` with msg.guildId `" + msg.guildId + "`");
-          existent.splice(i, 1);
-          ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
-          msg.channel.send(answer).catch(console.error);
-          return
-        }
-      }
+    const unblacklisted = ougi.db().unblacklistTrigger(msg.guildId, trigger);
+    if (unblacklisted) {
+      client.channels.cache.get(consoleLogging).send("Trigger to be removed from blacklist: `" + trigger + "` in `" + msg.guild.toString() + "` with msg.guildId `" + msg.guildId + "`");
+      msg.channel.send(answer).catch(console.error);
+      return;
     }
     msg.channel.send(await ougi.text(msg, "notBlacklisted"));
-    return
+    return;
   }

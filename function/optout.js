@@ -1,7 +1,7 @@
 module.exports =
 
 async function (msg) {
-  settingsOBJ.ignored.push(msg.author.id);
+  ougi.db().ignoreUser(msg.author.id);
   let embed = new Discord.EmbedBuilder()
   .setTitle("Opt Out from Ougi")
   .setAuthor({name: "Ougi [BOT]", icon: client.user.avatarURL({dynamic: true, size: 4096})})
@@ -11,6 +11,5 @@ async function (msg) {
   .setFooter({text: "optoutEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true")
   msg.channel.send({embeds: [embed]});
-  ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
   client.users.cache.get(davidUserID).send("`" + msg.author.username + "` has requested the deletion of their data.");
 }

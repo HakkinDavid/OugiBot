@@ -46,11 +46,7 @@ module.exports =
             return
         }
         for (i = 0; users.length > i; i++) {
-            settingsOBJ.banned[users[i]] = {
-                reason,
-                until
-            };
+            ougi.db().banUser(users[i], reason, until);
         }
         msg.channel.send("Banned users\n```" + users.join(", ") + " = " + JSON.stringify({ reason, until }, null, 4) + "```");
-        ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
     }

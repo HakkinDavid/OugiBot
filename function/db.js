@@ -404,6 +404,297 @@ class OugiDatabaseManager {
         return this.getDb('economy').prepare('SELECT user_id, money, xp, level FROM user_economy WHERE guild_id = ? ORDER BY money DESC LIMIT ?').all(guildId, limit);
     }
 
+    // ─── Settings helpers — lang ─────────────────────────────────────────────
+
+    getLang(id) { return global.settingsOBJ?.lang?.[id] ?? null; }
+
+    setLang(id, code) {
+        if (code === 'default') {
+            delete global.settingsOBJ.lang[id];
+        } else {
+            global.settingsOBJ.lang[id] = code;
+        }
+        this.saveKV('settings', 'kv', 'settingsOBJ', global.settingsOBJ);
+    }
+
+    // ─── Settings helpers — prefix ───────────────────────────────────────────
+
+    getPrefix(guildId) { return global.settingsOBJ?.prefix?.[guildId] ?? null; }
+
+    setPrefix(guildId, prefix) {
+        global.settingsOBJ.prefix[guildId] = prefix;
+        this.saveKV('settings', 'kv', 'settingsOBJ', global.settingsOBJ);
+    }
+
+    // ─── Settings helpers — logging ───────────────────────────────────────────
+
+    getLogChannel(guildId) { return global.settingsOBJ?.logging?.[guildId] ?? null; }
+
+    setLogChannel(guildId, channelId) {
+        global.settingsOBJ.logging[guildId] = channelId;
+        this.saveKV('settings', 'kv', 'settingsOBJ', global.settingsOBJ);
+    }
+
+    deleteLogChannel(guildId) {
+        delete global.settingsOBJ.logging[guildId];
+        this.saveKV('settings', 'kv', 'settingsOBJ', global.settingsOBJ);
+    }
+
+    // ─── Settings helpers — guildNews ─────────────────────────────────────────
+
+    getNewsChannel(guildId) { return global.settingsOBJ?.guildNews?.[guildId] ?? null; }
+
+    setNewsChannel(guildId, channelId) {
+        global.settingsOBJ.guildNews[guildId] = channelId;
+        this.saveKV('settings', 'kv', 'settingsOBJ', global.settingsOBJ);
+    }
+
+    deleteNewsChannel(guildId) {
+        delete global.settingsOBJ.guildNews[guildId];
+        this.saveKV('settings', 'kv', 'settingsOBJ', global.settingsOBJ);
+    }
+
+    // ─── Settings helpers — guildBump ─────────────────────────────────────────
+
+    getBumpConfig(guildId) { return global.settingsOBJ?.guildBump?.[guildId] ?? null; }
+
+    setBumpConfig(guildId, config) {
+        global.settingsOBJ.guildBump[guildId] = config;
+        this.saveKV('settings', 'kv', 'settingsOBJ', global.settingsOBJ);
+    }
+
+    deleteBumpConfig(guildId) {
+        delete global.settingsOBJ.guildBump[guildId];
+        this.saveKV('settings', 'kv', 'settingsOBJ', global.settingsOBJ);
+    }
+
+    // ─── Settings helpers — guildAdmins ──────────────────────────────────────
+
+    getGuildAdmins(guildId) { return global.settingsOBJ?.guildAdmins?.[guildId] ?? []; }
+
+    addGuildAdmin(guildId, userId) {
+        if (!Array.isArray(global.settingsOBJ.guildAdmins[guildId])) global.settingsOBJ.guildAdmins[guildId] = [];
+        if (!global.settingsOBJ.guildAdmins[guildId].includes(userId)) global.settingsOBJ.guildAdmins[guildId].push(userId);
+        this.saveKV('settings', 'kv', 'settingsOBJ', global.settingsOBJ);
+    }
+
+    removeGuildAdmin(guildId, userId) {
+        if (!Array.isArray(global.settingsOBJ.guildAdmins[guildId])) return;
+        global.settingsOBJ.guildAdmins[guildId] = global.settingsOBJ.guildAdmins[guildId].filter(id => id !== userId);
+        this.saveKV('settings', 'kv', 'settingsOBJ', global.settingsOBJ);
+    }
+
+    // ─── Settings helpers — blacklist ─────────────────────────────────────────
+
+    getBlacklist(guildId) { return global.settingsOBJ?.blacklist?.[guildId] ?? []; }
+
+    blacklistTrigger(guildId, trigger) {
+        if (!Array.isArray(global.settingsOBJ.blacklist[guildId])) global.settingsOBJ.blacklist[guildId] = [];
+        if (!global.settingsOBJ.blacklist[guildId].includes(trigger)) global.settingsOBJ.blacklist[guildId].push(trigger);
+        this.saveKV('settings', 'kv', 'settingsOBJ', global.settingsOBJ);
+    }
+
+    unblacklistTrigger(guildId, trigger) {
+        if (!Array.isArray(global.settingsOBJ.blacklist[guildId])) return false;
+        const idx = global.settingsOBJ.blacklist[guildId].findIndex(t => t.toLowerCase() === trigger.toLowerCase());
+        if (idx === -1) return false;
+        global.settingsOBJ.blacklist[guildId].splice(idx, 1);
+        this.saveKV('settings', 'kv', 'settingsOBJ', global.settingsOBJ);
+        return true;
+    }
+
+    // ─── Settings helpers — banned ────────────────────────────────────────────
+
+    getBan(userId) { return global.settingsOBJ?.banned?.[userId] ?? null; }
+
+    banUser(userId, reason, until) {
+        global.settingsOBJ.banned[userId] = { reason, until };
+        this.saveKV('settings', 'kv', 'settingsOBJ', global.settingsOBJ);
+    }
+
+    // ─── Settings helpers — ignored ───────────────────────────────────────────
+
+    isIgnored(userId) { return global.settingsOBJ?.ignored?.includes(userId) ?? false; }
+
+    ignoreUser(userId) {
+        if (!global.settingsOBJ.ignored.includes(userId)) global.settingsOBJ.ignored.push(userId);
+        this.saveKV('settings', 'kv', 'settingsOBJ', global.settingsOBJ);
+    }
+
+    unignoreUser(userId) {
+        const idx = global.settingsOBJ.ignored.indexOf(userId);
+        if (idx !== -1) global.settingsOBJ.ignored.splice(idx, 1);
+        this.saveKV('settings', 'kv', 'settingsOBJ', global.settingsOBJ);
+    }
+
+    // ─── Settings helpers — subscribers ──────────────────────────────────────
+
+    isSubscriber(userId) { return global.settingsOBJ?.subscribers?.includes(userId) ?? false; }
+
+    addSubscriber(userId) {
+        if (!global.settingsOBJ.subscribers.includes(userId)) global.settingsOBJ.subscribers.push(userId);
+        this.saveKV('settings', 'kv', 'settingsOBJ', global.settingsOBJ);
+    }
+
+    removeSubscriber(userId) {
+        const idx = global.settingsOBJ.subscribers.indexOf(userId);
+        if (idx !== -1) global.settingsOBJ.subscribers.splice(idx, 1);
+        this.saveKV('settings', 'kv', 'settingsOBJ', global.settingsOBJ);
+    }
+
+    // ─── Settings helpers — patrons ───────────────────────────────────────────
+
+    getPatron(userId) { return global.settingsOBJ?.patrons?.[userId] ?? null; }
+
+    upsertPatron(userId, data) {
+        if (!global.settingsOBJ.patrons) global.settingsOBJ.patrons = {};
+        global.settingsOBJ.patrons[userId] = Object.assign(global.settingsOBJ.patrons[userId] || {}, data);
+        this.saveKV('settings', 'kv', 'settingsOBJ', global.settingsOBJ);
+    }
+
+    // ─── Settings helpers — nicknames ─────────────────────────────────────────
+
+    getNicknames(guildId) { return global.settingsOBJ?.nicknames?.[guildId] ?? {}; }
+
+    setNickname(guildId, userId, name) {
+        if (!global.settingsOBJ.nicknames[guildId]) global.settingsOBJ.nicknames[guildId] = {};
+        global.settingsOBJ.nicknames[guildId][userId] = name;
+        this.saveKV('settings', 'kv', 'settingsOBJ', global.settingsOBJ);
+    }
+
+    // ─── Settings helpers — shortcuts ─────────────────────────────────────────
+
+    getShortcuts(guildId) { return global.settingsOBJ?.shortcuts?.[guildId] ?? {}; }
+
+    setShortcut(guildId, emojiKey, data) {
+        if (!global.settingsOBJ.shortcuts[guildId]) global.settingsOBJ.shortcuts[guildId] = {};
+        global.settingsOBJ.shortcuts[guildId][emojiKey] = data;
+        this.saveKV('settings', 'kv', 'settingsOBJ', global.settingsOBJ);
+    }
+
+    deleteShortcut(guildId, emojiKey) {
+        if (global.settingsOBJ.shortcuts?.[guildId]) {
+            delete global.settingsOBJ.shortcuts[guildId][emojiKey];
+            this.saveKV('settings', 'kv', 'settingsOBJ', global.settingsOBJ);
+        }
+    }
+
+    // ─── Settings helpers — AI ────────────────────────────────────────────────
+
+    getAIDescription(guildId) { return global.settingsOBJ?.AI?.description?.[guildId] ?? null; }
+
+    setAIDescription(guildId, desc) {
+        if (!global.settingsOBJ.AI) global.settingsOBJ.AI = { description: {} };
+        if (!global.settingsOBJ.AI.description) global.settingsOBJ.AI.description = {};
+        global.settingsOBJ.AI.description[guildId] = desc;
+        this.saveKV('settings', 'kv', 'settingsOBJ', global.settingsOBJ);
+    }
+
+    // ─── Settings helpers — surveys ───────────────────────────────────────────
+
+    getSurvey(surveyId) { return global.settingsOBJ?.surveysAvailable?.[surveyId] ?? null; }
+
+    upsertSurvey(surveyId, data) {
+        global.settingsOBJ.surveysAvailable[surveyId] = data;
+        this.saveKV('settings', 'kv', 'settingsOBJ', global.settingsOBJ);
+    }
+
+    markSurveySeen(userId, surveyId) {
+        if (!global.settingsOBJ.surveys[userId]) global.settingsOBJ.surveys[userId] = [];
+        if (!global.settingsOBJ.surveys[userId].includes(surveyId)) {
+            global.settingsOBJ.surveys[userId].push(surveyId);
+        }
+        this.saveKV('settings', 'kv', 'settingsOBJ', global.settingsOBJ);
+    }
+
+    recordSurveyVote(surveyId, userId, voteKey) {
+        const survey = global.settingsOBJ.surveysAvailable[surveyId];
+        if (!survey) return;
+        // Remove any prior vote
+        ['yes', 'no'].forEach(k => {
+            const idx = survey[k].indexOf(userId);
+            if (idx !== -1) survey[k].splice(idx, 1);
+        });
+        survey[voteKey].push(userId);
+        this.saveKV('settings', 'kv', 'settingsOBJ', global.settingsOBJ);
+    }
+
+    incrementSurveyPoppedUp(surveyId) {
+        if (global.settingsOBJ.surveysAvailable[surveyId]) {
+            global.settingsOBJ.surveysAvailable[surveyId].poppedUp++;
+            this.saveKV('settings', 'kv', 'settingsOBJ', global.settingsOBJ);
+        }
+    }
+
+    endSurvey(surveyId) {
+        if (global.settingsOBJ.surveysAvailable[surveyId]) {
+            global.settingsOBJ.surveysAvailable[surveyId].ended = new Date().getTime();
+            this.saveKV('settings', 'kv', 'settingsOBJ', global.settingsOBJ);
+        }
+    }
+
+    // ─── Interaction & Ad counter helper ────────────────────────────────────
+
+    recordInteraction(userId, channelId, now) {
+        if (!global.settingsOBJ.patreonAdLastSeen) global.settingsOBJ.patreonAdLastSeen = { users: {}, channels: {} };
+        if (!global.settingsOBJ.interactionsCounter) global.settingsOBJ.interactionsCounter = { users: {}, channels: {} };
+        if (!global.settingsOBJ.interactionsCounter.users) global.settingsOBJ.interactionsCounter.users = {};
+        if (!global.settingsOBJ.interactionsCounter.channels) global.settingsOBJ.interactionsCounter.channels = {};
+
+        if (!global.settingsOBJ.interactionsCounter.users[userId]) global.settingsOBJ.interactionsCounter.users[userId] = 0;
+        if (!global.settingsOBJ.interactionsCounter.channels[channelId]) global.settingsOBJ.interactionsCounter.channels[channelId] = 0;
+
+        const isPatron = Boolean(global.settingsOBJ.patrons?.[userId]);
+        const channelCount = global.settingsOBJ.interactionsCounter.channels[channelId];
+        let showAd = false;
+
+        if (!isPatron && channelCount !== 0 && channelCount % 15 === 0) {
+            if (!global.settingsOBJ.patreonAdLastSeen.users) global.settingsOBJ.patreonAdLastSeen.users = {};
+            if (!global.settingsOBJ.patreonAdLastSeen.channels) global.settingsOBJ.patreonAdLastSeen.channels = {};
+            global.settingsOBJ.patreonAdLastSeen.users[userId] = now;
+            global.settingsOBJ.patreonAdLastSeen.channels[channelId] = now;
+            showAd = true;
+        }
+
+        global.settingsOBJ.interactionsCounter.users[userId] += 1;
+        global.settingsOBJ.interactionsCounter.channels[channelId] += 1;
+
+        this.saveKV('settings', 'kv', 'settingsOBJ', global.settingsOBJ);
+        return showAd;
+    }
+
+    // ─── Raffles helper ────────────────────────────────────────────────────────
+
+    saveRaffles() {
+        if (global.rafflesOBJ) {
+            this.saveKV('raffles', 'kv', 'rafflesOBJ', global.rafflesOBJ);
+        }
+    }
+
+    // ─── KnowledgeBase helpers ─────────────────────────────────────────────────
+
+    addKBReply(trigger, response) {
+        if (!global.knowledgeBase[trigger]) global.knowledgeBase[trigger] = [];
+        if (!global.knowledgeBase[trigger].some(r => r.toLowerCase() === response.toLowerCase())) {
+            global.knowledgeBase[trigger].push(response);
+            this.saveKnowledgeBase(global.knowledgeBase);
+            return true;
+        }
+        return false;
+    }
+
+    removeKBReply(trigger, response) {
+        if (!global.knowledgeBase[trigger]) return false;
+        const idx = global.knowledgeBase[trigger].findIndex(r => r.toLowerCase() === response.toLowerCase());
+        if (idx === -1) return false;
+        global.knowledgeBase[trigger].splice(idx, 1);
+        if (global.knowledgeBase[trigger].length === 0) {
+            delete global.knowledgeBase[trigger];
+        }
+        this.saveKnowledgeBase(global.knowledgeBase);
+        return true;
+    }
+
     checkpointAll() {
         for (const db of Object.values(this.databases)) {
             try {

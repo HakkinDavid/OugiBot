@@ -10,9 +10,8 @@ async function (arguments, msg) {
   if (arguments.length > 0) {
     if (arguments[0] == "disable") {
       if (settingsOBJ.logging.hasOwnProperty(msg.guildId)){
-        delete settingsOBJ.logging[msg.guildId];
+        ougi.db().deleteLogChannel(msg.guildId);
         msg.channel.send("Logging channel successfully disabled.");
-        ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
         return
       }
       else {
@@ -36,6 +35,5 @@ async function (arguments, msg) {
   }
   msg.channel.send("I'll start sending this server's commands log into <#"+ guildLogger +">.");
 
-  settingsOBJ.logging[msg.guildId] = guildLogger;
-  ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
+  ougi.db().setLogChannel(msg.guildId, guildLogger);
 }

@@ -1,11 +1,10 @@
 module.exports = async function (msg) {
   let callerID = msg.author.id;
-  if (settingsOBJ.subscribers.includes(callerID)) {
+  if (ougi.db().isSubscriber(callerID)) {
     msg.channel.send("Beep boop. You were already subscribed!");
     return;
   }
-  settingsOBJ.subscribers.push(callerID);
-  ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
+  ougi.db().addSubscriber(callerID);
 
   let embed = new Discord.EmbedBuilder()
     .setTitle("Thanks for subscribing, " + client.users.cache.get(callerID).username + "!")

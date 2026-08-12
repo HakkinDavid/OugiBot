@@ -13,6 +13,5 @@ async function (arguments, msg) {
   }
   msg.channel.send("Prefix for Ougi in " + msg.guild.toString() + " set as `" + prefix + "`.");
 
-  settingsOBJ.prefix[msg.guildId] = prefix;
-  ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
+  ougi.db().setPrefix(msg.guildId, prefix);
 }

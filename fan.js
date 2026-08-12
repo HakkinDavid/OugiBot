@@ -162,7 +162,7 @@ client.on('interactionCreate', async (interaction) => {
     if (!interaction) return;
     if (!TEASEABLE && interaction.user.id !== davidUserID) return;
     if (!ougi.startup()) return;
-    if (settingsOBJ?.ignored?.includes(interaction.user.id)) {
+    if (ougi.db().isIgnored(interaction.user.id)) {
         if (interaction.isRepliable()) {
             await interaction.reply({ content: "You are currently opted out from using Ougi.", flags: Discord.MessageFlags.Ephemeral }).catch(console.error);
         }
@@ -180,20 +180,12 @@ client.on('messageCreate', async (msg) => {
 
     if (!ougi.startup()) return;
 
-    if (settingsOBJ?.ignored.includes(msg.author.id)) {
+    if (ougi.db().isIgnored(msg.author.id)) {
         if (msg.content === "I want to start using Ougi [BOT].") ougi.optback(msg);
         return;
     }
 
     if (msg.content.includes("@everyone")) return;
-
-    // Interactions counter
-    if (!settingsOBJ.interactionsCounter) {
-        settingsOBJ.interactionsCounter = {
-            users: {},
-            channels: {}
-        };
-    }
 
     let repliedToOugi = false;
     if (msg.reference) {
@@ -222,7 +214,7 @@ client.on('messageCreate', async (msg) => {
             ourConcern = true;
         }
     } else if (msg.channel.type === Discord.ChannelType.GuildText && msg.content.length > 0) {
-        const prefix = settingsOBJ.prefix[msg.guildId] || '';
+        const prefix = ougi.db().getPrefix(msg.guildId) || '';
         let isCommand = false;
 
         if (prefix && lower.startsWith(prefix)) {
@@ -233,40 +225,20 @@ client.on('messageCreate', async (msg) => {
         }
 
         if (!isCommand && repliedToOugi) { ougi.genAIAbility(msg, repliedToOugi); ourConcern = true; }
-        if (!isCommand && settingsOBJ.economy?.[msg.guildId]?.channels.includes(msg.channel.id)) ougi.economy('xp', msg);
+        const guildEco = ougi.db().getGuildEconomy(msg.guildId);
+        if (!isCommand && guildEco.channels.includes(msg.channel.id)) ougi.economy('xp', msg);
     }
     if (ourConcern) {
-        const now = Date.now();
-        if (!settingsOBJ.patreonAdLastSeen) {
-            settingsOBJ.patreonAdLastSeen = {
-                users: {},
-                channels: {}
-            };
-        }
-        if (!settingsOBJ.interactionsCounter) {
-            settingsOBJ.interactionsCounter = {
-                users: {},
-                channels: {}
-            };
-        }
-        if (!settingsOBJ.interactionsCounter.users) settingsOBJ.interactionsCounter.users = {};
-        if (!settingsOBJ.interactionsCounter.channels) settingsOBJ.interactionsCounter.channels = {};
-
-        if (!settingsOBJ.interactionsCounter.users[msg.author.id]) settingsOBJ.interactionsCounter.users[msg.author.id] = 0;
-        if (!settingsOBJ.interactionsCounter.channels[msg.channel.id]) settingsOBJ.interactionsCounter.channels[msg.channel.id] = 0;
-        if ((!settingsOBJ.patrons || !settingsOBJ.patrons[msg.author.id]) && (settingsOBJ.interactionsCounter.channels[msg.channel.id] != 0 && settingsOBJ.interactionsCounter.channels[msg.channel.id] % 15 == 0)) {
-            settingsOBJ.patreonAdLastSeen.users[msg.author.id] = now;
-            settingsOBJ.patreonAdLastSeen.channels[msg.channel.id] = now;
+        const showAd = ougi.db().recordInteraction(msg.author.id, msg.channel.id, Date.now());
+        if (showAd) {
             await ougi.patreonCommand(msg, true);
         }
-        settingsOBJ.interactionsCounter.users[msg.author.id] += 1;
-        settingsOBJ.interactionsCounter.channels[msg.channel.id] += 1;
     }
 });
 
 client.on('messageReactionAdd', async (reaction, user) => {
     if (!user || user.bot || user.id === client.user.id) return;
-    if (!ougi.startup() || settingsOBJ.ignored.includes(user.id)) return;
+    if (!ougi.startup() || ougi.db().isIgnored(user.id)) return;
 
     const guildId = reaction.message.guildId;
     if (!guildId) return;
@@ -274,7 +246,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
     // Normalize key: raw char for Unicode, ID for custom/app
     const emojiKey = reaction.emoji.id ? reaction.emoji.id : reaction.emoji.name;
 
-    const shortcut = settingsOBJ.shortcuts?.[guildId]?.[emojiKey];
+    const shortcut = ougi.db().getShortcuts(guildId)?.[emojiKey];
     if (!shortcut) return;
 
     const msg = {
@@ -304,9 +276,9 @@ client.on('messageReactionAdd', async (reaction, user) => {
 ['messageDelete', 'messageUpdate'].forEach(event => {
     client.on(event, async (msg) => {
         if (!msg?.author || msg.author.bot) return;
-        if (!ougi.startup() || settingsOBJ.ignored.includes(msg.author.id)) return;
+        if (!ougi.startup() || ougi.db().isIgnored(msg.author.id)) return;
         if (msg.channel.type === Discord.ChannelType.GuildText) {
-            const blacklist = settingsOBJ.blacklist?.[msg.guildId] || [];
+            const blacklist = ougi.db().getBlacklist(msg.guildId);
             if ((event === 'messageDelete' && blacklist.includes('snipe')) ||
                 (event === 'messageUpdate' && blacklist.includes('editsnipe'))) return;
         }
@@ -329,18 +301,20 @@ setInterval(async () => {
 setInterval(async () => {
     if (!TEASEABLE || !ougi.startup()) return;
     const now = Date.now();
-    for (const [bumpGuild, bumpData] of Object.entries(settingsOBJ.guildBump || {})) {
+    const bumpConfigs = ougi.db().getBumpConfig() || {};
+    for (const [bumpGuild, bumpData] of Object.entries(bumpConfigs)) {
         if (bumpData.next_bump && bumpData.next_bump < now && !bumpData.reminded) {
             ougi.globalLog(`Reminded users to bump guild ${bumpGuild}`);
-            const message = (await ougi.text(settingsOBJ.lang[bumpGuild] || "en", "bumpNow"))
+            const message = (await ougi.text(ougi.db().getLang(bumpGuild) || "en", "bumpNow"))
                 .replace("{timeStamp}", `<t:${Math.floor(now / 1000)}:t>`);
             const channel = client.channels.cache.get(bumpData.channel);
             if (channel) await channel.send(`${message}${bumpData.role ? `\n<@&${bumpData.role}>` : ''}`);
             bumpData.reminded = true;
+            ougi.db().setBumpConfig(bumpGuild, bumpData);
         }
     }
 
-    for (const [guildId, guildData] of Object.entries(rafflesOBJ || {})) {
+    for (const [guildId, guildData] of Object.entries(global.rafflesOBJ || {})) {
         if (guildData.licensedUntil < now) continue;
 
         (guildData.ongoingRaffles || []).forEach((raffle, idx) => {

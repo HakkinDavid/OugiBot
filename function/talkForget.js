@@ -84,37 +84,17 @@ async function (arguments, msg) {
   ];
   let answer = afterOptions[Math.floor(Math.random()*afterOptions.length)];
 
-  if (knowledgeBase.hasOwnProperty(trigger)){
-    let existent = knowledgeBase[trigger];
-    for (let i = 0; i < existent.length; i++) {
-      if (existent[i].toLowerCase() === response) {
-        existent.splice(i, 1);
-        msg.channel.send(answer).catch(console.error);
-        let embed = new Discord.EmbedBuilder()
-        .setTitle("Input for talkForget")
-        .addFields({name: "Response to be deleted", value: response})
-        .setColor("#00FF73")
-        .setFooter({text: "globalLogEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
-
-        knowledgeBase[trigger] = existent;
-        if (existent.length < 1) {
-          delete knowledgeBase[trigger];
-          embed.addFields({name: "Trigger to be deleted", value: trigger});
-        }
-        else {
-          embed.addFields({name: "From trigger", value: trigger})
-        }
-        
-        client.channels.cache.get(consoleLogging).send({embeds: [embed]});
-        ougi.db().saveKnowledgeBase(knowledgeBase);
-        return
-      }
-    }
-    msg.channel.send("Sorry, this response doesn't match any from this trigger.").catch(console.error);
-    return
+  const removed = ougi.db().removeKBReply(trigger, response);
+  if (removed) {
+    msg.channel.send(answer).catch(console.error);
+    let embed = new Discord.EmbedBuilder()
+    .setTitle("Input for talkForget")
+    .addFields({name: "Response to be deleted", value: response})
+    .addFields({name: "From trigger", value: trigger})
+    .setColor("#00FF73")
+    .setFooter({text: "globalLogEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})});
+    client.channels.cache.get(consoleLogging).send({embeds: [embed]});
+    return;
   }
-
-  else {
-    msg.channel.send("This trigger doesn't exist in my database.")
-  }
+  msg.channel.send("Sorry, this response doesn't match any from this trigger.").catch(console.error);
 }

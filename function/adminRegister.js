@@ -16,22 +16,20 @@ module.exports = async function (arguments, msg) {
         return;
     }
 
-    if (!Array.isArray(settingsOBJ.guildAdmins[msg.guildId])) {
-        settingsOBJ.guildAdmins[msg.guildId] = [];
-    }
-
     if (action === "add") {
         // Add each mentioned user ID if not already present
         for (const id of mentionedUsers) {
-            if (!settingsOBJ.guildAdmins[msg.guildId].includes(id)) settingsOBJ.guildAdmins[msg.guildId].push(id);
+            ougi.db().addGuildAdmin(msg.guildId, id);
         }
     } else if (action === "remove") {
         // Remove each mentioned user ID if present
-        settingsOBJ.guildAdmins[msg.guildId] = settingsOBJ.guildAdmins[msg.guildId].filter(id => !mentionedUsers.includes(id));
+        for (const id of mentionedUsers) {
+            ougi.db().removeGuildAdmin(msg.guildId, id);
+        }
     }
 
     // Confirmation message
     const actionText = action === "add" ? "Added administrators:" : "Removed administrators:";
-    msg.channel.send(`${actionText}\n\`\`\`${mentionedUsers.join("\n")}\`\`\`\nCurrent administrators:\n\`\`\`${settingsOBJ.guildAdmins[msg.guildId].join("\n")}\`\`\``);
-    ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
+    const currentAdmins = ougi.db().getGuildAdmins(msg.guildId);
+    msg.channel.send(`${actionText}\n\`\`\`${mentionedUsers.join("\n")}\`\`\`\nCurrent administrators:\n\`\`\`${currentAdmins.join("\n")}\`\`\``);
 }

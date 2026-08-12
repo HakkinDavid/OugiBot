@@ -45,14 +45,9 @@ async function (msg) {
         return
     }
 
-    settingsOBJ.patrons = settingsOBJ.patrons || {};
     for (i = 0; users.length > i; i++) {
-        settingsOBJ.patrons[users[i]] = settingsOBJ.patrons[users[i]] || {};
-        settingsOBJ.patrons[users[i]].amount = amount || settingsOBJ.patrons[users[i]].amount;
-        settingsOBJ.patrons[users[i]].recurrence = recurrence || settingsOBJ.patrons[users[i]].recurrence;
-        settingsOBJ.patrons[users[i]].since = since || settingsOBJ.patrons[users[i]].since;
+        ougi.db().upsertPatron(users[i], { amount, recurrence, since });
     }
 
-    msg.channel.send("Registered patrons\n```" + users.map(u => u + " = " + JSON.stringify(settingsOBJ.patrons[u], null, 4)).join("\n") + "```");
-    ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
+    msg.channel.send("Registered patrons\n```" + users.map(u => u + " = " + JSON.stringify(ougi.db().getPatron(u), null, 4)).join("\n") + "```");
 }

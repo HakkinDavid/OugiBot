@@ -24,9 +24,7 @@ module.exports = async function (msgOrInteraction) {
       }
 
       // Save user preference
-      if (!settingsOBJ.lang) settingsOBJ.lang = {};
-      settingsOBJ.lang[requester.id] = selectedLangFromMenu;
-      ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
+      ougi.db().setLang(requester.id, selectedLangFromMenu);
     }
 
     if (!phrase || phrase.trim().length === 0) {

@@ -50,9 +50,5 @@ async function (arguments, msg, guildExecution) {
   }
   langEmbed.addFields({name: ":warning: " + await ougi.text(msg, "possibleDelay"), value: await ougi.text(msg, "delayWarning")})
   msg.channel.send({embeds: [langEmbed]});
-  settingsOBJ.lang[preferencesID] = finalCode;
-  if (finalCode == 'default') {
-    delete settingsOBJ.lang[preferencesID]
-  }
-  ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
+  ougi.db().setLang(preferencesID, finalCode);
 }

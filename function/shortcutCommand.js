@@ -9,9 +9,7 @@ module.exports = async function (arguments, msg) {
         return;
     }
 
-    if (!settingsOBJ.shortcuts[msg.guildId]) {
-        settingsOBJ.shortcuts[msg.guildId] = {};
-    }
+    const shortcuts = ougi.db().getShortcuts(msg.guildId);
 
     if (subcommand === 'create') {
         const emoji = arguments[1];
@@ -22,10 +20,8 @@ module.exports = async function (arguments, msg) {
                 case client.user.toString():
                 case settingsOBJ.prefix[msg.guildId]:
                     return 3;
-                    break;
                 default:
                     return 2;
-                    break;
             }
         })()).join(" ").toLowerCase();
 
@@ -64,16 +60,14 @@ module.exports = async function (arguments, msg) {
             return;
         }
 
-        settingsOBJ.shortcuts[msg.guildId][emojiKey] = {
+        ougi.db().setShortcut(msg.guildId, emojiKey, {
             "action": action,
             "creator": msg.author.id,
             "timestamp": Date.now(),
             "emojiId": emojiId,
             "emojiName": emojiName,
             "animated": animated
-        };
-
-        ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
+        });
 
         msg.channel.send(await ougi.text(msg, "shortcutCreated"));
     }
@@ -94,14 +88,12 @@ module.exports = async function (arguments, msg) {
             }
         }
 
-        if (!settingsOBJ.shortcuts[msg.guildId][emojiKey]) {
+        if (!shortcuts[emojiKey]) {
             msg.channel.send(await ougi.text(msg, "notExist"));
             return;
         }
 
-        delete settingsOBJ.shortcuts[msg.guildId][emojiKey];
-
-        ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
+        ougi.db().deleteShortcut(msg.guildId, emojiKey);
 
         msg.channel.send(await ougi.text(msg, "shortcutDeleted"));
     }

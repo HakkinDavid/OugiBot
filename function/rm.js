@@ -46,28 +46,13 @@ async function (arguments, msg) {
   ];
   let answer = afterOptions[Math.floor(Math.random()*afterOptions.length)];
 
-  if (settingsOBJ.blacklist.hasOwnProperty(msg.guildId)){
-    let existent = settingsOBJ.blacklist[msg.guildId];
-    for(i = 0; i < existent.length; i++) {
-      if(existent[i].toLowerCase() === trigger) {
-        msg.channel.send("Sorry, that trigger is already blacklisted in " + msg.guild.toString() + ".").catch(console.error);
-        return
-      }
-    }
-    existent.push(trigger);
-    msg.channel.send(answer).catch(console.error);
-    client.channels.cache.get(consoleLogging).send("Trigger to be blacklisted: `" + trigger + "` in `" + msg.guild.toString() + "` with msg.guildId `" + msg.guildId + "`");
-    settingsOBJ.blacklist[msg.guildId] = existent;
-    ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
-    return
+  const isAlreadyBlacklisted = ougi.db().getBlacklist(msg.guildId).some(t => t.toLowerCase() === trigger.toLowerCase());
+  if (isAlreadyBlacklisted) {
+    msg.channel.send("Sorry, that trigger is already blacklisted in " + msg.guild.toString() + ".").catch(console.error);
+    return;
   }
 
   msg.channel.send(answer).catch(console.error);
   client.channels.cache.get(consoleLogging).send("Trigger to be blacklisted: `" + trigger + "` in `" + msg.guild.toString() + "` with msg.guildId `" + msg.guildId + "`");
-
-  settingsOBJ.blacklist[msg.guildId] = [];
-  let arrayMaker = settingsOBJ.blacklist[msg.guildId];
-  arrayMaker.push(trigger);
-  settingsOBJ.blacklist[msg.guildId] = arrayMaker;
-  ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
+  ougi.db().blacklistTrigger(msg.guildId, trigger);
 }

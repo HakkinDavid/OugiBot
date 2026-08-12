@@ -94,7 +94,7 @@ module.exports =
       return
     }
     let startDate = new Date().getTime();
-    settingsOBJ.surveysAvailable[questionID] = {
+    ougi.db().upsertSurvey(questionID, {
       q: surveyQuestion,
       d: questionDesc,
       url: surveyURL,
@@ -104,8 +104,7 @@ module.exports =
       color: surveyColor,
       started: startDate,
       ended: null
-    }
-    ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
+    });
 
     let embed = new Discord.EmbedBuilder()
       .setTitle("Enjoying Ougi so far?")

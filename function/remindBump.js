@@ -11,9 +11,8 @@ async function (arguments, msg) {
   if (arguments.length > 0) {
     if (arguments[0] == "disable") {
       if (settingsOBJ.guildBump.hasOwnProperty(msg.guildId)){
-        delete settingsOBJ.guildBump[msg.guildId];
+        ougi.db().deleteBumpConfig(msg.guildId);
         msg.channel.send("Bump reminder channel successfully disabled.");
-        ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
         return
       }
       else {
@@ -29,11 +28,8 @@ async function (arguments, msg) {
 
   msg.channel.send("I'll remind " + (guildBumpRole ? "<@&" + guildBumpRole + ">" : "you all") + " to bump in <#"+ guildBump +">.");
 
-  if (!settingsOBJ.guildBump.hasOwnProperty(msg.guildId)) {
-    ougi.globalLog("Initializing remindBump in " + msg.guild.toString() + ".");
-    settingsOBJ.guildBump[msg.guildId] = {channel: guildBump, role: guildBumpRole, next_bump: null, reminded: false};
-  }
-  settingsOBJ.guildBump[msg.guildId].channel = guildBump;
-  settingsOBJ.guildBump[msg.guildId].role = guildBumpRole;
-  ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
+  const currentConfig = ougi.db().getBumpConfig(msg.guildId) || { channel: guildBump, role: guildBumpRole, next_bump: null, reminded: false };
+  currentConfig.channel = guildBump;
+  currentConfig.role = guildBumpRole;
+  ougi.db().setBumpConfig(msg.guildId, currentConfig);
 }

@@ -34,10 +34,9 @@ async function (msg, shouldEnd) {
   .setFooter({text: "surveyResultsEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})});
   if (shouldEnd && msg.author.id == davidUserID) {
     if (settingsOBJ.surveysAvailable[thisSurvey].ended == null) {
-      settingsOBJ.surveysAvailable[thisSurvey].ended = new Date().getTime();
+      ougi.db().endSurvey(thisSurvey);
       surveyDone = "Survey has ended!";
     }
-    ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
   }
   embed.addFields({name: surveyDone, value: "Duration: " + ougi.toHumanTime(mySurvey.started, mySurvey.ended) + "."})
   msg.channel.send({embeds: [embed]});

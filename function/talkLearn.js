@@ -96,33 +96,13 @@ async function (arguments, msg) {
   .setColor("#FF008C")
   .setFooter({text: "globalLogEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})});
 
-  if (knowledgeBase.hasOwnProperty(trigger)) {
-    let existent = knowledgeBase[trigger];
-    for (let i = 0; i < existent.length; i++) {
-      if (existent[i].toLowerCase() === response) {
-        msg.channel.send("Sorry, that response for this trigger already exists.").catch(console.error);
-        return
-      }
-    }
-    existent.push(response);
-    msg.channel.send(answer).catch(console.error);
-
-    client.channels.cache.get(consoleLogging).send({embeds: [embed]});
-    knowledgeBase[trigger] = existent;
-    ougi.db().saveKnowledgeBase(knowledgeBase);
-    if (potentialLinks.length > 0 && msg.author.id !== davidUserID) client.users.cache.get(davidUserID).send("User uploaded media.\n" + "**Trigger:** " + trigger + "\n**Response:** " + response);
-    return
+  const added = ougi.db().addKBReply(trigger, response);
+  if (!added) {
+    msg.channel.send("Sorry, that response for this trigger already exists.").catch(console.error);
+    return;
   }
 
   msg.channel.send(answer).catch(console.error);
-
   client.channels.cache.get(consoleLogging).send({embeds: [embed]});
-
-  knowledgeBase[trigger] = [];
-  let arrayMaker = knowledgeBase[trigger];
-  arrayMaker.push(response);
-  knowledgeBase[trigger] = arrayMaker;
-  ougi.db().saveKnowledgeBase(knowledgeBase);
   if (potentialLinks.length > 0 && msg.author.id !== davidUserID) client.users.cache.get(davidUserID).send("User uploaded media.\n" + "**Trigger:** " + trigger + "\n**Response:** " + response);
-  return
 }

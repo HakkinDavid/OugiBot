@@ -45,9 +45,8 @@ async function (msg, intentional) {
   if (surveyOBJ.url != null) {
     embed.addFields({name: "\u200b", value: "Feeling generous enough to spend a couple extra minutes? I'd be so glad to hear your thoughts in [this survey](" + surveyOBJ.url + ")."});
   }
-  settingsOBJ.surveys[msg.author.id].push(takeableSurvey);
-  settingsOBJ.surveysAvailable[takeableSurvey].poppedUp++;
-  ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
+  ougi.db().markSurveySeen(msg.author.id, takeableSurvey);
+  ougi.db().incrementSurveyPoppedUp(takeableSurvey);
   msg.channel.send({embeds: [embed]}).then(async (sentMSG) => {
     let filter = (reaction, user) => user.id !== client.user.id;
     await sentMSG.react(client.emojis.cache.get('818120409219334144'))
@@ -59,23 +58,11 @@ async function (msg, intentional) {
       if (reaction.emoji.id !== '818120409219334144' && reaction.emoji.id !== '818120425757999144') {
         return
       }
-      if (!settingsOBJ.surveys.hasOwnProperty(msg.author.id)) {
-        surveyRegistry[msg.author.id] = [];
-      }
-      settingsOBJ.surveys[msg.author.id].push(takeableSurvey);
-      let pastVoteA = settingsOBJ.surveysAvailable[takeableSurvey].yes.indexOf(user.id);
-      let pastVoteB = settingsOBJ.surveysAvailable[takeableSurvey].no.indexOf(user.id);
-      if (pastVoteA >= 0) {
-        settingsOBJ.surveysAvailable[takeableSurvey].yes.splice(pastVoteA, 1);
-      }
-      if (pastVoteB >= 0) {
-        settingsOBJ.surveysAvailable[takeableSurvey].no.splice(pastVoteB, 1);
-      }
-      settingsOBJ.surveysAvailable[takeableSurvey][reaction.emoji.name].push(user.id);
+      ougi.db().markSurveySeen(msg.author.id, takeableSurvey);
+      const voteKey = reaction.emoji.id === '818120409219334144' ? 'yes' : 'no';
+      ougi.db().recordSurveyVote(takeableSurvey, user.id, voteKey);
 
       client.users.cache.get(davidUserID).send(user.username + " voted " + reaction.emoji.toString() + " in `" + surveyOBJ.q + "`.").catch(console.error);
-
-      ougi.db().saveKV('settings', 'kv', 'settingsOBJ', settingsOBJ);
     })
     collector.on('end', async => {
       sentMSG.edit(collectedEmbed);
