@@ -12,7 +12,7 @@ class OugiDatabaseManager {
         if (!this.databases[name]) {
             const dbPath = path.join(__dirname, '..', `${name}.db`);
             const db = new Database(dbPath);
-            db.pragma('journal_mode = WAL');
+            db.pragma('journal_mode = DELETE');
             this.databases[name] = db;
         }
         return this.databases[name];
@@ -143,6 +143,18 @@ class OugiDatabaseManager {
 
     // KV Save / Load for Settings
     saveKV(dbName, tableName, key, value) {
+        if (dbName === 'settings' && key === 'settingsOBJ') {
+            if (!value || typeof value !== 'object' || Array.isArray(value)) {
+                console.error("[CRITICAL SAFEGUARD] Attempted to save invalid settingsOBJ into settings.db, operation aborted!");
+                return;
+            }
+            const requiredKeys = ['banned', 'ignored', 'ratelimit', 'prefix', 'blacklist', 'economy', 'logging', 'lang', 'guildNews', 'subscribers', 'surveys', 'surveysAvailable', 'AI', 'guildBump', 'patreonAdLastSeen', 'interactionsCounter', 'patrons', 'shortcuts', 'nicknames', 'guildAdmins'];
+            const missingKeys = requiredKeys.filter(k => !(k in value));
+            if (missingKeys.length > 0) {
+                console.error(`[CRITICAL SAFEGUARD] settingsOBJ is missing ${missingKeys.length} schema keys (${missingKeys.join(', ')}). Save operation aborted to prevent truncation!`);
+                return;
+            }
+        }
         const db = this.getDb(dbName);
         const stmt = db.prepare(`INSERT INTO ${tableName} (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value=excluded.value`);
         stmt.run(key, typeof value === 'object' ? JSON.stringify(value) : String(value));
@@ -269,8 +281,21 @@ class OugiDatabaseManager {
         for (const db of Object.values(this.databases)) {
             try {
                 db.pragma('wal_checkpoint(TRUNCATE)');
+                db.pragma('journal_mode = DELETE');
             } catch (e) {}
         }
+        // Auto-remove any lingering sidecar journal files
+        try {
+            const rootDir = path.join(__dirname, '..');
+            const files = fs.readdirSync(rootDir);
+            for (const file of files) {
+                if (file.endsWith('.db-wal') || file.endsWith('.db-shm')) {
+                    try {
+                        fs.unlinkSync(path.join(rootDir, file));
+                    } catch {}
+                }
+            }
+        } catch {}
     }
 }
 
