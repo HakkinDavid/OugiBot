@@ -154,10 +154,6 @@ class OugiDatabaseManager {
         // 10. News Channel Table
         const newsDb = this.getDb('newsChannel');
         newsDb.exec(`
-            CREATE TABLE IF NOT EXISTS news_channels (
-                guild_id TEXT PRIMARY KEY,
-                channel_id TEXT
-            );
             CREATE TABLE IF NOT EXISTS kv (
                 key TEXT PRIMARY KEY,
                 value TEXT
@@ -312,7 +308,7 @@ class OugiDatabaseManager {
 
     loadNews() {
         const db = this.getDb('newsChannel');
-        const rows = db.prepare("SELECT value FROM kv WHERE key = 'newsList'").get();
+        const rows = db.prepare("SELECT value FROM kv WHERE key = 'newsData'").get();
         if (!rows) return [];
         try {
             return JSON.parse(rows.value);
@@ -324,7 +320,7 @@ class OugiDatabaseManager {
     addNews(newsItem) {
         const list = this.loadNews();
         list.push(newsItem);
-        this.saveKV('newsChannel', 'kv', 'newsList', list);
+        this.saveKV('newsChannel', 'kv', 'newsData', list);
     }
 
     // ─── Economy ──────────────────────────────────────────────────────────────
