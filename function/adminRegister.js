@@ -39,7 +39,7 @@ module.exports = async function (arguments, msg) {
     // Confirmation message
     const actionText = action === "add" ? "Added administrators:" : "Removed administrators:";
     const currentAdmins = ougi.db().getGuildAdmins(msg.guildId);
-    const adminsDisplay = currentAdmins.length > 0 ? `\`\`\`\n${currentAdmins.join("\n")}\n\`\`\`` : "`None (Server Owner & Members with Administrator permission retain implicit admin access)`";
+    const adminsDisplay = currentAdmins.length > 0 ? `\`\`\`\n${currentAdmins.join("\n")}\n\`\`\`` : "`None`";
 
-    msg.channel.send(`${actionText}\n\`\`\`\n${mentionedUsers.join("\n")}\n\`\`\`\nCurrent custom administrators:\n${adminsDisplay}\n*(Note: Guild Owner <@${msg.guild?.ownerId}> and users with Discord Administrator permissions are always authorized).*`);
+    msg.channel.send(`${actionText}\n\`\`\`\n${mentionedUsers.join("\n")}\n\`\`\`\nCurrent custom administrators:\n${adminsDisplay}\n*(Note: Owner and users with Discord Administrator permissions are always authorized).*`);
 }
