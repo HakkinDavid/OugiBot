@@ -35,7 +35,7 @@ async function (arguments, msg) {
     return
   }
 
-  if (trigger.startsWith("help") || trigger.startsWith("blacklist") || trigger.startsWith("setlog") || trigger.startsWith("allow") || trigger.startsWith("ougi")) {
+  if (trigger.startsWith("help") || trigger.startsWith("blacklist") || trigger.startsWith("setlog") || trigger.startsWith("allow") || ougi.helperFunctions.checkForPrefix(trigger, msg)) {
     msg.channel.send("This command can't be blacklisted.");
     return
   }

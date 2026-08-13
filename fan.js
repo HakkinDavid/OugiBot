@@ -196,7 +196,7 @@ client.on('messageCreate', async (msg) => {
         ourConcern = true;
     } else if (msg.channel.type === Discord.ChannelType.DM && msg.content.length > 0) {
         if (msg.content === "I want to opt out from using Ougi [BOT].") {
-            const pseudoMSG = { ...msg, content: "ougi OPTOUTSTATEMENT" };
+            const pseudoMSG = { ...msg, content: ougi.helperFunctions.prependPrefix("OPTOUTSTATEMENT") };
             ougi.globalLog(pseudoMSG);
             ougi.optout(msg);
         }
@@ -241,7 +241,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
 
     const msg = {
         id: 0,
-        content: 'ougi ' + shortcut.action,
+        content: ougi.helperFunctions.prependPrefix(ougi.helperFunctions.stripPrefix(shortcut.action, message)),
         author: user,
         channelId: reaction.message.id,
         channel: reaction.message.channel,

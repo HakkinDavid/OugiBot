@@ -67,7 +67,7 @@ module.exports = async function (msg) {
     if (commandMap[spookyCommand]) {
         await commandMap[spookyCommand]();
     } else if (urlPattern.test(spookyCommand)) {
-        msg.content = msg.content.replace("ougi", "ougi music");
+        msg.content = 'ougi music ' + ougi.helperFunctions.stripPrefix(msg.content, msg);
         await ougi.voiceCallMusic(msg).catch(console.error);
     } else if (spookyCommand === "subscribe" && args.length === 0) {
         await ougi.subscribeCommand(msg);

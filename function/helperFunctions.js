@@ -101,15 +101,30 @@ module.exports = {
     },
 
     /**
-     * Prepends 'ougi ' to message content after removing a custom prefix.
-     * @param {object|string} msg - Message object or string.
-     * @param {string} customPrefix - The custom prefix to strip.
-     * @returns {string} The normalized command content starting with 'ougi '.
+     * Ensures input text/message starts with 'ougi '.
+     * If prefixToStrip is provided, it is removed from the start of input before prepending 'ougi '.
+     * If input already starts with 'ougi ', it is returned normalized.
+     *
+     * @param {object|string} input - Message object or text string.
+     * @param {string} [prefixToStrip] - Optional prefix to strip before prepending.
+     * @returns {string} Content starting with 'ougi '.
      */
-    prependPrefix(msg, customPrefix) {
-        const raw = typeof msg === 'string' ? msg : (msg?.content ?? '');
-        if (!customPrefix) return raw;
-        return 'ougi ' + raw.slice(customPrefix.length).trim();
+    prependPrefix(input, prefixToStrip) {
+        let raw = typeof input === 'string' ? input : (input?.content ?? '');
+        raw = raw.trim();
+
+        if (prefixToStrip && raw.toLowerCase().startsWith(prefixToStrip.toLowerCase())) {
+            raw = raw.slice(prefixToStrip.length).trim();
+        }
+
+        if (raw.toLowerCase().startsWith('ougi ')) {
+            return raw;
+        }
+        if (raw.toLowerCase() === 'ougi') {
+            return 'ougi';
+        }
+
+        return ('ougi ' + raw).trim();
     },
 
     /**
