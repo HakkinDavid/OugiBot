@@ -29,11 +29,54 @@ global.googleTTS = require('google-tts-api');
 global.YouTube = require('youtube-sr').default;
 global.youtubedl = require('youtube-dl-exec');
 
+global.sanitizeCookiesFile = function(filePath) {
+    if (!filePath || !fs.existsSync(filePath)) return null;
+    try {
+        const content = fs.readFileSync(filePath, 'utf-8');
+        const lines = content.split(/\r?\n/);
+        const cleanLines = [
+            '# Netscape HTTP Cookie File',
+            '# https://curl.haxx.se/rfc/cookie_spec.html',
+            '# This is a sanitized cookie file for yt-dlp',
+            ''
+        ];
+
+        for (let line of lines) {
+            line = line.trim();
+            if (!line || line.startsWith('#')) continue;
+
+            const parts = line.split('\t');
+            if (parts.length >= 6) {
+                let domain = parts[0];
+                let sub = domain.startsWith('.') ? 'TRUE' : (parts[1] ? parts[1].toUpperCase() : 'FALSE');
+                if (domain.startsWith('.')) sub = 'TRUE';
+
+                const cookiePath = parts[2] || '/';
+                const secure = parts[3] ? parts[3].toUpperCase() : 'FALSE';
+                const expires = parts[4] || '0';
+                const name = parts[5];
+                const value = parts[6] || '';
+
+                if (name) {
+                    cleanLines.push(`${domain}\t${sub}\t${cookiePath}\t${secure}\t${expires}\t${name}\t${value}`);
+                }
+            }
+        }
+
+        const sanitizedPath = filePath + '.clean';
+        fs.writeFileSync(sanitizedPath, cleanLines.join('\n'), 'utf-8');
+        return sanitizedPath;
+    } catch (e) {
+        console.error("Error sanitizing cookies file:", e);
+        return filePath;
+    }
+};
+
 global.updateCookiesCache = function() {
     const envPath = process.env.YOUTUBE_COOKIES_FILE;
-    if (envPath && fs.existsSync(envPath)) return envPath;
+    if (envPath && fs.existsSync(envPath)) return global.sanitizeCookiesFile(envPath);
     const defaultPath = path.join(__dirname, 'cookies.txt');
-    if (fs.existsSync(defaultPath)) return defaultPath;
+    if (fs.existsSync(defaultPath)) return global.sanitizeCookiesFile(defaultPath);
     return null;
 };
 global.cachedCookiesPath = global.updateCookiesCache();
@@ -125,7 +168,7 @@ console.error = (...args) => {
         .setColor("#c20d00")
         .setFooter({ text: "errorLogEmbed by Ougi", iconURL: "https://github.com/HakkinDavid/OugiBot/blob/master/images/ougi.png?raw=true" })
         .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/fatal.png?raw=true")
-        .setDescription(logMessages.pop().toString());
+        .setDescription(logMessages.pop().toString().slice(0, 4000));
 
     errorBackup.apply(console, args);
     client.channels.cache.get(consoleLogging)?.send({ embeds: [criticalEmbed] }).catch(errorBackup);
