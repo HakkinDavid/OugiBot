@@ -148,8 +148,7 @@ async function (msg) {
         msg.channel.send("Preset name must be between 1 and 100 characters long.");
         return
       }
-      let dbManager = require('./db')();
-      let myLoad = dbManager.loadEmbedPresets();
+      let myLoad = ougi.db().loadEmbedPresets();
       let aPreset = material + "::" + msg.author.id;
       if (myLoad.hasOwnProperty(aPreset)) {
         let gonnaPull = myLoad[aPreset].slice().reverse();
@@ -165,8 +164,7 @@ async function (msg) {
       }
     }
     else if (material.startsWith("list")) {
-      let dbManager = require('./db')();
-      let myLoad = dbManager.loadEmbedPresets();
+      let myLoad = ougi.db().loadEmbedPresets();
       let aPreset = "::" + msg.author.id;
       let allPresets = Object.keys(myLoad);
       for (e=0; allPresets.length > e; e++) {
@@ -187,9 +185,8 @@ async function (msg) {
         msg.channel.send("Preset name must be between 1 and 100 characters long.");
         return
       }
-      let dbManager = require('./db')();
       let aPreset = material + "::" + msg.author.id;
-      dbManager.deleteEmbedPreset(aPreset);
+      ougi.db().deleteEmbedPreset(aPreset);
       breakChocolate.splice(i, 1);
       msg.channel.send("Deleted preset `" + material + "`.");
       i--;
@@ -587,9 +584,8 @@ async function (msg) {
       msg.channel.send("Your embed must not be empty.");
       return
     }
-    let dbManager = require('./db')();
     let personalizedPresetName = presetName + "::" + msg.author.id;
-    dbManager.saveEmbedPreset(personalizedPresetName, breakChocolate);
+    ougi.db().saveEmbedPreset(personalizedPresetName, breakChocolate);
 
     msg.channel.send("Saved preset as `" + presetName + "`, it's now available for you to use as template. Include `::load " + presetName + "` as command option whenever you want to use it.");
   }
@@ -599,12 +595,11 @@ async function (msg) {
       msg.channel.send("Your embed must not be empty.");
       return
     }
-    let dbManager = require('./db')();
     let circleOfSharing = [];
     for (i=0; i < sharedWith.length; i++) {
       circleOfSharing.push(client.users.cache.get(sharedWith[i]).username);
       let everyPresetShare = msg.author.username + "'s preset::" + sharedWith[i];
-      dbManager.saveEmbedPreset(everyPresetShare, breakChocolate);
+      ougi.db().saveEmbedPreset(everyPresetShare, breakChocolate);
     }
 
     msg.channel.send("Shared preset as `" + msg.author.username + "'s preset` with `" + circleOfSharing.join("`, `") + "`. It's now available for them to use as template until it's overwritten by another share of yours. In order to keep it, they must load and save it under another name. Tell them to include `::load " + msg.author.username + "'s preset` as command option whenever they want to use it.");

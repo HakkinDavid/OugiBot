@@ -109,14 +109,13 @@ async function (msg) {
   if (mod > 0) {
     ougi.globalLog("Skipped " + mod + " invalid IDs.")
   }
-  let dbManager = require('./db')();
   let thisArray = {
     title: embedName,
     desc: embedDesc,
     type: embedType,
     sent: new Date().toDateString()
   };
-  dbManager.addNews(thisArray);
+  ougi.db().addNews(thisArray);
 
   msg.channel.send({ content: "Sent this newsletter to:\n" + names.join('\n'), embeds: [spookyConstructor] });
 }

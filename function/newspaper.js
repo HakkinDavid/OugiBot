@@ -1,8 +1,7 @@
 module.exports =
 
 async function (arguments, msg) {
-  let dbManager = require('./db')();
-  let paper = dbManager.loadNews().slice().reverse();
+  let paper = ougi.db().loadNews().slice().reverse();
   let maxIndex = paper.length;
   let index = arguments * 1 - 1;
 
