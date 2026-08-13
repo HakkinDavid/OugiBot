@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "@discordjs/voice": "^0.19.2",
+    "@distube/ytdl-core": "github:distubejs/ytdl-core",
     "@ksoft/api": "^3.1.9",
     "@types/node": "^14.14.44",
     "@vitalets/google-translate-api": "^4.0.0",
@@ -34,6 +35,7 @@
     "mathjs": "^15.2.0",
     "newsapi": "^2.4.1",
     "node-env-run": "^3.0.2",
+    "play-dl": "^1.9.7",
     "random-case": "^1.0.0",
     "remove-words": "^0.9.0",
     "request": "^2.88.2",
@@ -45,7 +47,10 @@
     "twit": "^2.2.11",
     "utf-8-validate": "^5.0.5",
     "winston": "^3.3.3",
-    "yargs-parser": "^20.2.7"
+    "yargs-parser": "^20.2.7",
+    "youtube-dl-exec": "^3.1.12",
+    "youtube-sr": "^4.3.12",
+    "yt-stream": "^1.7.4"
   },
   "scripts": {
     "start": "git pull && node fan.js"

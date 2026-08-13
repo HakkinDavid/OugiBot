@@ -1,5 +1,8 @@
+const YouTube = require('youtube-sr').default;
+const youtubedl = require('youtube-dl-exec');
+
 module.exports = async function (msg) {
-    const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus, getVoiceConnection } = Voice;
+    const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus, getVoiceConnection, entersState, VoiceConnectionStatus } = Voice;
 
     try {
         if (!msg.guild) {
@@ -13,23 +16,36 @@ module.exports = async function (msg) {
             return;
         }
 
-        const args = msg.content.trim().split(/\s+/).slice(2);
-        const command = msg.content.trim().split(/\s+/)[1]?.toLowerCase();
+        const permissions = vcChannel.permissionsFor(msg.client.user);
+        if (permissions && (!permissions.has('Connect') || !permissions.has('Speak'))) {
+            await msg.channel.send("I need permissions to connect and speak in your voice channel.");
+            return;
+        }
 
+        const cleanedContent = msg.content.replace(/\s+/g, ' ').trim();
+        const tokens = cleanedContent.split(" ");
+        const command = tokens[1]?.toLowerCase();
+        const subCommand = tokens[2]?.toLowerCase();
+
+        if (!global.vc) global.vc = {};
         if (!vc[msg.guildId]) {
             vc[msg.guildId] = { queue: [], player: null, connection: null };
         }
 
-        if (command === "stop") {
+        // Command: stop
+        if (command === "stop" || (command === "music" && subCommand === "stop")) {
             const connection = getVoiceConnection(msg.guildId);
-            if (connection) connection.destroy();
+            if (connection && connection.state.status !== VoiceConnectionStatus.Destroyed) {
+                connection.destroy();
+            }
             delete vc[msg.guildId];
             await msg.channel.send(await ougi.text(msg, "musicStopped"));
             return;
         }
 
-        if (command === "skip") {
-            if (!vc[msg.guildId] || vc[msg.guildId].queue.length <= 1) {
+        // Command: skip
+        if (command === "skip" || (command === "music" && subCommand === "skip")) {
+            if (!vc[msg.guildId] || vc[msg.guildId].queue.length === 0) {
                 await msg.channel.send(await ougi.text(msg, "musicNothingToSkip"));
                 return;
             }
@@ -38,46 +54,96 @@ module.exports = async function (msg) {
             return;
         }
 
-        if (!args.length) {
+        // Command: queue / list / playlist
+        if (command === "queue" || (command === "music" && ["list", "queue", "playlist"].includes(subCommand))) {
+            const guildQueue = vc[msg.guildId]?.queue || [];
+            if (!guildQueue.length) {
+                await msg.channel.send("The music queue is currently empty.");
+                return;
+            }
+
+            const queueList = guildQueue.map((s, idx) => `${idx === 0 ? '**Now Playing:**' : `\`${idx}.\``} [${s.title}](${s.url}) (\`${s.duration}\`)`).slice(0, 10).join('\n');
+            const queueEmbed = new Discord.EmbedBuilder()
+                .setTitle("Ougi Music Queue")
+                .setDescription(queueList)
+                .setColor("#230347")
+                .setFooter({ text: `Total songs in queue: ${guildQueue.length}`, iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) });
+
+            await msg.channel.send({ embeds: [queueEmbed] });
+            return;
+        }
+
+        // Extract query args
+        let queryArgs = tokens.slice(2);
+        if (["play", "p"].includes(command)) {
+            queryArgs = tokens.slice(2);
+        } else if (command === "music" && ["play", "p"].includes(subCommand)) {
+            queryArgs = tokens.slice(3);
+        } else if (command === "music") {
+            queryArgs = tokens.slice(2);
+        }
+
+        const query = queryArgs.join(" ").trim();
+        if (!query) {
             await msg.channel.send(await ougi.text(msg, "keywordRequired"));
             return;
         }
 
-        const query = args.join(" ");
-        let ytInfo;
+        let songInfo;
+        const isUrl = /^https?:\/\/(www\.)?(youtube\.com|youtu\.be)/i.test(query);
 
-        if (play.yt_validate(query) === 'video') {
-            const info = await play.video_info(query);
-            ytInfo = info.video_details;
+        if (isUrl) {
+            try {
+                const video = await YouTube.getVideo(query);
+                songInfo = {
+                    title: video.title,
+                    url: video.url,
+                    duration: video.durationFormatted || "Live",
+                    thumbnail: video.thumbnail?.url || "https://github.com/HakkinDavid/OugiBot/blob/master/images/ougimusic.png?raw=true"
+                };
+            } catch {
+                const searchResults = await YouTube.search(query, { limit: 1, type: 'video' });
+                if (!searchResults || !searchResults.length) {
+                    await msg.channel.send(await ougi.text(msg, "resultsZero"));
+                    return;
+                }
+                const video = searchResults[0];
+                songInfo = {
+                    title: video.title,
+                    url: video.url,
+                    duration: video.durationFormatted || "Live",
+                    thumbnail: video.thumbnail?.url || "https://github.com/HakkinDavid/OugiBot/blob/master/images/ougimusic.png?raw=true"
+                };
+            }
         } else {
-            const search = await play.search(query, { limit: 1 });
-            if (!search || !search.length) {
+            const searchResults = await YouTube.search(query, { limit: 1, type: 'video' });
+            if (!searchResults || !searchResults.length) {
                 await msg.channel.send(await ougi.text(msg, "resultsZero"));
                 return;
             }
-            ytInfo = search[0];
+            const video = searchResults[0];
+            songInfo = {
+                title: video.title,
+                url: video.url,
+                duration: video.durationFormatted || "Live",
+                thumbnail: video.thumbnail?.url || "https://github.com/HakkinDavid/OugiBot/blob/master/images/ougimusic.png?raw=true"
+            };
         }
 
-        const song = {
-            title: ytInfo.title,
-            url: ytInfo.url,
-            duration: ytInfo.durationRaw || `${ytInfo.durationInSec}s`,
-            thumbnail: ytInfo.thumbnails?.[0]?.url || "https://github.com/HakkinDavid/OugiBot/blob/master/images/ougimusic.png?raw=true"
-        };
-
-        vc[msg.guildId].queue.push(song);
+        vc[msg.guildId].queue.push(songInfo);
 
         const embed = new Discord.EmbedBuilder()
             .setTitle(await ougi.text(msg, "musicAdded"))
-            .setDescription(`[${song.title}](${song.url})`)
-            .setThumbnail(song.thumbnail)
+            .setDescription(`[${songInfo.title}](${songInfo.url})`)
+            .setThumbnail(songInfo.thumbnail)
             .setColor("#230347")
+            .addFields({ name: "Duration", value: `\`${songInfo.duration}\``, inline: true })
             .setFooter({ text: "musicEmbed by Ougi", iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) });
 
         await msg.channel.send({ embeds: [embed] });
 
         if (vc[msg.guildId].queue.length === 1) {
-            playNext(msg, vcChannel, play);
+            playNext(msg, vcChannel);
         }
 
     } catch (error) {
@@ -86,12 +152,14 @@ module.exports = async function (msg) {
     }
 };
 
-async function playNext(msg, vcChannel, play) {
-    const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus, getVoiceConnection } = Voice;
+async function playNext(msg, vcChannel) {
+    const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus, getVoiceConnection, entersState, VoiceConnectionStatus } = Voice;
     const guildQueue = vc[msg.guildId];
     if (!guildQueue || guildQueue.queue.length === 0) {
         const connection = getVoiceConnection(msg.guildId);
-        if (connection) connection.destroy();
+        if (connection && connection.state.status !== VoiceConnectionStatus.Destroyed) {
+            connection.destroy();
+        }
         delete vc[msg.guildId];
         return;
     }
@@ -99,35 +167,69 @@ async function playNext(msg, vcChannel, play) {
     const song = guildQueue.queue[0];
 
     try {
-        const stream = await play.stream(song.url);
-        const resource = createAudioResource(stream.stream, { inputType: stream.type });
+        const rawStreamUrl = (await youtubedl(song.url, { getUrl: true, format: 'bestaudio' })).trim();
+        const resource = createAudioResource(rawStreamUrl);
 
         if (!guildQueue.player) {
             guildQueue.player = createAudioPlayer();
+
             guildQueue.player.on(AudioPlayerStatus.Idle, () => {
                 guildQueue.queue.shift();
-                playNext(msg, vcChannel, play);
+                playNext(msg, vcChannel);
             });
+
             guildQueue.player.on('error', (err) => {
-                console.error("Audio player error:", err);
+                console.error("Audio player error in playNext:", err);
+                msg.channel.send(`⚠️ Stream error playing **${song.title}**. Skipping...`).catch(() => {});
                 guildQueue.queue.shift();
-                playNext(msg, vcChannel, play);
+                playNext(msg, vcChannel);
             });
         }
 
-        const connection = getVoiceConnection(msg.guildId) ||
-            joinVoiceChannel({
+        let connection = getVoiceConnection(msg.guildId);
+        if (!connection || connection.state.status === VoiceConnectionStatus.Destroyed) {
+            connection = joinVoiceChannel({
                 channelId: vcChannel.id,
                 guildId: vcChannel.guildId,
                 adapterCreator: vcChannel.guild.voiceAdapterCreator,
+                selfDeaf: true,
             });
+        } else if (connection.joinConfig.channelId !== vcChannel.id) {
+            connection = joinVoiceChannel({
+                channelId: vcChannel.id,
+                guildId: vcChannel.guildId,
+                adapterCreator: vcChannel.guild.voiceAdapterCreator,
+                selfDeaf: true,
+            });
+        }
+
+        if (!connection._hasMusicDisconnectHandler) {
+            connection._hasMusicDisconnectHandler = true;
+            connection.on(VoiceConnectionStatus.Disconnected, async () => {
+                try {
+                    await Promise.race([
+                        entersState(connection, VoiceConnectionStatus.Signalling, 5_000),
+                        entersState(connection, VoiceConnectionStatus.Connecting, 5_000),
+                    ]);
+                } catch {
+                    if (connection.state.status !== VoiceConnectionStatus.Destroyed) {
+                        connection.destroy();
+                    }
+                }
+            });
+        }
+
+        if (connection.state.status !== VoiceConnectionStatus.Ready) {
+            await entersState(connection, VoiceConnectionStatus.Ready, 15_000);
+        }
 
         connection.subscribe(guildQueue.player);
         guildQueue.player.play(resource);
+
     } catch (err) {
         console.error("Stream error in playNext:", err);
         msg.channel.send(`⚠️ Unable to play **${song.title}** (stream unavailable or restricted). Skipping...`).catch(() => {});
         guildQueue.queue.shift();
-        playNext(msg, vcChannel, play);
+        playNext(msg, vcChannel);
     }
 }

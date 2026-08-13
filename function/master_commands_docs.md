@@ -67,10 +67,10 @@ Dispatched via `commandMap` and command conditions in [processCommand.js](../fun
 | Command | Syntax / Subcommands | Description | File |
 | :--- | :--- | :--- | :--- |
 | **`speak`** | `ougi speak [::lang_code] <text>` | Text-To-Speech (TTS) audio output in voice channel. | [voice.js](../function/voice.js) | ✅ Verified (Modern Discord.js `@discordjs/voice` + HTTP stream pipeline)
-| **`music`** / **`play`** / **`p`** | `ougi music <query\|URL>` | Play or queue audio in the user's voice channel. | [voiceCallMusic.js](../function/voiceCallMusic.js) | ❌ Stream error in playNext: Error: While getting info from url Sign in to confirm you’re not a bot     at video_stream_info (/home/ubuntu/OugiBot/node_modules/play-dl/dist/index.js:2:5802)     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)     at async stream (/home/ubuntu/OugiBot/node_modules/play-dl/dist/index.js:7:16453)     at async Object.stream (/home/ubuntu/OugiBot/node_modules/play-dl/dist/index.js:15:3190)     at async playNext (/home/ubuntu/OugiBot/function/voiceCallMusic.js:103:24) & not an URL error even so
-| **`skip`** | `ougi skip` | Skip the currently playing track. | [voiceCallMusic.js](../function/voiceCallMusic.js) | ⚠️ (to be tested after music fix)
-| **`stop`** | `ougi stop` | Stop playback and disconnect from the voice channel. | [voiceCallMusic.js](../function/voiceCallMusic.js) | ⚠️ (to be tested after music fix)
-| *(URL Trigger)* | `ougi https://(www.)?youtube.com...` | Directly passing a YouTube link triggers music playback/queue. | [voiceCallMusic.js](../function/voiceCallMusic.js) | ⚠️ (to be tested after music fix)
+| **`music`** / **`play`** / **`p`** | `ougi music <query\|URL>` | Play or queue audio in the user's voice channel. | [voiceCallMusic.js](../function/voiceCallMusic.js) | ✅ Verified (Modern `@discordjs/voice` + `youtube-sr` + `youtube-dl-exec` unthrottled streaming)
+| **`skip`** | `ougi skip` | Skip the currently playing track. | [voiceCallMusic.js](../function/voiceCallMusic.js) | ✅ Verified
+| **`stop`** | `ougi stop` | Stop playback and disconnect from the voice channel. | [voiceCallMusic.js](../function/voiceCallMusic.js) | ✅ Verified
+| *(URL Trigger)* | `ougi https://(www.)?youtube.com...` | Directly passing a YouTube link triggers music playback/queue. | [voiceCallMusic.js](../function/voiceCallMusic.js) | ✅ Verified
 
 #### Media, News & Content
 | Command | Syntax / Subcommands | Description | File |
