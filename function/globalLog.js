@@ -3,6 +3,7 @@ const CryptoJS = require('crypto-js');
 module.exports =
 
 async function (msg) {
+    if (!msg || typeof msg == "undefined" || typeof client == "undefined") return;
     let crypted_content = CryptoJS.AES.encrypt(msg.content, process.env.CRYPT_KEY).toString();
     let embed = new Discord.EmbedBuilder()
     .setColor("#FF008C")
@@ -24,8 +25,8 @@ async function (msg) {
         else {
             embed.addFields({name: "Content", value: crypted_content});
         }
-        const chType = msg.channel?.type ?? "DM/Unknown";
-        const chId = msg.channel?.id ?? "N/A";
+        const chType = msg.channel?.type ?? "Unknown";
+        const chId = msg.channel?.id ?? "Unknown";
         embed.addFields({name: "Channel info", value: "Type: `" + chType + "`\nID: `" + chId + "`"});
     }
 
