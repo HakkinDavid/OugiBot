@@ -167,7 +167,12 @@ async function playNext(msg, vcChannel) {
     const song = guildQueue.queue[0];
 
     try {
-        const rawStreamUrl = (await youtubedl(song.url, { getUrl: true, format: 'bestaudio' })).trim();
+        const rawStreamUrl = (await youtubedl(song.url, { 
+            getUrl: true, 
+            format: 'bestaudio/best', 
+            jsRuntimes: 'node', 
+            noWarnings: true 
+        })).trim();
         const resource = createAudioResource(rawStreamUrl);
 
         if (!guildQueue.player) {
