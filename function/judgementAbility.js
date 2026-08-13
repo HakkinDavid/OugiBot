@@ -21,13 +21,7 @@ async function (msg, replied_to_ougi) {
       let stringsArray = ougi.db().getKBTriggers();
       let notSpookyDM = msg.content.toLowerCase();
       let usedLang;
-      notSpookyDM = notSpookyDM.replace('<@629837958123356172>', 'ougi').replace('扇', 'ougi').replace('<@!629837958123356172>', 'ougi');
-      while (notSpookyDM.startsWith("ougi")) {
-        notSpookyDM = notSpookyDM.substring(4, notSpookyDM.length)
-      }
-      while (notSpookyDM.startsWith(" ")) {
-        notSpookyDM = notSpookyDM.substring(1, notSpookyDM.length)
-      }
+      notSpookyDM = ougi.helperFunctions.stripPrefix(notSpookyDM, msg);
       embed.addFields({name: "Content", value: notSpookyDM.slice(0, 1024)});
       
       let prevSimilarity = stringSimilarity.findBestMatch(notSpookyDM, stringsArray).bestMatch.rating;

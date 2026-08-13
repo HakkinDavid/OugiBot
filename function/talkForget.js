@@ -30,17 +30,7 @@ async function (arguments, msg) {
   let trigger = breakChocolate[0].toString();
   let response = breakChocolate[1].toString();
 
-  while (trigger.startsWith("ougi")){
-    trigger = trigger.substring(4, trigger.length)
-  }
-
-  while (trigger.startsWith("#ougi")){
-    trigger = trigger.substring(5, trigger.length)
-  }
-
-  while (trigger.startsWith("@ougi")){
-    trigger = trigger.substring(5, trigger.length)
-  }
+  trigger = ougi.helperFunctions.stripPrefix(trigger, msg);
 
   while (trigger.endsWith(" ")){
     trigger = trigger.substring(0, trigger.length-1)

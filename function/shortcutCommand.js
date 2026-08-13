@@ -14,15 +14,10 @@ module.exports = async function (arguments, msg) {
     if (subcommand === 'create') {
         const emoji = arguments[1];
         let action = arguments.slice((() => {
-            switch (arguments[2].toLowerCase()) {
-                case 'ougi':
-                case '扇':
-                case client.user.toString():
-                case ougi.db().getPrefix(msg.guildId):
-                    return 3;
-                default:
-                    return 2;
+            if (ougi.helperFunctions.checkForPrefix(arguments[2], msg)) {
+                return 3;
             }
+            return 2;
         })()).join(" ").toLowerCase();
 
         let emojiKey = null;

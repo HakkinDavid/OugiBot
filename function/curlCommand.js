@@ -93,8 +93,7 @@ module.exports = async function (msg) {
         value: memberCurl.roles.hoist?.toString() || await ougi.text(msg, "noDistinctRole")
       });
 
-      const lastMessage = memberCurl.lastMessage;
-      if (lastMessage && !lastMessage.content.startsWith("ougi")) {
+      if (lastMessage && !ougi.helperFunctions.checkForPrefix(lastMessage)) {
         embed.setDescription(`*"${lastMessage.content.slice(0, 2040)} ..."*`);
       }
     }

@@ -186,12 +186,12 @@ client.on('messageCreate', async (msg) => {
         } catch { }
     }
 
-    const lower = msg.content.toLowerCase();
+    const prefixMatch = ougi.helperFunctions.checkForPrefix(msg);
     let ourConcern = false;
-    if (lower.startsWith("ougi") || lower.startsWith("扇") || msg.mentions.has(client.user)) {
+    if (prefixMatch?.isTopLevel && !prefixMatch.isRoot) {
         await ougi.processCommand(msg);
         ourConcern = true;
-    } else if (lower.startsWith("#ougi")) {
+    } else if (prefixMatch?.isRoot) {
         await ougi.rootCommands(msg);
         ourConcern = true;
     } else if (msg.channel.type === Discord.ChannelType.DM && msg.content.length > 0) {
@@ -205,11 +205,10 @@ client.on('messageCreate', async (msg) => {
             ourConcern = true;
         }
     } else if (msg.channel.type === Discord.ChannelType.GuildText && msg.content.length > 0) {
-        const prefix = ougi.db().getPrefix(msg.guildId);
         let isCommand = false;
 
-        if (prefix && lower.startsWith(prefix)) {
-            msg.content = 'ougi ' + msg.content.slice(prefix.length).trim();
+        if (prefixMatch?.isCustom) {
+            msg.content = ougi.helperFunctions.prependPrefix(msg, prefixMatch.prefix);
             await ougi.processCommand(msg);
             ourConcern = true;
             isCommand = true;
