@@ -5,7 +5,7 @@ Dispatched via `commandMap` and command conditions in [processCommand.js](../fun
 #### Utility & General
 | Command | Syntax / Subcommands | Description | File |
 | :--- | :--- | :--- | :--- |
-| **`help`** | `ougi help [command]` | Display the interactive help menu or specific command instructions. | [helpCommand.js](../function/helpCommand.js) | ⚠️ (OUTDATED AND INCOMPLETE)
+| **`help`** | `ougi help [command]` | Display the interactive help menu or specific command instructions. | [helpCommand.js](../function/helpCommand.js) | ✅
 | **`calc`** | `ougi calc <expression>` | Evaluate a mathematical expression. | [calculateCommand.js](../function/calculateCommand.js) | ✅
 | **`curl`** | `ougi curl <@user\|#channel\|@role\|emoji\|ID>` | Fetch Discord entity. | [curlCommand.js](../function/curlCommand.js) | ✅
 | **`translate`** | `ougi translate <lang> <text>`<br>*(or reply to a message)* | Translate text to a target language. Usually paired with `ougi shortcut create 🌐 translate` | [translateCommand.js](../function/translateCommand.js) | ✅

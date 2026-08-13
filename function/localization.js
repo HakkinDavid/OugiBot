@@ -264,7 +264,22 @@ module.exports =
         "raffleJoinHelpDesc": "Confirm your participation in a raffle you replied to. The bot will match your registered name against the raffle's participant list.",
         "raffleJoinHelpOutput": "Your participation is confirmed. Your registered name is marked as active in the raffle.",
         "note": "Note",
-        "raffleHelpClear": "You can also use the following command to remove raffles and free up space."
+        "raffleHelpClear": "You can also use the following command to remove raffles and free up space.",
+        "calcHelpDesc": "Use this command to evaluate a mathematical expression.",
+        "storytellHelpDesc": "Start an interactive storytelling RPG session. Participants each take 1 turn continuing the story before Ougi judges the collective outcome for currency rewards or penalties.",
+        "balanceHelpDesc": "Check your server currency balance, level, XP progress, and inventory items. You can also mention another user to check their balance.",
+        "workHelpDesc": "Perform work to earn server currency. Has a server-configurable cooldown.",
+        "dailyHelpDesc": "Claim your daily server currency reward. Available once every 24 hours.",
+        "payHelpDesc": "Transfer a specified amount of server currency to another member of the server.",
+        "leaderboardHelpDesc": "Display the server's economy leaderboard showing the top 10 richest members.",
+        "coinflipHelpDesc": "Bet server currency on a coinflip. Choose heads or tails and double your bet if you win!",
+        "slotsHelpDesc": "Spin the slot machine for a chance to win 2x your bet for two matching symbols or 5x your bet for a jackpot of three matching symbols!",
+        "gambleHelpDesc": "High-roll dice gamble. Roll a 100-sided die and win double your bet if your roll is higher than 55.",
+        "economyHelpDesc": "Server administration command to enable, disable, reset, or configure the cooldown for the guild economy system.",
+        "xpChannelHelpDesc": "Server administration command to enable or disable XP gain for text activity in specific channels.",
+        "seticonHelpDesc": "Server administration command to customize the currency symbol or XP label used in the server.",
+        "adminRegisterHelpDesc": "Register or remove custom bot administrators for your server. Custom administrators gain access to Ougi server configuration commands.",
+        "resultsHelpDesc": "View voting results and statistics for a global feedback survey."
     },
     "es": {
         "helpTitle": "Página de ayuda con Ougi",
