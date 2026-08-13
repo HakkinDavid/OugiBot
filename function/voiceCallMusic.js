@@ -1,16 +1,6 @@
-let voice, play;
-try {
-    voice = require('@discordjs/voice');
-    play = require('play-dl');
-} catch (e) {}
-const { EmbedBuilder } = require('discord.js');
-
 module.exports = async function (msg) {
-    if (!voice || !play) {
-        return msg.channel.send("Music functionality is currently disabled (audio dependencies not installed).");
-    }
+    const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus, getVoiceConnection } = Voice;
 
-    const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus, getVoiceConnection } = voice;
     try {
         if (!msg.guild) {
             await msg.channel.send(await ougi.text(msg, "mustGuild"));
@@ -77,7 +67,7 @@ module.exports = async function (msg) {
 
         vc[msg.guildId].queue.push(song);
 
-        const embed = new EmbedBuilder()
+        const embed = new Discord.EmbedBuilder()
             .setTitle(await ougi.text(msg, "musicAdded"))
             .setDescription(`[${song.title}](${song.url})`)
             .setThumbnail(song.thumbnail)
@@ -87,7 +77,7 @@ module.exports = async function (msg) {
         await msg.channel.send({ embeds: [embed] });
 
         if (vc[msg.guildId].queue.length === 1) {
-            playNext(msg, vcChannel);
+            playNext(msg, vcChannel, play);
         }
 
     } catch (error) {
@@ -96,7 +86,8 @@ module.exports = async function (msg) {
     }
 };
 
-async function playNext(msg, vcChannel) {
+async function playNext(msg, vcChannel, play) {
+    const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus, getVoiceConnection } = Voice;
     const guildQueue = vc[msg.guildId];
     if (!guildQueue || guildQueue.queue.length === 0) {
         const connection = getVoiceConnection(msg.guildId);
@@ -115,12 +106,12 @@ async function playNext(msg, vcChannel) {
             guildQueue.player = createAudioPlayer();
             guildQueue.player.on(AudioPlayerStatus.Idle, () => {
                 guildQueue.queue.shift();
-                playNext(msg, vcChannel);
+                playNext(msg, vcChannel, play);
             });
             guildQueue.player.on('error', (err) => {
                 console.error("Audio player error:", err);
                 guildQueue.queue.shift();
-                playNext(msg, vcChannel);
+                playNext(msg, vcChannel, play);
             });
         }
 
@@ -137,6 +128,6 @@ async function playNext(msg, vcChannel) {
         console.error("Stream error in playNext:", err);
         msg.channel.send(`⚠️ Unable to play **${song.title}** (stream unavailable or restricted). Skipping...`).catch(() => {});
         guildQueue.queue.shift();
-        playNext(msg, vcChannel);
+        playNext(msg, vcChannel, play);
     }
 }
