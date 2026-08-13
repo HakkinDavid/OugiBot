@@ -1,6 +1,6 @@
 module.exports = async function (msg) {
   let embed = await ougi.helpPreset(msg, "minesweeper");
-  embed.setDescription("Generate an interactive Discord spoiler minesweeper grid.")
+  embed.setDescription("Generate a spoiler-based minesweeper grid.")
     .addFields({
       name: await ougi.text(msg, "example"),
       value: "`ougi minesweeper`\n`ougi minesweeper ::title Spooky Field ::fill 💣 ::treasure 💎 ::difficulty 6`"
