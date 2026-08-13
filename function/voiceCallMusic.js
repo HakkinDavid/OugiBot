@@ -1,8 +1,16 @@
-const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus, getVoiceConnection } = require('@discordjs/voice');
-const play = require('play-dl');
+let voice, play;
+try {
+    voice = require('@discordjs/voice');
+    play = require('play-dl');
+} catch (e) {}
 const { EmbedBuilder } = require('discord.js');
 
 module.exports = async function (msg) {
+    if (!voice || !play) {
+        return msg.channel.send("Music functionality is currently disabled (audio dependencies not installed).");
+    }
+
+    const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus, getVoiceConnection } = voice;
     try {
         if (!msg.guild) {
             await msg.channel.send(await ougi.text(msg, "mustGuild"));

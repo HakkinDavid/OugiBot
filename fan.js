@@ -15,7 +15,6 @@ global.levenary = require('levenary').default;
 global.leven = require('leven');
 global.isHexcolor = require('is-hexcolor');
 global.isImageUrl = require('is-image-url');
-global.ytdl = require('ytdl-core-discord');
 global.scrapeYt = require('scrape-yt');
 global.KSoftClient = require('@ksoft/api').KSoftClient;
 global.removeWords = require('remove-words');
@@ -26,6 +25,8 @@ global.exec = require('child_process').exec;
 global.Voice = require('@discordjs/voice').Voice;
 global.path = require('node:path');
 global.colors = require('@colors/colors/safe');
+global.googleTTS = require('google-tts-api');
+
 
 try {
     findRemoveSync('./', { extensions: ['.txt', '.db', '.db-wal', '.db-shm', '.mp3'] });
