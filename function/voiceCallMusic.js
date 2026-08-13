@@ -1,6 +1,3 @@
-const YouTube = require('youtube-sr').default;
-const youtubedl = require('youtube-dl-exec');
-
 module.exports = async function (msg) {
     const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus, getVoiceConnection, entersState, VoiceConnectionStatus } = Voice;
 
@@ -167,13 +164,19 @@ async function playNext(msg, vcChannel) {
     const song = guildQueue.queue[0];
 
     try {
-        const rawStreamUrl = (await youtubedl(song.url, { 
+        const ytOptions = { 
             getUrl: true, 
             format: 'bestaudio/best', 
             jsRuntimes: 'node', 
             extractorArgs: 'youtube:player_client=mweb,android,web',
             noWarnings: true 
-        })).trim();
+        };
+
+        if (global.cachedCookiesPath) {
+            ytOptions.cookies = global.cachedCookiesPath;
+        }
+
+        const rawStreamUrl = (await youtubedl(song.url, ytOptions)).trim();
         const resource = createAudioResource(rawStreamUrl);
 
         if (!guildQueue.player) {

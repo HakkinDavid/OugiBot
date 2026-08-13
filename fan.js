@@ -26,6 +26,17 @@ global.Voice = require('@discordjs/voice');
 global.path = require('node:path');
 global.colors = require('@colors/colors/safe');
 global.googleTTS = require('google-tts-api');
+global.YouTube = require('youtube-sr').default;
+global.youtubedl = require('youtube-dl-exec');
+
+global.updateCookiesCache = function() {
+    const envPath = process.env.YOUTUBE_COOKIES_FILE;
+    if (envPath && fs.existsSync(envPath)) return envPath;
+    const defaultPath = path.join(__dirname, 'cookies.txt');
+    if (fs.existsSync(defaultPath)) return defaultPath;
+    return null;
+};
+global.cachedCookiesPath = global.updateCookiesCache();
 
 
 try {
@@ -95,7 +106,8 @@ global.channels = {
     locales: "820971831992647681",
     dynamicLocales: "880322518139957299",
     raffles: "1411177261172002906",
-    economy: "1536866624253075527"
+    economy: "1536866624253075527",
+    cookies: "1537325636945846273"
 };
 
 ougi.db().unloadAll();
@@ -126,6 +138,8 @@ async function syncData() {
         for (const [key, data] of Object.entries(database)) {
             if (!data.done) await ougi.fetch(data.id, data.file, key);
         }
+        await ougi.fetchAttachment(channels.cookies, "1537327306765504532", "cookies.txt").catch(() => {});
+        global.cachedCookiesPath = global.updateCookiesCache();
     } finally {
         global.isSyncing = false;
     }
