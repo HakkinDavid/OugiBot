@@ -171,6 +171,7 @@ async function playNext(msg, vcChannel) {
             getUrl: true, 
             format: 'bestaudio/best', 
             jsRuntimes: 'node', 
+            extractorArgs: 'youtube:player_client=mweb,android,web',
             noWarnings: true 
         })).trim();
         const resource = createAudioResource(rawStreamUrl);
