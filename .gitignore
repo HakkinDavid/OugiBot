@@ -10,3 +10,4 @@ node_modules
 *.db
 *.db-shm
 *.db-wal
+package-lock.json
