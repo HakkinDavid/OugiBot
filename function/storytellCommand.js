@@ -46,7 +46,7 @@ module.exports = async function storytellCommand(args, msg) {
 
   await msg.channel.send({ embeds: [startEmbed] });
 
-  const filter = m => !m.author.bot && m.content.length > 0 && !ougi.helperFunctions.checkForPrefix(m);
+  const filter = m => !m.author.bot && m.content.length > 0 && !ougi.helperFunctions.checkForPrefixMsg(m);
   const collector = msg.channel.createMessageCollector({ filter, time: 5 * 60 * 1000 });
 
   collector.on('collect', m => {

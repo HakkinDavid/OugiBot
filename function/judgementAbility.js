@@ -21,7 +21,7 @@ async function (msg, replied_to_ougi) {
       let stringsArray = ougi.db().getKBTriggers();
       let notSpookyDM = msg.content.toLowerCase();
       let usedLang;
-      notSpookyDM = ougi.helperFunctions.stripPrefix(notSpookyDM, msg);
+      notSpookyDM = ougi.helperFunctions.stripPrefixMsg(msg);
       embed.addFields({name: "Content", value: notSpookyDM.slice(0, 1024)});
       
       let prevSimilarity = stringSimilarity.findBestMatch(notSpookyDM, stringsArray).bestMatch.rating;

@@ -186,7 +186,7 @@ client.on('messageCreate', async (msg) => {
         } catch { }
     }
 
-    const prefixMatch = ougi.helperFunctions.checkForPrefix(msg);
+    const prefixMatch = ougi.helperFunctions.checkForPrefixMsg(msg);
     let ourConcern = false;
     if (prefixMatch?.isTopLevel && !prefixMatch.isRoot) {
         await ougi.processCommand(msg);
@@ -208,7 +208,7 @@ client.on('messageCreate', async (msg) => {
         let isCommand = false;
 
         if (prefixMatch?.isCustom) {
-            msg.content = ougi.helperFunctions.prependPrefix(msg, prefixMatch.prefix);
+            msg.content = ougi.helperFunctions.prependPrefixMsg(msg, prefixMatch.prefix);
             await ougi.processCommand(msg);
             ourConcern = true;
             isCommand = true;
@@ -241,7 +241,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
 
     const msg = {
         id: 0,
-        content: ougi.helperFunctions.prependPrefix(ougi.helperFunctions.stripPrefix(shortcut.action, message)),
+        content: ougi.helperFunctions.prependPrefix(ougi.helperFunctions.stripPrefixStr(shortcut.action, guildId)),
         author: user,
         channelId: reaction.message.id,
         channel: reaction.message.channel,

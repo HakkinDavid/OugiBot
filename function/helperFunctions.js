@@ -1,34 +1,26 @@
 module.exports = {
     /**
-     * Checks if a message or text string starts with a valid top-level or guild prefix.
-     * Top-level prefixes: ["ougi", "#ougi", "扇"] as well as bot mentions.
-     * Guild prefix: ougi.db().getPrefix(guildId) if available.
-     *
-     * @param {object|string} input - Discord Message object or text string.
-     * @param {object|string} [msgContext] - Optional Discord Message object if input is string.
+     * Checks if a Discord Message object starts with a top-level or guild prefix.
+     * @param {object} msg - Discord Message object.
      * @returns {object|null} Match object with { matched: true, prefix, isCustom, isRoot, isTopLevel, isMention } or null.
      */
-    checkForPrefix(input, msgContext) {
-        if (!input) return null;
+    checkForPrefixMsg(msg) {
+        if (!msg || typeof msg !== 'object') return null;
+        const content = msg.content ?? msg.text ?? '';
+        const guildId = msg.guildId ?? msg.guild?.id ?? null;
+        return this.checkForPrefixStr(content, guildId, msg);
+    },
 
-        let content = "";
-        let guildId = null;
-        let messageObj = null;
-
-        if (typeof input === 'string') {
-            content = input;
-            if (msgContext && typeof msgContext === 'object') {
-                messageObj = msgContext;
-                guildId = msgContext.guildId ?? msgContext.guild?.id ?? null;
-            }
-        } else if (typeof input === 'object') {
-            messageObj = input;
-            content = input.content ?? input.text ?? "";
-            guildId = input.guildId ?? input.guild?.id ?? null;
-        }
-
-        if (!content) return null;
-        const lower = content.toLowerCase();
+    /**
+     * Checks if a text string starts with a top-level or guild prefix.
+     * @param {string} text - Raw text string.
+     * @param {string} [guildId] - Optional Guild ID.
+     * @param {object} [msgObj] - Optional Discord Message object for mention checks.
+     * @returns {object|null} Match object with { matched: true, prefix, isCustom, isRoot, isTopLevel, isMention } or null.
+     */
+    checkForPrefixStr(text, guildId = null, msgObj = null) {
+        if (typeof text !== 'string' || !text) return null;
+        const lower = text.toLowerCase();
 
         // 1. Top-level prefixes
         const topPrefixes = ["ougi", "#ougi", "扇"];
@@ -47,8 +39,8 @@ module.exports = {
         }
 
         // 2. Mention check
-        if (messageObj && typeof client !== 'undefined' && client.user) {
-            if (messageObj.mentions?.has?.(client.user)) {
+        if (msgObj && typeof client !== 'undefined' && client.user) {
+            if (msgObj.mentions?.has?.(client.user)) {
                 return {
                     matched: true,
                     prefix: client.user.toString(),
@@ -101,16 +93,29 @@ module.exports = {
     },
 
     /**
-     * Ensures input text/message starts with 'ougi '.
-     * If prefixToStrip is provided, it is removed from the start of input before prepending 'ougi '.
-     * If input already starts with 'ougi ', it is returned normalized.
-     *
-     * @param {object|string} input - Message object or text string.
-     * @param {string} [prefixToStrip] - Optional prefix to strip before prepending.
-     * @returns {string} Content starting with 'ougi '.
+     * Primary convenience function @ checkForPrefix(msg).
+     * Delegates to checkForPrefixMsg if given a Message object, or checkForPrefixStr if given a string.
+     * @param {object|string} input - Discord Message object or text string.
+     * @param {string} [guildId] - Optional Guild ID if input is string.
+     * @returns {object|null} Match object or null.
      */
-    prependPrefix(input, prefixToStrip) {
-        let raw = typeof input === 'string' ? input : (input?.content ?? '');
+    checkForPrefix(input, guildId = null) {
+        if (!input) return null;
+        if (typeof input === 'string') {
+            return this.checkForPrefixStr(input, guildId);
+        }
+        return this.checkForPrefixMsg(input);
+    },
+
+    /**
+     * Prepares string command content ensuring it starts with 'ougi '.
+     * Strips prefixToStrip from start of text if provided.
+     * @param {string} text - Command text string.
+     * @param {string} [prefixToStrip] - Optional prefix to strip.
+     * @returns {string} Normalized string starting with 'ougi '.
+     */
+    prependPrefix(text, prefixToStrip = null) {
+        let raw = typeof text === 'string' ? text : '';
         raw = raw.trim();
 
         if (prefixToStrip && raw.toLowerCase().startsWith(prefixToStrip.toLowerCase())) {
@@ -128,13 +133,25 @@ module.exports = {
     },
 
     /**
+     * Prepares Message object content ensuring it starts with 'ougi '.
+     * Strips prefixToStrip from start of message content if provided.
+     * @param {object} msg - Discord Message object.
+     * @param {string} [prefixToStrip] - Optional prefix to strip.
+     * @returns {string} Normalized string starting with 'ougi '.
+     */
+    prependPrefixMsg(msg, prefixToStrip = null) {
+        const content = msg?.content ?? msg?.text ?? '';
+        return this.prependPrefix(content, prefixToStrip);
+    },
+
+    /**
      * Replaces bot mention tags and "扇" with "ougi".
-     * @param {string} content - Text content.
+     * @param {string} text - Text content.
      * @returns {string} Text with mentions normalized to "ougi".
      */
-    normalizeMentions(content) {
-        if (typeof content !== 'string') return '';
-        let result = content.replace(/<@!?629837958123356172>/g, 'ougi').replace(/扇/g, 'ougi');
+    normalizeMentions(text) {
+        if (typeof text !== 'string') return '';
+        let result = text.replace(/<@!?629837958123356172>/g, 'ougi').replace(/扇/g, 'ougi');
         if (typeof client !== 'undefined' && client.user?.id) {
             const botTagRegex = new RegExp(`<@!?${client.user.id}>`, 'g');
             result = result.replace(botTagRegex, 'ougi');
@@ -143,19 +160,38 @@ module.exports = {
     },
 
     /**
-     * Strips any leading prefix or bot mention from a text string or message.
-     * @param {object|string} input - Message object or text string.
-     * @param {object} [msgContext] - Optional message object context.
-     * @returns {string} The content with leading prefix/mention removed.
+     * Strips any leading prefix or bot mention from a text string.
+     * @param {string} text - Text string.
+     * @param {string} [guildId] - Optional Guild ID.
+     * @returns {string} Content with leading prefix/mention removed.
      */
-    stripPrefix(input, msgContext) {
-        let str = typeof input === 'string' ? input : (input?.content ?? '');
-        str = this.normalizeMentions(str);
+    stripPrefixStr(text, guildId = null) {
+        if (typeof text !== 'string') return '';
+        let str = this.normalizeMentions(text);
 
-        let match = this.checkForPrefix(str, msgContext);
+        let match = this.checkForPrefixStr(str, guildId);
         while (match) {
             str = str.slice(match.prefix.length).trimStart();
-            match = this.checkForPrefix(str, msgContext);
+            match = this.checkForPrefixStr(str, guildId);
+        }
+        return str.trim();
+    },
+
+    /**
+     * Strips any leading prefix or bot mention from a Discord Message object.
+     * @param {object} msg - Discord Message object.
+     * @returns {string} Content with leading prefix/mention removed.
+     */
+    stripPrefixMsg(msg) {
+        if (!msg || typeof msg !== 'object') return '';
+        const content = msg.content ?? msg.text ?? '';
+        const guildId = msg.guildId ?? msg.guild?.id ?? null;
+        let str = this.normalizeMentions(content);
+
+        let match = this.checkForPrefixStr(str, guildId, msg);
+        while (match) {
+            str = str.slice(match.prefix.length).trimStart();
+            match = this.checkForPrefixStr(str, guildId, msg);
         }
         return str.trim();
     }

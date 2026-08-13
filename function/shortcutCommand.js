@@ -14,7 +14,7 @@ module.exports = async function (arguments, msg) {
     if (subcommand === 'create') {
         const emoji = arguments[1];
         let action = arguments.slice((() => {
-            if (ougi.helperFunctions.checkForPrefix(arguments[2], msg)) {
+            if (ougi.helperFunctions.checkForPrefixStr(arguments[2], msg.guildId)) {
                 return 3;
             }
             return 2;

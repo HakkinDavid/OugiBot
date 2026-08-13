@@ -30,7 +30,7 @@ async function (arguments, msg) {
   let trigger = breakChocolate[0].toString();
   let response = breakChocolate[1].toString();
 
-  trigger = ougi.helperFunctions.stripPrefix(trigger, msg);
+  trigger = ougi.helperFunctions.stripPrefixStr(trigger, msg.guildId);
 
   while (trigger.endsWith(" ")){
     trigger = trigger.substring(0, trigger.length-1)
