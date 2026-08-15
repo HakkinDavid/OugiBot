@@ -337,6 +337,15 @@ module.exports = {
             // Ignore EPIPE when encoder closes
         });
 
+        mixer.onBufferLow = () => {
+            if (session.diskReadStream && session.diskReadStream.isPaused()) {
+                session.diskReadStream.resume();
+            }
+            if (session.musicProc && session.musicProc.stdout && session.musicProc.stdout.isPaused()) {
+                session.musicProc.stdout.resume();
+            }
+        };
+
         mixer.pipe(encoder.stdin);
 
         const resource = V.createAudioResource(encoder.stdout, {
@@ -413,8 +422,8 @@ module.exports = {
                     });
 
                     session.mixer.onBufferLow = () => {
-                        if (diskReadStream && diskReadStream.isPaused()) {
-                            diskReadStream.resume();
+                        if (session.diskReadStream && session.diskReadStream.isPaused()) {
+                            session.diskReadStream.resume();
                         }
                     };
 
@@ -499,6 +508,7 @@ module.exports = {
             song.cachedPcm = [];
             let totalPcmCached = 0;
             const cacheWriter = cacheManager.createCacheWriteStream(song.url);
+            session.cacheWriter = cacheWriter;
 
             let musicProc = null;
             let ytProc = null;
@@ -513,6 +523,9 @@ module.exports = {
                         cookies: global.cachedCookiesPath,
                         noWarnings: true
                     });
+
+                    // Catch SIGTERM / process kill cleanly to avoid ChildProcessError
+                    ytProc.catch(() => {});
 
                     musicProc = spawn('ffmpeg', [
                         '-loglevel', 'error',
@@ -565,8 +578,8 @@ module.exports = {
                     session.mixer.writeMusic(chunk);
 
                     // Write to global disk cache
-                    if (cacheWriter) {
-                        cacheWriter.write(chunk);
+                    if (session.cacheWriter) {
+                        session.cacheWriter.write(chunk);
                     }
 
                     // Write to in-memory cache for immediate loops
@@ -590,11 +603,21 @@ module.exports = {
 
             musicProc.on('error', (err) => {
                 console.error(`Music decoder error for ${song.title}:`, err);
-                if (cacheWriter) cacheWriter.abort();
+                if (session.cacheWriter) {
+                    session.cacheWriter.abort();
+                    session.cacheWriter = null;
+                }
             });
 
             musicProc.on('close', (code) => {
-                if (cacheWriter) cacheWriter.end();
+                if (session.cacheWriter) {
+                    if (code === 0 && !musicProc.killed) {
+                        session.cacheWriter.end();
+                    } else {
+                        session.cacheWriter.abort();
+                    }
+                    session.cacheWriter = null;
+                }
                 onSongComplete();
             });
 
@@ -738,6 +761,11 @@ module.exports = {
 
         session.isCachedPlaying = false;
 
+        if (session.cacheWriter) {
+            try { session.cacheWriter.abort(); } catch (_) {}
+            session.cacheWriter = null;
+        }
+
         if (session.diskReadStream) {
             try { session.diskReadStream.destroy(); } catch (_) {}
             session.diskReadStream = null;
@@ -815,6 +843,11 @@ module.exports = {
         if (session.disconnectTimer) {
             clearTimeout(session.disconnectTimer);
             session.disconnectTimer = null;
+        }
+
+        if (session.cacheWriter) {
+            try { session.cacheWriter.abort(); } catch (_) {}
+            session.cacheWriter = null;
         }
 
         if (session.diskReadStream) {

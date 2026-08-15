@@ -141,7 +141,7 @@ class AudioCacheManager {
             isClosed = true;
 
             try {
-                if (fs.existsSync(tempFile) && totalBytesWritten > 0) {
+                if (fs.existsSync(tempFile) && totalBytesWritten >= 3840) {
                     fs.renameSync(tempFile, targetFile);
                     this.cacheMap.set(videoId, {
                         filePath: targetFile,
@@ -156,6 +156,7 @@ class AudioCacheManager {
                 }
             } catch (err) {
                 console.error(`[AudioCacheManager] Error finalizing cache for ${videoId}:`, err);
+                try { if (fs.existsSync(tempFile)) fs.unlinkSync(tempFile); } catch (_) {}
             }
         };
 
@@ -164,6 +165,8 @@ class AudioCacheManager {
             isClosed = true;
             try {
                 writeStream.destroy();
+            } catch (_) {}
+            try {
                 if (fs.existsSync(tempFile)) {
                     fs.unlinkSync(tempFile);
                 }
@@ -268,6 +271,9 @@ class AudioCacheManager {
                         cookies: global.cachedCookiesPath,
                         noWarnings: true
                     });
+
+                    // Catch SIGTERM / tinyspawn rejection cleanly
+                    ytProc.catch(() => {});
 
                     ffmpegProc = spawn('ffmpeg', [
                         '-loglevel', 'error',
