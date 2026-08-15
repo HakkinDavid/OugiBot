@@ -210,12 +210,14 @@ module.exports = {
     AudioMixer,
 
     async getOrCreateSession(guildId, vcChannel) {
-        const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus, getVoiceConnection, entersState, VoiceConnectionStatus, StreamType } = Voice;
+        const V = global.Voice || require('@discordjs/voice');
+        const { createAudioPlayer, createAudioResource, AudioPlayerStatus, entersState, VoiceConnectionStatus, StreamType } = V;
 
         if (!global.vc) global.vc = {};
         if (!vc[guildId]) {
             vc[guildId] = {
                 queue: [],
+                ttsQueue: [],
                 player: null,
                 connection: null,
                 mixer: null,
@@ -223,6 +225,7 @@ module.exports = {
                 musicProc: null,
                 currentTtsProc: null,
                 isTtsPlaying: false,
+                isProcessingTts: false,
                 disconnectTimer: null
             };
         }
@@ -235,16 +238,16 @@ module.exports = {
             session.disconnectTimer = null;
         }
 
-        let connection = getVoiceConnection(guildId);
+        let connection = V.getVoiceConnection(guildId);
         if (!connection || connection.state.status === VoiceConnectionStatus.Destroyed) {
-            connection = joinVoiceChannel({
+            connection = V.joinVoiceChannel({
                 channelId: vcChannel.id,
                 guildId: vcChannel.guildId,
                 adapterCreator: vcChannel.guild.voiceAdapterCreator,
                 selfDeaf: true,
             });
-        } else if (connection.joinConfig.channelId !== vcChannel.id) {
-            connection = joinVoiceChannel({
+        } else if (connection.joinConfig && connection.joinConfig.channelId !== vcChannel.id) {
+            connection = V.joinVoiceChannel({
                 channelId: vcChannel.id,
                 guildId: vcChannel.guildId,
                 adapterCreator: vcChannel.guild.voiceAdapterCreator,
@@ -434,71 +437,107 @@ module.exports = {
     async playTts(msg, vcChannel, ttsUrls) {
         const session = await this.getOrCreateSession(msg.guildId, vcChannel);
 
+        return new Promise((resolve, reject) => {
+            session.ttsQueue.push({
+                msg,
+                vcChannel,
+                ttsUrls,
+                resolve,
+                reject
+            });
+
+            if (!session.isProcessingTts) {
+                this.processTtsQueue(msg.guildId, vcChannel);
+            }
+        });
+    },
+
+    async processTtsQueue(guildId, vcChannel) {
+        const session = vc[guildId];
+        if (!session) return;
+
+        session.isProcessingTts = true;
+        session.isTtsPlaying = true;
+
         if (!session.mixer || session.mixer.destroyed || session.mixer.ended) {
-            this.startMixerPipeline(msg.guildId);
+            this.startMixerPipeline(guildId);
         }
 
-        session.isTtsPlaying = true;
         session.mixer.startTts();
 
-        try {
-            for (const chunk of ttsUrls) {
-                if (!vc[msg.guildId]) break; // stopped
+        while (session.ttsQueue && session.ttsQueue.length > 0) {
+            const currentItem = session.ttsQueue[0];
+            const { msg, ttsUrls, resolve } = currentItem;
 
-                const response = await axios.get(chunk.url, {
-                    responseType: 'stream',
-                    headers: {
-                        'User-Agent': 'stagefright/1.2 (Linux;Android 5.0)',
-                        'Referer': 'https://translate.google.com/'
-                    },
-                    timeout: 10000
-                });
+            try {
+                for (const chunk of ttsUrls) {
+                    if (!vc[guildId]) break; // stopped / disconnected
 
-                await new Promise((resolve) => {
-                    const ttsProc = spawn('ffmpeg', [
-                        '-loglevel', 'error',
-                        '-i', 'pipe:0',
-                        '-f', 's16le',
-                        '-ar', '48000',
-                        '-ac', '2',
-                        '-vn',
-                        'pipe:1'
-                    ]);
-
-                    session.currentTtsProc = ttsProc;
-
-                    response.data.pipe(ttsProc.stdin);
-
-                    ttsProc.stdout.on('data', (pcmChunk) => {
-                        if (session.mixer && !session.mixer.destroyed) {
-                            session.mixer.writeTts(pcmChunk);
-                        }
+                    const response = await axios.get(chunk.url, {
+                        responseType: 'stream',
+                        headers: {
+                            'User-Agent': 'stagefright/1.2 (Linux;Android 5.0)',
+                            'Referer': 'https://translate.google.com/'
+                        },
+                        timeout: 10000
                     });
 
-                    ttsProc.stdin.on('error', () => {});
-                    ttsProc.stdout.on('error', () => {});
+                    await new Promise((chunkResolve) => {
+                        const ttsProc = spawn('ffmpeg', [
+                            '-loglevel', 'error',
+                            '-i', 'pipe:0',
+                            '-f', 's16le',
+                            '-ar', '48000',
+                            '-ac', '2',
+                            '-vn',
+                            'pipe:1'
+                        ]);
 
-                    const cleanupProc = () => {
-                        session.currentTtsProc = null;
-                        resolve();
-                    };
+                        session.currentTtsProc = ttsProc;
 
-                    ttsProc.on('close', cleanupProc);
-                    ttsProc.on('error', (e) => {
-                        console.error("TTS FFmpeg process error:", e);
-                        cleanupProc();
+                        response.data.pipe(ttsProc.stdin);
+
+                        ttsProc.stdout.on('data', (pcmChunk) => {
+                            if (session.mixer && !session.mixer.destroyed) {
+                                session.mixer.writeTts(pcmChunk);
+                            }
+                        });
+
+                        ttsProc.stdin.on('error', () => {});
+                        ttsProc.stdout.on('error', () => {});
+
+                        const cleanupProc = () => {
+                            session.currentTtsProc = null;
+                            chunkResolve();
+                        };
+
+                        ttsProc.on('close', cleanupProc);
+                        ttsProc.on('error', (e) => {
+                            console.error("TTS FFmpeg process error:", e);
+                            cleanupProc();
+                        });
                     });
-                });
+                }
+            } catch (err) {
+                console.error("Error in TTS streaming queue item:", err);
             }
-        } catch (err) {
-            console.error("Error in TTS streaming:", err);
-        } finally {
-            if (session.mixer) {
-                session.mixer.endTts();
+
+            msg?.react?.('🔊').catch(() => {});
+            resolve?.();
+
+            if (session.ttsQueue) {
+                session.ttsQueue.shift();
             }
-            session.isTtsPlaying = false;
-            msg.react('🔊').catch(() => {});
         }
+
+        if (session.mixer) {
+            session.mixer.endTts();
+        }
+
+        session.isTtsPlaying = false;
+        session.isProcessingTts = false;
+
+        this.handlePlayerIdle(guildId, vcChannel);
     },
 
     skipMusic(guildId, msg, vcChannel) {
@@ -540,11 +579,11 @@ module.exports = {
         }
 
         // If queue empty and not speaking, schedule idle disconnect after 2 minutes
-        if ((!session.queue || session.queue.length === 0) && !session.isTtsPlaying) {
+        if ((!session.queue || session.queue.length === 0) && !session.isTtsPlaying && (!session.ttsQueue || session.ttsQueue.length === 0)) {
             if (!session.disconnectTimer) {
                 session.disconnectTimer = setTimeout(() => {
                     const currentSession = vc[guildId];
-                    if (currentSession && (!currentSession.queue || currentSession.queue.length === 0) && !currentSession.isTtsPlaying) {
+                    if (currentSession && (!currentSession.queue || currentSession.queue.length === 0) && !currentSession.isTtsPlaying && (!currentSession.ttsQueue || currentSession.ttsQueue.length === 0)) {
                         const { getVoiceConnection, VoiceConnectionStatus } = Voice;
                         const connection = getVoiceConnection(guildId);
                         if (connection && connection.state.status !== VoiceConnectionStatus.Destroyed) {
@@ -579,6 +618,13 @@ module.exports = {
         if (session.encoder && !session.encoder.killed) {
             try { session.encoder.kill(); } catch (_) {}
             session.encoder = null;
+        }
+
+        if (session.ttsQueue) {
+            for (const item of session.ttsQueue) {
+                item.resolve?.();
+            }
+            session.ttsQueue = [];
         }
 
         if (session.mixer) {
