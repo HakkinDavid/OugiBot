@@ -7,7 +7,7 @@ module.exports = async function (msg) {
     })
     .addFields({
       name: "Available Options",
-      value: "• `::title <text>` - Set custom title\n• `::fill <emoji/text>` - Custom mine emoji\n• `::treasure <emoji/text>` - Custom treasure emoji\n• `::difficulty <1-10>` - Set mine grid density"
+      value: "• `::title <text>` Set custom title\n• `::fill <emoji/text>` Custom mine emoji\n• `::treasure <emoji/text>` Custom treasure emoji\n• `::difficulty <1-10>` Set mine grid density"
     });
 
   msg.channel.send({ embeds: [embed] }).catch(console.error);
