@@ -12,6 +12,7 @@ class AudioMixer extends Readable {
 
         this.isMusicActive = false;
         this.isTtsActive = false;
+        this.isMusicEof = false;
 
         this.duckedVolume = 0.20; // Volume of music when TTS is speaking
         this.ttsVolume = 1.00;    // Volume of TTS (predominant)
@@ -27,8 +28,14 @@ class AudioMixer extends Readable {
     writeMusic(chunk) {
         if (this.destroyed || this.ended) return;
         this.isMusicActive = true;
+        this.isMusicEof = false;
         this.musicBuffers.push(chunk);
         this.musicBytes += chunk.length;
+        this._process();
+    }
+
+    notifyMusicEof() {
+        this.isMusicEof = true;
         this._process();
     }
 
@@ -36,10 +43,12 @@ class AudioMixer extends Readable {
         this.musicBuffers = [];
         this.musicBytes = 0;
         this.isMusicActive = false;
+        this.isMusicEof = false;
     }
 
     endMusic() {
         this.isMusicActive = false;
+        this.isMusicEof = true;
         this._process();
         this._checkEnd();
     }
@@ -112,8 +121,16 @@ class AudioMixer extends Readable {
                 // Music only at full volume
                 const m = this._consumeMusic(this.chunkSize);
                 if (!this.push(m)) break;
+            } else if (this.isMusicEof && this.musicBytes > 0) {
+                // End of music stream reached: flush remaining bytes zero-padded to full 3840 frame
+                const m = this._consumeMusic(this.chunkSize);
+                this.musicBytes = 0;
+                this.musicBuffers = [];
+                if (!this.push(m)) break;
             } else if (!this.isMusicActive && this.musicBytes > 0) {
-                const m = this._consumeMusic(Math.min(this.chunkSize, this.musicBytes));
+                const m = this._consumeMusic(this.chunkSize);
+                this.musicBytes = 0;
+                this.musicBuffers = [];
                 if (!this.push(m)) break;
             } else {
                 break;
@@ -428,6 +445,9 @@ module.exports = {
                     };
 
                     diskReadStream.on('end', () => {
+                        if (session.mixer && !session.mixer.destroyed) {
+                            session.mixer.notifyMusicEof();
+                        }
                         const checkMixerDrain = () => {
                             if (!session.queue || session.queue[0] !== song) return;
                             if (session.mixer && session.mixer.musicBytes > 0 && !session.mixer.destroyed) {
@@ -477,6 +497,9 @@ module.exports = {
                     isFeeding = false;
 
                     if (chunkIndex >= song.cachedPcm.length) {
+                        if (session.mixer && !session.mixer.destroyed) {
+                            session.mixer.notifyMusicEof();
+                        }
                         const checkMixerDrain = () => {
                             if (!session.queue || session.queue[0] !== song) return;
                             if (session.mixer && session.mixer.musicBytes > 0 && !session.mixer.destroyed) {
