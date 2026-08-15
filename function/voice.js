@@ -3,12 +3,17 @@ module.exports = async function (msg) {
     return msg.channel.send(await ougi.text(msg, "mustGuild"));
   }
 
-  const memberVC = msg.member?.voice?.channel;
+  let member = msg.member;
+  if (!member && msg.guild && msg.author) {
+    member = msg.guild.members?.cache?.get(msg.author.id) || await msg.guild.members?.fetch(msg.author.id).catch(() => null);
+  }
+
+  const memberVC = member?.voice?.channel;
   if (!memberVC) {
     return msg.channel.send(await ougi.text(msg, "musicNoVC"));
   }
 
-  const permissions = memberVC.permissionsFor(msg.client.user);
+  const permissions = memberVC.permissionsFor(msg.client?.user || client?.user);
   if (permissions && (!permissions.has('Connect') || !permissions.has('Speak'))) {
     return msg.channel.send("I need permissions to connect and speak in your voice channel.");
   }
@@ -16,7 +21,7 @@ module.exports = async function (msg) {
   const cleanedContent = msg.content.replace(/\s+/g, ' ').trim();
   let args = cleanedContent.split(" ").slice(2);
 
-  let langCode = (ougi.db().getLang(msg.guildId)) ?? 'en';
+  let langCode = (ougi.db().getLang(msg.author?.id)) ?? (ougi.db().getLang(msg.guildId)) ?? 'en';
   if (args.length > 0 && args[0].startsWith("::")) {
     const code = args[0].replace(/^::/, "").toLowerCase();
     if (ougi.langCodes && ougi.langCodes[code]) {
@@ -25,7 +30,18 @@ module.exports = async function (msg) {
     }
   }
 
-  let textToSpeak = args.join(" ").replace(/[\+\*\?\^\$\(\)\[\]\{\}\|\\\&\/\@]/g, "").trim();
+  let textToSpeak = args.join(" ");
+
+  if ((!textToSpeak || textToSpeak.trim().length === 0) && msg.reference) {
+    try {
+      const targetMsg = await msg.channel.messages.fetch(msg.reference.messageId);
+      if (targetMsg?.content) {
+        textToSpeak = targetMsg.content;
+      }
+    } catch (e) {}
+  }
+
+  textToSpeak = textToSpeak.replace(/[\+\*\?\^\$\(\)\[\]\{\}\|\\\&\/\@]/g, "").trim();
   if (!textToSpeak) {
     return msg.channel.send("Please specify a sentence for me to read out loud.");
   }
