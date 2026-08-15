@@ -11,3 +11,5 @@ node_modules
 *.db-shm
 *.db-wal
 package-lock.json
+cookies.txt
+cookies.txt.clean
