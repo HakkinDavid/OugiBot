@@ -8,7 +8,7 @@ async function (arguments, msg) {
   .setDescription("A simple chat bot with an undefined personality: If you had to describe it on the shortest phrase, it would be \"Oshino Ougi is Oshino Ougi\", even an entire encyclopedia about Ougi would just require that sentence.")
   .setFooter({text: "HauntedEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
   .setThumbnail(client.users.cache.get(davidUserID).avatarURL({dynamic: true, size: 4096}))
-  .setURL("https://twitter.com/HakkinDavid")
+  .setURL("https://www.instagram.com/hakkindavid/")
   .addFields({name: "Who's Ougi?", value: "Ougi."})
   .addFields({name: "What's Ougi's prefix?", value: "`ougi`"})
   .addFields({name: "What does Ougi do?", value: "Ask Ougi.\nTry `ougi help`."})
