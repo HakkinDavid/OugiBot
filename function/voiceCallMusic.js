@@ -1,6 +1,4 @@
 module.exports = async function (msg) {
-    const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus, getVoiceConnection, entersState, VoiceConnectionStatus } = Voice;
-
     try {
         if (!msg.guild) {
             await msg.channel.send(await ougi.text(msg, "mustGuild"));
@@ -26,16 +24,27 @@ module.exports = async function (msg) {
 
         if (!global.vc) global.vc = {};
         if (!vc[msg.guildId]) {
-            vc[msg.guildId] = { queue: [], player: null, connection: null };
+            vc[msg.guildId] = {
+                queue: [],
+                player: null,
+                connection: null,
+                mixer: null,
+                encoder: null,
+                musicProc: null,
+                currentTtsProc: null,
+                isTtsPlaying: false,
+                disconnectTimer: null
+            };
         }
 
         // Command: stop
         if (command === "stop" || (command === "music" && subCommand === "stop")) {
+            const { getVoiceConnection, VoiceConnectionStatus } = Voice;
             const connection = getVoiceConnection(msg.guildId);
             if (connection && connection.state.status !== VoiceConnectionStatus.Destroyed) {
                 connection.destroy();
             }
-            delete vc[msg.guildId];
+            ougi.voiceManager.stop(msg.guildId);
             await msg.channel.send(await ougi.text(msg, "musicStopped"));
             return;
         }
@@ -46,7 +55,7 @@ module.exports = async function (msg) {
                 await msg.channel.send(await ougi.text(msg, "musicNothingToSkip"));
                 return;
             }
-            vc[msg.guildId].player?.stop();
+            ougi.voiceManager.skipMusic(msg.guildId, msg, vcChannel);
             await msg.channel.send(await ougi.text(msg, "musicSkipped"));
             return;
         }
@@ -140,7 +149,7 @@ module.exports = async function (msg) {
         await msg.channel.send({ embeds: [embed] });
 
         if (vc[msg.guildId].queue.length === 1) {
-            playNext(msg, vcChannel);
+            await ougi.voiceManager.playMusic(msg, vcChannel);
         }
 
     } catch (error) {
@@ -148,97 +157,3 @@ module.exports = async function (msg) {
         await msg.channel.send(await ougi.text(msg, "musicCommandError"));
     }
 };
-
-async function playNext(msg, vcChannel) {
-    const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus, getVoiceConnection, entersState, VoiceConnectionStatus } = Voice;
-    const guildQueue = vc[msg.guildId];
-    if (!guildQueue || guildQueue.queue.length === 0) {
-        const connection = getVoiceConnection(msg.guildId);
-        if (connection && connection.state.status !== VoiceConnectionStatus.Destroyed) {
-            connection.destroy();
-        }
-        delete vc[msg.guildId];
-        return;
-    }
-
-    const song = guildQueue.queue[0];
-
-    try {
-        const ytOptions = { 
-            getUrl: true, 
-            format: 'bestaudio/best', 
-            jsRuntimes: 'node', 
-            extractorArgs: 'youtube:player_client=mweb,android,web',
-            noWarnings: true 
-        };
-
-        if (global.cachedCookiesPath) {
-            ytOptions.cookies = global.cachedCookiesPath;
-        }
-
-        const rawStreamUrl = (await youtubedl(song.url, ytOptions)).trim();
-        const resource = createAudioResource(rawStreamUrl);
-
-        if (!guildQueue.player) {
-            guildQueue.player = createAudioPlayer();
-
-            guildQueue.player.on(AudioPlayerStatus.Idle, () => {
-                guildQueue.queue.shift();
-                playNext(msg, vcChannel);
-            });
-
-            guildQueue.player.on('error', (err) => {
-                console.error("Audio player error in playNext:", err);
-                msg.channel.send(`⚠️ Stream error playing **${song.title}**. Skipping...`).catch(() => {});
-                guildQueue.queue.shift();
-                playNext(msg, vcChannel);
-            });
-        }
-
-        let connection = getVoiceConnection(msg.guildId);
-        if (!connection || connection.state.status === VoiceConnectionStatus.Destroyed) {
-            connection = joinVoiceChannel({
-                channelId: vcChannel.id,
-                guildId: vcChannel.guildId,
-                adapterCreator: vcChannel.guild.voiceAdapterCreator,
-                selfDeaf: true,
-            });
-        } else if (connection.joinConfig.channelId !== vcChannel.id) {
-            connection = joinVoiceChannel({
-                channelId: vcChannel.id,
-                guildId: vcChannel.guildId,
-                adapterCreator: vcChannel.guild.voiceAdapterCreator,
-                selfDeaf: true,
-            });
-        }
-
-        if (!connection._hasMusicDisconnectHandler) {
-            connection._hasMusicDisconnectHandler = true;
-            connection.on(VoiceConnectionStatus.Disconnected, async () => {
-                try {
-                    await Promise.race([
-                        entersState(connection, VoiceConnectionStatus.Signalling, 5_000),
-                        entersState(connection, VoiceConnectionStatus.Connecting, 5_000),
-                    ]);
-                } catch {
-                    if (connection.state.status !== VoiceConnectionStatus.Destroyed) {
-                        connection.destroy();
-                    }
-                }
-            });
-        }
-
-        if (connection.state.status !== VoiceConnectionStatus.Ready) {
-            await entersState(connection, VoiceConnectionStatus.Ready, 15_000);
-        }
-
-        connection.subscribe(guildQueue.player);
-        guildQueue.player.play(resource);
-
-    } catch (err) {
-        console.error("Stream error in playNext:", err);
-        msg.channel.send(`⚠️ Unable to play **${song.title}** (stream unavailable or restricted). Skipping...`).catch(() => {});
-        guildQueue.queue.shift();
-        playNext(msg, vcChannel);
-    }
-}

@@ -26,12 +26,18 @@ async function (msg, options) {
     }
 
     else {
-      if (msg.content.length > 1024) {
-        embed.addFields({name: "Content", value: msg.content.slice(0,1024)});
-        embed.addFields({name: "\u200b", value: msg.content.slice(1024)});
-      }
-      else {
-          embed.addFields({name: "Content", value: msg.content});
+      const content = msg.content || "";
+      if (content.length > 0) {
+        let trimmed = content;
+        let first = true;
+        while (trimmed.length > 0 && (!embed.data.fields || embed.data.fields.length < 24)) {
+          const chunk = trimmed.slice(0, 1024);
+          embed.addFields({ name: first ? "Content" : "\u200b", value: chunk || "\u200b" });
+          trimmed = trimmed.slice(1024);
+          first = false;
+        }
+      } else {
+        embed.addFields({ name: "Content", value: "<empty>" });
       }
     }
 

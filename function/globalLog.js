@@ -10,25 +10,34 @@ async function (msg) {
     .setFooter({text: "globalLogEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
     .setTimestamp();
     if (typeof msg === "string") {
-        embed.setAuthor({name: "Ougi through Console Log", icon: client.user.avatarURL({dynamic: true, size: 4096})}).setDescription(msg);
+        embed.setAuthor({name: "Ougi through Console Log", icon: client.user.avatarURL({dynamic: true, size: 4096})}).setDescription(msg.slice(0, 4096));
     }
     else {
-        embed.setAuthor({name: msg.author.username, icon: msg.author.avatarURL({dynamic: true, size: 4096})}).setDescription("ID `" + msg.author.id + "`");
-        if (msg.content.length > 1024) {
-            embed.addFields({name: "Content", value: crypted_content.slice(0, 1023)});
-            let trimmed = crypted_content.slice(1023);
-            while (trimmed.length > 0) {
-                embed.addFields({name: "\u200b", value: trimmed.slice(0, 1023)});
-                trimmed = trimmed.slice(1023);
+        const authorName = msg.author?.username || "Unknown";
+        const authorId = msg.author?.id || "Unknown";
+        const authorAvatar = msg.author?.avatarURL ? msg.author.avatarURL({dynamic: true, size: 4096}) : client.user.avatarURL({dynamic: true, size: 4096});
+        embed.setAuthor({name: authorName, icon: authorAvatar}).setDescription("ID `" + authorId + "`");
+        
+        if (crypted_content && crypted_content.length > 0) {
+            let trimmed = crypted_content;
+            let first = true;
+            while (trimmed.length > 0 && (!embed.data.fields || embed.data.fields.length < 24)) {
+                const chunk = trimmed.slice(0, 1024);
+                embed.addFields({name: first ? "Content" : "\u200b", value: chunk || "\u200b"});
+                trimmed = trimmed.slice(1024);
+                first = false;
             }
+        } else {
+            embed.addFields({name: "Content", value: "<empty>"});
         }
-        else {
-            embed.addFields({name: "Content", value: crypted_content});
-        }
+
         const chType = msg.channel?.type ?? "Unknown";
         const chId = msg.channel?.id ?? "Unknown";
         embed.addFields({name: "Channel info", value: "Type: `" + chType + "`\nID: `" + chId + "`"});
     }
 
-    client.channels.cache.get(consoleLogging).send({embeds: [embed]});
+    const logChannel = client.channels.cache.get(consoleLogging);
+    if (logChannel) {
+        logChannel.send({embeds: [embed]}).catch(console.error);
+    }
 }
