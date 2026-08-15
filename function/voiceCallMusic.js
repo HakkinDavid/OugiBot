@@ -100,13 +100,18 @@ module.exports = async function (msg) {
                 return;
             }
 
+            const cacheManager = ougi.audioCacheManager || require('./audioCacheManager');
             const isLooping = !!vc[msg.guildId]?.isLooping;
-            const queueList = guildQueue.map((s, idx) => `${idx === 0 ? '**Now Playing:**' : `\`${idx}.\``} [${s.title}](${s.url}) (\`${s.duration}\`)`).slice(0, 10).join('\n');
+            const queueList = guildQueue.map((s, idx) => {
+                const cachedTag = cacheManager.has(s.url) ? ' ⚡' : '';
+                return `${idx === 0 ? '**Now Playing:**' : `\`${idx}.\``} [${s.title}](${s.url})${cachedTag} (\`${s.duration}\`)`;
+            }).slice(0, 10).join('\n');
+
             const queueEmbed = new Discord.EmbedBuilder()
                 .setTitle("Ougi Music Queue")
                 .setDescription(queueList)
                 .setColor("#230347")
-                .setFooter({ text: `Total songs: ${guildQueue.length} | Loop: ${isLooping ? 'Enabled 🔂' : 'Disabled ➡️'}`, iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) });
+                .setFooter({ text: `Total songs: ${guildQueue.length} | Loop: ${isLooping ? 'Enabled 🔂' : 'Disabled ➡️'} | ⚡ = Preloaded`, iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) });
 
             await msg.channel.send({ embeds: [queueEmbed] });
             return;
@@ -171,9 +176,15 @@ module.exports = async function (msg) {
 
         vc[msg.guildId].queue.push(songInfo);
 
+        const cacheManager = ougi.audioCacheManager || require('./audioCacheManager');
+        if (vc[msg.guildId].queue.length > 1) {
+            cacheManager.prefetch(songInfo);
+        }
+
+        const isPrecached = cacheManager.has(songInfo.url);
         const embed = new Discord.EmbedBuilder()
             .setTitle(await ougi.text(msg, "musicAdded"))
-            .setDescription(`[${songInfo.title}](${songInfo.url})`)
+            .setDescription(`[${songInfo.title}](${songInfo.url})${isPrecached ? ' ⚡ *(Cached)*' : ''}`)
             .setThumbnail(songInfo.thumbnail)
             .setColor("#230347")
             .addFields({ name: "Duration", value: `\`${songInfo.duration}\``, inline: true })

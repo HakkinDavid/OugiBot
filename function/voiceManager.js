@@ -358,6 +358,8 @@ module.exports = {
         if (session.isCachedPlaying) return;
 
         const song = session.queue[0];
+        const cacheManager = ougi.audioCacheManager || require('./audioCacheManager');
+
         try {
             if (!session.mixer || session.mixer.destroyed || session.mixer.ended) {
                 this.startMixerPipeline(msg.guildId);
@@ -366,6 +368,10 @@ module.exports = {
             const onSongComplete = () => {
                 session.musicProc = null;
                 session.isCachedPlaying = false;
+                if (session.diskReadStream) {
+                    try { session.diskReadStream.destroy(); } catch (_) {}
+                    session.diskReadStream = null;
+                }
                 if (session.ytProc && !session.ytProc.killed) {
                     try { session.ytProc.kill(); } catch (_) {}
                     session.ytProc = null;
@@ -390,7 +396,54 @@ module.exports = {
                 }
             };
 
-            // Mode 1: Instant replay from cached PCM (no network re-download)
+            // Strategy 1: Global Persistent Disk/LRU Cache (0ms latency, zero network)
+            if (cacheManager.has(song.url)) {
+                const diskReadStream = cacheManager.createReadStream(song.url);
+                if (diskReadStream) {
+                    session.isCachedPlaying = true;
+                    session.diskReadStream = diskReadStream;
+
+                    diskReadStream.on('data', (chunk) => {
+                        if (session.mixer && !session.mixer.destroyed) {
+                            session.mixer.writeMusic(chunk);
+                            if (session.mixer.musicBytes > 48000 && !diskReadStream.isPaused()) {
+                                diskReadStream.pause();
+                            }
+                        }
+                    });
+
+                    session.mixer.onBufferLow = () => {
+                        if (diskReadStream && diskReadStream.isPaused()) {
+                            diskReadStream.resume();
+                        }
+                    };
+
+                    diskReadStream.on('end', () => {
+                        const checkMixerDrain = () => {
+                            if (!session.queue || session.queue[0] !== song) return;
+                            if (session.mixer && session.mixer.musicBytes > 0 && !session.mixer.destroyed) {
+                                setTimeout(checkMixerDrain, 100);
+                            } else {
+                                onSongComplete();
+                            }
+                        };
+                        checkMixerDrain();
+                    });
+
+                    diskReadStream.on('error', (err) => {
+                        console.error(`[VoiceManager] Disk cache stream error for ${song.title}:`, err);
+                        onSongComplete();
+                    });
+
+                    // Background prefetch next track in queue
+                    if (session.queue.length > 1) {
+                        cacheManager.prefetch(session.queue[1]);
+                    }
+                    return;
+                }
+            }
+
+            // Strategy 2: In-Memory Cached PCM (Loop Replay)
             if (song.cachedPcm && song.cachedPcm.length > 0) {
                 session.isCachedPlaying = true;
                 let chunkIndex = 0;
@@ -434,16 +487,23 @@ module.exports = {
                 };
 
                 feedCachedChunks();
+
+                // Background prefetch next track in queue
+                if (session.queue.length > 1) {
+                    cacheManager.prefetch(session.queue[1]);
+                }
                 return;
             }
 
-            // Mode 2: Network stream + Cache PCM
+            // Strategy 3: Network stream + Cache Write (Disk & In-Memory)
             song.cachedPcm = [];
             let totalPcmCached = 0;
+            const cacheWriter = cacheManager.createCacheWriteStream(song.url);
+
             let musicProc = null;
             let ytProc = null;
 
-            // Primary Strategy: Authenticated streaming with cookies via yt-dlp stdout pipe
+            // Authenticated streaming with cookies via yt-dlp stdout pipe
             if (global.cachedCookiesPath) {
                 try {
                     ytProc = youtubedl.exec(song.url, {
@@ -475,7 +535,7 @@ module.exports = {
                 }
             }
 
-            // Fallback Strategy: If no cookies or if cookie pipe failed, fetch direct stream URL
+            // Fallback: direct stream URL extraction without cookies
             if (!musicProc) {
                 const rawStreamUrl = (await youtubedl(song.url, {
                     getUrl: true,
@@ -504,7 +564,12 @@ module.exports = {
                 if (session.mixer && !session.mixer.destroyed) {
                     session.mixer.writeMusic(chunk);
 
-                    // Cache PCM for instant looping (limit to 100MB per track)
+                    // Write to global disk cache
+                    if (cacheWriter) {
+                        cacheWriter.write(chunk);
+                    }
+
+                    // Write to in-memory cache for immediate loops
                     if (totalPcmCached < 100 * 1024 * 1024) {
                         song.cachedPcm.push(chunk);
                         totalPcmCached += chunk.length;
@@ -525,11 +590,18 @@ module.exports = {
 
             musicProc.on('error', (err) => {
                 console.error(`Music decoder error for ${song.title}:`, err);
+                if (cacheWriter) cacheWriter.abort();
             });
 
             musicProc.on('close', (code) => {
+                if (cacheWriter) cacheWriter.end();
                 onSongComplete();
             });
+
+            // Trigger background prefetch for next track in queue
+            if (session.queue.length > 1) {
+                cacheManager.prefetch(session.queue[1]);
+            }
 
         } catch (err) {
             console.error(`Error streaming ${song.title}:`, err);
@@ -666,6 +738,11 @@ module.exports = {
 
         session.isCachedPlaying = false;
 
+        if (session.diskReadStream) {
+            try { session.diskReadStream.destroy(); } catch (_) {}
+            session.diskReadStream = null;
+        }
+
         if (session.musicProc && !session.musicProc.killed) {
             try { session.musicProc.kill(); } catch (_) {}
             session.musicProc = null;
@@ -706,7 +783,7 @@ module.exports = {
         if (!session) return;
 
         // If music in queue, restart playback
-        if (session.queue && session.queue.length > 0 && (!session.musicProc || session.musicProc.killed)) {
+        if (session.queue && session.queue.length > 0 && (!session.musicProc || session.musicProc.killed) && !session.isCachedPlaying) {
             return;
         }
 
@@ -732,9 +809,17 @@ module.exports = {
         if (!global.vc || !vc[guildId]) return;
         const session = vc[guildId];
 
+        session.isCachedPlaying = false;
+        session.isLooping = false;
+
         if (session.disconnectTimer) {
             clearTimeout(session.disconnectTimer);
             session.disconnectTimer = null;
+        }
+
+        if (session.diskReadStream) {
+            try { session.diskReadStream.destroy(); } catch (_) {}
+            session.diskReadStream = null;
         }
 
         if (session.musicProc && !session.musicProc.killed) {
