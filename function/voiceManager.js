@@ -80,45 +80,40 @@ class AudioMixer extends Readable {
 
         while (true) {
             const hasMusic = this.musicBytes >= this.chunkSize;
-            const hasTts = this.ttsBytes >= this.chunkSize || (this.ttsBytes > 0 && !this.isTtsActive);
+            const hasTts = this.ttsBytes > 0;
 
             // Trigger flow control callback if buffer drops low
-            if (this.musicBytes < 96000 && this.onBufferLow) {
+            if (this.musicBytes < 24000 && this.onBufferLow) {
                 this.onBufferLow();
             }
 
-            if (this.isTtsActive || this.ttsBytes > 0) {
-                // TTS is active or playing remaining buffered chunks
-                if (hasTts && hasMusic) {
-                    const m = this._consumeMusic(this.chunkSize);
-                    const t = this._consumeTts(this.chunkSize);
-                    const mixed = this._mix(m, t, this.duckedVolume, this.ttsVolume);
-                    if (!this.push(mixed)) break;
-                } else if (hasTts && !this.isMusicActive && this.musicBytes === 0) {
-                    const bytesToRead = Math.min(this.chunkSize, this.ttsBytes);
-                    const t = this._consumeTts(bytesToRead);
-                    const scaled = this._scaleVolume(t, this.ttsVolume);
-                    if (!this.push(scaled)) break;
-                } else if (hasTts && this.isMusicActive && !hasMusic) {
-                    const bytesToRead = Math.min(this.chunkSize, this.ttsBytes);
-                    const t = this._consumeTts(bytesToRead);
-                    const scaled = this._scaleVolume(t, this.ttsVolume);
-                    if (!this.push(scaled)) break;
-                } else if (this.isTtsActive && hasMusic) {
-                    // TTS stream is active but still buffering first chunk; duck music immediately
-                    const m = this._consumeMusic(this.chunkSize);
-                    const ducked = this._scaleVolume(m, this.duckedVolume);
-                    if (!this.push(ducked)) break;
-                } else {
-                    break;
-                }
+            if (hasTts && hasMusic) {
+                // Both active: mix music (ducked) and TTS (predominant)
+                const m = this._consumeMusic(this.chunkSize);
+                const t = this._consumeTts(this.chunkSize);
+                const mixed = this._mix(m, t, this.duckedVolume, this.ttsVolume);
+                if (!this.push(mixed)) break;
+            } else if (hasTts && !this.isMusicActive && this.musicBytes === 0) {
+                // TTS only (no music active)
+                const t = this._consumeTts(Math.min(this.chunkSize, this.ttsBytes));
+                const scaled = this._scaleVolume(t, this.ttsVolume);
+                if (!this.push(scaled)) break;
+            } else if (hasTts && this.isMusicActive && !hasMusic) {
+                // TTS available, music stream buffering; output TTS
+                const t = this._consumeTts(Math.min(this.chunkSize, this.ttsBytes));
+                const scaled = this._scaleVolume(t, this.ttsVolume);
+                if (!this.push(scaled)) break;
+            } else if (!hasTts && this.isTtsActive && hasMusic) {
+                // TTS is active but chunk hasn't arrived yet; duck music
+                const m = this._consumeMusic(this.chunkSize);
+                const ducked = this._scaleVolume(m, this.duckedVolume);
+                if (!this.push(ducked)) break;
             } else if (hasMusic) {
-                // Music only (normal volume)
+                // Music only at full volume
                 const m = this._consumeMusic(this.chunkSize);
                 if (!this.push(m)) break;
             } else if (!this.isMusicActive && this.musicBytes > 0) {
-                const bytesToRead = Math.min(this.chunkSize, this.musicBytes);
-                const m = this._consumeMusic(bytesToRead);
+                const m = this._consumeMusic(Math.min(this.chunkSize, this.musicBytes));
                 if (!this.push(m)) break;
             } else {
                 break;
@@ -149,7 +144,7 @@ class AudioMixer extends Readable {
 
     _consumeTts(bytes) {
         const aligned = bytes - (bytes % 2);
-        const chunk = Buffer.alloc(aligned);
+        const chunk = Buffer.alloc(aligned); // Zero-filled (silence padding for partial chunks)
         let offset = 0;
         while (offset < aligned && this.ttsBuffers.length > 0) {
             const buf = this.ttsBuffers[0];
@@ -165,6 +160,7 @@ class AudioMixer extends Readable {
             }
         }
         this.ttsBytes -= offset;
+        if (this.ttsBytes < 0) this.ttsBytes = 0;
         return chunk;
     }
 
@@ -211,7 +207,7 @@ module.exports = {
 
     async getOrCreateSession(guildId, vcChannel) {
         const V = global.Voice || require('@discordjs/voice');
-        const { createAudioPlayer, createAudioResource, AudioPlayerStatus, entersState, VoiceConnectionStatus, StreamType } = V;
+        const { createAudioPlayer, VoiceConnectionStatus } = V;
 
         if (!global.vc) global.vc = {};
         if (!vc[guildId]) {
@@ -231,6 +227,8 @@ module.exports = {
         }
 
         const session = vc[guildId];
+        if (!session.queue) session.queue = [];
+        if (!session.ttsQueue) session.ttsQueue = [];
 
         // Clear any pending idle disconnect timer
         if (session.disconnectTimer) {
@@ -260,8 +258,8 @@ module.exports = {
             connection.on(VoiceConnectionStatus.Disconnected, async () => {
                 try {
                     await Promise.race([
-                        entersState(connection, VoiceConnectionStatus.Signalling, 5_000),
-                        entersState(connection, VoiceConnectionStatus.Connecting, 5_000),
+                        V.entersState(connection, VoiceConnectionStatus.Signalling, 5_000),
+                        V.entersState(connection, VoiceConnectionStatus.Connecting, 5_000),
                     ]);
                 } catch {
                     if (connection.state.status !== VoiceConnectionStatus.Destroyed) {
@@ -273,7 +271,7 @@ module.exports = {
         }
 
         if (connection.state.status !== VoiceConnectionStatus.Ready) {
-            await entersState(connection, VoiceConnectionStatus.Ready, 15_000);
+            await V.entersState(connection, VoiceConnectionStatus.Ready, 15_000);
         }
 
         session.connection = connection;
@@ -284,7 +282,7 @@ module.exports = {
             session.player.on('error', (err) => {
                 console.error(`AudioPlayer error in guild ${guildId}:`, err);
             });
-            session.player.on(AudioPlayerStatus.Idle, () => {
+            session.player.on(V.AudioPlayerStatus.Idle, () => {
                 this.handlePlayerIdle(guildId, vcChannel);
             });
             connection.subscribe(session.player);
@@ -299,7 +297,7 @@ module.exports = {
     },
 
     startMixerPipeline(guildId) {
-        const { createAudioResource, StreamType } = Voice;
+        const V = global.Voice || require('@discordjs/voice');
         const session = vc[guildId];
         if (!session) return;
 
@@ -311,6 +309,7 @@ module.exports = {
         }
 
         const mixer = new AudioMixer();
+        // WebM container with instant cluster limits emits Opus frames with 0ms buffering delay
         const encoder = spawn('ffmpeg', [
             '-loglevel', 'error',
             '-f', 's16le',
@@ -319,7 +318,9 @@ module.exports = {
             '-i', 'pipe:0',
             '-c:a', 'libopus',
             '-b:a', '128k',
-            '-f', 'ogg',
+            '-f', 'webm',
+            '-cluster_size_limit', '0',
+            '-cluster_time_limit', '20',
             'pipe:1'
         ]);
 
@@ -333,8 +334,8 @@ module.exports = {
 
         mixer.pipe(encoder.stdin);
 
-        const resource = createAudioResource(encoder.stdout, {
-            inputType: StreamType.OggOpus
+        const resource = V.createAudioResource(encoder.stdout, {
+            inputType: V.StreamType.WebmOpus
         });
 
         session.mixer = mixer;
@@ -355,8 +356,7 @@ module.exports = {
             const ytOptions = {
                 getUrl: true,
                 format: 'bestaudio/best',
-                jsRuntimes: 'node',
-                extractorArgs: 'youtube:player_client=mweb,android,web',
+                extractorArgs: 'youtube:player_client=android,tv_embedded',
                 noWarnings: true
             };
 
@@ -388,8 +388,8 @@ module.exports = {
             musicProc.stdout.on('data', (chunk) => {
                 if (session.mixer && !session.mixer.destroyed) {
                     session.mixer.writeMusic(chunk);
-                    // Flow control / Backpressure: pause if buffer > 192KB (~1s)
-                    if (session.mixer.musicBytes > 192000 && !musicProc.stdout.isPaused()) {
+                    // Flow control / Backpressure: pause if buffer > 48KB (~250ms)
+                    if (session.mixer.musicBytes > 48000 && !musicProc.stdout.isPaused()) {
                         musicProc.stdout.pause();
                     }
                 }
@@ -408,7 +408,7 @@ module.exports = {
             musicProc.on('close', (code) => {
                 session.musicProc = null;
                 // Only advance queue if this wasn't aborted manually by skip
-                if (session.queue[0] === song) {
+                if (session.queue && session.queue[0] === song) {
                     session.queue.shift();
                     if (session.queue.length > 0) {
                         this.playMusic(msg, vcChannel);
@@ -485,6 +485,10 @@ module.exports = {
                     await new Promise((chunkResolve) => {
                         const ttsProc = spawn('ffmpeg', [
                             '-loglevel', 'error',
+                            '-fflags', '+nobuffer',
+                            '-flags', 'low_delay',
+                            '-analyzeduration', '0',
+                            '-probesize', '32',
                             '-i', 'pipe:0',
                             '-f', 's16le',
                             '-ar', '48000',
@@ -520,6 +524,11 @@ module.exports = {
                 }
             } catch (err) {
                 console.error("Error in TTS streaming queue item:", err);
+            }
+
+            // Wait until the decoded speech has been completely played by the mixer
+            while (session.mixer && !session.mixer.destroyed && session.mixer.ttsBytes > 0) {
+                await new Promise(r => setTimeout(r, 100));
             }
 
             msg?.react?.('🔊').catch(() => {});
@@ -574,7 +583,7 @@ module.exports = {
         if (!session) return;
 
         // If music in queue, restart playback
-        if (session.queue.length > 0 && (!session.musicProc || session.musicProc.killed)) {
+        if (session.queue && session.queue.length > 0 && (!session.musicProc || session.musicProc.killed)) {
             return;
         }
 
@@ -584,9 +593,9 @@ module.exports = {
                 session.disconnectTimer = setTimeout(() => {
                     const currentSession = vc[guildId];
                     if (currentSession && (!currentSession.queue || currentSession.queue.length === 0) && !currentSession.isTtsPlaying && (!currentSession.ttsQueue || currentSession.ttsQueue.length === 0)) {
-                        const { getVoiceConnection, VoiceConnectionStatus } = Voice;
-                        const connection = getVoiceConnection(guildId);
-                        if (connection && connection.state.status !== VoiceConnectionStatus.Destroyed) {
+                        const V = global.Voice || require('@discordjs/voice');
+                        const connection = V.getVoiceConnection(guildId);
+                        if (connection && connection.state.status !== V.VoiceConnectionStatus.Destroyed) {
                             connection.destroy();
                         }
                         this.cleanup(guildId);
