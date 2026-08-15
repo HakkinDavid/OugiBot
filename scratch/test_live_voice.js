@@ -76,36 +76,33 @@ client.on('ready', async () => {
                     console.log('[Channel Message]:', txt);
                 }
             },
-            content: 'ougi play https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+            content: 'ougi play https://www.youtube.com/watch?v=2hiKeIUJtos',
             react: async (emoji) => console.log(`[Message Reacted]: ${emoji}`)
         };
 
-        console.log('\n--- Step 1: Starting YouTube Music Playback with Cookies ---');
+        console.log('\n--- Step 1: Starting Short YouTube Track Playback ---');
         await ougi.voiceCallMusic(mockMsg);
 
-        console.log('Waiting for music to start and listening for 20 seconds...');
-        await new Promise(r => setTimeout(r, 20000));
+        console.log('\n--- Step 2: Enabling Queue Loop (ougi music loop) ---');
+        mockMsg.content = 'ougi music loop';
+        await ougi.voiceCallMusic(mockMsg);
 
-        console.log('\n--- Step 2: Testing Concurrent TTS with Ducking over Music ---');
-        const ttsUrlsDucking = googleTTS.getAllAudioUrls("Probando voz sobre música con cookies de producción activas. El volumen de la canción debe bajar mientras hablo y subir automáticamente al terminar.", {
-            lang: 'es',
-            slow: false,
-            host: 'https://translate.google.com'
-        });
+        console.log('Listening to song play and naturally loop back from in-memory cache for 35 seconds...');
+        await new Promise(r => setTimeout(r, 35000));
 
-        console.log('Speaking TTS over playing music...');
-        await ougi.voiceManager.playTts(mockMsg, vcChannel, ttsUrlsDucking);
-        console.log('[Step 2 Complete] TTS finished speaking! Music volume restored to 100%.');
+        const song = vc[guild.id]?.queue?.[0];
+        console.log(`Current song in loop: "${song?.title}", Cached PCM buffer chunks: ${song?.cachedPcm?.length || 0}`);
 
-        console.log('Letting music play at full volume for 15 more seconds...');
-        await new Promise(r => setTimeout(r, 15000));
+        console.log('\n--- Step 3: Disabling Queue Loop (ougi music unloop) ---');
+        mockMsg.content = 'ougi music unloop';
+        await ougi.voiceCallMusic(mockMsg);
 
-        console.log('\n--- Step 3: Stopping Playback ---');
+        console.log('\n--- Step 4: Stopping Playback ---');
         mockMsg.content = 'ougi stop';
         await ougi.voiceCallMusic(mockMsg);
-        console.log('[Step 3 Complete] Playback stopped cleanly.');
+        console.log('[Step 4 Complete] Playback stopped cleanly.');
 
-        console.log('\n🎉 ALL LIVE TESTS COMPLETED WITH AUDIO PLAYING!');
+        console.log('\n🎉 ALL LOOP LIVE TESTS COMPLETED SUCCESSFULLY!');
         process.exit(0);
 
     } catch (err) {

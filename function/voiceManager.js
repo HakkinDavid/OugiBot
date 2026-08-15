@@ -214,11 +214,14 @@ module.exports = {
             vc[guildId] = {
                 queue: [],
                 ttsQueue: [],
+                isLooping: false,
+                isCachedPlaying: false,
                 player: null,
                 connection: null,
                 mixer: null,
                 encoder: null,
                 musicProc: null,
+                ytProc: null,
                 currentTtsProc: null,
                 isTtsPlaying: false,
                 isProcessingTts: false,
@@ -229,6 +232,8 @@ module.exports = {
         const session = vc[guildId];
         if (!session.queue) session.queue = [];
         if (!session.ttsQueue) session.ttsQueue = [];
+        if (typeof session.isLooping !== 'boolean') session.isLooping = false;
+        if (typeof session.isCachedPlaying !== 'boolean') session.isCachedPlaying = false;
 
         // Clear any pending idle disconnect timer
         if (session.disconnectTimer) {
@@ -350,6 +355,7 @@ module.exports = {
 
         // If music is already playing, do nothing (it will advance naturally)
         if (session.musicProc && !session.musicProc.killed) return;
+        if (session.isCachedPlaying) return;
 
         const song = session.queue[0];
         try {
@@ -357,6 +363,83 @@ module.exports = {
                 this.startMixerPipeline(msg.guildId);
             }
 
+            const onSongComplete = () => {
+                session.musicProc = null;
+                session.isCachedPlaying = false;
+                if (session.ytProc && !session.ytProc.killed) {
+                    try { session.ytProc.kill(); } catch (_) {}
+                    session.ytProc = null;
+                }
+
+                // Advance or rotate queue
+                if (session.queue && session.queue[0] === song) {
+                    if (session.isLooping) {
+                        const finishedSong = session.queue.shift();
+                        session.queue.push(finishedSong);
+                    } else {
+                        session.queue.shift();
+                    }
+
+                    if (session.queue.length > 0) {
+                        this.playMusic(msg, vcChannel);
+                    } else {
+                        if (session.mixer) {
+                            session.mixer.endMusic();
+                        }
+                    }
+                }
+            };
+
+            // Mode 1: Instant replay from cached PCM (no network re-download)
+            if (song.cachedPcm && song.cachedPcm.length > 0) {
+                session.isCachedPlaying = true;
+                let chunkIndex = 0;
+                let isFeeding = false;
+
+                const feedCachedChunks = () => {
+                    if (isFeeding || !session.queue || session.queue[0] !== song) return;
+                    isFeeding = true;
+
+                    while (chunkIndex < song.cachedPcm.length) {
+                        if (session.mixer && !session.mixer.destroyed) {
+                            const chunk = song.cachedPcm[chunkIndex++];
+                            session.mixer.writeMusic(chunk);
+                            if (session.mixer.musicBytes > 48000) {
+                                break;
+                            }
+                        } else {
+                            break;
+                        }
+                    }
+
+                    isFeeding = false;
+
+                    if (chunkIndex >= song.cachedPcm.length) {
+                        const checkMixerDrain = () => {
+                            if (!session.queue || session.queue[0] !== song) return;
+                            if (session.mixer && session.mixer.musicBytes > 0 && !session.mixer.destroyed) {
+                                setTimeout(checkMixerDrain, 100);
+                            } else {
+                                onSongComplete();
+                            }
+                        };
+                        checkMixerDrain();
+                    }
+                };
+
+                session.mixer.onBufferLow = () => {
+                    if (chunkIndex < song.cachedPcm.length) {
+                        feedCachedChunks();
+                    }
+                };
+
+                feedCachedChunks();
+                return;
+            }
+
+            // Mode 2: Network stream + Cache PCM
+            song.cachedPcm = [];
+            let totalPcmCached = 0;
             let musicProc = null;
             let ytProc = null;
 
@@ -420,6 +503,13 @@ module.exports = {
             musicProc.stdout.on('data', (chunk) => {
                 if (session.mixer && !session.mixer.destroyed) {
                     session.mixer.writeMusic(chunk);
+
+                    // Cache PCM for instant looping (limit to 100MB per track)
+                    if (totalPcmCached < 100 * 1024 * 1024) {
+                        song.cachedPcm.push(chunk);
+                        totalPcmCached += chunk.length;
+                    }
+
                     // Flow control / Backpressure: pause if buffer > 48KB (~250ms)
                     if (session.mixer.musicBytes > 48000 && !musicProc.stdout.isPaused()) {
                         musicProc.stdout.pause();
@@ -438,23 +528,7 @@ module.exports = {
             });
 
             musicProc.on('close', (code) => {
-                session.musicProc = null;
-                if (session.ytProc && !session.ytProc.killed) {
-                    try { session.ytProc.kill(); } catch (_) {}
-                    session.ytProc = null;
-                }
-
-                // Only advance queue if this wasn't aborted manually by skip
-                if (session.queue && session.queue[0] === song) {
-                    session.queue.shift();
-                    if (session.queue.length > 0) {
-                        this.playMusic(msg, vcChannel);
-                    } else {
-                        if (session.mixer) {
-                            session.mixer.endMusic();
-                        }
-                    }
-                }
+                onSongComplete();
             });
 
         } catch (err) {
@@ -590,6 +664,8 @@ module.exports = {
         const session = vc[guildId];
         if (!session || session.queue.length === 0) return false;
 
+        session.isCachedPlaying = false;
+
         if (session.musicProc && !session.musicProc.killed) {
             try { session.musicProc.kill(); } catch (_) {}
             session.musicProc = null;
@@ -604,7 +680,12 @@ module.exports = {
             session.mixer.clearMusicBuffer();
         }
 
-        session.queue.shift();
+        if (session.isLooping) {
+            const skippedSong = session.queue.shift();
+            session.queue.push(skippedSong);
+        } else {
+            session.queue.shift();
+        }
 
         if (session.queue.length > 0) {
             this.playMusic(msg, vcChannel);

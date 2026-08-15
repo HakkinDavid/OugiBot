@@ -60,6 +60,38 @@ module.exports = async function (msg) {
             return;
         }
 
+        // Command: loop
+        if (command === "loop" || (command === "music" && subCommand === "loop")) {
+            if (!vc[msg.guildId] || !vc[msg.guildId].queue || vc[msg.guildId].queue.length === 0) {
+                await msg.channel.send("There is no active music queue to loop.");
+                return;
+            }
+            vc[msg.guildId].isLooping = true;
+            const embed = new Discord.EmbedBuilder()
+                .setTitle("🔂 Queue Loop Enabled")
+                .setDescription("The current music queue will now repeat indefinitely.")
+                .setColor("#230347")
+                .setFooter({ text: "musicLoop by Ougi", iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) });
+            await msg.channel.send({ embeds: [embed] });
+            return;
+        }
+
+        // Command: unloop
+        if (command === "unloop" || (command === "music" && subCommand === "unloop")) {
+            if (!vc[msg.guildId]) {
+                await msg.channel.send("There is no active music playback to unloop.");
+                return;
+            }
+            vc[msg.guildId].isLooping = false;
+            const embed = new Discord.EmbedBuilder()
+                .setTitle("➡️ Queue Loop Disabled")
+                .setDescription("The music queue will now play once and end when finished.")
+                .setColor("#230347")
+                .setFooter({ text: "musicLoop by Ougi", iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) });
+            await msg.channel.send({ embeds: [embed] });
+            return;
+        }
+
         // Command: queue / list / playlist
         if (command === "queue" || (command === "music" && ["list", "queue", "playlist"].includes(subCommand))) {
             const guildQueue = vc[msg.guildId]?.queue || [];
@@ -68,12 +100,13 @@ module.exports = async function (msg) {
                 return;
             }
 
+            const isLooping = !!vc[msg.guildId]?.isLooping;
             const queueList = guildQueue.map((s, idx) => `${idx === 0 ? '**Now Playing:**' : `\`${idx}.\``} [${s.title}](${s.url}) (\`${s.duration}\`)`).slice(0, 10).join('\n');
             const queueEmbed = new Discord.EmbedBuilder()
                 .setTitle("Ougi Music Queue")
                 .setDescription(queueList)
                 .setColor("#230347")
-                .setFooter({ text: `Total songs in queue: ${guildQueue.length}`, iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) });
+                .setFooter({ text: `Total songs: ${guildQueue.length} | Loop: ${isLooping ? 'Enabled 🔂' : 'Disabled ➡️'}`, iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) });
 
             await msg.channel.send({ embeds: [queueEmbed] });
             return;
