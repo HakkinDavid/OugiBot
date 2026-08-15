@@ -16,7 +16,7 @@ async function (arguments, msg) {
   .addFields({name: "What does Ougi log in it's console?", value: "Ougi logs commands containing it's prefix with their respective arguments or DMs you send to it, plus any information that might be useful for further debugging."})
   .addFields({name: "Can I invite Ougi to my server?", value: "Of course! Here's Ougi's page link.\nhttps://top.gg/bot/629837958123356172"})
   .addFields({name: "Does Ougi have a GitHub repository?", value: "Yes, it does.\nGitHub: https://github.com/HakkinDavid/OugiBot"})
-  .addFields({name: "Wait! Is Ougi in Twitter?!", value: "Yup, and it's saying nonsense.\nhttps://twitter.com/OugiBotto"})
+  //.addFields({name: "Wait! Is Ougi in Twitter?!", value: "Yup, and it's saying nonsense.\nhttps://twitter.com/OugiBotto"})
   .addFields({name: "Can I send any feedback?", value: "Sure! David, the developer of Ougi, is always glad to receive it. Feel free to DM him or to reach him out in Twitter.\n**Twitter:** https://twitter.com/HakkinDavid\n**Discord:** " + client.users.cache.get(davidUserID).username});
 
   msg.channel.send({embeds: [embed]}).catch(console.error);
