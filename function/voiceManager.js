@@ -353,35 +353,67 @@ module.exports = {
 
         const song = session.queue[0];
         try {
-            const ytOptions = {
-                getUrl: true,
-                format: 'bestaudio/best',
-                extractorArgs: 'youtube:player_client=android,tv_embedded',
-                noWarnings: true
-            };
-
-            if (global.cachedCookiesPath) {
-                ytOptions.cookies = global.cachedCookiesPath;
-            }
-
-            const rawStreamUrl = (await youtubedl(song.url, ytOptions)).trim();
-
             if (!session.mixer || session.mixer.destroyed || session.mixer.ended) {
                 this.startMixerPipeline(msg.guildId);
             }
 
-            const musicProc = spawn('ffmpeg', [
-                '-loglevel', 'error',
-                '-reconnect', '1',
-                '-reconnect_streamed', '1',
-                '-reconnect_delay_max', '5',
-                '-i', rawStreamUrl,
-                '-f', 's16le',
-                '-ar', '48000',
-                '-ac', '2',
-                '-vn',
-                'pipe:1'
-            ]);
+            let musicProc = null;
+            let ytProc = null;
+
+            // Primary Strategy: Authenticated streaming with cookies via yt-dlp stdout pipe
+            if (global.cachedCookiesPath) {
+                try {
+                    ytProc = youtubedl.exec(song.url, {
+                        output: '-',
+                        format: 'bestaudio/best',
+                        jsRuntimes: 'node',
+                        cookies: global.cachedCookiesPath,
+                        noWarnings: true
+                    });
+
+                    musicProc = spawn('ffmpeg', [
+                        '-loglevel', 'error',
+                        '-i', 'pipe:0',
+                        '-f', 's16le',
+                        '-ar', '48000',
+                        '-ac', '2',
+                        '-vn',
+                        'pipe:1'
+                    ]);
+
+                    ytProc.stdout.pipe(musicProc.stdin);
+                    session.ytProc = ytProc;
+
+                    ytProc.on('error', (err) => {
+                        console.error(`yt-dlp stream error for ${song.title}:`, err);
+                    });
+                } catch (cookieErr) {
+                    console.warn(`[VoiceManager] Direct yt-dlp cookie pipe failed for "${song.title}", falling back to client extractors:`, cookieErr.message);
+                }
+            }
+
+            // Fallback Strategy: If no cookies or if cookie pipe failed, fetch direct stream URL
+            if (!musicProc) {
+                const rawStreamUrl = (await youtubedl(song.url, {
+                    getUrl: true,
+                    format: 'bestaudio/best',
+                    extractorArgs: 'youtube:player_client=android,tv_embedded',
+                    noWarnings: true
+                })).trim();
+
+                musicProc = spawn('ffmpeg', [
+                    '-loglevel', 'error',
+                    '-reconnect', '1',
+                    '-reconnect_streamed', '1',
+                    '-reconnect_delay_max', '5',
+                    '-i', rawStreamUrl,
+                    '-f', 's16le',
+                    '-ar', '48000',
+                    '-ac', '2',
+                    '-vn',
+                    'pipe:1'
+                ]);
+            }
 
             session.musicProc = musicProc;
 
@@ -407,6 +439,11 @@ module.exports = {
 
             musicProc.on('close', (code) => {
                 session.musicProc = null;
+                if (session.ytProc && !session.ytProc.killed) {
+                    try { session.ytProc.kill(); } catch (_) {}
+                    session.ytProc = null;
+                }
+
                 // Only advance queue if this wasn't aborted manually by skip
                 if (session.queue && session.queue[0] === song) {
                     session.queue.shift();
@@ -558,6 +595,11 @@ module.exports = {
             session.musicProc = null;
         }
 
+        if (session.ytProc && !session.ytProc.killed) {
+            try { session.ytProc.kill(); } catch (_) {}
+            session.ytProc = null;
+        }
+
         if (session.mixer) {
             session.mixer.clearMusicBuffer();
         }
@@ -617,6 +659,11 @@ module.exports = {
         if (session.musicProc && !session.musicProc.killed) {
             try { session.musicProc.kill(); } catch (_) {}
             session.musicProc = null;
+        }
+
+        if (session.ytProc && !session.ytProc.killed) {
+            try { session.ytProc.kill(); } catch (_) {}
+            session.ytProc = null;
         }
 
         if (session.currentTtsProc && !session.currentTtsProc.killed) {
