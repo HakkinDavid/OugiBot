@@ -193,7 +193,7 @@ module.exports = async function (msg) {
         const isPrecached = cacheManager.has(songInfo.url);
         const embed = new Discord.EmbedBuilder()
             .setTitle(await ougi.text(msg, "musicAdded"))
-            .setDescription(`[${songInfo.title}](${songInfo.url})${isPrecached ? ' ⚡ *(Cached)*' : ''}`)
+            .setDescription(`[${songInfo.title}](${songInfo.url})${isPrecached ? ' ⚡' : ''}`)
             .setThumbnail(songInfo.thumbnail)
             .setColor("#230347")
             .addFields({ name: await ougi.text(msg, "music_durationField"), value: `\`${songInfo.duration}\``, inline: true })
