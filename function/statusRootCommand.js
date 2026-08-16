@@ -20,7 +20,7 @@ module.exports =
         var thisMessage = arguments.join(" ");
         var breakChocolate = thisMessage.split("::").slice(1);
         if (breakChocolate.length < 3) {
-            msg.channel.send("You must include a status, activity name and type.")
+            msg.channel.send(await ougi.text('en', "root_statusRequired"))
             return
         }
         for (i = 0; breakChocolate.length > i; i++) {
@@ -58,8 +58,10 @@ module.exports =
         const activityType = typeMap[kind.toUpperCase()] ?? Discord.ActivityType.Playing;
         try {
             client.user.setPresence({ activities: [{ name: actname, type: activityType }], status: state });
-            client.channels.cache.get(consoleLogging).send("I'm " + kind + " " + actname);
-            msg.channel.send("Alright, switched! I'm " + kind + " " + actname).catch(console.error);
+            const logMsg = (await ougi.text('en', "root_statusConsoleLog")).replace(/{kind}/g, kind).replace(/{actname}/g, actname);
+            const userMsg = (await ougi.text('en', "root_statusSwitched")).replace(/{kind}/g, kind).replace(/{actname}/g, actname);
+            client.channels.cache.get(consoleLogging).send(logMsg);
+            msg.channel.send(userMsg).catch(console.error);
         }
         catch (e) {
             console.error(e)

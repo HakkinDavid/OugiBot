@@ -54,7 +54,7 @@ class AudioCacheManager {
             this.enforceSizeLimit();
             this.isInitialized = true;
         } catch (err) {
-            console.error('[AudioCacheManager] Initialization error:', err);
+            global.ougi?.text('en', "console_cacheInitError").then(msg => console.error(msg, err));
         }
     }
 
@@ -129,14 +129,16 @@ class AudioCacheManager {
         try {
             writeStream = fs.createWriteStream(tempFile);
         } catch (err) {
-            console.error(`[AudioCacheManager] Failed to create temp write stream for ${videoId}:`, err);
+            global.ougi?.text('en', "console_cacheFailedStream").then(tpl => {
+                console.error(tpl.replace(/{id}/g, videoId), err);
+            });
             return null;
         }
 
         let totalBytesWritten = 0;
         let isClosed = false;
 
-        const finishWrite = () => {
+        const finishWrite = async () => {
             if (isClosed) return;
             isClosed = true;
 
@@ -150,12 +152,16 @@ class AudioCacheManager {
                         createdAt: Date.now()
                     });
                     this.enforceSizeLimit();
-                    console.log(`[AudioCacheManager] Cached track "${videoId}" (${Math.round(totalBytesWritten / 1024 / 1024 * 10) / 10} MB)`);
+                    const cachedMsg = (await global.ougi?.text('en', "console_cacheTrackSuccess"))
+                        ?.replace(/{id}/g, videoId)
+                        ?.replace(/{mb}/g, Math.round(totalBytesWritten / 1024 / 1024 * 10) / 10);
+                    if (cachedMsg) console.log(cachedMsg);
                 } else if (fs.existsSync(tempFile)) {
                     fs.unlinkSync(tempFile);
                 }
             } catch (err) {
-                console.error(`[AudioCacheManager] Error finalizing cache for ${videoId}:`, err);
+                const finalizeErrMsg = (await global.ougi?.text('en', "console_cacheFinalizeError"))?.replace(/{id}/g, videoId);
+                if (finalizeErrMsg) console.error(finalizeErrMsg, err);
                 try { if (fs.existsSync(tempFile)) fs.unlinkSync(tempFile); } catch (_) {}
             }
         };
@@ -218,7 +224,10 @@ class AudioCacheManager {
                 }
                 this.cacheMap.delete(entry.id);
                 totalSize -= entry.sizeBytes;
-                console.log(`[AudioCacheManager] Evicted LRU cached track "${entry.id}" (${Math.round(entry.sizeBytes / 1024 / 1024 * 10) / 10} MB)`);
+                global.ougi?.text('en', "console_cacheEvicted").then(tpl => {
+                    const msg = tpl?.replace(/{id}/g, entry.id)?.replace(/{mb}/g, Math.round(entry.sizeBytes / 1024 / 1024 * 10) / 10);
+                    if (msg) console.log(msg);
+                });
             } catch (_) {}
         }
     }
@@ -248,7 +257,10 @@ class AudioCacheManager {
         }
 
         this.activePrefetch = nextItem;
-        console.log(`[AudioCacheManager] ⚡ Background prefetching next track: "${song.title}" (${videoId})...`);
+        const prefetchMsg = (await global.ougi?.text('en', "console_cachePrefetching"))
+            ?.replace(/{title}/g, song.title)
+            ?.replace(/{id}/g, videoId);
+        if (prefetchMsg) console.log(prefetchMsg);
 
         try {
             const cacheWriter = this.createCacheWriteStream(videoId);
@@ -332,7 +344,8 @@ class AudioCacheManager {
             });
 
         } catch (err) {
-            console.warn(`[AudioCacheManager] Prefetch error for ${videoId}:`, err.message);
+            const prefetchErrMsg = (await global.ougi?.text('en', "console_cachePrefetchError"))?.replace(/{id}/g, videoId);
+            if (prefetchErrMsg) console.warn(prefetchErrMsg, err.message);
             this.activePrefetch = null;
             this.processNextPrefetch();
         }

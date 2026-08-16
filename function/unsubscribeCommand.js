@@ -6,5 +6,7 @@ module.exports = async function (msg) {
   }
   ougi.db().removeSubscriber(callerID);
   msg.channel.send(await ougi.text(msg, "unsubscribe_success"));
-  client.users.cache.get(davidUserID)?.send(client.users.cache.get(callerID).username + " unsubscribed :pensive:").catch(console.error);
+  const devUnsubMsg = (await ougi.text(davidUserID, "dev_userUnsubscribed"))
+    .replace(/{user}/g, client.users.cache.get(callerID)?.username || "User");
+  client.users.cache.get(davidUserID)?.send(devUnsubMsg).catch(console.error);
 };

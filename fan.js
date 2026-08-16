@@ -159,14 +159,14 @@ let logMessages = [];
 global.errorBackup = console.error;
 
 /* ===== Manejo de Errores ===== */
-console.error = (...args) => {
+console.error = async (...args) => {
     logMessages.push(...args);
     if (!logMessages.at(-1)) return logMessages.pop();
 
     const criticalEmbed = new Discord.EmbedBuilder()
-        .setAuthor({ name: "CONSOLE ERROR" })
+        .setAuthor({ name: await ougi.text('en', "log_consoleErrorAuthor") })
         .setColor("#c20d00")
-        .setFooter({ text: "errorLogEmbed by Ougi", iconURL: "https://github.com/HakkinDavid/OugiBot/blob/master/images/ougi.png?raw=true" })
+        .setFooter({ text: await ougi.text('en', "log_errorEmbedFooter"), iconURL: "https://github.com/HakkinDavid/OugiBot/blob/master/images/ougi.png?raw=true" })
         .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/fatal.png?raw=true")
         .setDescription(logMessages.pop().toString().slice(0, 4000));
 
@@ -199,11 +199,15 @@ client.once('ready', async () => {
                 type: Discord.ApplicationCommandType.Message
             }
         ]).catch(console.error);
-        client.channels.cache.get(consoleLogging)?.send(`**INSTANCE ID:** ${instanceID}\n**DEV:** ${process.env.DEV}\n**SILENT MODE:** ${!TEASEABLE}`).catch(console.error);
-        console.log(`Instance ID: ${instanceID}`);
+        const startupPayload = (await ougi.text('en', "log_instanceStartup"))
+            .replace(/{id}/g, instanceID)
+            .replace(/{dev}/g, process.env.DEV)
+            .replace(/{silent}/g, !TEASEABLE);
+        client.channels.cache.get(consoleLogging)?.send(startupPayload).catch(console.error);
+        console.log((await ougi.text('en', "console_instanceId")).replace(/{id}/g, instanceID));
         ougi.startup();
     } catch (err) {
-        console.error("Error en ougi.startup:", err);
+        console.error(await ougi.text('en', "console_startupError"), err);
     }
 });
 
@@ -352,7 +356,7 @@ setInterval(async () => {
     const bumpConfigs = ougi.db().getBumpConfig() || {};
     for (const [bumpGuild, bumpData] of Object.entries(bumpConfigs)) {
         if (bumpData.next_bump && bumpData.next_bump < now && !bumpData.reminded) {
-            ougi.globalLog(`Reminded users to bump guild ${bumpGuild}`);
+            ougi.globalLog((await ougi.text('en', "console_bumpReminded")).replace(/{guild}/g, bumpGuild));
             const message = (await ougi.text(ougi.db().getLang(bumpGuild) || "en", "bumpNow"))
                 .replace("{timeStamp}", `<t:${Math.floor(now / 1000)}:t>`);
             const channel = client.channels.cache.get(bumpData.channel);
@@ -383,7 +387,7 @@ process.on('uncaughtException', async (e) => {
             trimmed = trimmed.slice(1994);
         }
     } catch {
-        console.log('Unable to DM David for console error');
+        console.log(await ougi.text('en', "console_dmDavidFailed"));
         console.log(e);
     }
 });

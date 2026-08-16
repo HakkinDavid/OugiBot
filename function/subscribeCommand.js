@@ -25,7 +25,10 @@ module.exports = async function (msg) {
     .setThumbnail(callerUser?.avatarURL({ dynamic: true, size: 4096 }))
     .setImage("https://github.com/HakkinDavid/OugiBot/blob/master/images/veryepic.png?raw=true");
 
-  callerUser?.send({ content: "__**Do you want to follow Ougi's development more closely?**__\nFeel free to join " + client.users.cache.get(davidUserID).username + " (Ougi's developer) in his personal Discord server.\nhttps://discord.gg/nB3GXW5\n*This is an optional step.*", embeds: [embed] })
+  const inviteMsg = (await ougi.text(msg, "dev_subscribeDevInvite"))
+    .replace(/{creator}/g, client.users.cache.get(davidUserID)?.username || "David");
+
+  callerUser?.send({ content: inviteMsg, embeds: [embed] })
     .then(() => { client.users.cache.get(davidUserID).send({ embeds: [subscribeNotificationEmbed] }).catch(console.error); })
     .catch(console.error);
 

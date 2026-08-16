@@ -11,5 +11,6 @@ async function (msg) {
   .setFooter({text: await ougi.text(msg, "optout_footer"), icon: client.user.avatarURL({dynamic: true, size: 4096})})
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true")
   msg.channel.send({embeds: [embed]});
-  client.users.cache.get(davidUserID).send("`" + msg.author.username + "` has requested the deletion of their data.");
+  const devOptoutMsg = (await ougi.text(davidUserID, "dev_optoutNotice")).replace(/{user}/g, msg.author.username);
+  client.users.cache.get(davidUserID).send(devOptoutMsg);
 }

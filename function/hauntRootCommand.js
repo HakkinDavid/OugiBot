@@ -7,14 +7,18 @@ async function (arguments, msg) {
   let userID = arguments[0];
   let hauntedContent = arguments.slice(1).join(" ");
   if (!userID || !hauntedContent) {
-    return msg.channel.send("Usage: `#ougi haunt <user_id> <message>`");
+    return msg.channel.send(await ougi.text('en', "root_hauntUsage"));
   }
   try {
     const targetUser = await client.users.fetch(userID);
     await targetUser.send(hauntedContent);
-    msg.channel.send("I sent `" + targetUser.username + "` a message containing `" + hauntedContent + "`").catch(console.error);
+    const sentMsg = (await ougi.text('en', "root_hauntSuccess"))
+      .replace(/{user}/g, targetUser.username)
+      .replace(/{message}/g, hauntedContent);
+    msg.channel.send(sentMsg).catch(console.error);
   } catch (err) {
     console.error("Haunt error:", err);
-    msg.channel.send("Could not send DM to user `" + userID + "`. (User not found or DMs closed).").catch(console.error);
+    const failMsg = (await ougi.text('en', "root_hauntFail")).replace(/{id}/g, userID);
+    msg.channel.send(failMsg).catch(console.error);
   }
 }

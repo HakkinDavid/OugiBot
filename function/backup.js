@@ -3,7 +3,8 @@ module.exports =
   async function (filename, where) {
 
     if (process.env.DEV == 1) {
-        console.log(`Skipping upload for ${filename} (reason: DEV)`);
+        const skipMsg = (await ougi.text('en', "console_backupDevSkip")).replace(/{filename}/g, filename);
+        console.log(skipMsg);
         return;
     }
 

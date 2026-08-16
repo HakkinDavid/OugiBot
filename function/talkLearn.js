@@ -87,11 +87,11 @@ async function (arguments, msg) {
   }
 
   let embed = new Discord.EmbedBuilder()
-  .setTitle("Input for talkLearn")
-  .addFields({name: "Response to be added", value: response})
-  .addFields({name: "With trigger", value: trigger})
+  .setTitle(await ougi.text('en', "log_talkLearnTitle"))
+  .addFields({name: await ougi.text('en', "log_talkLearnRespField"), value: response})
+  .addFields({name: await ougi.text('en', "log_talkLearnTrigField"), value: trigger})
   .setColor("#FF008C")
-  .setFooter({text: "globalLogEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})});
+  .setFooter({text: await ougi.text('en', "log_globalEmbedFooter"), icon: client.user.avatarURL({dynamic: true, size: 4096})});
 
   const added = ougi.db().addKBReply(trigger, response);
   if (!added) {
@@ -101,5 +101,10 @@ async function (arguments, msg) {
 
   msg.channel.send(answer).catch(console.error);
   client.channels.cache.get(consoleLogging).send({embeds: [embed]});
-  if (potentialLinks.length > 0 && msg.author.id !== davidUserID) client.users.cache.get(davidUserID).send("User uploaded media.\n" + "**Trigger:** " + trigger + "\n**Response:** " + response);
+  if (potentialLinks.length > 0 && msg.author.id !== davidUserID) {
+    const mediaNotice = (await ougi.text(davidUserID, "dev_mediaUploaded"))
+      .replace(/{trigger}/g, trigger)
+      .replace(/{response}/g, response);
+    client.users.cache.get(davidUserID).send(mediaNotice);
+  }
 }

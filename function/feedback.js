@@ -52,7 +52,11 @@ async function (msg, intentional) {
       const voteKey = reaction.emoji.id === '818120409219334144' ? 'yes' : 'no';
       ougi.db().recordSurveyVote(takeableSurvey, user.id, voteKey);
 
-      client.users.cache.get(davidUserID).send(user.username + " voted " + reaction.emoji.toString() + " in `" + surveyOBJ.q + "`.").catch(console.error);
+      const votedMsg = (await ougi.text(davidUserID, "dev_surveyVoted"))
+        .replace(/{user}/g, user.username)
+        .replace(/{emoji}/g, reaction.emoji.toString())
+        .replace(/{survey}/g, surveyOBJ.q);
+      client.users.cache.get(davidUserID).send(votedMsg).catch(console.error);
     })
     collector.on('end', async => {
       sentMSG.edit(collectedEmbed);

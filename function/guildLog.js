@@ -7,7 +7,8 @@ async function (msg, options) {
     let channelPointer = await client.channels.fetch(guildLogger);
 
     if (channelPointer === undefined) {
-      ougi.globalLog("Skipped invalid logging channel for " + msg.guild.toString() + ".");
+      const skipLog = (await ougi.text('en', "log_skippedInvalidLogging")).replace(/{guild}/g, msg.guild.toString());
+      ougi.globalLog(skipLog);
       return
     }
     
@@ -16,7 +17,7 @@ async function (msg, options) {
     .setDescription("ID `" + msg.author.id + "` | At " + msg.channel.toString())
     .setAuthor({name: "Ougi [BOT]", icon: client.user.avatarURL({dynamic: true, size: 4096})})
     .setColor("#00E5FF")
-    .setFooter({text: "logEmbed by Ougi", icon: msg.guild.iconURL()})
+    .setFooter({text: await ougi.text(msg, "log_guildEmbedFooter"), icon: msg.guild.iconURL()})
     .setThumbnail(msg.author.avatarURL({dynamic: true, size: 4096}))
     .setTimestamp();
 
@@ -27,17 +28,18 @@ async function (msg, options) {
 
     else {
       const content = msg.content || "";
+      const contentFieldName = await ougi.text(msg, "log_contentField");
       if (content.length > 0) {
         let trimmed = content;
         let first = true;
         while (trimmed.length > 0 && (!embed.data.fields || embed.data.fields.length < 24)) {
           const chunk = trimmed.slice(0, 1024);
-          embed.addFields({ name: first ? "Content" : "\u200b", value: chunk || "\u200b" });
+          embed.addFields({ name: first ? contentFieldName : "\u200b", value: chunk || "\u200b" });
           trimmed = trimmed.slice(1024);
           first = false;
         }
       } else {
-        embed.addFields({ name: "Content", value: "<empty>" });
+        embed.addFields({ name: contentFieldName, value: await ougi.text(msg, "log_contentEmpty") });
       }
     }
 

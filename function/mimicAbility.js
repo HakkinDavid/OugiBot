@@ -7,10 +7,10 @@ async function (msg, replied_to_ougi) {
   }
   reply = reply.join(" ");
   let embed = new Discord.EmbedBuilder()
-  .setTitle("mimicAbility")
+  .setTitle(await ougi.text('en', "log_mimicTitle"))
   .setColor("#FF008C")
-  .setFooter({text: "globalLogEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
-  .addFields({name: "Replied", value: reply});
+  .setFooter({text: await ougi.text('en', "log_globalEmbedFooter"), icon: client.user.avatarURL({dynamic: true, size: 4096})})
+  .addFields({name: await ougi.text('en', "log_mimicReplied"), value: reply});
 
   if (replied_to_ougi) { msg.reply(reply).catch(console.error); }
   else { msg.channel.send(reply).catch(console.error); }

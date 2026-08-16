@@ -9,7 +9,7 @@ async function (arguments, msg) {
     let attachment = new Discord.AttachmentBuilder(logFileName);
 
     client.channels.cache.get(channels.fileSpace).send({ content: "__**Emoji:**__ " + emojiList.length, files: [attachment] }).catch(console.error);
-    msg.channel.send("I've written a file containing every single emoji I can use.").catch(console.error);
+    msg.channel.send(await ougi.text('en', "root_logWrittenEmoji")).catch(console.error);
   }
   else if (what == "guilds") {
     let guildsList = client.guilds.cache.map((g) => g.toString() + " with a total of " + g.memberCount + " users");
@@ -18,6 +18,6 @@ async function (arguments, msg) {
     let attachment = new Discord.AttachmentBuilder(logFileName);
 
     client.channels.cache.get(channels.fileSpace).send({ content: "__**Guilds:**__ " + guildsList.length, files: [attachment] }).catch(console.error);
-    msg.channel.send("I've written a file containing every single guild I'm in.").catch(console.error);
+    msg.channel.send(await ougi.text('en', "root_logWrittenGuilds")).catch(console.error);
   }
 }

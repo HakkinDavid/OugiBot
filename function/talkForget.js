@@ -85,11 +85,11 @@ async function (arguments, msg) {
   if (removed) {
     msg.channel.send(answer).catch(console.error);
     let embed = new Discord.EmbedBuilder()
-    .setTitle("Input for talkForget")
-    .addFields({name: "Response to be deleted", value: response})
-    .addFields({name: "From trigger", value: trigger})
+    .setTitle(await ougi.text('en', "log_talkForgetTitle"))
+    .addFields({name: await ougi.text('en', "log_talkForgetRespField"), value: response})
+    .addFields({name: await ougi.text('en', "log_talkForgetTrigField"), value: trigger})
     .setColor("#00FF73")
-    .setFooter({text: "globalLogEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})});
+    .setFooter({text: await ougi.text('en', "log_globalEmbedFooter"), icon: client.user.avatarURL({dynamic: true, size: 4096})});
     client.channels.cache.get(consoleLogging).send({embeds: [embed]});
     return;
   }

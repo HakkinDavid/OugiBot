@@ -18,10 +18,10 @@ module.exports = async function storytellCommand(args, msg) {
   ougi.economy('init', msg);
 
   const scenarios = [
-    "You and your companions discover a mysterious glowing chest inside an abandoned monogatari shrine...",
-    "Ougi appears out of thin air with a spooky riddle that holds the secret to endless wealth or eternal damnation...",
-    "A strange portal opens in the middle of the server, smelling of fresh pancakes and dark magic...",
-    "You stumble upon a hidden underground casino run by shadowy spirits offering a single high-stakes game..."
+    await ougi.text(msg, "ai_storytellerScenario1"),
+    await ougi.text(msg, "ai_storytellerScenario2"),
+    await ougi.text(msg, "ai_storytellerScenario3"),
+    await ougi.text(msg, "ai_storytellerScenario4")
   ];
 
   const scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
@@ -73,8 +73,9 @@ module.exports = async function storytellCommand(args, msg) {
     }
 
     const storyText = session.turns.map(t => `${t.author}: "${t.text}"`).join("\n");
+    const systemPromptContent = await ougi.text('en', "ai_storytellerSystemPrompt");
     const aiPrompt = [
-      { role: 'system', content: "You are Oshino Ougi, judging an interactive story RPG session. Decide if the outcome is a GLORIOUS REWARD or a DAMNED PENALTY. End your response with REWARD: <amount> or PENALTY: <amount>." },
+      { role: 'system', content: systemPromptContent },
       { role: 'user', content: `Scenario: ${scenario}\n\nUser Turns:\n${storyText}` }
     ];
 
@@ -84,7 +85,7 @@ module.exports = async function storytellCommand(args, msg) {
     } catch { }
 
     if (!aiResult || typeof aiResult !== 'string') {
-      aiResult = "Ougi judged your adventure! Outcome: Glorious Reward! REWARD: 200";
+      aiResult = await ougi.text(msg, "ai_storytellerFallbackJudge");
     }
 
     const isReward = !aiResult.toLowerCase().includes("penalty");
