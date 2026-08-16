@@ -13,6 +13,10 @@ async function (msg, replied_to_ougi) {
 
   msg.content = ougi.helperFunctions.normalizeMentions(msg.content);
 
+  ougi.judgementAbility(msg, replied_to_ougi); return; // TODO: remove when we fix genAIText with a working endpoint
+
+  // UNUSED BELOW
+
   // Uso de interactions[msg.channel.id] en vez de previous_messages
   if (!interactions[msg.channel.id]) interactions[msg.channel.id] = [];
   let channelInteractions = interactions[msg.channel.id];
