@@ -25,7 +25,7 @@ module.exports = async function leaderboardCommand(args, msg) {
             userTag = fetched.username;
         } catch { }
 
-        const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `**#${i + 1}**`;
+        const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `#${i + 1}`;
         const line = await ougi.text({
             msg,
             stringID: "leaderboard_line",
