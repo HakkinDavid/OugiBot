@@ -7,19 +7,19 @@ module.exports =
     if (!(await ougi.adminCheck(msg))) return;
 
     if (arguments.length <= 0) {
-      msg.channel.send(await ougi.text(msg, "oneCharWhitelist"));
+      msg.channel.send(await ougi.text({ msg, stringID: "oneCharWhitelist" }));
       return
     }
 
     let trigger = arguments.join(" ");
 
     if (msg.content.includes("@everyone") || msg.content.includes("@here")) {
-      msg.channel.send(await ougi.text(msg, "massivePing"));
+      msg.channel.send(await ougi.text({ msg, stringID: "massivePing" }));
       return
     }
 
     if (trigger.includes("<@") && trigger.includes(">")) {
-      msg.channel.send(await ougi.text(msg, "avoidSpecialChar")).catch(console.error);
+      msg.channel.send(await ougi.text({ msg, stringID: "avoidSpecialChar" })).catch(console.error);
       return
     }
 
@@ -32,15 +32,19 @@ module.exports =
     }
 
     if (trigger.length <= 0) {
-      msg.channel.send(await ougi.text(msg, "oneCharWhitelist"));
+      msg.channel.send(await ougi.text({ msg, stringID: "oneCharWhitelist" }));
       return
     }
 
-    let afterOptions = [
-      await ougi.text(msg, "reactingTo"),
-      await ougi.text(msg, "alrightWhitelisted"),
-    ];
-    let answer = afterOptions[Math.floor(Math.random() * afterOptions.length)].replace(/{triggerName}/, "`" + trigger + "`").replace(/{guildName}/, msg.guild.toString());
+    let chosenKey = ["reactingTo", "alrightWhitelisted"][Math.floor(Math.random() * 2)];
+    let answer = await ougi.text({
+      msg,
+      stringID: chosenKey,
+      values: {
+        triggerName: "`" + trigger + "`",
+        guildName: msg.guild.toString()
+      }
+    });
 
     const unblacklisted = ougi.db().unblacklistTrigger(msg.guildId, trigger);
     if (unblacklisted) {
@@ -48,6 +52,6 @@ module.exports =
       msg.channel.send(answer).catch(console.error);
       return;
     }
-    msg.channel.send(await ougi.text(msg, "notBlacklisted"));
+    msg.channel.send(await ougi.text({ msg, stringID: "notBlacklisted" }));
     return;
   }

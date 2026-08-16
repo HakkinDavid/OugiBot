@@ -4,7 +4,7 @@ module.exports =
         if (!(await ougi.guildCheck(msg))) return;
 
         if (!ougi.isAdmin(msg)) {
-            msg.channel.send(await ougi.text(msg, "economy_adminOnly"));
+            msg.channel.send(await ougi.text({ msg, stringID: "economy_adminOnly" }));
             return;
         }
 
@@ -15,15 +15,15 @@ module.exports =
             case "currency":
                 guildEco.currency = arguments.slice(1).join(" ");
                 db.saveGuildEconomy(msg.guildId, guildEco);
-                msg.channel.send(await ougi.text(msg, "economy_currencyUpdated"));
+                msg.channel.send(await ougi.text({ msg, stringID: "economy_currencyUpdated" }));
                 break;
             case "xp":
                 guildEco.xp_label = arguments.slice(1).join(" ");
                 db.saveGuildEconomy(msg.guildId, guildEco);
-                msg.channel.send(await ougi.text(msg, "economy_xpUpdated"));
+                msg.channel.send(await ougi.text({ msg, stringID: "economy_xpUpdated" }));
                 break;
             default:
-                msg.channel.send(await ougi.text(msg, "economy_specifyIcon"));
+                msg.channel.send(await ougi.text({ msg, stringID: "economy_specifyIcon" }));
                 break;
         }
     }

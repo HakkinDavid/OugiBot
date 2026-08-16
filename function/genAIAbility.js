@@ -23,9 +23,16 @@ async function (msg, replied_to_ougi) {
 
   let context = "";
   if (msg.channel.type === Discord.ChannelType.GuildText) {
-    context = (await ougi.text(msg, "contextTextChannel")).replace(/{guildName}/, msg.guild.toString()).replace(/{channelName}/, msg.channel.name);
+    context = await ougi.text({
+      msg,
+      stringID: "contextTextChannel",
+      values: {
+        guildName: msg.guild.toString(),
+        channelName: msg.channel.name
+      }
+    });
   } else {
-    context = (await ougi.text(msg, "contextDM"));
+    context = await ougi.text({ msg, stringID: "contextDM" });
   }
 
   let userMessage = "[" + msg.author.username + "]:\n" + msg.content;
@@ -33,11 +40,11 @@ async function (msg, replied_to_ougi) {
 
   // Construir mensajes para el modelo
   let aiMessages = [
-    { role: 'system', content: (await ougi.text(msg, "whoAmI")) },
-    { role: 'system', content: (await ougi.text(msg, "instructions")) },
-    //{ role: 'system', content: (await ougi.text(msg, "userIsNamed")).replace(/{userName}/, msg.author.username) + (user_context ? "\n" + user_context : "") },
+    { role: 'system', content: await ougi.text({ msg, stringID: "whoAmI" }) },
+    { role: 'system', content: await ougi.text({ msg, stringID: "instructions" }) },
+    //{ role: 'system', content: (await ougi.text({ msg, stringID: "userIsNamed", values: { userName: msg.author.username } })) + (user_context ? "\n" + user_context : "") },
     { role: 'system', content: context },
-    { role: 'assistant', content: (await ougi.text(msg, "introductionAI")) },
+    { role: 'assistant', content: await ougi.text({ msg, stringID: "introductionAI" }) },
     ...channelInteractions,
     { role: 'user', content: userMessage }
   ];
@@ -53,7 +60,7 @@ async function (msg, replied_to_ougi) {
 
   if (typeof spookyReply !== "string" || spookyReply.includes("OpenAI") || spookyReply.includes("<!DOCTYPE html>") || spookyReply.includes("pollinations") || spookyReply.length > 1024) { ougi.judgementAbility(msg, replied_to_ougi); return; }
 
-  spookyReply = await ougi.text(msg, spookyReply, true);
+  spookyReply = await ougi.text({ msg, stringID: spookyReply, dynamic: true });
 
   // Actualizar el historial de interacciones del canal
   channelInteractions.push({ role: "user", content: userMessage });

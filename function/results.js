@@ -16,37 +16,38 @@ async function (msg, shouldEnd) {
   let thisSurvey = arguments.join(" ");
   let mySurvey = ougi.db().getSurvey(thisSurvey);
   if (!mySurvey) {
-    msg.channel.send(await ougi.text(msg, "results_notSurvey"));
+    msg.channel.send(await ougi.text({ msg, stringID: "results_notSurvey" }));
     return;
   }
   let surveyDone = "\u200b";
   let upvotes = mySurvey.yes.length;
   let downvotes = mySurvey.no.length;
   let total = upvotes + downvotes;
-  const descTemplate = await ougi.text(msg, "results_desc");
-  const posValTemplate = await ougi.text(msg, "results_positiveVal");
-  const negValTemplate = await ougi.text(msg, "results_negativeVal");
 
   let embed = new Discord.EmbedBuilder()
-  .setTitle(await ougi.text(msg, "results_title"))
+  .setTitle(await ougi.text({ msg, stringID: "results_title" }))
   .setDescription(
-    descTemplate
-      .replace(/{question}/g, mySurvey.q)
-      .replace(/{surveyId}/g, thisSurvey)
+    await ougi.text({
+      msg,
+      stringID: "results_desc",
+      values: {
+        question: mySurvey.q,
+        surveyId: thisSurvey
+      }
+    })
   )
   .setColor(mySurvey.color)
-  .addFields({name: await ougi.text(msg, "results_positive"), value: posValTemplate.replace(/{percent}/g, (total > 0 ? upvotes/total*100 : 0))})
-  .addFields({name: await ougi.text(msg, "results_negative"), value: negValTemplate.replace(/{percent}/g, (total > 0 ? downvotes/total*100 : 0))})
+  .addFields({name: await ougi.text({ msg, stringID: "results_positive" }), value: await ougi.text({ msg, stringID: "results_positiveVal", values: { percent: (total > 0 ? upvotes/total*100 : 0) } })})
+  .addFields({name: await ougi.text({ msg, stringID: "results_negative" }), value: await ougi.text({ msg, stringID: "results_negativeVal", values: { percent: (total > 0 ? downvotes/total*100 : 0) } })})
   .setTimestamp()
   .setAuthor({name: "Ougi [BOT]", icon: client.user.avatarURL({dynamic: true, size: 4096})})
-  .setFooter({text: await ougi.text(msg, "results_footer"), icon: client.user.avatarURL({dynamic: true, size: 4096})});
+  .setFooter({text: await ougi.text({ msg, stringID: "results_footer" }), icon: client.user.avatarURL({dynamic: true, size: 4096})});
   if (shouldEnd && msg.author.id == davidUserID) {
     if (mySurvey.ended == null) {
       ougi.db().endSurvey(thisSurvey);
-      surveyDone = await ougi.text(msg, "results_ended");
+      surveyDone = await ougi.text({ msg, stringID: "results_ended" });
     }
   }
-  const durTemplate = await ougi.text(msg, "results_duration");
-  embed.addFields({name: surveyDone, value: durTemplate.replace(/{duration}/g, ougi.toHumanTime(mySurvey.started, mySurvey.ended))})
+  embed.addFields({name: surveyDone, value: await ougi.text({ msg, stringID: "results_duration", values: { duration: ougi.toHumanTime(mySurvey.started, mySurvey.ended) } })})
   msg.channel.send({embeds: [embed]});
 }

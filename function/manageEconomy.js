@@ -4,7 +4,7 @@ async function (action, msg, options) {
     if (!(await ougi.guildCheck(msg))) return;
 
     if (!ougi.isAdmin(msg)) {
-        msg.channel.send(await ougi.text(msg, "economy_adminOnly"));
+        msg.channel.send(await ougi.text({ msg, stringID: "economy_adminOnly" }));
         return;
     }
 
@@ -15,7 +15,7 @@ async function (action, msg, options) {
         case 'channel': {
             const guildEco = db.getGuildEconomy(guildId);
             if (guildEco.disabled) {
-                msg.channel.send(await ougi.text(msg, "manageEco_enableFirst"));
+                msg.channel.send(await ougi.text({ msg, stringID: "manageEco_enableFirst" }));
                 return;
             }
             let expChannels = [];
@@ -25,7 +25,7 @@ async function (action, msg, options) {
                     if (options[i].startsWith("<#") && options[i].endsWith(">")) {
                         let channelMention = options[i].slice(2, -1);
                         if (!msg.guild.channels.cache.has(channelMention)) {
-                            msg.channel.send(await ougi.text(msg, "manageEco_xpChannelHelp"));
+                            msg.channel.send(await ougi.text({ msg, stringID: "manageEco_xpChannelHelp" }));
                             return;
                         }
                         expChannels.push(channelMention);
@@ -36,7 +36,7 @@ async function (action, msg, options) {
                     }
                 }
             } else {
-                msg.channel.send(await ougi.text(msg, "manageEco_xpChannelHelp"));
+                msg.channel.send(await ougi.text({ msg, stringID: "manageEco_xpChannelHelp" }));
                 return;
             }
 
@@ -44,15 +44,15 @@ async function (action, msg, options) {
                 case 'add':
                     guildEco.channels.push(...expChannels);
                     db.saveGuildEconomy(guildId, guildEco);
-                    msg.channel.send(await ougi.text(msg, "manageEco_xpChannelsAdd"));
+                    msg.channel.send(await ougi.text({ msg, stringID: "manageEco_xpChannelsAdd" }));
                     break;
                 case 'remove':
                     guildEco.channels = guildEco.channels.filter(ch => !expChannels.includes(ch));
                     db.saveGuildEconomy(guildId, guildEco);
-                    msg.channel.send(await ougi.text(msg, "manageEco_xpChannelsRemove"));
+                    msg.channel.send(await ougi.text({ msg, stringID: "manageEco_xpChannelsRemove" }));
                     break;
                 default:
-                    msg.channel.send(await ougi.text(msg, "manageEco_commandWrong"));
+                    msg.channel.send(await ougi.text({ msg, stringID: "manageEco_commandWrong" }));
                     break;
             }
             break;
@@ -62,23 +62,23 @@ async function (action, msg, options) {
                 case 'enable': {
                     const guildEco = db.getGuildEconomy(guildId);
                     if (!guildEco.disabled) {
-                        msg.channel.send(await ougi.text(msg, "manageEco_alreadyEnabled"));
+                        msg.channel.send(await ougi.text({ msg, stringID: "manageEco_alreadyEnabled" }));
                         return;
                     }
                     guildEco.disabled = false;
                     db.saveGuildEconomy(guildId, guildEco);
-                    msg.channel.send(await ougi.text(msg, "manageEco_enabled"));
+                    msg.channel.send(await ougi.text({ msg, stringID: "manageEco_enabled" }));
                     break;
                 }
                 case 'disable': {
                     const guildEco = db.getGuildEconomy(guildId);
                     if (guildEco.disabled) {
-                        msg.channel.send(await ougi.text(msg, "manageEco_alreadyDisabled"));
+                        msg.channel.send(await ougi.text({ msg, stringID: "manageEco_alreadyDisabled" }));
                         return;
                     }
                     guildEco.disabled = true;
                     db.saveGuildEconomy(guildId, guildEco);
-                    msg.channel.send(await ougi.text(msg, "manageEco_disabled"));
+                    msg.channel.send(await ougi.text({ msg, stringID: "manageEco_disabled" }));
                     break;
                 }
                 case 'reset': {
@@ -86,24 +86,24 @@ async function (action, msg, options) {
                         multiplier: 1, channels: [], currency: '$',
                         xp_label: 'XP', cooldown: 10, disabled: false
                     });
-                    msg.channel.send(await ougi.text(msg, "manageEco_reset"));
+                    msg.channel.send(await ougi.text({ msg, stringID: "manageEco_reset" }));
                     break;
                 }
                 case 'cooldown': {
                     const guildEco = db.getGuildEconomy(guildId);
                     guildEco.cooldown = parseInt(options[1], 10) || 10;
                     db.saveGuildEconomy(guildId, guildEco);
-                    msg.channel.send(await ougi.text(msg, "manageEco_cooldownSet"));
+                    msg.channel.send(await ougi.text({ msg, stringID: "manageEco_cooldownSet" }));
                     break;
                 }
                 default:
-                    msg.channel.send(await ougi.text(msg, "manageEco_commandWrong"));
+                    msg.channel.send(await ougi.text({ msg, stringID: "manageEco_commandWrong" }));
                     break;
             }
             break;
         }
         default:
-            msg.channel.send(await ougi.text(msg, "manageEco_commandWrong"));
+            msg.channel.send(await ougi.text({ msg, stringID: "manageEco_commandWrong" }));
             break;
     }
 }

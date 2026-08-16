@@ -5,15 +5,19 @@ module.exports =
     if (!(await ougi.guildCheck(msg))) return;
     let phrases = ["sike", "say a bad word", "snipe"];
     let allow = phrases[Math.floor(Math.random() * phrases.length)];
-    let afterOptions = [
-      await ougi.text(msg, "reactingTo"),
-      await ougi.text(msg, "alrightWhitelisted"),
-    ];
-    let answer = afterOptions[Math.floor(Math.random() * afterOptions.length)].replace(/{triggerName}/, "`" + allow + "`").replace(/{guildName}/, msg.guild.toString());
-    embed.setDescription(await ougi.text(msg, "allowUsage"))
-      .addFields({ name: await ougi.text(msg, "specialPermission"), value: ":warning: " + await ougi.text(msg, "onlyOwner") })
-      .addFields({ name: await ougi.text(msg, "example"), value: "`ougi allow " + allow + "`" })
-      .addFields({ name: await ougi.text(msg, "output"), value: answer });
+    let chosenKey = ["reactingTo", "alrightWhitelisted"][Math.floor(Math.random() * 2)];
+    let answer = await ougi.text({
+      msg,
+      stringID: chosenKey,
+      values: {
+        triggerName: "`" + allow + "`",
+        guildName: msg.guild.toString()
+      }
+    });
+    embed.setDescription(await ougi.text({ msg, stringID: "allowUsage" }))
+      .addFields({ name: await ougi.text({ msg, stringID: "specialPermission" }), value: ":warning: " + await ougi.text({ msg, stringID: "onlyOwner" }) })
+      .addFields({ name: await ougi.text({ msg, stringID: "example" }), value: "`ougi allow " + allow + "`" })
+      .addFields({ name: await ougi.text({ msg, stringID: "output" }), value: answer });
 
     msg.channel.send({ embeds: [embed] }).catch(console.error);
   }

@@ -8,12 +8,17 @@ module.exports = async function (arguments, msg) {
     const mentionedUsers = Array.from(msg.mentions.users?.keys?.() || []);
 
     if (action !== "add" && action !== "remove") {
-        msg.channel.send(await ougi.text(msg, "admin_usage"));
+        msg.channel.send(await ougi.text({ msg, stringID: "admin_usage" }));
         return;
     }
     if (!mentionedUsers.length) {
-        const mentionRequiredTemplate = await ougi.text(msg, "admin_mentionRequired");
-        msg.channel.send(mentionRequiredTemplate.replace(/{action}/g, action === "add" ? "register" : "remove"));
+        msg.channel.send(await ougi.text({
+            msg,
+            stringID: "admin_mentionRequired",
+            values: {
+                action: action === "add" ? "register" : "remove"
+            }
+        }));
         return;
     }
 
@@ -26,11 +31,11 @@ module.exports = async function (arguments, msg) {
         // Remove each mentioned user ID if present (excluding self and guild owner)
         for (const id of mentionedUsers) {
             if (id === msg.author.id) {
-                msg.channel.send(await ougi.text(msg, "admin_cantRemoveSelf"));
+                msg.channel.send(await ougi.text({ msg, stringID: "admin_cantRemoveSelf" }));
                 continue;
             }
             if (id === msg.guild?.ownerId) {
-                msg.channel.send(await ougi.text(msg, "admin_cantRemoveOwner"));
+                msg.channel.send(await ougi.text({ msg, stringID: "admin_cantRemoveOwner" }));
                 continue;
             }
             ougi.db().removeGuildAdmin(msg.guildId, id);
@@ -38,11 +43,11 @@ module.exports = async function (arguments, msg) {
     }
 
     // Confirmation message
-    const actionText = action === "add" ? await ougi.text(msg, "admin_addedHeader") : await ougi.text(msg, "admin_removedHeader");
+    const actionText = action === "add" ? await ougi.text({ msg, stringID: "admin_addedHeader" }) : await ougi.text({ msg, stringID: "admin_removedHeader" });
     const currentAdmins = ougi.db().getGuildAdmins(msg.guildId);
     const adminsDisplay = currentAdmins.length > 0 ? `\`\`\`\n${currentAdmins.join("\n")}\n\`\`\`` : "`None`";
-    const currentAdminsHeader = await ougi.text(msg, "admin_currentAdmins");
-    const authNote = await ougi.text(msg, "admin_authNote");
+    const currentAdminsHeader = await ougi.text({ msg, stringID: "admin_currentAdmins" });
+    const authNote = await ougi.text({ msg, stringID: "admin_authNote" });
 
     msg.channel.send(`${actionText}\n\`\`\`\n${mentionedUsers.join("\n")}\n\`\`\`\n${currentAdminsHeader}\n${adminsDisplay}\n${authNote}`);
 }

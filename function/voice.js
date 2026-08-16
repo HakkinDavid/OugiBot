@@ -1,6 +1,6 @@
 module.exports = async function (msg) {
   if (!msg.guild) {
-    return msg.channel.send(await ougi.text(msg, "mustGuild"));
+    return msg.channel.send(await ougi.text({ msg, stringID: "mustGuild" }));
   }
 
   let member = msg.member;
@@ -10,12 +10,12 @@ module.exports = async function (msg) {
 
   const memberVC = member?.voice?.channel;
   if (!memberVC) {
-    return msg.channel.send(await ougi.text(msg, "musicNoVC"));
+    return msg.channel.send(await ougi.text({ msg, stringID: "musicNoVC" }));
   }
 
   const permissions = memberVC.permissionsFor(msg.client?.user || client?.user);
   if (permissions && (!permissions.has('Connect') || !permissions.has('Speak'))) {
-    return msg.channel.send(await ougi.text(msg, "voice_needPermissions"));
+    return msg.channel.send(await ougi.text({ msg, stringID: "voice_needPermissions" }));
   }
 
   const cleanedContent = msg.content.replace(/\s+/g, ' ').trim();
@@ -43,7 +43,7 @@ module.exports = async function (msg) {
 
   textToSpeak = textToSpeak.replace(/[\+\*\?\^\$\(\)\[\]\{\}\|\\\&\/\@]/g, "").trim();
   if (!textToSpeak) {
-    return msg.channel.send(await ougi.text(msg, "voice_specifySentence"));
+    return msg.channel.send(await ougi.text({ msg, stringID: "voice_specifySentence" }));
   }
 
   try {
@@ -55,7 +55,7 @@ module.exports = async function (msg) {
     });
 
     if (!ttsUrls || !ttsUrls.length) {
-      return msg.channel.send(await ougi.text(msg, "voice_ttsFail"));
+      return msg.channel.send(await ougi.text({ msg, stringID: "voice_ttsFail" }));
     }
 
     await ougi.voiceManager.playTts(msg, memberVC, ttsUrls);

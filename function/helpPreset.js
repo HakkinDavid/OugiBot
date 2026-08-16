@@ -7,8 +7,8 @@ async function (msg, commandName) {
   .setFooter({text: "helpEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true");
   if (commandName) {
-    let title = await ougi.text(msg, "specificHelpTitle");
-    embed.setTitle(title.replace(/{commandName}/, "`" + commandName + "`"))
+    let title = await ougi.text({ msg, stringID: "specificHelpTitle", values: { commandName: "`" + commandName + "`" } });
+    embed.setTitle(title);
   }
   return embed;
 }

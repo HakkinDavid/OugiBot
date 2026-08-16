@@ -11,11 +11,11 @@ async function (arguments, msg) {
     if (arguments[0] == "disable") {
       if (ougi.db().getLogChannel(msg.guildId)){
         ougi.db().deleteLogChannel(msg.guildId);
-        msg.channel.send(await ougi.text(msg, "log_disabled"));
+        msg.channel.send(await ougi.text({ msg, stringID: "log_disabled" }));
         return;
       }
       else {
-        msg.channel.send(await ougi.text(msg, "log_notSet"));
+        msg.channel.send(await ougi.text({ msg, stringID: "log_notSet" }));
         return;
       }
     }
@@ -23,18 +23,23 @@ async function (arguments, msg) {
       let channelMention = arguments[0];
       channelMention = channelMention.slice(2, -1);
       if (!msg.guild.channels.cache.has(channelMention)) {
-        msg.channel.send(await ougi.text(msg, "log_usageHelp"));
+        msg.channel.send(await ougi.text({ msg, stringID: "log_usageHelp" }));
         return;
       }
       guildLogger = channelMention;
     }
     else {
-      msg.channel.send(await ougi.text(msg, "log_usageHelp"));
+      msg.channel.send(await ougi.text({ msg, stringID: "log_usageHelp" }));
       return;
     }
   }
-  const channelSetTemplate = await ougi.text(msg, "log_channelSetDesc");
-  msg.channel.send(channelSetTemplate.replace(/{channel}/g, guildLogger));
+  msg.channel.send(await ougi.text({
+    msg,
+    stringID: "log_channelSetDesc",
+    values: {
+      channel: guildLogger
+    }
+  }));
 
   ougi.db().setLogChannel(msg.guildId, guildLogger);
 }

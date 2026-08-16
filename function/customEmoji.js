@@ -52,10 +52,10 @@ module.exports =
         }
       }).catch(console.error);
       if (emojiArray.includes("<:unknown_emoji:731996283790950420>")) {
-        msg.channel.send(await ougi.text(msg, "seeEmoji") + "\n> ougi emoji-list").catch(console.error);
+        msg.channel.send(await ougi.text({ msg, stringID: "seeEmoji" }) + "\n> ougi emoji-list").catch(console.error);
       }
     }
     else {
-      msg.channel.send(await ougi.text(msg, "pleaseIncludeEmoji") + "\n> ougi emoji-list").catch(console.error);
+      msg.channel.send(await ougi.text({ msg, stringID: "pleaseIncludeEmoji" }) + "\n> ougi emoji-list").catch(console.error);
     }
   }

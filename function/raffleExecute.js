@@ -12,8 +12,8 @@ module.exports = async function (raffleGuildId, raffleIdx) {
         raffle.winners = await ougi.pickWinners(raffle.participants, raffle.config.winnersCount);
         raffle.finished = true;
 
-        const resultsInText = await ougi.text(raffleGuildId, "raffle_resultsIn");
-        const winnersHeader = await ougi.text(raffleGuildId, "raffle_winnersHeader");
+        const resultsInText = await ougi.text({ lang: raffleGuildId, stringID: "raffle_resultsIn" });
+        const winnersHeader = await ougi.text({ lang: raffleGuildId, stringID: "raffle_winnersHeader" });
 
         await msg.edit({ content: resultsInText, embeds: [raffle.embed] });
         await msg.reply(

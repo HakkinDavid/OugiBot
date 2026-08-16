@@ -1,11 +1,11 @@
 module.exports = async function (msg) {
   let embed = await ougi.helpPreset(msg, "daily");
   if (msg.channel.type !== Discord.ChannelType.GuildText) {
-    embed.addFields({ name: await ougi.text(msg, "onlyGuilds"), value: ":warning: " + await ougi.text(msg, "mustGuild") });
+    embed.addFields({ name: await ougi.text({ msg, stringID: "onlyGuilds" }), value: ":warning: " + await ougi.text({ msg, stringID: "mustGuild" }) });
   }
-  embed.setDescription(await ougi.text(msg, "dailyHelpDesc"))
+  embed.setDescription(await ougi.text({ msg, stringID: "dailyHelpDesc" }))
     .addFields({
-      name: await ougi.text(msg, "example"),
+      name: await ougi.text({ msg, stringID: "example" }),
       value: "`ougi daily`"
     });
 

@@ -7,7 +7,7 @@ async function (msg) {
     const guildEco = db.getGuildEconomy(msg.guildId);
 
     if (guildEco.disabled) {
-        msg.channel.send(await ougi.text(msg, "economy_disabled"));
+        msg.channel.send(await ougi.text({ msg, stringID: "economy_disabled" }));
         return;
     }
 
@@ -16,30 +16,48 @@ async function (msg) {
 
     if (user.worked && (rn - user.worked) <= guildEco.cooldown * 1000) {
         const remaining = ((guildEco.cooldown * 1000) - (rn - user.worked)) / 1000;
-        const cooldownTemplate = await ougi.text(msg, "work_cooldown");
-        msg.channel.send(cooldownTemplate.replace(/{remaining}/g, remaining));
+        msg.channel.send(await ougi.text({
+            msg,
+            stringID: "work_cooldown",
+            values: {
+                remaining
+            }
+        }));
         return;
     }
 
     user.worked = rn;
     db.saveUser(msg.guildId, msg.author.id, user);
 
-    const workingTitleTemplate = await ougi.text(msg, "work_workingTitle");
     let embed = new Discord.EmbedBuilder()
-        .setTitle(workingTitleTemplate.replace(/{username}/g, msg.author.username))
+        .setTitle(await ougi.text({
+            msg,
+            stringID: "work_workingTitle",
+            values: {
+                username: msg.author.username
+            }
+        }))
         .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/loading.gif?raw=true")
         .setColor("#00D0D0");
 
     msg.channel.send({ embeds: [embed] }).then(async message => {
-        const rewardTitleTemplate = await ougi.text(msg, "work_rewardTitle");
-        const rewardDescTemplate = await ougi.text(msg, "work_rewardDesc");
         const earned = ougi.economy('add', msg, { reason: 'work' });
+        const rewardTitle = await ougi.text({
+            msg,
+            stringID: "work_rewardTitle",
+            values: { username: msg.author.username }
+        });
+        const rewardDesc = await ougi.text({
+            msg,
+            stringID: "work_rewardDesc",
+            values: { currency: guildEco.currency, amount: earned }
+        });
         setTimeout(function () {
             message.delete();
             let workEmbed = new Discord.EmbedBuilder()
-                .setTitle(rewardTitleTemplate.replace(/{username}/g, msg.author.username))
+                .setTitle(rewardTitle)
                 .setThumbnail(msg.author.avatarURL({ dynamic: true, size: 4096 }))
-                .setDescription(rewardDescTemplate.replace(/{currency}/g, guildEco.currency).replace(/{amount}/g, earned))
+                .setDescription(rewardDesc)
                 .setColor("#281E87");
             message.channel.send({ embeds: [workEmbed] });
         }, Math.floor(Math.random() * 10000));

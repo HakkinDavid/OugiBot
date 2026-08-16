@@ -22,7 +22,7 @@ async function (arguments, msg, guildExecution) {
   let isLang = ougi.whereIs(ougi.langCodes, niceLang);
   let isCode = ougi.langCodes[toLang];
   if (isLang == undefined && isCode == undefined) {
-    msg.channel.send(await ougi.text(msg, "validLang") + "\n> ougi help language").catch(console.error);
+    msg.channel.send(await ougi.text({ msg, stringID: "validLang" }) + "\n> ougi help language").catch(console.error);
     return
   }
   if (isCode != undefined && isLang == undefined) {
@@ -30,25 +30,25 @@ async function (arguments, msg, guildExecution) {
   }
   let finalCode = ougi.whereIs(ougi.langCodes, niceLang);
   let langEmbed = new Discord.EmbedBuilder()
-  .setTitle((await ougi.text(msg, "newLang")).replace(/{langName}/gi, niceLang + " (" + finalCode + ")"))
+  .setTitle(await ougi.text({ msg, stringID: "newLang", values: { langName: niceLang + " (" + finalCode + ")" } }))
   .setAuthor({name: "Ougi [BOT]", icon: client.user.avatarURL({dynamic: true, size: 4096})})
   .setColor("#32A852")
-  .setDescription(await ougi.text(msg, "langDesc"))
+  .setDescription(await ougi.text({ msg, stringID: "langDesc" }))
   .setFooter({text: "langEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/world.png?raw=true");
   if (finalCode == 'default') {
-    langEmbed.setTitle(await ougi.text(msg, "lang_restoredDefaultTitle"));
-    langEmbed.setDescription(await ougi.text(msg, "lang_restoredDefaultDesc"));
+    langEmbed.setTitle(await ougi.text({ msg, stringID: "lang_restoredDefaultTitle" }));
+    langEmbed.setDescription(await ougi.text({ msg, stringID: "lang_restoredDefaultDesc" }));
   }
   if (guildExecution) {
-    langEmbed.setTitle((await ougi.text(msg, "newLangGuild")).replace(/{langName}/gi, niceLang + " (" + finalCode + ")"));
-    langEmbed.setDescription((await ougi.text(msg, "langGuildDesc")).replace(/{guildName}/, msg.guild.toString()));
+    langEmbed.setTitle(await ougi.text({ msg, stringID: "newLangGuild", values: { langName: niceLang + " (" + finalCode + ")" } }));
+    langEmbed.setDescription(await ougi.text({ msg, stringID: "langGuildDesc", values: { guildName: msg.guild.toString() } }));
     if (finalCode == 'default') {
-      langEmbed.setTitle(await ougi.text(msg, "lang_guildRestoredDefaultTitle"));
-      langEmbed.setDescription(await ougi.text(msg, "lang_guildRestoredDefaultDesc"));
+      langEmbed.setTitle(await ougi.text({ msg, stringID: "lang_guildRestoredDefaultTitle" }));
+      langEmbed.setDescription(await ougi.text({ msg, stringID: "lang_guildRestoredDefaultDesc" }));
     }
   }
-  langEmbed.addFields({name: ":warning: " + await ougi.text(msg, "possibleDelay"), value: await ougi.text(msg, "delayWarning")})
+  langEmbed.addFields({name: ":warning: " + await ougi.text({ msg, stringID: "possibleDelay" }), value: await ougi.text({ msg, stringID: "delayWarning" })});
   msg.channel.send({embeds: [langEmbed]});
   ougi.db().setLang(preferencesID, finalCode);
 }

@@ -3,7 +3,7 @@ module.exports =
   async function (filename, where) {
 
     if (process.env.DEV == 1) {
-        const skipMsg = (await ougi.text('en', "console_backupDevSkip")).replace(/{filename}/g, filename);
+        const skipMsg = await ougi.text({ lang: 'en', stringID: "console_backupDevSkip", values: { filename } });
         console.log(skipMsg);
         return;
     }

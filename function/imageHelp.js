@@ -16,15 +16,15 @@ async function (msg) {
       }
 
       if (urls.length == 0) {
-          msg.channel.send(await ougi.text(msg, "resultsZero")).catch(console.error);
+          msg.channel.send(await ougi.text({ msg, stringID: "resultsZero" })).catch(console.error);
           return;
       }
 
       let imageToSend = urls[Math.floor(Math.random()*urls.length)].url;
 
       let embed = await ougi.helpPreset(msg, "image");
-      embed.setDescription(await ougi.text(msg, "imageHelpDesc"))
-      .addFields({name: await ougi.text(msg, "example"), value: "`ougi image " + search +"`"})
+      embed.setDescription(await ougi.text({ msg, stringID: "imageHelpDesc" }))
+      .addFields({name: await ougi.text({ msg, stringID: "example" }), value: "`ougi image " + search +"`"})
       .setImage(imageToSend)
       .setFooter({text: "helpEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
       .setTimestamp();

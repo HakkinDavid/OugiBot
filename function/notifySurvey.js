@@ -16,7 +16,7 @@ async function (msg) {
   let thisSurvey = arguments.join(" ");
   let breakChocolate = thisSurvey.split("::").slice(1);
   if (breakChocolate.length < 2) {
-    msg.channel.send(await ougi.text(msg, "survey_notifyMissingFields"));
+    msg.channel.send(await ougi.text({ msg, stringID: "survey_notifyMissingFields" }));
     return;
   }
   let surveyID, notification;
@@ -35,25 +35,24 @@ async function (msg) {
     }
   }
   if (surveyID == null || notification == null || notification.length < 1 || notification.length > 1024) {
-    msg.channel.send(await ougi.text(msg, "survey_notifyMissingFields"));
+    msg.channel.send(await ougi.text({ msg, stringID: "survey_notifyMissingFields" }));
     return;
   }
   let mySurvey = ougi.db().getSurvey(surveyID);
   if (!mySurvey) {
-    msg.channel.send(await ougi.text(msg, "survey_notSurveyId"));
+    msg.channel.send(await ougi.text({ msg, stringID: "survey_notSurveyId" }));
     return;
   }
   let upvoters = mySurvey.yes;
-  const descTemplate = await ougi.text(msg, "survey_notificationDesc");
   let embed = new Discord.EmbedBuilder()
-  .setTitle(await ougi.text(msg, "survey_notificationTitle"))
-  .setDescription(descTemplate.replace(/{question}/g, mySurvey.q))
+  .setTitle(await ougi.text({ msg, stringID: "survey_notificationTitle" }))
+  .setDescription(await ougi.text({ msg, stringID: "survey_notificationDesc", values: { question: mySurvey.q } }))
   .addFields({name: "\u200b", value: notification})
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/news.png?raw=true")
   .setColor(mySurvey.color)
   .setTimestamp()
   .setAuthor({name: "Ougi [BOT]", icon: client.user.avatarURL({dynamic: true, size: 4096})})
-  .setFooter({text: await ougi.text(msg, "survey_notificationFooter"), icon: client.user.avatarURL({dynamic: true, size: 4096})});
+  .setFooter({text: await ougi.text({ msg, stringID: "survey_notificationFooter" }), icon: client.user.avatarURL({dynamic: true, size: 4096})});
   let names = [];
   let mod = 0;
   for (let i = 0; upvoters.length > i; i++) {

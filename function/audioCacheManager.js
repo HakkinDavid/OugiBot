@@ -54,7 +54,7 @@ class AudioCacheManager {
             this.enforceSizeLimit();
             this.isInitialized = true;
         } catch (err) {
-            global.ougi?.text('en', "console_cacheInitError").then(msg => console.error(msg, err));
+            global.ougi?.text({ lang: 'en', stringID: "console_cacheInitError" }).then(msg => console.error(msg, err));
         }
     }
 
@@ -129,8 +129,8 @@ class AudioCacheManager {
         try {
             writeStream = fs.createWriteStream(tempFile);
         } catch (err) {
-            global.ougi?.text('en', "console_cacheFailedStream").then(tpl => {
-                console.error(tpl.replace(/{id}/g, videoId), err);
+            global.ougi?.text({ lang: 'en', stringID: "console_cacheFailedStream", values: { id: videoId } }).then(msg => {
+                console.error(msg, err);
             });
             return null;
         }
@@ -152,15 +152,24 @@ class AudioCacheManager {
                         createdAt: Date.now()
                     });
                     this.enforceSizeLimit();
-                    const cachedMsg = (await global.ougi?.text('en', "console_cacheTrackSuccess"))
-                        ?.replace(/{id}/g, videoId)
-                        ?.replace(/{mb}/g, Math.round(totalBytesWritten / 1024 / 1024 * 10) / 10);
+                    const cachedMsg = await global.ougi?.text({
+                        lang: 'en',
+                        stringID: "console_cacheTrackSuccess",
+                        values: {
+                            id: videoId,
+                            mb: Math.round(totalBytesWritten / 1024 / 1024 * 10) / 10
+                        }
+                    });
                     if (cachedMsg) console.log(cachedMsg);
                 } else if (fs.existsSync(tempFile)) {
                     fs.unlinkSync(tempFile);
                 }
             } catch (err) {
-                const finalizeErrMsg = (await global.ougi?.text('en', "console_cacheFinalizeError"))?.replace(/{id}/g, videoId);
+                const finalizeErrMsg = await global.ougi?.text({
+                    lang: 'en',
+                    stringID: "console_cacheFinalizeError",
+                    values: { id: videoId }
+                });
                 if (finalizeErrMsg) console.error(finalizeErrMsg, err);
                 try { if (fs.existsSync(tempFile)) fs.unlinkSync(tempFile); } catch (_) {}
             }
@@ -224,8 +233,14 @@ class AudioCacheManager {
                 }
                 this.cacheMap.delete(entry.id);
                 totalSize -= entry.sizeBytes;
-                global.ougi?.text('en', "console_cacheEvicted").then(tpl => {
-                    const msg = tpl?.replace(/{id}/g, entry.id)?.replace(/{mb}/g, Math.round(entry.sizeBytes / 1024 / 1024 * 10) / 10);
+                global.ougi?.text({
+                    lang: 'en',
+                    stringID: "console_cacheEvicted",
+                    values: {
+                        id: entry.id,
+                        mb: Math.round(entry.sizeBytes / 1024 / 1024 * 10) / 10
+                    }
+                }).then(msg => {
                     if (msg) console.log(msg);
                 });
             } catch (_) {}
@@ -257,9 +272,14 @@ class AudioCacheManager {
         }
 
         this.activePrefetch = nextItem;
-        const prefetchMsg = (await global.ougi?.text('en', "console_cachePrefetching"))
-            ?.replace(/{title}/g, song.title)
-            ?.replace(/{id}/g, videoId);
+        const prefetchMsg = await global.ougi?.text({
+            lang: 'en',
+            stringID: "console_cachePrefetching",
+            values: {
+                title: song.title,
+                id: videoId
+            }
+        });
         if (prefetchMsg) console.log(prefetchMsg);
 
         try {
@@ -344,7 +364,11 @@ class AudioCacheManager {
             });
 
         } catch (err) {
-            const prefetchErrMsg = (await global.ougi?.text('en', "console_cachePrefetchError"))?.replace(/{id}/g, videoId);
+            const prefetchErrMsg = await global.ougi?.text({
+                lang: 'en',
+                stringID: "console_cachePrefetchError",
+                values: { id: videoId }
+            });
             if (prefetchErrMsg) console.warn(prefetchErrMsg, err.message);
             this.activePrefetch = null;
             this.processNextPrefetch();

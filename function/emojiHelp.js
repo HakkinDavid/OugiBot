@@ -16,10 +16,10 @@ async function (msg) {
   let thatEmoji3 = proArrayName.indexOf(searchFor3)
   let spookyEmoji3 = proArrayID[thatEmoji3];
   let embed = await ougi.helpPreset(msg, "emoji");
-  embed.setDescription((await ougi.text(msg, "emojiHelpDesc")).replace(/{commandOption}/gi, "`random`"))
-  .addFields({name: await ougi.text(msg, "example"), value: "`ougi emoji " + searchFor + " " + searchFor2 + " " + searchFor3 + "`"})
-  .addFields({name: await ougi.text(msg, "output"), value: spookyEmoji + spookyEmoji2 + spookyEmoji3})
-  .addFields({name: await ougi.text(msg, "lookEmoji"), value: "`ougi emoji-list`"})
+  embed.setDescription(await ougi.text({ msg, stringID: "emojiHelpDesc", values: { commandOption: "`random`" } }))
+  .addFields({name: await ougi.text({ msg, stringID: "example" }), value: "`ougi emoji " + searchFor + " " + searchFor2 + " " + searchFor3 + "`"})
+  .addFields({name: await ougi.text({ msg, stringID: "output" }), value: spookyEmoji + spookyEmoji2 + spookyEmoji3})
+  .addFields({name: await ougi.text({ msg, stringID: "lookEmoji" }), value: "`ougi emoji-list`"})
 
   msg.channel.send({embeds: [embed]}).catch(console.error);
 }

@@ -8,7 +8,7 @@ async function (arguments, msg) {
   let page = arguments * 1 - 1;
 
   if (isNaN(page)) {
-    msg.channel.send(await ougi.text(msg, "pleasePage")).catch(console.error);
+    msg.channel.send(await ougi.text({ msg, stringID: "pleasePage" })).catch(console.error);
     return
   }
 
@@ -18,7 +18,7 @@ async function (arguments, msg) {
 
   let displayPage = page + 1;
   if (displayPage > pageMax) {
-    msg.channel.send(await ougi.text(msg, "notPage")).catch(console.error);
+    msg.channel.send(await ougi.text({ msg, stringID: "notPage" })).catch(console.error);
     return
   }
 
@@ -26,11 +26,10 @@ async function (arguments, msg) {
   let newNameList = ougi.miniArrays(emojiNameList, 14);
   let willShow = newList[page];
   let willShowN = newNameList[page];
-  const titleTemplate = await ougi.text(msg, "emoji_listTitle");
   let embed = new Discord.EmbedBuilder()
-    .setTitle(titleTemplate.replace(/{page}/g, displayPage))
+    .setTitle(await ougi.text({ msg, stringID: "emoji_listTitle", values: { page: displayPage } }))
     .setColor("#C93A57")
-    .setFooter({text: (await ougi.text(msg, "emojiListFooter")).replace(/{emoji}/gi, howMany).replace(/{numpage}/gi, pageMax), icon: client.user.avatarURL({dynamic: true, size: 4096})});
+    .setFooter({text: await ougi.text({ msg, stringID: "emojiListFooter", values: { emoji: howMany, numpage: pageMax } }), icon: client.user.avatarURL({dynamic: true, size: 4096})});
     for (i = 0; i < willShow.length; i+=2) {
       if (willShow[i+1] == undefined) {
         willShow[i+1] = "\u200b";

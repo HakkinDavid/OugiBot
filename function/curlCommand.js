@@ -9,7 +9,7 @@ module.exports = async function (msg) {
       mentioned = msg.mentions.users.first();
       thisOBJ = await client.users.fetch(mentioned.id);
       if (!thisOBJ) {
-        await msg.channel.send(await ougi.text(msg, "userFetchFail"));
+        await msg.channel.send(await ougi.text({ msg, stringID: "userFetchFail" }));
         return;
       }
       curlType = "user";
@@ -67,38 +67,56 @@ module.exports = async function (msg) {
     }
 
     if (!curlType) {
-      await msg.channel.send(await ougi.text(msg, "curlNoTarget"));
+      await msg.channel.send(await ougi.text({ msg, stringID: "curlNoTarget" }));
       return;
     }
-
-    const createdAtFieldTemplate = await ougi.text(msg, "curl_createdAtField");
-    const joinedAtFieldTemplate = await ougi.text(msg, "curl_joinedAtField");
-    const timeAgoTemplate = await ougi.text(msg, "curl_timeAgo");
 
     const embed = new EmbedBuilder()
       .setTitle(titleCurl)
       .addFields({
-        name: createdAtFieldTemplate
-          .replace(/{type}/g, curlType)
-          .replace(/{date}/g, thisOBJ.createdAt.toDateString().slice(4).replace(/ 0/gi, " ")),
-        value: timeAgoTemplate.replace(/{time}/g, ougi.toHumanTime(thisOBJ.createdAt))
+        name: await ougi.text({
+          msg,
+          stringID: "curl_createdAtField",
+          values: {
+            type: curlType,
+            date: thisOBJ.createdAt.toDateString().slice(4).replace(/ 0/gi, " ")
+          }
+        }),
+        value: await ougi.text({
+          msg,
+          stringID: "curl_timeAgo",
+          values: {
+            time: ougi.toHumanTime(thisOBJ.createdAt)
+          }
+        })
       })
       .setColor(colorCurl)
       .setTimestamp()
       .setFooter({
-        text: await ougi.text(msg, "curl_footer"),
+        text: await ougi.text({ msg, stringID: "curl_footer" }),
         iconURL: client.user.avatarURL({ dynamic: true, size: 4096 })
       });
 
     if (memberCurl) {
       embed.addFields({
-        name: joinedAtFieldTemplate
-          .replace(/{guild}/g, msg.guild.toString())
-          .replace(/{date}/g, memberCurl.joinedAt.toDateString().slice(4).replace(/ 0/gi, " ")),
-        value: timeAgoTemplate.replace(/{time}/g, ougi.toHumanTime(memberCurl.joinedAt))
+        name: await ougi.text({
+          msg,
+          stringID: "curl_joinedAtField",
+          values: {
+            guild: msg.guild.toString(),
+            date: memberCurl.joinedAt.toDateString().slice(4).replace(/ 0/gi, " ")
+          }
+        }),
+        value: await ougi.text({
+          msg,
+          stringID: "curl_timeAgo",
+          values: {
+            time: ougi.toHumanTime(memberCurl.joinedAt)
+          }
+        })
       }).addFields({
-        name: await ougi.text(msg, "curl_mostDistinctiveRole"),
-        value: memberCurl.roles.hoist?.toString() || await ougi.text(msg, "noDistinctRole")
+        name: await ougi.text({ msg, stringID: "curl_mostDistinctiveRole" }),
+        value: memberCurl.roles.hoist?.toString() || await ougi.text({ msg, stringID: "noDistinctRole" })
       });
 
       if (lastMessage && !ougi.helperFunctions.checkForPrefixMsg(lastMessage)) {
@@ -109,7 +127,7 @@ module.exports = async function (msg) {
     if (iconCurl) {
       embed.setImage(iconCurl).addFields({
         name: "\u200b",
-        value: `[${await ougi.text(msg, "downloadIcon")}](${iconCurl})`
+        value: `[${await ougi.text({ msg, stringID: "downloadIcon" })}](${iconCurl})`
       });
     }
 
@@ -117,6 +135,6 @@ module.exports = async function (msg) {
 
   } catch (error) {
     console.error("Error in curlCommand:", error);
-    await msg.channel.send(await ougi.text(msg, "curlError"));
+    await msg.channel.send(await ougi.text({ msg, stringID: "curlError" }));
   }
 };

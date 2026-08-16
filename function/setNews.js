@@ -11,11 +11,11 @@ async function (arguments, msg) {
     if (arguments[0] == "disable") {
       if (ougi.db().getNewsChannel(msg.guildId)){
         ougi.db().deleteNewsChannel(msg.guildId);
-        msg.channel.send(await ougi.text(msg, "news_disabled"));
+        msg.channel.send(await ougi.text({ msg, stringID: "news_disabled" }));
         return;
       }
       else {
-        msg.channel.send(await ougi.text(msg, "news_notSet"));
+        msg.channel.send(await ougi.text({ msg, stringID: "news_notSet" }));
         return;
       }
     }
@@ -23,19 +23,24 @@ async function (arguments, msg) {
       let channelMention = arguments[0];
       channelMention = channelMention.slice(2, -1);
       if (!msg.guild.channels.cache.has(channelMention)) {
-        msg.channel.send(await ougi.text(msg, "news_usageHelp"));
+        msg.channel.send(await ougi.text({ msg, stringID: "news_usageHelp" }));
         return;
       }
       guildNews = channelMention;
     }
     else {
-      msg.channel.send(await ougi.text(msg, "news_usageHelp"));
+      msg.channel.send(await ougi.text({ msg, stringID: "news_usageHelp" }));
       return;
     }
   }
 
-  const newsSetTemplate = await ougi.text(msg, "news_channelSetDesc");
-  msg.channel.send(newsSetTemplate.replace(/{channel}/g, guildNews));
+  msg.channel.send(await ougi.text({
+    msg,
+    stringID: "news_channelSetDesc",
+    values: {
+      channel: guildNews
+    }
+  }));
 
   ougi.db().setNewsChannel(msg.guildId, guildNews);
 }

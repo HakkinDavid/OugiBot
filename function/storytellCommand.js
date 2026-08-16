@@ -4,24 +4,24 @@ const activeSessions = {};
 
 module.exports = async function storytellCommand(args, msg) {
   if (!msg.guild) {
-    msg.channel.send(await ougi.text(msg, "mustGuild")).catch(console.error);
+    msg.channel.send(await ougi.text({ msg, stringID: "mustGuild" })).catch(console.error);
     return;
   }
 
   const channelId = msg.channel.id;
 
   if (activeSessions[channelId]) {
-    msg.channel.send(await ougi.text(msg, "storytell_alreadyActive")).catch(console.error);
+    msg.channel.send(await ougi.text({ msg, stringID: "storytell_alreadyActive" })).catch(console.error);
     return;
   }
 
   ougi.economy('init', msg);
 
   const scenarios = [
-    await ougi.text(msg, "ai_storytellerScenario1"),
-    await ougi.text(msg, "ai_storytellerScenario2"),
-    await ougi.text(msg, "ai_storytellerScenario3"),
-    await ougi.text(msg, "ai_storytellerScenario4")
+    await ougi.text({ msg, stringID: "ai_storytellerScenario1" }),
+    await ougi.text({ msg, stringID: "ai_storytellerScenario2" }),
+    await ougi.text({ msg, stringID: "ai_storytellerScenario3" }),
+    await ougi.text({ msg, stringID: "ai_storytellerScenario4" })
   ];
 
   const scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
@@ -37,12 +37,11 @@ module.exports = async function storytellCommand(args, msg) {
 
   activeSessions[channelId] = session;
 
-  const startDescTemplate = await ougi.text(msg, "storytell_startDesc");
   const startEmbed = new EmbedBuilder()
-    .setTitle(await ougi.text(msg, "storytell_startTitle"))
-    .setDescription(startDescTemplate.replace(/{scenario}/g, scenario))
+    .setTitle(await ougi.text({ msg, stringID: "storytell_startTitle" }))
+    .setDescription(await ougi.text({ msg, stringID: "storytell_startDesc", values: { scenario } }))
     .setColor("#9B59B6")
-    .setFooter({ text: await ougi.text(msg, "storytell_startFooter"), iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) })
+    .setFooter({ text: await ougi.text({ msg, stringID: "storytell_startFooter" }), iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) })
     .setTimestamp();
 
   await msg.channel.send({ embeds: [startEmbed] });
@@ -52,7 +51,7 @@ module.exports = async function storytellCommand(args, msg) {
 
   collector.on('collect', async m => {
     if (session.participants.has(m.author.id)) {
-      m.reply(await ougi.text(msg, "storytell_alreadyTakenTurn")).catch(console.error);
+      m.reply(await ougi.text({ msg, stringID: "storytell_alreadyTakenTurn" })).catch(console.error);
       return;
     }
 
@@ -68,12 +67,12 @@ module.exports = async function storytellCommand(args, msg) {
     delete activeSessions[channelId];
 
     if (session.turns.length === 0) {
-      msg.channel.send(await ougi.text(msg, "storytell_expiredNoParticipants")).catch(console.error);
+      msg.channel.send(await ougi.text({ msg, stringID: "storytell_expiredNoParticipants" })).catch(console.error);
       return;
     }
 
     const storyText = session.turns.map(t => `${t.author}: "${t.text}"`).join("\n");
-    const systemPromptContent = await ougi.text('en', "ai_storytellerSystemPrompt");
+    const systemPromptContent = await ougi.text({ lang: 'en', stringID: "ai_storytellerSystemPrompt" });
     const aiPrompt = [
       { role: 'system', content: systemPromptContent },
       { role: 'user', content: `Scenario: ${scenario}\n\nUser Turns:\n${storyText}` }
@@ -85,7 +84,7 @@ module.exports = async function storytellCommand(args, msg) {
     } catch { }
 
     if (!aiResult || typeof aiResult !== 'string') {
-      aiResult = await ougi.text(msg, "ai_storytellerFallbackJudge");
+      aiResult = await ougi.text({ msg, stringID: "ai_storytellerFallbackJudge" });
     }
 
     const isReward = !aiResult.toLowerCase().includes("penalty");
@@ -104,19 +103,15 @@ module.exports = async function storytellCommand(args, msg) {
       db.saveUser(msg.guildId, userId, user);
     }
 
-    const rewardMsgTemplate = await ougi.text(msg, "storytell_rewardAll");
-    const penaltyMsgTemplate = await ougi.text(msg, "storytell_penaltyAll");
     const outcomeNotice = isReward
-      ? rewardMsgTemplate.replace(/{amount}/g, rewardAmount).replace(/{currency}/g, currencySymbol)
-      : penaltyMsgTemplate.replace(/{amount}/g, rewardAmount).replace(/{currency}/g, currencySymbol);
-
-    const participantsFooterTemplate = await ougi.text(msg, "storytell_participantsFooter");
+      ? await ougi.text({ msg, stringID: "storytell_rewardAll", values: { amount: rewardAmount, currency: currencySymbol } })
+      : await ougi.text({ msg, stringID: "storytell_penaltyAll", values: { amount: rewardAmount, currency: currencySymbol } });
 
     const endEmbed = new EmbedBuilder()
-      .setTitle(await ougi.text(msg, "storytell_concludedTitle"))
+      .setTitle(await ougi.text({ msg, stringID: "storytell_concludedTitle" }))
       .setDescription(`**Conclusion:**\n${aiResult.slice(0, 1500)}\n\n${outcomeNotice}`)
       .setColor(isReward ? "#00FF00" : "#FF0000")
-      .setFooter({ text: participantsFooterTemplate.replace(/{count}/g, session.participants.size), iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) })
+      .setFooter({ text: await ougi.text({ msg, stringID: "storytell_participantsFooter", values: { count: session.participants.size } }), iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) })
       .setTimestamp();
 
     await msg.channel.send({ embeds: [endEmbed] });

@@ -20,7 +20,7 @@ module.exports =
         var thisMessage = arguments.join(" ");
         var breakChocolate = thisMessage.split("::").slice(1);
         if (breakChocolate.length < 3) {
-            msg.channel.send(await ougi.text('en', "root_statusRequired"))
+            msg.channel.send(await ougi.text({ lang: 'en', stringID: "root_statusRequired" }))
             return
         }
         for (i = 0; breakChocolate.length > i; i++) {
@@ -58,8 +58,8 @@ module.exports =
         const activityType = typeMap[kind.toUpperCase()] ?? Discord.ActivityType.Playing;
         try {
             client.user.setPresence({ activities: [{ name: actname, type: activityType }], status: state });
-            const logMsg = (await ougi.text('en', "root_statusConsoleLog")).replace(/{kind}/g, kind).replace(/{actname}/g, actname);
-            const userMsg = (await ougi.text('en', "root_statusSwitched")).replace(/{kind}/g, kind).replace(/{actname}/g, actname);
+            const logMsg = await ougi.text({ lang: 'en', stringID: "root_statusConsoleLog", values: { kind, actname } });
+            const userMsg = await ougi.text({ lang: 'en', stringID: "root_statusSwitched", values: { kind, actname } });
             client.channels.cache.get(consoleLogging).send(logMsg);
             msg.channel.send(userMsg).catch(console.error);
         }

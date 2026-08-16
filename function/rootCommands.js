@@ -17,16 +17,16 @@ async function (msg) {
     .setAuthor({name: msg.author.username, icon: msg.author.avatarURL({dynamic: true, size: 4096})})
     .setDescription("ID `" + msg.author.id + "`")
     .setColor("#FF008C")
-    .setFooter({text: await ougi.text('en', "log_globalEmbedFooter"), icon: client.user.avatarURL({dynamic: true, size: 4096})})
+    .setFooter({text: await ougi.text({ lang: 'en', stringID: "log_globalEmbedFooter" }), icon: client.user.avatarURL({dynamic: true, size: 4096})})
     .setTimestamp()
     if (hauntedCommand == undefined) {
-      embed.addFields({name: await ougi.text('en', "root_noTrigger"), value: "\u200B"})
+      embed.addFields({name: await ougi.text({ lang: 'en', stringID: "root_noTrigger" }), value: "\u200B"})
     }
     else {
-      embed.addFields({name: await ougi.text('en', "root_commandField"), value: hauntedCommand});
+      embed.addFields({name: await ougi.text({ lang: 'en', stringID: "root_commandField" }), value: hauntedCommand});
     }
     if (arguments != "") {
-      const argsFieldName = await ougi.text('en', "root_argumentsField");
+      const argsFieldName = await ougi.text({ lang: 'en', stringID: "root_argumentsField" });
       if (arguments.length < 1024) {
         embed.addFields({name: argsFieldName, value: arguments.join(" ")})
       }

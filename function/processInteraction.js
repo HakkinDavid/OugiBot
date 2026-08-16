@@ -7,7 +7,11 @@ module.exports = async function (interaction) {
     const userId = interaction.user.id;
     const rateLimitResult = ougi.db().checkRateLimit(userId);
     if (rateLimitResult.ratelimited) {
-        const limitMsg = (await ougi.text(interaction, "ratelimited")).replace('{t}', `\`${rateLimitResult.waitTime}\``);
+        const limitMsg = await ougi.text({
+            msg: interaction,
+            stringID: "ratelimited",
+            values: { t: `\`${rateLimitResult.waitTime}\`` }
+        });
         if (interaction.replied || interaction.deferred) {
             await interaction.followUp({ content: limitMsg, flags: MessageFlags.Ephemeral }).catch(console.error);
         } else {
@@ -22,11 +26,11 @@ module.exports = async function (interaction) {
     if (userBan && userBan.active) {
         const banEmbed = new EmbedBuilder()
             .setColor("#20064F")
-            .setTitle(await ougi.text(interaction, "ban_activeTitle"))
-            .setDescription(await ougi.text(interaction, "ban_activeDesc"))
+            .setTitle(await ougi.text({ msg: interaction, stringID: "ban_activeTitle" }))
+            .setDescription(await ougi.text({ msg: interaction, stringID: "ban_activeDesc" }))
             .addFields(
-                { name: await ougi.text(interaction, "ban_expiresField"), value: `<t:${Math.floor(userBan.until / 1000)}:f>` },
-                { name: await ougi.text(interaction, "ban_reasonField"), value: userBan.reason || await ougi.text(interaction, "ban_noReason") }
+                { name: await ougi.text({ msg: interaction, stringID: "ban_expiresField" }), value: `<t:${Math.floor(userBan.until / 1000)}:f>` },
+                { name: await ougi.text({ msg: interaction, stringID: "ban_reasonField" }), value: userBan.reason || await ougi.text({ msg: interaction, stringID: "ban_noReason" }) }
             );
         if (interaction.replied || interaction.deferred) {
             await interaction.followUp({ embeds: [banEmbed], flags: MessageFlags.Ephemeral }).catch(console.error);
@@ -38,7 +42,7 @@ module.exports = async function (interaction) {
 
     // Blacklist check
     if (interaction.guildId && ougi.db().isBlacklisted(interaction.guildId, 'translate')) {
-        const blMsg = await ougi.text(interaction, "interaction_translateBlacklisted");
+        const blMsg = await ougi.text({ msg: interaction, stringID: "interaction_translateBlacklisted" });
         if (interaction.replied || interaction.deferred) {
             await interaction.followUp({ content: blMsg, flags: MessageFlags.Ephemeral }).catch(console.error);
         } else {

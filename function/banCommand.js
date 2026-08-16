@@ -11,11 +11,11 @@ module.exports =
         let thisMessage = arguments.join(" ");
         let breakChocolate = thisMessage.split("::").slice(1);
         if (breakChocolate.length < 3) {
-            msg.channel.send(await ougi.text(msg, "ban_missingFields"));
+            msg.channel.send(await ougi.text({ msg, stringID: "ban_missingFields" }));
             return;
         }
         let spookyConstructor = new Discord.EmbedBuilder()
-            .setFooter({ text: await ougi.text(msg, "ban_footer") })
+            .setFooter({ text: await ougi.text({ msg, stringID: "ban_footer" }) })
             .setTimestamp()
             .setColor("#021959");
         for (i = 0; breakChocolate.length > i; i++) {
@@ -28,7 +28,7 @@ module.exports =
             if (breakChocolate[i].startsWith("user")) {
                 users = breakChocolate[i].match(/[0-9]{17,}/gi);
                 if (users.length === 0) {
-                    msg.channel.send(await ougi.text(msg, "ban_invalidUser"));
+                    msg.channel.send(await ougi.text({ msg, stringID: "ban_invalidUser" }));
                     return;
                 }
             }
@@ -42,12 +42,12 @@ module.exports =
             }
         }
         if (typeof users === 'undefined' || typeof reason === 'undefined' || typeof until === 'undefined') {
-            msg.channel.send(await ougi.text(msg, "ban_missingFields"));
+            msg.channel.send(await ougi.text({ msg, stringID: "ban_missingFields" }));
             return;
         }
         for (i = 0; users.length > i; i++) {
             ougi.db().banUser(users[i], reason, until);
         }
-        const bannedHeader = await ougi.text(msg, "ban_successHeader");
+        const bannedHeader = await ougi.text({ msg, stringID: "ban_successHeader" });
         msg.channel.send(bannedHeader + "\n```" + users.join(", ") + " = " + JSON.stringify({ reason, until }, null, 4) + "```");
     }

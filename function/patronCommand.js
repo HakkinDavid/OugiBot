@@ -9,7 +9,7 @@ async function (msg) {
     let breakChocolate = thisMessage.split("::").slice(1);
 
     if (breakChocolate.length < 1) {
-        msg.channel.send(await ougi.text(msg, "patron_missingUsers"));
+        msg.channel.send(await ougi.text({ msg, stringID: "patron_missingUsers" }));
         return;
     }
 
@@ -28,7 +28,7 @@ async function (msg) {
         if (breakChocolate[i].startsWith("user")) {
             users = breakChocolate[i].match(/[0-9]{17,}/gi);
             if (!users || users.length === 0) {
-                msg.channel.send(await ougi.text(msg, "patron_invalidUser"));
+                msg.channel.send(await ougi.text({ msg, stringID: "patron_invalidUser" }));
                 return;
             }
         } else if (breakChocolate[i].startsWith("amount")) {
@@ -41,7 +41,7 @@ async function (msg) {
     }
 
     if (typeof users === 'undefined') {
-        msg.channel.send(await ougi.text(msg, "patron_missingUsers"));
+        msg.channel.send(await ougi.text({ msg, stringID: "patron_missingUsers" }));
         return;
     }
 
@@ -49,6 +49,6 @@ async function (msg) {
         ougi.db().upsertPatron(users[i], { amount, recurrence, since });
     }
 
-    const regHeader = await ougi.text(msg, "patron_registeredHeader");
+    const regHeader = await ougi.text({ msg, stringID: "patron_registeredHeader" });
     msg.channel.send(regHeader + "\n```" + users.map(u => u + " = " + JSON.stringify(ougi.db().getPatron(u), null, 4)).join("\n") + "```");
 }

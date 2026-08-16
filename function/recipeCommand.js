@@ -3,7 +3,7 @@ const { EmbedBuilder } = require('discord.js');
 
 module.exports = async function (arguments, msg) {
   if (!arguments.length) {
-    msg.channel.send(await ougi.text(msg, "keywordRequired")).catch(console.error);
+    msg.channel.send(await ougi.text({ msg, stringID: "keywordRequired" })).catch(console.error);
     return;
   }
 
@@ -14,7 +14,7 @@ module.exports = async function (arguments, msg) {
     const meals = res.data?.meals;
 
     if (!meals || meals.length === 0) {
-      msg.channel.send(await ougi.text(msg, "resultsZero")).catch(console.error);
+      msg.channel.send(await ougi.text({ msg, stringID: "resultsZero" })).catch(console.error);
       return;
     }
 
@@ -35,14 +35,14 @@ module.exports = async function (arguments, msg) {
       .setAuthor({ name: meal.strCategory || "Recipe" })
       .setThumbnail(meal.strMealThumb)
       .setDescription(`**Category:** ${meal.strCategory} | **Cuisine:** ${meal.strArea}\n\n**Instructions:**\n${meal.strInstructions?.slice(0, 1000)}...`)
-      .addFields({ name: await ougi.text(msg, "ingredients"), value: ingredients.join("\n").slice(0, 1024) || "N/A" })
+      .addFields({ name: await ougi.text({ msg, stringID: "ingredients" }), value: ingredients.join("\n").slice(0, 1024) || "N/A" })
       .setColor("#6E2C00")
-      .setFooter({ text: await ougi.text(msg, "recipe_footer"), iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) })
+      .setFooter({ text: await ougi.text({ msg, stringID: "recipe_footer" }), iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) })
       .setTimestamp();
 
     await msg.channel.send({ embeds: [embed] });
   } catch (error) {
     console.error("Error in recipeCommand:", error);
-    msg.channel.send(await ougi.text(msg, "resultsZero")).catch(console.error);
+    msg.channel.send(await ougi.text({ msg, stringID: "resultsZero" })).catch(console.error);
   }
 };

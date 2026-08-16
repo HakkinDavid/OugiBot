@@ -164,9 +164,9 @@ console.error = async (...args) => {
     if (!logMessages.at(-1)) return logMessages.pop();
 
     const criticalEmbed = new Discord.EmbedBuilder()
-        .setAuthor({ name: await ougi.text('en', "log_consoleErrorAuthor") })
+        .setAuthor({ name: await ougi.text({ lang: 'en', stringID: "log_consoleErrorAuthor" }) })
         .setColor("#c20d00")
-        .setFooter({ text: await ougi.text('en', "log_errorEmbedFooter"), iconURL: "https://github.com/HakkinDavid/OugiBot/blob/master/images/ougi.png?raw=true" })
+        .setFooter({ text: await ougi.text({ lang: 'en', stringID: "log_errorEmbedFooter" }), iconURL: "https://github.com/HakkinDavid/OugiBot/blob/master/images/ougi.png?raw=true" })
         .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/fatal.png?raw=true")
         .setDescription(logMessages.pop().toString().slice(0, 4000));
 
@@ -199,15 +199,20 @@ client.once('ready', async () => {
                 type: Discord.ApplicationCommandType.Message
             }
         ]).catch(console.error);
-        const startupPayload = (await ougi.text('en', "log_instanceStartup"))
-            .replace(/{id}/g, instanceID)
-            .replace(/{dev}/g, process.env.DEV)
-            .replace(/{silent}/g, !TEASEABLE);
+        const startupPayload = await ougi.text({
+            lang: 'en',
+            stringID: "log_instanceStartup",
+            values: {
+                id: instanceID,
+                dev: process.env.DEV,
+                silent: !TEASEABLE
+            }
+        });
         client.channels.cache.get(consoleLogging)?.send(startupPayload).catch(console.error);
-        console.log((await ougi.text('en', "console_instanceId")).replace(/{id}/g, instanceID));
+        console.log(await ougi.text({ lang: 'en', stringID: "console_instanceId", values: { id: instanceID } }));
         ougi.startup();
     } catch (err) {
-        console.error(await ougi.text('en', "console_startupError"), err);
+        console.error(await ougi.text({ lang: 'en', stringID: "console_startupError" }), err);
     }
 });
 
@@ -217,7 +222,7 @@ client.on('interactionCreate', async (interaction) => {
     if (!ougi.startup()) return;
     if (ougi.db().isIgnored(interaction.user.id)) {
         if (interaction.isRepliable()) {
-            await interaction.reply({ content: await ougi.text(interaction, "interaction_optedOut"), flags: Discord.MessageFlags.Ephemeral }).catch(console.error);
+            await interaction.reply({ content: await ougi.text({ msg: interaction, stringID: "interaction_optedOut" }), flags: Discord.MessageFlags.Ephemeral }).catch(console.error);
         }
         return;
     }
@@ -356,9 +361,12 @@ setInterval(async () => {
     const bumpConfigs = ougi.db().getBumpConfig() || {};
     for (const [bumpGuild, bumpData] of Object.entries(bumpConfigs)) {
         if (bumpData.next_bump && bumpData.next_bump < now && !bumpData.reminded) {
-            ougi.globalLog((await ougi.text('en', "console_bumpReminded")).replace(/{guild}/g, bumpGuild));
-            const message = (await ougi.text(ougi.db().getLang(bumpGuild) || "en", "bumpNow"))
-                .replace("{timeStamp}", `<t:${Math.floor(now / 1000)}:t>`);
+            ougi.globalLog(await ougi.text({ lang: 'en', stringID: "console_bumpReminded", values: { guild: bumpGuild } }));
+            const message = await ougi.text({
+                lang: ougi.db().getLang(bumpGuild) || "en",
+                stringID: "bumpNow",
+                values: { timeStamp: `<t:${Math.floor(now / 1000)}:t>` }
+            });
             const channel = client.channels.cache.get(bumpData.channel);
             if (channel) await channel.send(`${message}${bumpData.role ? `\n<@&${bumpData.role}>` : ''}`);
             bumpData.reminded = true;
@@ -387,7 +395,7 @@ process.on('uncaughtException', async (e) => {
             trimmed = trimmed.slice(1994);
         }
     } catch {
-        console.log(await ougi.text('en', "console_dmDavidFailed"));
+        console.log(await ougi.text({ lang: 'en', stringID: "console_dmDavidFailed" }));
         console.log(e);
     }
 });

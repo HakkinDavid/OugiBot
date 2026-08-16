@@ -23,7 +23,7 @@ async function (arguments, msg) {
   }
 
   if (breakChocolate.length !== 2){
-    msg.channel.send(await ougi.text(msg, "forget_wrongSyntax")).catch(console.error);
+    msg.channel.send(await ougi.text({ msg, stringID: "forget_wrongSyntax" })).catch(console.error);
     return
   }
 
@@ -49,35 +49,28 @@ async function (arguments, msg) {
   }
 
   if (trigger.length < niceCharacterAmount){
-    const trigMinTemplate = await ougi.text(msg, "learn_triggerMinLength");
-    msg.channel.send(trigMinTemplate.replace(/{count}/g, niceCharacterAmount.toString())).catch(console.error);
+    msg.channel.send(await ougi.text({ msg, stringID: "learn_triggerMinLength", values: { count: niceCharacterAmount.toString() } })).catch(console.error);
     return
   }
 
   if (response.length < niceCharacterAmount){
-    const respMinTemplate = await ougi.text(msg, "learn_responseMinLength");
-    msg.channel.send(respMinTemplate.replace(/{count}/g, niceCharacterAmount.toString())).catch(console.error);
+    msg.channel.send(await ougi.text({ msg, stringID: "learn_responseMinLength", values: { count: niceCharacterAmount.toString() } })).catch(console.error);
     return
   }
 
   if (trigger.length > maxCharacterAmount){
-    const trigMaxTemplate = await ougi.text(msg, "learn_triggerMaxLength");
-    msg.channel.send(trigMaxTemplate.replace(/{count}/g, maxCharacterAmount.toString())).catch(console.error);
+    msg.channel.send(await ougi.text({ msg, stringID: "learn_triggerMaxLength", values: { count: maxCharacterAmount.toString() } })).catch(console.error);
     return
   }
 
   if (response.length > maxCharacterAmount){
-    const respMaxTemplate = await ougi.text(msg, "learn_responseMaxLength");
-    msg.channel.send(respMaxTemplate.replace(/{count}/g, maxCharacterAmount.toString())).catch(console.error);
+    msg.channel.send(await ougi.text({ msg, stringID: "learn_responseMaxLength", values: { count: maxCharacterAmount.toString() } })).catch(console.error);
     return
   }
 
-  const forgetSuccess1Template = await ougi.text(msg, "forget_success1");
-  const forgetSuccess2Template = await ougi.text(msg, "forget_success2");
-
   let afterOptions = [
-    forgetSuccess1Template.replace(/{response}/g, response).replace(/{trigger}/g, trigger),
-    forgetSuccess2Template.replace(/{response}/g, response).replace(/{trigger}/g, trigger),
+    await ougi.text({ msg, stringID: "forget_success1", values: { response, trigger } }),
+    await ougi.text({ msg, stringID: "forget_success2", values: { response, trigger } }),
   ];
   let answer = afterOptions[Math.floor(Math.random()*afterOptions.length)];
 
@@ -85,13 +78,13 @@ async function (arguments, msg) {
   if (removed) {
     msg.channel.send(answer).catch(console.error);
     let embed = new Discord.EmbedBuilder()
-    .setTitle(await ougi.text('en', "log_talkForgetTitle"))
-    .addFields({name: await ougi.text('en', "log_talkForgetRespField"), value: response})
-    .addFields({name: await ougi.text('en', "log_talkForgetTrigField"), value: trigger})
+    .setTitle(await ougi.text({ lang: 'en', stringID: "log_talkForgetTitle" }))
+    .addFields({name: await ougi.text({ lang: 'en', stringID: "log_talkForgetRespField" }), value: response})
+    .addFields({name: await ougi.text({ lang: 'en', stringID: "log_talkForgetTrigField" }), value: trigger})
     .setColor("#00FF73")
-    .setFooter({text: await ougi.text('en', "log_globalEmbedFooter"), icon: client.user.avatarURL({dynamic: true, size: 4096})});
+    .setFooter({text: await ougi.text({ lang: 'en', stringID: "log_globalEmbedFooter" }), icon: client.user.avatarURL({dynamic: true, size: 4096})});
     client.channels.cache.get(consoleLogging).send({embeds: [embed]});
     return;
   }
-  msg.channel.send(await ougi.text(msg, "forget_notFound")).catch(console.error);
+  msg.channel.send(await ougi.text({ msg, stringID: "forget_notFound" })).catch(console.error);
 }

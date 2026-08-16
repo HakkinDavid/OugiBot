@@ -20,7 +20,7 @@ module.exports = async function (msg) {
     // Rate-limit
     const rateLimitResult = ougi.db().checkRateLimit(msg.author.id);
     if (rateLimitResult.ratelimited) {
-        msg.channel.send((await ougi.text(msg, "ratelimited")).replace('{t}', `\`${rateLimitResult.waitTime}\``));
+        msg.channel.send(await ougi.text({ msg, stringID: "ratelimited", values: { t: `\`${rateLimitResult.waitTime}\`` } }));
         ougi.globalLog(`Rate limit applied to user ${msg.author.username} (${rateLimitResult.waitTime}s)`);
         return;
     }
@@ -29,15 +29,15 @@ module.exports = async function (msg) {
     const userBan = ougi.db().checkBan(msg.author.id);
     if (userBan) {
         if (userBan.expired) {
-            await msg.channel.send(await ougi.text(msg, "ban_expiredSentence"));
+            await msg.channel.send(await ougi.text({ msg, stringID: "ban_expiredSentence" }));
         } else if (userBan.active) {
             const banEmbed = new EmbedBuilder()
                 .setColor("#20064F")
-                .setTitle(await ougi.text(msg, "ban_activeTitle"))
-                .setDescription(await ougi.text(msg, "ban_activeDesc"))
+                .setTitle(await ougi.text({ msg, stringID: "ban_activeTitle" }))
+                .setDescription(await ougi.text({ msg, stringID: "ban_activeDesc" }))
                 .addFields(
-                    { name: await ougi.text(msg, "ban_expiresField"), value: `<t:${Math.floor(userBan.until / 1000)}:f>` },
-                    { name: await ougi.text(msg, "ban_reasonField"), value: userBan.reason || await ougi.text(msg, "ban_noReason") }
+                    { name: await ougi.text({ msg, stringID: "ban_expiresField" }), value: `<t:${Math.floor(userBan.until / 1000)}:f>` },
+                    { name: await ougi.text({ msg, stringID: "ban_reasonField" }), value: userBan.reason || await ougi.text({ msg, stringID: "ban_noReason" }) }
                 );
             await msg.channel.send({ embeds: [banEmbed] });
             return;
@@ -47,8 +47,7 @@ module.exports = async function (msg) {
     // Blacklist check
     if (msg.channel.type === ChannelType.GuildText) {
         if (ougi.db().isBlacklisted(msg.guildId, spookyCommand) || ougi.db().isBlacklisted(msg.guildId, parts.slice(1).join(' '))) {
-            const blTemplate = await ougi.text(msg, "command_blacklistedInGuild");
-            await msg.channel.send(blTemplate.replace(/{guild}/g, msg.guild.toString())).catch(console.error);
+            await msg.channel.send(await ougi.text({ msg, stringID: "command_blacklistedInGuild", values: { guild: msg.guild.toString() } })).catch(console.error);
             return;
         }
         ougi.guildLog(msg);

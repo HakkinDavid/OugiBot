@@ -166,10 +166,10 @@ State read/write operations use `ougi.readFile` and `ougi.writeFile`:
 
 ## 🌐 Dynamic Localization Pipeline
 
-OugiBot features an advanced multi-tiered localization engine managed through `ougi.text(msg, stringID, dynamic, raw)`.
+OugiBot features an advanced multi-tiered localization engine managed through `ougi.text({ msg, lang, stringID, dynamic, raw, values })`.
 
 ```
-                        ougi.text(msg, phrase, dynamic)
+                  ougi.text({ msg, lang, stringID, dynamic, raw, values })
                                        |
                    +-------------------+-------------------+
                    |                                       |
@@ -180,20 +180,23 @@ OugiBot features an advanced multi-tiered localization engine managed through `o
         Found? ----+---- Not Found?              Found? ---+--- Not Found?
           |                |                       |               |
           v                v                       v               v
-    Return String   Translate via GT           Return String   Fuzzy Match Check
-                    & Cache in localesCache                    (stringSimilarity > 0.75)
-                                                                   |
-                                                         Matched? -+- Unmatched?
-                                                            |           |
-                                                            v           v
-                                                       Return Cached   Translate via GT,
-                                                                       preserve emojis,
-                                                                       cache & backup
+    Apply Values    Mask Tokens {var}        Apply Values    Fuzzy Match Check
+    Interpolation   Translate via GT         Interpolation   (stringSimilarity > 0.75)
+          |         Restore Tokens & Cache         |               |
+          v                |                       v     Matched? -+- Unmatched?
+    Return String   Apply Values Interpolation   Return     |           |
+                           |                     String     v           v
+                           v                             Return   Mask Tokens {var},
+                     Return String                       Cached   Translate via GT,
+                                                                  preserve emojis,
+                                                                  restore tokens,
+                                                                  cache & interpolate
 ```
 
 1. **Static Dictionary (`localization.js`)**: Hardcoded strings in English (`en`), Spanish (`es`), and Mexican Spanish (`mx`).
-2. **Static Locales Cache (`localesCache.txt`)**: Translates missing English keys into target user/guild language using Google Translate API and caches results permanently.
-3. **Dynamic Phrase Translation (`dynamicLocales.txt`)**: Translates arbitrary runtime strings. Uses `string-similarity` to find cached translations with >75% similarity. Replaces Discord custom emojis (`<:name:id>`) safely around translation steps.
+2. **Static Locales Cache (`localesCache.db`)**: Translates missing English keys into target user/guild language using Google Translate API with transparent token shielding (`{variableName}` protected via `__OGVAR_n__`) and caches results permanently.
+3. **Dynamic Phrase Translation (`dynamicLocales.db`)**: Translates arbitrary runtime strings. Uses `string-similarity` to find cached translations with >75% similarity. Replaces Discord custom emojis (`<:name:id>`) and placeholder tokens safely around translation steps.
+4. **Values Interpolation**: Automatically interpolates `{token}` variables from the `values` map post-translation.
 
 ---
 

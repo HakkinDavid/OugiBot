@@ -14,11 +14,11 @@ async function (arguments, msg) {
 
     if (sayMessage.length <= 0) {
       var options = [
-        await ougi.text(msg, "say_empty1"),
-        await ougi.text(msg, "say_empty2"),
-        await ougi.text(msg, "say_empty3"),
-        await ougi.text(msg, "say_empty4"),
-        await ougi.text(msg, "say_empty5")
+        await ougi.text({ msg, stringID: "say_empty1" }),
+        await ougi.text({ msg, stringID: "say_empty2" }),
+        await ougi.text({ msg, stringID: "say_empty3" }),
+        await ougi.text({ msg, stringID: "say_empty4" }),
+        await ougi.text({ msg, stringID: "say_empty5" })
       ];
       var response = options[Math.floor(Math.random()*options.length)];
       msg.channel.send(response).catch(console.error);
@@ -26,7 +26,7 @@ async function (arguments, msg) {
     }
 
     if (sayMessage.includes("<@") && msg.content.includes(">")) {
-      msg.channel.send(await ougi.text(msg, "say_avoidPings")).catch(console.error);
+      msg.channel.send(await ougi.text({ msg, stringID: "say_avoidPings" })).catch(console.error);
       return;
     }
 

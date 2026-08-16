@@ -5,7 +5,7 @@ module.exports = async function (arguments, msg) {
 
     const subcommand = arguments[0].toLowerCase();
     if (subcommand !== 'create' && subcommand !== 'delete') {
-        msg.channel.send((await ougi.text(msg, "invalidOption")) + "\ncreate, delete");
+        msg.channel.send((await ougi.text({ msg, stringID: "invalidOption" })) + "\ncreate, delete");
         return;
     }
 
@@ -37,12 +37,12 @@ module.exports = async function (arguments, msg) {
             emojiKey = emoji;
             // Validate that emojiKey is a valid Unicode emoji
             if (!/\p{Extended_Pictographic}/u.test(emojiKey)) {
-                msg.channel.send(await ougi.text(msg, "mustEmoji"));
+                msg.channel.send(await ougi.text({ msg, stringID: "mustEmoji" }));
                 return;
             }
             // Reject if input starts and ends with ':' (e.g., :sunglasses:)
             if (emojiKey.startsWith(':') && emojiKey.endsWith(':')) {
-                msg.channel.send(await ougi.text(msg, "mustEmoji"));
+                msg.channel.send(await ougi.text({ msg, stringID: "mustEmoji" }));
                 return;
             }
             emojiId = null;
@@ -51,7 +51,7 @@ module.exports = async function (arguments, msg) {
         }
 
         if (!emojiKey) {
-            msg.channel.send(await ougi.text(msg, "mustEmoji"));
+            msg.channel.send(await ougi.text({ msg, stringID: "mustEmoji" }));
             return;
         }
 
@@ -64,7 +64,7 @@ module.exports = async function (arguments, msg) {
             "animated": animated
         });
 
-        msg.channel.send(await ougi.text(msg, "shortcutCreated"));
+        msg.channel.send(await ougi.text({ msg, stringID: "shortcutCreated" }));
     }
     else if (subcommand === 'delete') {
         const emoji = arguments[1];
@@ -78,18 +78,18 @@ module.exports = async function (arguments, msg) {
             // Assume raw unicode emoji
             emojiKey = emoji;
             if (!/\p{Extended_Pictographic}/u.test(emojiKey)) {
-                msg.channel.send(await ougi.text(msg, "mustEmoji"));
+                msg.channel.send(await ougi.text({ msg, stringID: "mustEmoji" }));
                 return;
             }
         }
 
         if (!shortcuts[emojiKey]) {
-            msg.channel.send(await ougi.text(msg, "notExist"));
+            msg.channel.send(await ougi.text({ msg, stringID: "notExist" }));
             return;
         }
 
         ougi.db().deleteShortcut(msg.guildId, emojiKey);
 
-        msg.channel.send(await ougi.text(msg, "shortcutDeleted"));
+        msg.channel.send(await ougi.text({ msg, stringID: "shortcutDeleted" }));
     }
 }

@@ -3,16 +3,16 @@ module.exports =
     async function (msg) {
         let embed = await ougi.helpPreset(msg, "raffle-join");
         if (msg.channel.type !== Discord.ChannelType.GuildText) {
-            embed.addFields({ name: await ougi.text(msg, "onlyGuilds"), value: ":warning: " + await ougi.text(msg, "mustGuild") })
+            embed.addFields({ name: await ougi.text({ msg, stringID: "onlyGuilds" }), value: ":warning: " + await ougi.text({ msg, stringID: "mustGuild" }) })
         }
-        embed.setDescription(await ougi.text(msg, "raffleJoinHelpDesc"))
+        embed.setDescription(await ougi.text({ msg, stringID: "raffleJoinHelpDesc" }))
             .addFields({
-                name: await ougi.text(msg, "example"),
+                name: await ougi.text({ msg, stringID: "example" }),
                 value: "`ougi raffle-join`"
             })
             .addFields({
-                name: await ougi.text(msg, "output"),
-                value: await ougi.text(msg, "raffleJoinHelpOutput")
+                name: await ougi.text({ msg, stringID: "output" }),
+                value: await ougi.text({ msg, stringID: "raffleJoinHelpOutput" })
             });
 
         msg.channel.send({ embeds: [embed] }).catch(console.error);

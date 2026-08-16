@@ -3,7 +3,7 @@ const { EmbedBuilder } = require('discord.js');
 module.exports = async function newsCommand(arguments, msg) {
   try {
     if (!arguments || arguments.length < 1) {
-      await msg.channel.send(await ougi.text(msg, "keywordRequired"));
+      await msg.channel.send(await ougi.text({ msg, stringID: "keywordRequired" }));
       return;
     }
 
@@ -41,7 +41,7 @@ module.exports = async function newsCommand(arguments, msg) {
     });
 
     if (!newspaperNow.articles.length) {
-      await msg.channel.send(await ougi.text(msg, "noNews"));
+      await msg.channel.send(await ougi.text({ msg, stringID: "noNews" }));
       return;
     }
 
@@ -50,7 +50,7 @@ module.exports = async function newsCommand(arguments, msg) {
     if (langCode !== actualLangCode) {
       const localizedProperties = ["title", "description", "content"];
       for (let i = 0; i < localizedProperties.length; i++) {
-        article[localizedProperties[i]] = await ougi.text(msg, article[localizedProperties[i]], true);
+        article[localizedProperties[i]] = await ougi.text({ msg, stringID: article[localizedProperties[i]], dynamic: true });
       }
     }
 
@@ -69,7 +69,7 @@ module.exports = async function newsCommand(arguments, msg) {
       .setDescription(
         article.description.slice(0, 1500) +
         "\n\n[" +
-        (await ougi.text(msg, "readFullNews")).replace(/{n}/gi, article.source.name) +
+        (await ougi.text({ msg, stringID: "readFullNews", values: { n: article.source.name } })) +
         "](" + article.url + ")"
       );
 
@@ -77,6 +77,6 @@ module.exports = async function newsCommand(arguments, msg) {
 
   } catch (error) {
     console.error("Error en newsCommand:", error);
-    await msg.channel.send(await ougi.text(msg, "newsCommandError"));
+    await msg.channel.send(await ougi.text({ msg, stringID: "newsCommandError" }));
   }
 };

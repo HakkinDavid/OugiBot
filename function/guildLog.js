@@ -7,7 +7,13 @@ async function (msg, options) {
     let channelPointer = await client.channels.fetch(guildLogger);
 
     if (channelPointer === undefined) {
-      const skipLog = (await ougi.text('en', "log_skippedInvalidLogging")).replace(/{guild}/g, msg.guild.toString());
+      const skipLog = await ougi.text({
+        lang: 'en',
+        stringID: "log_skippedInvalidLogging",
+        values: {
+          guild: msg.guild.toString()
+        }
+      });
       ougi.globalLog(skipLog);
       return
     }
@@ -17,18 +23,18 @@ async function (msg, options) {
     .setDescription("ID `" + msg.author.id + "` | At " + msg.channel.toString())
     .setAuthor({name: "Ougi [BOT]", icon: client.user.avatarURL({dynamic: true, size: 4096})})
     .setColor("#00E5FF")
-    .setFooter({text: await ougi.text(msg, "log_guildEmbedFooter"), icon: msg.guild.iconURL()})
+    .setFooter({text: await ougi.text({ msg, stringID: "log_guildEmbedFooter" }), icon: msg.guild.iconURL()})
     .setThumbnail(msg.author.avatarURL({dynamic: true, size: 4096}))
     .setTimestamp();
 
     if (options && options.type === 'economy') {
       if (options.income !== undefined) embed.setDescription("Cash: `" + (options.income > 0 ? "+" + options.income : options.income) + "`");
-      if (options.reason) embed.addFields({name: await ougi.text(msg, options.reason), value: "\u200b"});
+      if (options.reason) embed.addFields({name: await ougi.text({ msg, stringID: options.reason }), value: "\u200b"});
     }
 
     else {
       const content = msg.content || "";
-      const contentFieldName = await ougi.text(msg, "log_contentField");
+      const contentFieldName = await ougi.text({ msg, stringID: "log_contentField" });
       if (content.length > 0) {
         let trimmed = content;
         let first = true;
@@ -39,7 +45,7 @@ async function (msg, options) {
           first = false;
         }
       } else {
-        embed.addFields({ name: contentFieldName, value: await ougi.text(msg, "log_contentEmpty") });
+        embed.addFields({ name: contentFieldName, value: await ougi.text({ msg, stringID: "log_contentEmpty" }) });
       }
     }
 

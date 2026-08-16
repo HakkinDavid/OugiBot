@@ -6,7 +6,7 @@ module.exports = async function (msg) {
     const participants = parseInt(args[3], 10) || 50;
 
     if (!guildId) {
-        msg.channel.send(await ougi.text(msg, "raffle_licenseUsage"));
+        msg.channel.send(await ougi.text({ msg, stringID: "raffle_licenseUsage" }));
         return;
     }
 
@@ -17,12 +17,16 @@ module.exports = async function (msg) {
 
     ougi.db().saveRaffles();
 
-    const licenseUpdatedTemplate = await ougi.text(msg, "raffle_licenseUpdated");
     msg.channel.send(
-        licenseUpdatedTemplate
-            .replace(/{guildId}/g, guildId)
-            .replace(/{until}/g, new Date(guildRaffles.licensedUntil).toISOString())
-            .replace(/{concurrent}/g, concurrent)
-            .replace(/{participants}/g, participants)
+        await ougi.text({
+            msg,
+            stringID: "raffle_licenseUpdated",
+            values: {
+                guildId,
+                until: new Date(guildRaffles.licensedUntil).toISOString(),
+                concurrent,
+                participants
+            }
+        })
     );
 };

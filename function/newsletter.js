@@ -16,7 +16,7 @@ async function (msg) {
   let thisMessage = arguments.join(" ");
   let breakChocolate = thisMessage.split("::").slice(1);
   if (breakChocolate.length < 2) {
-    msg.channel.send(await ougi.text(msg, "newsletter_missingFields"));
+    msg.channel.send(await ougi.text({ msg, stringID: "newsletter_missingFields" }));
     return;
   }
   let spookyConstructor = new Discord.EmbedBuilder()
@@ -53,7 +53,7 @@ async function (msg) {
         .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/fatal.png?raw=true");
       }
       else {
-        msg.channel.send(await ougi.text(msg, "newsletter_invalidType"));
+        msg.channel.send(await ougi.text({ msg, stringID: "newsletter_invalidType" }));
         return;
       }
     }

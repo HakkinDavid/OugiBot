@@ -18,6 +18,6 @@ module.exports = async function (msg, silent = false) {
         return true;
     }
 
-    if (!silent) msg.channel.send(await ougi.text(msg, "mustOwnOrAdmin"));
+    if (!silent) msg.channel.send(await ougi.text({ msg, stringID: "mustOwnOrAdmin" }));
     return false;
 };

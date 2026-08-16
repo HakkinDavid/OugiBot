@@ -1,15 +1,15 @@
 module.exports = async function (msg) {
   let embed = await ougi.helpPreset(msg, "admin-register");
   if (msg.channel.type !== Discord.ChannelType.GuildText) {
-    embed.addFields({ name: await ougi.text(msg, "onlyGuilds"), value: ":warning: " + await ougi.text(msg, "mustGuild") });
+    embed.addFields({ name: await ougi.text({ msg, stringID: "onlyGuilds" }), value: ":warning: " + await ougi.text({ msg, stringID: "mustGuild" }) });
   }
-  embed.setDescription(await ougi.text(msg, "adminRegisterHelpDesc"))
+  embed.setDescription(await ougi.text({ msg, stringID: "adminRegisterHelpDesc" }))
     .addFields({
-      name: await ougi.text(msg, "specialPermission"),
-      value: ":warning: " + await ougi.text(msg, "mustOwnOrAdmin")
+      name: await ougi.text({ msg, stringID: "specialPermission" }),
+      value: ":warning: " + await ougi.text({ msg, stringID: "mustOwnOrAdmin" })
     })
     .addFields({
-      name: await ougi.text(msg, "example"),
+      name: await ougi.text({ msg, stringID: "example" }),
       value: "`ougi admin-register add " + msg.author.toString() + "`\n`ougi admin-register remove " + msg.author.toString() + "`"
     });
 

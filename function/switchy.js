@@ -4,13 +4,19 @@ async function (arguments, msg) {
   if (arguments == instanceID) {
     if (global.TEASEABLE) {
       const TEASEABLE = false;
-      const exclusiveTemplate = await ougi.text(msg, "switchy_exclusive");
-      msg.channel.send(exclusiveTemplate.replace(/{instanceID}/g, instanceID)).catch(console.error);
+      msg.channel.send(await ougi.text({
+        msg,
+        stringID: "switchy_exclusive",
+        values: { instanceID }
+      })).catch(console.error);
     }
     else {
       const TEASEABLE = true;
-      const allTemplate = await ougi.text(msg, "switchy_all");
-      msg.channel.send(allTemplate.replace(/{instanceID}/g, instanceID)).catch(console.error);
+      msg.channel.send(await ougi.text({
+        msg,
+        stringID: "switchy_all",
+        values: { instanceID }
+      })).catch(console.error);
     }
   }
 }

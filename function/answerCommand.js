@@ -7,7 +7,7 @@ module.exports = async function answerCommand(msg, replied_to_ougi) {
     ];
 
     const randomOption = options[Math.floor(Math.random() * options.length)];
-    const response = await ougi.text(msg, randomOption);
+    const response = await ougi.text({ msg, stringID: randomOption });
 
     if (replied_to_ougi) {
       await msg.reply(response);
@@ -25,6 +25,6 @@ module.exports = async function answerCommand(msg, replied_to_ougi) {
 
   } catch (err) {
     console.error('Error en answerCommand:', err);
-    await msg.channel.send(await ougi.text(msg, 'generalError'));
+    await msg.channel.send(await ougi.text({ msg, stringID: 'generalError' }));
   }
 };

@@ -2,7 +2,7 @@ const { EmbedBuilder } = require('discord.js');
 
 module.exports = async function gamblingCommands(args, msg, subCommand) {
     if (!msg.guild) {
-        msg.channel.send(await ougi.text(msg, "mustGuild")).catch(console.error);
+        msg.channel.send(await ougi.text({ msg, stringID: "mustGuild" })).catch(console.error);
         return;
     }
 
@@ -15,20 +15,26 @@ module.exports = async function gamblingCommands(args, msg, subCommand) {
 
     const bet = parseInt(args[0], 10);
     if (isNaN(bet) || bet <= 0) {
-        msg.channel.send(await ougi.text(msg, "gamble_invalidBet"));
+        msg.channel.send(await ougi.text({ msg, stringID: "gamble_invalidBet" }));
         return;
     }
 
     if ((user.money || 0) < bet) {
-        const notEnoughTemplate = await ougi.text(msg, "gamble_notEnoughCurrency");
-        msg.channel.send(notEnoughTemplate.replace(/{bet}/g, bet).replace(/{currency}/g, currencySymbol));
+        msg.channel.send(await ougi.text({
+            msg,
+            stringID: "gamble_notEnoughCurrency",
+            values: {
+                bet,
+                currency: currencySymbol
+            }
+        }));
         return;
     }
 
     if (subCommand === 'coinflip') {
         const choice = (args[1] || 'heads').toLowerCase();
         if (choice !== 'heads' && choice !== 'tails') {
-            msg.channel.send(await ougi.text(msg, "coinflip_invalidChoice"));
+            msg.channel.send(await ougi.text({ msg, stringID: "coinflip_invalidChoice" }));
             return;
         }
         const outcome = Math.random() < 0.5 ? 'heads' : 'tails';
@@ -36,21 +42,23 @@ module.exports = async function gamblingCommands(args, msg, subCommand) {
         if (won) { user.money += bet; } else { user.money -= bet; }
         db.saveUser(guildId, userId, user);
 
-        const wonTemplate = await ougi.text(msg, "coinflip_won");
-        const lostTemplate = await ougi.text(msg, "coinflip_lost");
         const resultString = won
-            ? wonTemplate.replace(/{bet}/g, bet).replace(/{currency}/g, currencySymbol)
-            : lostTemplate.replace(/{bet}/g, bet).replace(/{currency}/g, currencySymbol);
+            ? await ougi.text({ msg, stringID: "coinflip_won", values: { bet, currency: currencySymbol } })
+            : await ougi.text({ msg, stringID: "coinflip_lost", values: { bet, currency: currencySymbol } });
 
-        const descTemplate = await ougi.text(msg, "coinflip_desc");
-        const renderedDesc = descTemplate
-            .replace(/{outcome}/g, outcome.toUpperCase())
-            .replace(/{result}/g, resultString)
-            .replace(/{balance}/g, user.money)
-            .replace(/{currency}/g, currencySymbol);
+        const renderedDesc = await ougi.text({
+            msg,
+            stringID: "coinflip_desc",
+            values: {
+                outcome: outcome.toUpperCase(),
+                result: resultString,
+                balance: user.money,
+                currency: currencySymbol
+            }
+        });
 
         const embed = new EmbedBuilder()
-            .setTitle(await ougi.text(msg, "coinflip_title"))
+            .setTitle(await ougi.text({ msg, stringID: "coinflip_title" }))
             .setDescription(renderedDesc)
             .setColor(won ? "#00FF00" : "#FF0000");
 
@@ -74,23 +82,25 @@ module.exports = async function gamblingCommands(args, msg, subCommand) {
         if (winnings > 0) { user.money += (winnings - bet); } else { user.money -= bet; }
         db.saveUser(guildId, userId, user);
 
-        const jackpotTemplate = await ougi.text(msg, "slots_jackpot");
-        const noMatchTemplate = await ougi.text(msg, "slots_noMatch");
         const resultString = winnings > 0
-            ? jackpotTemplate.replace(/{winnings}/g, winnings).replace(/{currency}/g, currencySymbol)
-            : noMatchTemplate.replace(/{bet}/g, bet).replace(/{currency}/g, currencySymbol);
+            ? await ougi.text({ msg, stringID: "slots_jackpot", values: { winnings, currency: currencySymbol } })
+            : await ougi.text({ msg, stringID: "slots_noMatch", values: { bet, currency: currencySymbol } });
 
-        const descTemplate = await ougi.text(msg, "slots_desc");
-        const renderedDesc = descTemplate
-            .replace(/{reel1}/g, reel1)
-            .replace(/{reel2}/g, reel2)
-            .replace(/{reel3}/g, reel3)
-            .replace(/{result}/g, resultString)
-            .replace(/{balance}/g, user.money)
-            .replace(/{currency}/g, currencySymbol);
+        const renderedDesc = await ougi.text({
+            msg,
+            stringID: "slots_desc",
+            values: {
+                reel1,
+                reel2,
+                reel3,
+                result: resultString,
+                balance: user.money,
+                currency: currencySymbol
+            }
+        });
 
         const embed = new EmbedBuilder()
-            .setTitle(await ougi.text(msg, "slots_title"))
+            .setTitle(await ougi.text({ msg, stringID: "slots_title" }))
             .setDescription(renderedDesc)
             .setColor(winnings > 0 ? "#FFD700" : "#FF0000");
 
@@ -104,25 +114,26 @@ module.exports = async function gamblingCommands(args, msg, subCommand) {
         if (won) { user.money += bet; } else { user.money -= bet; }
         db.saveUser(guildId, userId, user);
 
-        const wonTemplate = await ougi.text(msg, "coinflip_won");
-        const lostTemplate = await ougi.text(msg, "coinflip_lost");
         const resultString = won
-            ? wonTemplate.replace(/{bet}/g, bet).replace(/{currency}/g, currencySymbol)
-            : lostTemplate.replace(/{bet}/g, bet).replace(/{currency}/g, currencySymbol);
+            ? await ougi.text({ msg, stringID: "coinflip_won", values: { bet, currency: currencySymbol } })
+            : await ougi.text({ msg, stringID: "coinflip_lost", values: { bet, currency: currencySymbol } });
 
-        const descTemplate = await ougi.text(msg, "gamble_highRollDesc");
-        const renderedDesc = descTemplate
-            .replace(/{roll}/g, userRoll)
-            .replace(/{result}/g, resultString)
-            .replace(/{balance}/g, user.money)
-            .replace(/{currency}/g, currencySymbol);
+        const renderedDesc = await ougi.text({
+            msg,
+            stringID: "gamble_highRollDesc",
+            values: {
+                roll: userRoll,
+                result: resultString,
+                balance: user.money,
+                currency: currencySymbol
+            }
+        });
 
         const embed = new EmbedBuilder()
-            .setTitle(await ougi.text(msg, "gamble_highRollTitle"))
+            .setTitle(await ougi.text({ msg, stringID: "gamble_highRollTitle" }))
             .setDescription(renderedDesc)
             .setColor(won ? "#00FF00" : "#FF0000");
 
         msg.channel.send({ embeds: [embed] });
     }
 };
-

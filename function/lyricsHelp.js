@@ -10,8 +10,8 @@ async function (msg) {
   ];
   let thatIndex = Math.floor(Math.random()*videos.length);
   var embed = await ougi.helpPreset(msg, "lyrics");
-  embed.setDescription(await ougi.text(msg, "lyricsHelpDesc"))
-  .addFields({name: await ougi.text(msg, "example"), value: "`ougi lyrics " + videos[thatIndex] + "`"})
-  .addFields({name: await ougi.text(msg, "output"), value: lyrics[thatIndex]});
+  embed.setDescription(await ougi.text({ msg, stringID: "lyricsHelpDesc" }))
+  .addFields({name: await ougi.text({ msg, stringID: "example" }), value: "`ougi lyrics " + videos[thatIndex] + "`"})
+  .addFields({name: await ougi.text({ msg, stringID: "output" }), value: lyrics[thatIndex]});
   msg.channel.send({embeds: [embed]}).catch(console.error);
 }

@@ -199,7 +199,7 @@ class OugiDatabaseManager {
     saveKV(dbName, tableName, key, value) {
         if (dbName === 'settings' && key === 'settingsOBJ') {
             if (!value || typeof value !== 'object' || Array.isArray(value)) {
-                global.ougi?.text('en', "console_dbCriticalSettings").then(msg => console.error(msg));
+                global.ougi?.text({ lang: 'en', stringID: "console_dbCriticalSettings" }).then(msg => console.error(msg));
                 return;
             }
             const requiredKeys = ['banned', 'ignored', 'ratelimit', 'prefix', 'blacklist', 'logging', 'lang', 'guildNews', 'subscribers', 'surveys', 'surveysAvailable', 'AI', 'guildBump', 'patreonAdLastSeen', 'interactionsCounter', 'patrons', 'shortcuts', 'nicknames', 'guildAdmins'];

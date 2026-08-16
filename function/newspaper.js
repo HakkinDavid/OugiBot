@@ -6,7 +6,7 @@ async function (arguments, msg) {
   let index = arguments * 1 - 1;
 
   if (isNaN(index)) {
-    msg.channel.send(await ougi.text(msg, "news_invalidNumber")).catch(console.error);
+    msg.channel.send(await ougi.text({ msg, stringID: "news_invalidNumber" })).catch(console.error);
     return;
   }
 
@@ -16,17 +16,21 @@ async function (arguments, msg) {
 
   let displayIndex = index + 1;
   if (displayIndex > maxIndex) {
-    msg.channel.send(await ougi.text(msg, "news_indexOutOfRange")).catch(console.error);
+    msg.channel.send(await ougi.text({ msg, stringID: "news_indexOutOfRange" })).catch(console.error);
     return;
   }
 
   let news = paper[index];
   let thatType = news.type;
-  const footerTemplate = await ougi.text(msg, "news_footerFormat");
-  const renderedFooter = footerTemplate
-    .replace(/{sent}/g, news.sent)
-    .replace(/{page}/g, displayIndex)
-    .replace(/{max}/g, maxIndex);
+  const renderedFooter = await ougi.text({
+    msg,
+    stringID: "news_footerFormat",
+    values: {
+      sent: news.sent,
+      page: displayIndex,
+      max: maxIndex
+    }
+  });
 
   let spookyConstructor = new Discord.EmbedBuilder()
   .setTitle(news.title)

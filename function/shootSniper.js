@@ -6,7 +6,7 @@ async function (arguments, msg, isEdit) {
 
   if (ammo[channelID] == undefined && !isEdit || reloadedAmmo[channelID] == undefined && isEdit) {
     const randomKey = responseKeys[Math.floor(Math.random() * responseKeys.length)];
-    msg.channel.send(await ougi.text(msg, randomKey));
+    msg.channel.send(await ougi.text({ msg, stringID: randomKey }));
     return;
   }
 
@@ -18,7 +18,7 @@ async function (arguments, msg, isEdit) {
   let index = arguments * 1 - 1;
 
   if (isNaN(index)) {
-    msg.channel.send(await ougi.text(msg, "snipe_invalidNumber")).catch(console.error);
+    msg.channel.send(await ougi.text({ msg, stringID: "snipe_invalidNumber" })).catch(console.error);
     return;
   }
 
@@ -28,7 +28,7 @@ async function (arguments, msg, isEdit) {
 
   let displayIndex = index + 1;
   if (displayIndex > maxIndex) {
-    msg.channel.send(await ougi.text(msg, "snipe_indexOutOfRange")).catch(console.error);
+    msg.channel.send(await ougi.text({ msg, stringID: "snipe_indexOutOfRange" })).catch(console.error);
     return;
   }
 
@@ -50,16 +50,18 @@ async function (arguments, msg, isEdit) {
     footerLogo = msg.guild.iconURL();
   }
 
-  const footerTemplate = await ougi.text(msg, "snipe_footerFormat");
-  const renderedFooter = footerTemplate
-    .replace(/{action}/g, action)
-    .replace(/{author}/g, bullet.author)
-    .replace(/{distance}/g, distance)
-    .replace(/{weapon}/g, snipedWith)
-    .replace(/{rarity}/g, rarity)
-    .replace(/{maxIndex}/g, maxIndex);
-
-  const saidTemplate = await ougi.text(msg, "snipe_said");
+  const renderedFooter = await ougi.text({
+    msg,
+    stringID: "snipe_footerFormat",
+    values: {
+      action,
+      author: bullet.author,
+      distance,
+      weapon: snipedWith,
+      rarity,
+      maxIndex
+    }
+  });
 
   let embed = new Discord.EmbedBuilder()
   .setColor("#7F0037")
@@ -67,7 +69,13 @@ async function (arguments, msg, isEdit) {
   .setThumbnail(bullet.pfp)
   .setFooter({text: renderedFooter, icon: footerLogo});
   if (bullet.text != "") {
-    const fieldHeader = saidTemplate.replace(/{author}/g, bullet.author) + " <:quote:730061725755375667>";
+    const fieldHeader = (await ougi.text({
+      msg,
+      stringID: "snipe_said",
+      values: {
+        author: bullet.author
+      }
+    })) + " <:quote:730061725755375667>";
     if (bullet.text.length < 1024) {
       embed.addFields({name: fieldHeader, value: bullet.text});
     }

@@ -3,7 +3,7 @@ module.exports = async function(msg) {
     const content = msg.content.trim();
     const parts = content.split(" ");
     if (parts.length < 3) {
-        msg.channel.send(await ougi.text(msg, "inspect_specifyPath"));
+        msg.channel.send(await ougi.text({ msg, stringID: "inspect_specifyPath" }));
         return;
     }
 
@@ -24,10 +24,10 @@ module.exports = async function(msg) {
     async function resolveExpression(expr, stopBeforeLast = false) {
         // Separar rootVar de los accesadores
         const rootMatch = expr.match(/^([a-zA-Z_$][a-zA-Z0-9_$]*)/);
-        if (!rootMatch) return { error: await ougi.text(msg, "inspect_noRootVar") };
+        if (!rootMatch) return { error: await ougi.text({ msg, stringID: "inspect_noRootVar" }) };
 
         let target = global[rootMatch[1]]; // Acceso directo al contexto global
-        if (target === undefined) return { error: (await ougi.text(msg, "inspect_varNotFound")).replace(/{name}/g, rootMatch[1]) };
+        if (target === undefined) return { error: await ougi.text({ msg, stringID: "inspect_varNotFound", values: { name: rootMatch[1] } }) };
 
         let remainder = expr.slice(rootMatch[1].length);
         const regex = /(\.([a-zA-Z_$][a-zA-Z0-9_$]*)|\[([^\]]+)\])/g;
@@ -45,7 +45,7 @@ module.exports = async function(msg) {
         }
 
         if (stopBeforeLast && keys.length === 0) {
-            return { error: await ougi.text(msg, "inspect_noPropertyToAssign") };
+            return { error: await ougi.text({ msg, stringID: "inspect_noPropertyToAssign" }) };
         }
 
         let limit = stopBeforeLast ? keys.length - 1 : keys.length;
@@ -54,7 +54,7 @@ module.exports = async function(msg) {
             if (target && typeof target === 'object' && key in target) {
                 target = target[key];
             } else {
-                return { error: (await ougi.text(msg, "inspect_propNotFound")).replace(/{prop}/g, key) };
+                return { error: await ougi.text({ msg, stringID: "inspect_propNotFound", values: { prop: key } }) };
             }
         }
 
@@ -102,11 +102,21 @@ module.exports = async function(msg) {
 
         try {
             resolved.target[resolved.lastKey] = parsedValue;
-            const updatedSuccessTemplate = await ougi.text(msg, "inspect_updatedProp");
-            msg.channel.send(updatedSuccessTemplate.replace(/{prop}/g, leftExpr));
+            msg.channel.send(await ougi.text({
+                msg,
+                stringID: "inspect_updatedProp",
+                values: {
+                    prop: leftExpr
+                }
+            }));
         } catch (err) {
-            const assignErrTemplate = await ougi.text(msg, "inspect_assignError");
-            msg.channel.send(assignErrTemplate.replace(/{err}/g, err.message));
+            msg.channel.send(await ougi.text({
+                msg,
+                stringID: "inspect_assignError",
+                values: {
+                    err: err.message
+                }
+            }));
         }
 
         return;

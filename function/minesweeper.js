@@ -24,10 +24,9 @@ async function (msg) {
   let treasures = [];
   let fillers = [];
   let mine = [];
-  const footerTemplate = await ougi.text(msg, "minesweeper_footer");
   let minesweeperEmbed = new Discord.EmbedBuilder()
     .setColor(embedColor)
-    .setFooter({text: footerTemplate.replace(/{username}/g, msg.author.username), icon: client.user.avatarURL({dynamic: true, size: 4096})})
+    .setFooter({text: await ougi.text({ msg, stringID: "minesweeper_footer", values: { username: msg.author.username } }), icon: client.user.avatarURL({dynamic: true, size: 4096})})
     .setThumbnail(icon);
   for (i=0; breakChocolate.length > i; i++) {
     let material = breakChocolate[i];
@@ -37,7 +36,7 @@ async function (msg) {
     if (material.startsWith("title ")) {
       material = material.substring(6);
       if (material.length < 1 || material.length > 256) {
-        msg.channel.send(await ougi.text(msg, "minesweeper_titleLimit"));
+        msg.channel.send(await ougi.text({ msg, stringID: "minesweeper_titleLimit" }));
         return;
       }
       minesweeperEmbed.setTitle(material)
@@ -45,7 +44,7 @@ async function (msg) {
     else if (material.startsWith("fill ")) {
       material = material.substring(5);
       if (material.length < 1 || material.length > 60) {
-        msg.channel.send(await ougi.text(msg, "minesweeper_fillTooLong"));
+        msg.channel.send(await ougi.text({ msg, stringID: "minesweeper_fillTooLong" }));
         return;
       }
       fillers.push(material);
@@ -53,7 +52,7 @@ async function (msg) {
     else if (material.startsWith("treasure ")) {
       material = material.substring(9);
       if (material.length < 1 || material.length > 60) {
-        msg.channel.send(await ougi.text(msg, "minesweeper_treasureTooLong"));
+        msg.channel.send(await ougi.text({ msg, stringID: "minesweeper_treasureTooLong" }));
         return;
       }
       treasures.push(material);
@@ -61,17 +60,17 @@ async function (msg) {
     else if (material.startsWith("difficulty ")) {
       material = material.substring(11);
       if (isNaN(material)) {
-        msg.channel.send(await ougi.text(msg, "minesweeper_difficultyRange"));
+        msg.channel.send(await ougi.text({ msg, stringID: "minesweeper_difficultyRange" }));
         return;
       }
       if (material < 1 || material > 10) {
-        msg.channel.send(await ougi.text(msg, "minesweeper_difficultyRange"));
+        msg.channel.send(await ougi.text({ msg, stringID: "minesweeper_difficultyRange" }));
         return;
       }
       difficulty = material;
     }
     else {
-      msg.channel.send(await ougi.text(msg, "minesweeper_syntaxHelp"));
+      msg.channel.send(await ougi.text({ msg, stringID: "minesweeper_syntaxHelp" }));
       return;
     }
   }

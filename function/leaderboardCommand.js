@@ -2,7 +2,7 @@ const { EmbedBuilder } = require('discord.js');
 
 module.exports = async function leaderboardCommand(args, msg) {
     if (!msg.guild) {
-        msg.channel.send(await ougi.text(msg, "mustGuild")).catch(console.error);
+        msg.channel.send(await ougi.text({ msg, stringID: "mustGuild" })).catch(console.error);
         return;
     }
 
@@ -12,11 +12,10 @@ module.exports = async function leaderboardCommand(args, msg) {
     const topUsers = db.getLeaderboard(guildId, 10);
 
     if (topUsers.length === 0) {
-        msg.channel.send(await ougi.text(msg, "leaderboard_noRecords"));
+        msg.channel.send(await ougi.text({ msg, stringID: "leaderboard_noRecords" }));
         return;
     }
 
-    const leaderboardLineTemplate = await ougi.text(msg, "leaderboard_line");
     const leaderboardLines = [];
     for (let i = 0; i < topUsers.length; i++) {
         const entry = topUsers[i];
@@ -27,22 +26,25 @@ module.exports = async function leaderboardCommand(args, msg) {
         } catch { }
 
         const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `**#${i + 1}**`;
-        leaderboardLines.push(
-            leaderboardLineTemplate
-                .replace(/{medal}/g, medal)
-                .replace(/{userTag}/g, userTag)
-                .replace(/{money}/g, entry.money)
-                .replace(/{currency}/g, guildEco.currency)
-                .replace(/{level}/g, entry.level)
-        );
+        const line = await ougi.text({
+            msg,
+            stringID: "leaderboard_line",
+            values: {
+                medal,
+                userTag,
+                money: entry.money,
+                currency: guildEco.currency,
+                level: entry.level
+            }
+        });
+        leaderboardLines.push(line);
     }
 
-    const titleTemplate = await ougi.text(msg, "leaderboard_title");
     const embed = new EmbedBuilder()
-        .setTitle(titleTemplate.replace(/{guildName}/g, msg.guild.name))
+        .setTitle(await ougi.text({ msg, stringID: "leaderboard_title", values: { guildName: msg.guild.name } }))
         .setDescription(leaderboardLines.join("\n"))
         .setColor("#FF8C00")
-        .setFooter({ text: await ougi.text(msg, "economy_footer"), iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) })
+        .setFooter({ text: await ougi.text({ msg, stringID: "economy_footer" }), iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) })
         .setTimestamp();
 
     msg.channel.send({ embeds: [embed] });

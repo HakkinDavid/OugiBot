@@ -18,13 +18,13 @@ async function(msg) {
     .setTimestamp()
     .setFooter({text: "X", icon: "https://github.com/HakkinDavid/OugiBot/blob/master/images/xicon.png?raw=true"});
   if (arguments.length < 1) {
-    msg.channel.send(await ougi.text(msg, "tweet_empty"));
+    msg.channel.send(await ougi.text({ msg, stringID: "tweet_empty" }));
     return;
   }
   if (arguments[0].startsWith("<@") && arguments[0].endsWith(">")) {
     let mentionedUser = arguments[0].slice(2, arguments[0].length-1).replace("!", "");
     if (!client.users.cache.has(mentionedUser)) {
-      msg.channel.send(await ougi.text(msg, "tweet_invalidUser"));
+      msg.channel.send(await ougi.text({ msg, stringID: "tweet_invalidUser" }));
       return;
     }
     ghostTweet.setAuthor({name: client.users.cache.get(mentionedUser).username + " (@" + client.users.cache.get(mentionedUser).username + ")", icon: client.users.cache.get(mentionedUser).avatarURL({dynamic: true, size: 4096})});

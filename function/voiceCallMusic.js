@@ -1,19 +1,19 @@
 module.exports = async function (msg) {
     try {
         if (!msg.guild) {
-            await msg.channel.send(await ougi.text(msg, "mustGuild"));
+            await msg.channel.send(await ougi.text({ msg, stringID: "mustGuild" }));
             return;
         }
 
         const vcChannel = msg.member?.voice?.channel;
         if (!vcChannel) {
-            await msg.channel.send(await ougi.text(msg, "musicNoVC"));
+            await msg.channel.send(await ougi.text({ msg, stringID: "musicNoVC" }));
             return;
         }
 
         const permissions = vcChannel.permissionsFor(msg.client.user);
         if (permissions && (!permissions.has('Connect') || !permissions.has('Speak'))) {
-            await msg.channel.send(await ougi.text(msg, "voice_needPermissions"));
+            await msg.channel.send(await ougi.text({ msg, stringID: "voice_needPermissions" }));
             return;
         }
 
@@ -45,33 +45,33 @@ module.exports = async function (msg) {
                 connection.destroy();
             }
             ougi.voiceManager.stop(msg.guildId);
-            await msg.channel.send(await ougi.text(msg, "musicStopped"));
+            await msg.channel.send(await ougi.text({ msg, stringID: "musicStopped" }));
             return;
         }
 
         // Command: skip
         if (command === "skip" || (command === "music" && subCommand === "skip")) {
             if (!vc[msg.guildId] || vc[msg.guildId].queue.length === 0) {
-                await msg.channel.send(await ougi.text(msg, "musicNothingToSkip"));
+                await msg.channel.send(await ougi.text({ msg, stringID: "musicNothingToSkip" }));
                 return;
             }
             ougi.voiceManager.skipMusic(msg.guildId, msg, vcChannel);
-            await msg.channel.send(await ougi.text(msg, "musicSkipped"));
+            await msg.channel.send(await ougi.text({ msg, stringID: "musicSkipped" }));
             return;
         }
 
         // Command: loop
         if (command === "loop" || (command === "music" && subCommand === "loop")) {
             if (!vc[msg.guildId] || !vc[msg.guildId].queue || vc[msg.guildId].queue.length === 0) {
-                await msg.channel.send(await ougi.text(msg, "music_noQueueToLoop"));
+                await msg.channel.send(await ougi.text({ msg, stringID: "music_noQueueToLoop" }));
                 return;
             }
             vc[msg.guildId].isLooping = true;
             const embed = new Discord.EmbedBuilder()
-                .setTitle(await ougi.text(msg, "music_loopEnabledTitle"))
-                .setDescription(await ougi.text(msg, "music_loopEnabledDesc"))
+                .setTitle(await ougi.text({ msg, stringID: "music_loopEnabledTitle" }))
+                .setDescription(await ougi.text({ msg, stringID: "music_loopEnabledDesc" }))
                 .setColor("#230347")
-                .setFooter({ text: await ougi.text(msg, "music_loopFooter"), iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) });
+                .setFooter({ text: await ougi.text({ msg, stringID: "music_loopFooter" }), iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) });
             await msg.channel.send({ embeds: [embed] });
             return;
         }
@@ -79,15 +79,15 @@ module.exports = async function (msg) {
         // Command: unloop
         if (command === "unloop" || (command === "music" && subCommand === "unloop")) {
             if (!vc[msg.guildId]) {
-                await msg.channel.send(await ougi.text(msg, "music_noPlaybackToUnloop"));
+                await msg.channel.send(await ougi.text({ msg, stringID: "music_noPlaybackToUnloop" }));
                 return;
             }
             vc[msg.guildId].isLooping = false;
             const embed = new Discord.EmbedBuilder()
-                .setTitle(await ougi.text(msg, "music_loopDisabledTitle"))
-                .setDescription(await ougi.text(msg, "music_loopDisabledDesc"))
+                .setTitle(await ougi.text({ msg, stringID: "music_loopDisabledTitle" }))
+                .setDescription(await ougi.text({ msg, stringID: "music_loopDisabledDesc" }))
                 .setColor("#230347")
-                .setFooter({ text: await ougi.text(msg, "music_loopFooter"), iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) });
+                .setFooter({ text: await ougi.text({ msg, stringID: "music_loopFooter" }), iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) });
             await msg.channel.send({ embeds: [embed] });
             return;
         }
@@ -96,28 +96,33 @@ module.exports = async function (msg) {
         if (command === "queue" || (command === "music" && ["list", "queue", "playlist"].includes(subCommand))) {
             const guildQueue = vc[msg.guildId]?.queue || [];
             if (!guildQueue.length) {
-                await msg.channel.send(await ougi.text(msg, "music_queueEmpty"));
+                await msg.channel.send(await ougi.text({ msg, stringID: "music_queueEmpty" }));
                 return;
             }
 
             const isLooping = !!vc[msg.guildId]?.isLooping;
-            const nowPlayingPrefix = await ougi.text(msg, "music_nowPlaying");
+            const nowPlayingPrefix = await ougi.text({ msg, stringID: "music_nowPlaying" });
             const queueList = guildQueue.map((s, idx) => {
                 const cachedTag = ougi.audioCacheManager.has(s.url) ? ' ⚡' : '';
                 return `${idx === 0 ? `**${nowPlayingPrefix}**` : `\`${idx}.\``} [${s.title}](${s.url})${cachedTag} (\`${s.duration}\`)`;
             }).slice(0, 10).join('\n');
 
-            const queueFooterTemplate = await ougi.text(msg, "music_queueFooter");
-            const loopStatusText = isLooping ? await ougi.text(msg, "music_loopEnabledTag") : await ougi.text(msg, "music_loopDisabledTag");
+            const loopStatusText = isLooping ? await ougi.text({ msg, stringID: "music_loopEnabledTag" }) : await ougi.text({ msg, stringID: "music_loopDisabledTag" });
+            const queueFooterText = await ougi.text({
+                msg,
+                stringID: "music_queueFooter",
+                values: {
+                    total: guildQueue.length,
+                    loopStatus: loopStatusText
+                }
+            });
 
             const queueEmbed = new Discord.EmbedBuilder()
-                .setTitle(await ougi.text(msg, "music_queueTitle"))
+                .setTitle(await ougi.text({ msg, stringID: "music_queueTitle" }))
                 .setDescription(queueList)
                 .setColor("#230347")
                 .setFooter({
-                    text: queueFooterTemplate
-                        .replace(/{total}/g, guildQueue.length)
-                        .replace(/{loopStatus}/g, loopStatusText),
+                    text: queueFooterText,
                     iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 })
                 });
 
@@ -137,7 +142,7 @@ module.exports = async function (msg) {
 
         const query = queryArgs.join(" ").trim();
         if (!query) {
-            await msg.channel.send(await ougi.text(msg, "keywordRequired"));
+            await msg.channel.send(await ougi.text({ msg, stringID: "keywordRequired" }));
             return;
         }
 
@@ -156,7 +161,7 @@ module.exports = async function (msg) {
             } catch {
                 const searchResults = await YouTube.search(query, { limit: 1, type: 'video' });
                 if (!searchResults || !searchResults.length) {
-                    await msg.channel.send(await ougi.text(msg, "resultsZero"));
+                    await msg.channel.send(await ougi.text({ msg, stringID: "resultsZero" }));
                     return;
                 }
                 const video = searchResults[0];
@@ -170,7 +175,7 @@ module.exports = async function (msg) {
         } else {
             const searchResults = await YouTube.search(query, { limit: 1, type: 'video' });
             if (!searchResults || !searchResults.length) {
-                await msg.channel.send(await ougi.text(msg, "resultsZero"));
+                await msg.channel.send(await ougi.text({ msg, stringID: "resultsZero" }));
                 return;
             }
             const video = searchResults[0];
@@ -190,12 +195,12 @@ module.exports = async function (msg) {
 
         const isPrecached = ougi.audioCacheManager.has(songInfo.url);
         const embed = new Discord.EmbedBuilder()
-            .setTitle(await ougi.text(msg, "musicAdded"))
+            .setTitle(await ougi.text({ msg, stringID: "musicAdded" }))
             .setDescription(`[${songInfo.title}](${songInfo.url})${isPrecached ? ' ⚡' : ''}`)
             .setThumbnail(songInfo.thumbnail)
             .setColor("#230347")
-            .addFields({ name: await ougi.text(msg, "music_durationField"), value: `\`${songInfo.duration}\``, inline: true })
-            .setFooter({ text: await ougi.text(msg, "music_footer"), iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) });
+            .addFields({ name: await ougi.text({ msg, stringID: "music_durationField" }), value: `\`${songInfo.duration}\``, inline: true })
+            .setFooter({ text: await ougi.text({ msg, stringID: "music_footer" }), iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) });
 
         await msg.channel.send({ embeds: [embed] });
 
@@ -205,6 +210,6 @@ module.exports = async function (msg) {
 
     } catch (error) {
         console.error("Error in voiceCallMusic:", error);
-        await msg.channel.send(await ougi.text(msg, "musicCommandError"));
+        await msg.channel.send(await ougi.text({ msg, stringID: "musicCommandError" }));
     }
 };

@@ -75,8 +75,8 @@ Create a help helper file to handle `ougi help coinflip`:
 // function/coinflipHelp.js
 module.exports = async function (msg) {
     const embed = new Discord.EmbedBuilder()
-        .setTitle(await ougi.text(msg, "specificHelpTitle", false).replace("{commandName}", "coinflip"))
-        .setDescription(await ougi.text(msg, "coinflipHelpDesc"))
+        .setTitle(await ougi.text({ msg, stringID: "specificHelpTitle", values: { commandName: "coinflip" } }))
+        .setDescription(await ougi.text({ msg, stringID: "coinflipHelpDesc" }))
         .setColor("#FF008C");
     await msg.channel.send({ embeds: [embed] });
 };
@@ -90,14 +90,25 @@ Always process user-facing text through `ougi.text`:
 
 ```javascript
 // Static key lookup
-const greeting = await ougi.text(msg, "helpTitle");
+const greeting = await ougi.text({ msg, stringID: "helpTitle" });
+
+// Static key lookup with variable interpolation
+const balance = await ougi.text({
+    msg,
+    stringID: "balance_output",
+    values: {
+        user: msg.author.username,
+        amount: 500,
+        currency: "🪙"
+    }
+});
 
 // Dynamic phrase translation (translates to user/guild preferred language)
-const dynamicResponse = await ougi.text(msg, "Welcome to the custom arena!", true);
+const dynamicResponse = await ougi.text({ msg, stringID: "Welcome to the custom arena!", dynamic: true });
 ```
 
-- Pass `dynamic = true` to translate arbitrary runtime strings.
-- Custom Discord emojis (`<:name:id>`) inside dynamic text are preserved automatically.
+- Pass `dynamic: true` to translate arbitrary runtime strings.
+- Custom Discord emojis (`<:name:id>`) and placeholder tokens (`{variableName}`) inside dynamic text are shielded automatically.
 
 ---
 

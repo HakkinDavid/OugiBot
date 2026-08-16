@@ -11,7 +11,7 @@ async function (msg, intentional) {
   const surveyResult = ougi.db().findTakeableSurvey(msg.author.id);
   if (!surveyResult) {
     if (intentional) {
-      msg.channel.send(await ougi.text(msg, "feedback_noSurveys"));
+      msg.channel.send(await ougi.text({ msg, stringID: "feedback_noSurveys" }));
     }
     return;
   }
@@ -19,21 +19,29 @@ async function (msg, intentional) {
   const surveyOBJ = surveyResult.surveyOBJ;
   /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
   let embed = new Discord.EmbedBuilder()
-  .setTitle(await ougi.text(msg, "feedback_enjoyingTitle"))
-  .setDescription(await ougi.text(msg, "feedback_enjoyingDesc"))
+  .setTitle(await ougi.text({ msg, stringID: "feedback_enjoyingTitle" }))
+  .setDescription(await ougi.text({ msg, stringID: "feedback_enjoyingDesc" }))
   .addFields({name: surveyOBJ.q, value: surveyOBJ.d})
   .setColor(surveyOBJ.color)
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/news.png?raw=true");
 
   let collectedEmbed = new Discord.EmbedBuilder()
-  .setTitle(await ougi.text(msg, "feedback_timeoutTitle"))
-  .setDescription(await ougi.text(msg, "feedback_timeoutDesc"))
-  .addFields({name: "\u200b", value: await ougi.text(msg, "feedback_checkCommand")})
+  .setTitle(await ougi.text({ msg, stringID: "feedback_timeoutTitle" }))
+  .setDescription(await ougi.text({ msg, stringID: "feedback_timeoutDesc" }))
+  .addFields({name: "\u200b", value: await ougi.text({ msg, stringID: "feedback_checkCommand" })})
   .setColor(surveyOBJ.color);
 
   if (surveyOBJ.url != null) {
-    const extraSurveyTemplate = await ougi.text(msg, "feedback_spendMinutes");
-    embed.addFields({name: "\u200b", value: extraSurveyTemplate.replace(/{url}/g, surveyOBJ.url)});
+    embed.addFields({
+      name: "\u200b",
+      value: await ougi.text({
+        msg,
+        stringID: "feedback_spendMinutes",
+        values: {
+          url: surveyOBJ.url
+        }
+      })
+    });
   }
   ougi.db().markSurveySeen(msg.author.id, takeableSurvey);
   ougi.db().incrementSurveyPoppedUp(takeableSurvey);
@@ -52,10 +60,15 @@ async function (msg, intentional) {
       const voteKey = reaction.emoji.id === '818120409219334144' ? 'yes' : 'no';
       ougi.db().recordSurveyVote(takeableSurvey, user.id, voteKey);
 
-      const votedMsg = (await ougi.text(davidUserID, "dev_surveyVoted"))
-        .replace(/{user}/g, user.username)
-        .replace(/{emoji}/g, reaction.emoji.toString())
-        .replace(/{survey}/g, surveyOBJ.q);
+      const votedMsg = await ougi.text({
+        lang: davidUserID,
+        stringID: "dev_surveyVoted",
+        values: {
+          user: user.username,
+          emoji: reaction.emoji.toString(),
+          survey: surveyOBJ.q
+        }
+      });
       client.users.cache.get(davidUserID).send(votedMsg).catch(console.error);
     })
     collector.on('end', async => {

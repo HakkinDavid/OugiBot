@@ -3,17 +3,22 @@ module.exports = async function (arguments, msg) {
 
     const participantName = msg.content.slice(msg.content.toLowerCase().indexOf("raffle-register") + "raffle-register".length).trim();
     if (!participantName.trim()) {
-        msg.channel.send(await ougi.text(msg, "raffle_registerProvideName"));
+        msg.channel.send(await ougi.text({ msg, stringID: "raffle_registerProvideName" }));
         return;
     }
     const nicknames = ougi.db().getNicknames(msg.guildId);
     const existingNicknames = Object.values(nicknames);
     if (existingNicknames.some(name => name.toLowerCase() === participantName.toLowerCase())) {
-        msg.channel.send(await ougi.text(msg, "raffle_registerNameTaken"));
+        msg.channel.send(await ougi.text({ msg, stringID: "raffle_registerNameTaken" }));
         return;
     }
     ougi.db().setNickname(msg.guildId, msg.author.id, participantName);
-    const registerSuccessTemplate = await ougi.text(msg, "raffle_registerSuccess");
-    msg.channel.send(registerSuccessTemplate.replace(/{name}/g, participantName));
+    msg.channel.send(await ougi.text({
+        msg,
+        stringID: "raffle_registerSuccess",
+        values: {
+            name: participantName
+        }
+    }));
     return;
 }

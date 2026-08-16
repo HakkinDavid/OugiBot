@@ -6,7 +6,7 @@ module.exports = async function remindMe(msg) {
   const content = msg.content.trim().slice(msg.content.indexOf("reminder") + "reminder".length).trim();
   
   if (!content || !content.includes("::")) {
-    msg.channel.send(await ougi.text(msg, "remind_specifyDuration")).catch(console.error);
+    msg.channel.send(await ougi.text({ msg, stringID: "remind_specifyDuration" })).catch(console.error);
     return;
   }
 
@@ -31,36 +31,44 @@ module.exports = async function remindMe(msg) {
     if (!isNaN(rawNum) && rawNum > 0) {
       durationMs = rawNum * 60 * 1000;
     } else {
-      msg.channel.send(await ougi.text(msg, "remind_invalidFormat")).catch(console.error);
+      msg.channel.send(await ougi.text({ msg, stringID: "remind_invalidFormat" })).catch(console.error);
       return;
     }
   }
 
   const triggerAt = Date.now() + durationMs;
   const humanDuration = ougi.toHumanTime(Date.now() - durationMs);
-  const setDescTemplate = await ougi.text(msg, "remind_setDesc");
 
   const embed = new EmbedBuilder()
-    .setTitle(await ougi.text(msg, "remind_setTitle"))
+    .setTitle(await ougi.text({ msg, stringID: "remind_setTitle" }))
     .setDescription(
-      setDescTemplate
-        .replace(/{reminder}/g, reminderMessage)
-        .replace(/{timestamp}/g, Math.floor(triggerAt / 1000))
+      await ougi.text({
+        msg,
+        stringID: "remind_setDesc",
+        values: {
+          reminder: reminderMessage,
+          timestamp: Math.floor(triggerAt / 1000)
+        }
+      })
     )
     .setColor("#FFA500")
-    .setFooter({ text: await ougi.text(msg, "remind_footer"), iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) })
+    .setFooter({ text: await ougi.text({ msg, stringID: "remind_footer" }), iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) })
     .setTimestamp();
 
   await msg.channel.send({ embeds: [embed] });
 
   setTimeout(async () => {
-    const alertDescTemplate = await ougi.text(msg, "remind_alertDesc");
     const remindEmbed = new EmbedBuilder()
-      .setTitle(await ougi.text(msg, "remind_alertTitle"))
+      .setTitle(await ougi.text({ msg, stringID: "remind_alertTitle" }))
       .setDescription(
-        alertDescTemplate
-          .replace(/{user}/g, `<@${msg.author.id}>`)
-          .replace(/{reminder}/g, reminderMessage)
+        await ougi.text({
+          msg,
+          stringID: "remind_alertDesc",
+          values: {
+            user: `<@${msg.author.id}>`,
+            reminder: reminderMessage
+          }
+        })
       )
       .setColor("#FF0055")
       .setTimestamp();
