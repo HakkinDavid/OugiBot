@@ -384,7 +384,6 @@ module.exports = {
         if (session.isCachedPlaying) return;
 
         const song = session.queue[0];
-        const cacheManager = ougi.audioCacheManager || require('./audioCacheManager');
 
         try {
             if (!session.mixer || session.mixer.destroyed || session.mixer.ended) {
@@ -423,8 +422,8 @@ module.exports = {
             };
 
             // Strategy 1: Global Persistent Disk/LRU Cache (0ms latency, zero network)
-            if (cacheManager.has(song.url)) {
-                const diskReadStream = cacheManager.createReadStream(song.url);
+            if (ougi.audioCacheManager.has(song.url)) {
+                const diskReadStream = ougi.audioCacheManager.createReadStream(song.url);
                 if (diskReadStream) {
                     session.isCachedPlaying = true;
                     session.diskReadStream = diskReadStream;
@@ -466,7 +465,7 @@ module.exports = {
 
                     // Background prefetch next track in queue
                     if (session.queue.length > 1) {
-                        cacheManager.prefetch(session.queue[1]);
+                        ougi.audioCacheManager.prefetch(session.queue[1]);
                     }
                     return;
                 }
@@ -522,7 +521,7 @@ module.exports = {
 
                 // Background prefetch next track in queue
                 if (session.queue.length > 1) {
-                    cacheManager.prefetch(session.queue[1]);
+                    ougi.audioCacheManager.prefetch(session.queue[1]);
                 }
                 return;
             }
@@ -530,7 +529,7 @@ module.exports = {
             // Strategy 3: Network stream + Cache Write (Disk & In-Memory)
             song.cachedPcm = [];
             let totalPcmCached = 0;
-            const cacheWriter = cacheManager.createCacheWriteStream(song.url);
+            const cacheWriter = ougi.audioCacheManager.createCacheWriteStream(song.url);
             session.cacheWriter = cacheWriter;
 
             let musicProc = null;
@@ -646,7 +645,7 @@ module.exports = {
 
             // Trigger background prefetch for next track in queue
             if (session.queue.length > 1) {
-                cacheManager.prefetch(session.queue[1]);
+                ougi.audioCacheManager.prefetch(session.queue[1]);
             }
 
         } catch (err) {

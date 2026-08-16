@@ -100,11 +100,10 @@ module.exports = async function (msg) {
                 return;
             }
 
-            const cacheManager = ougi.audioCacheManager || require('./audioCacheManager');
             const isLooping = !!vc[msg.guildId]?.isLooping;
             const nowPlayingPrefix = await ougi.text(msg, "music_nowPlaying");
             const queueList = guildQueue.map((s, idx) => {
-                const cachedTag = cacheManager.has(s.url) ? ' ⚡' : '';
+                const cachedTag = ougi.audioCacheManager.has(s.url) ? ' ⚡' : '';
                 return `${idx === 0 ? `**${nowPlayingPrefix}**` : `\`${idx}.\``} [${s.title}](${s.url})${cachedTag} (\`${s.duration}\`)`;
             }).slice(0, 10).join('\n');
 
@@ -185,12 +184,11 @@ module.exports = async function (msg) {
 
         vc[msg.guildId].queue.push(songInfo);
 
-        const cacheManager = ougi.audioCacheManager || require('./audioCacheManager');
         if (vc[msg.guildId].queue.length > 1) {
-            cacheManager.prefetch(songInfo);
+            ougi.audioCacheManager.prefetch(songInfo);
         }
 
-        const isPrecached = cacheManager.has(songInfo.url);
+        const isPrecached = ougi.audioCacheManager.has(songInfo.url);
         const embed = new Discord.EmbedBuilder()
             .setTitle(await ougi.text(msg, "musicAdded"))
             .setDescription(`[${songInfo.title}](${songInfo.url})${isPrecached ? ' ⚡' : ''}`)
