@@ -15,7 +15,7 @@ function maskTokens(str) {
 
 function unmaskTokens(str, tokens) {
     if (!str || typeof str !== 'string' || !tokens || tokens.length === 0) return str;
-    return str.replace(/\s*\$(\d+)\s*/g, (match, idxStr) => {
+    return str.replace(/\$(\d+)/g, (match, idxStr) => {
         const idx = parseInt(idxStr, 10);
         if (idx >= 0 && idx < tokens.length) {
             return `{${tokens[idx]}}`;
