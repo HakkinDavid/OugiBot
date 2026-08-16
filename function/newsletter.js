@@ -16,8 +16,8 @@ async function (msg) {
   let thisMessage = arguments.join(" ");
   let breakChocolate = thisMessage.split("::").slice(1);
   if (breakChocolate.length < 2) {
-    msg.channel.send("You must include a title, a description, and optionally a type.")
-    return
+    msg.channel.send(await ougi.text(msg, "newsletter_missingFields"));
+    return;
   }
   let spookyConstructor = new Discord.EmbedBuilder()
     .setFooter({text: "newsletterEmbed by Ougi"})
@@ -53,8 +53,8 @@ async function (msg) {
         .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/fatal.png?raw=true");
       }
       else {
-        msg.channel.send("Not a valid type. Types: info, mail, alert, fatal.");
-        return
+        msg.channel.send(await ougi.text(msg, "newsletter_invalidType"));
+        return;
       }
     }
     else if (material.startsWith("title ")) {

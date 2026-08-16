@@ -2,15 +2,10 @@ module.exports =
 
 async function (msg) {
   let possiblePrefix = ["spooky", "oshino", "xXOugi_YTXx", "o!", "$p00ky"];
-  let embed = new Discord.EmbedBuilder()
-  .setTitle("Ougi's `prefix` command")
-  .setAuthor({name: "Ougi [BOT]", icon: client.user.avatarURL({dynamic: true, size: 4096})})
-  .setColor("#230347")
-  .setFooter({text: "helpEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
-  .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true");
   if (!(await ougi.guildCheck(msg))) return;
-  embed.setDescription("Use this command to change Ougi's prefix inside your Discord server to anything you'd like.")
-  .addFields({name: "Special permission required", value: ":warning: You must be the owner of whatever Discord server you run this command in."})
+  let embed = await ougi.helpPreset(msg, "prefix");
+  embed.setDescription(await ougi.text(msg, "prefixHelpDesc"))
+  .addFields({name: await ougi.text(msg, "specialPermission"), value: ":warning: " + await ougi.text(msg, "onlyOwner")})
   .addFields({name: await ougi.text(msg, "example"), value: "`ougi prefix " + possiblePrefix[Math.floor(Math.random()*possiblePrefix.length)] + "`"});
 
   msg.channel.send({embeds: [embed]}).catch(console.error);

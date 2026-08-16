@@ -6,7 +6,7 @@ module.exports = async function remindMe(msg) {
   const content = msg.content.trim().slice(msg.content.indexOf("reminder") + "reminder".length).trim();
   
   if (!content || !content.includes("::")) {
-    msg.channel.send("Please specify a duration and a reminder message using `::`.\nExample: `ougi reminder 10m :: Turn off the oven`").catch(console.error);
+    msg.channel.send(await ougi.text(msg, "remind_specifyDuration")).catch(console.error);
     return;
   }
 
@@ -31,27 +31,37 @@ module.exports = async function remindMe(msg) {
     if (!isNaN(rawNum) && rawNum > 0) {
       durationMs = rawNum * 60 * 1000;
     } else {
-      msg.channel.send("Invalid duration format. Please specify time as `10m`, `2h`, `1d`, or `30s`.").catch(console.error);
+      msg.channel.send(await ougi.text(msg, "remind_invalidFormat")).catch(console.error);
       return;
     }
   }
 
   const triggerAt = Date.now() + durationMs;
   const humanDuration = ougi.toHumanTime(Date.now() - durationMs);
+  const setDescTemplate = await ougi.text(msg, "remind_setDesc");
 
   const embed = new EmbedBuilder()
-    .setTitle("⏰ Reminder Set!")
-    .setDescription(`I'll remind you about: **"${reminderMessage}"**\nTarget time: <t:${Math.floor(triggerAt / 1000)}:R>`)
+    .setTitle(await ougi.text(msg, "remind_setTitle"))
+    .setDescription(
+      setDescTemplate
+        .replace(/{reminder}/g, reminderMessage)
+        .replace(/{timestamp}/g, Math.floor(triggerAt / 1000))
+    )
     .setColor("#FFA500")
-    .setFooter({ text: "Ougi Reminder Engine", iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) })
+    .setFooter({ text: await ougi.text(msg, "remind_footer"), iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) })
     .setTimestamp();
 
   await msg.channel.send({ embeds: [embed] });
 
   setTimeout(async () => {
+    const alertDescTemplate = await ougi.text(msg, "remind_alertDesc");
     const remindEmbed = new EmbedBuilder()
-      .setTitle("⏰ Reminder Alert!")
-      .setDescription(`<@${msg.author.id}>, you asked me to remind you:\n\n> **${reminderMessage}**`)
+      .setTitle(await ougi.text(msg, "remind_alertTitle"))
+      .setDescription(
+        alertDescTemplate
+          .replace(/{user}/g, `<@${msg.author.id}>`)
+          .replace(/{reminder}/g, reminderMessage)
+      )
       .setColor("#FF0055")
       .setTimestamp();
 

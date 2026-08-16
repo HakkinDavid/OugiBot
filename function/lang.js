@@ -37,15 +37,15 @@ async function (arguments, msg, guildExecution) {
   .setFooter({text: "langEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/world.png?raw=true");
   if (finalCode == 'default') {
-    langEmbed.setTitle("Language preferences restored to default");
-    langEmbed.setDescription("Ougi will talk to you in English.");
+    langEmbed.setTitle(await ougi.text(msg, "lang_restoredDefaultTitle"));
+    langEmbed.setDescription(await ougi.text(msg, "lang_restoredDefaultDesc"));
   }
   if (guildExecution) {
     langEmbed.setTitle((await ougi.text(msg, "newLangGuild")).replace(/{langName}/gi, niceLang + " (" + finalCode + ")"));
     langEmbed.setDescription((await ougi.text(msg, "langGuildDesc")).replace(/{guildName}/, msg.guild.toString()));
     if (finalCode == 'default') {
-      langEmbed.setTitle("Guild language preferences restored to default");
-      langEmbed.setDescription("Ougi will use each user's language preferences.");
+      langEmbed.setTitle(await ougi.text(msg, "lang_guildRestoredDefaultTitle"));
+      langEmbed.setDescription(await ougi.text(msg, "lang_guildRestoredDefaultDesc"));
     }
   }
   langEmbed.addFields({name: ":warning: " + await ougi.text(msg, "possibleDelay"), value: await ougi.text(msg, "delayWarning")})

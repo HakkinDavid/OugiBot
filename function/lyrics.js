@@ -7,13 +7,13 @@ module.exports = async function (arguments, msg) {
     .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/ougimusic.png?raw=true")
     .setAuthor({ name: "Ougi [BOT]", iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) })
     .setColor("#230347")
-    .setFooter({ text: "lyricsEmbed by Ougi | Lyrics via Genius", iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) });
+    .setFooter({ text: await ougi.text(msg, "lyrics_footer"), iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) });
 
   let searchQuery = arguments.join(" ");
 
   if (!searchQuery) {
     if (!msg.guild || !vc[msg.guildId] || !vc[msg.guildId].queue.length) {
-      msg.channel.send("Nothing is playing. Please specify a song title to search for lyrics.").catch(console.error);
+      msg.channel.send(await ougi.text(msg, "lyrics_nothingPlaying")).catch(console.error);
       return;
     }
     searchQuery = vc[msg.guildId].queue[0].title;
@@ -28,7 +28,7 @@ module.exports = async function (arguments, msg) {
     const songHit = songSection?.hits?.[0]?.result;
 
     if (!songHit) {
-      msg.channel.send("Lyrics aren't available right now for that song.").catch(console.error);
+      msg.channel.send(await ougi.text(msg, "lyrics_notAvailable")).catch(console.error);
       return;
     }
 
@@ -47,7 +47,7 @@ module.exports = async function (arguments, msg) {
     }
 
     if (!lyrics) {
-      msg.channel.send("Could not extract lyrics.").catch(console.error);
+      msg.channel.send(await ougi.text(msg, "lyrics_extractFail")).catch(console.error);
       return;
     }
 

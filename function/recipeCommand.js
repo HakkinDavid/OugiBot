@@ -37,7 +37,7 @@ module.exports = async function (arguments, msg) {
       .setDescription(`**Category:** ${meal.strCategory} | **Cuisine:** ${meal.strArea}\n\n**Instructions:**\n${meal.strInstructions?.slice(0, 1000)}...`)
       .addFields({ name: await ougi.text(msg, "ingredients"), value: ingredients.join("\n").slice(0, 1024) || "N/A" })
       .setColor("#6E2C00")
-      .setFooter({ text: "recipeEmbed by Ougi (powered by TheMealDB)", iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) })
+      .setFooter({ text: await ougi.text(msg, "recipe_footer"), iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) })
       .setTimestamp();
 
     await msg.channel.send({ embeds: [embed] });

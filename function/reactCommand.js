@@ -2,11 +2,11 @@ module.exports =
 
 async function (arguments, msg) {
     if (!msg.reference.messageId) {
-        msg.reply("You should reply to a message for me to react.");
+        msg.reply(await ougi.text(msg, "react_replyNeeded"));
         return;
     }
     if (arguments.length < 1) {
-        msg.reply("You didn't tell me what to react!");
+        msg.reply(await ougi.text(msg, "react_tellWhat"));
         return;
     }
     try {
@@ -14,6 +14,6 @@ async function (arguments, msg) {
         if (msg.id !== msg.reference.messageId) msg.delete();
     }
     catch (e) {
-        msg.reply("Sorry. Couldn't react to that message.");
+        msg.reply(await ougi.text(msg, "react_error"));
     }
 }

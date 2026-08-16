@@ -44,7 +44,8 @@ module.exports = async function (arguments, msg) {
     }
     try {
         const originalMessage = await channel.messages.fetch(messageId);
-        await originalMessage.edit({ content: `${msg.author} has joined!`, embeds: [currentRaffle.embed] });
+        const joinedTemplate = await ougi.text(msg, "raffle_userJoined");
+        await originalMessage.edit({ content: joinedTemplate.replace(/{user}/g, msg.author.toString()), embeds: [currentRaffle.embed] });
     } catch (error) {
         ougi.globalLog(`Raffle joining failed for raffle ${messageId}: ${error}`);
     }

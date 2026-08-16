@@ -3,12 +3,12 @@ module.exports =
 async function (msg) {
   ougi.db().ignoreUser(msg.author.id);
   let embed = new Discord.EmbedBuilder()
-  .setTitle("Opt Out from Ougi")
+  .setTitle(await ougi.text(msg, "optout_title"))
   .setAuthor({name: "Ougi [BOT]", icon: client.user.avatarURL({dynamic: true, size: 4096})})
   .setColor("#230347")
-  .setDescription("You've successfully opted out from using Ougi and its services. Please note whatever you do from now on will not trigger any behavior in this bot.")
-  .addFields({name: "If you executed this by accident or if you ever change your mind, please send a direct message to Ougi containing the following, in order to opt in.", value: "`I want to start using Ougi [BOT].`"})
-  .setFooter({text: "optoutEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
+  .setDescription(await ougi.text(msg, "optout_desc"))
+  .addFields({name: await ougi.text(msg, "optout_fieldName"), value: await ougi.text(msg, "optout_fieldValue")})
+  .setFooter({text: await ougi.text(msg, "optout_footer"), icon: client.user.avatarURL({dynamic: true, size: 4096})})
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true")
   msg.channel.send({embeds: [embed]});
   client.users.cache.get(davidUserID).send("`" + msg.author.username + "` has requested the deletion of their data.");

@@ -71,25 +71,33 @@ module.exports = async function (msg) {
       return;
     }
 
+    const createdAtFieldTemplate = await ougi.text(msg, "curl_createdAtField");
+    const joinedAtFieldTemplate = await ougi.text(msg, "curl_joinedAtField");
+    const timeAgoTemplate = await ougi.text(msg, "curl_timeAgo");
+
     const embed = new EmbedBuilder()
       .setTitle(titleCurl)
       .addFields({
-        name: "Discord " + curlType + " created at " + thisOBJ.createdAt.toDateString().slice(4).replace(/ 0/gi, " "),
-        value: ougi.toHumanTime(thisOBJ.createdAt) + " ago."
+        name: createdAtFieldTemplate
+          .replace(/{type}/g, curlType)
+          .replace(/{date}/g, thisOBJ.createdAt.toDateString().slice(4).replace(/ 0/gi, " ")),
+        value: timeAgoTemplate.replace(/{time}/g, ougi.toHumanTime(thisOBJ.createdAt))
       })
       .setColor(colorCurl)
       .setTimestamp()
       .setFooter({
-        text: "curlEmbed by Ougi",
+        text: await ougi.text(msg, "curl_footer"),
         iconURL: client.user.avatarURL({ dynamic: true, size: 4096 })
       });
 
     if (memberCurl) {
       embed.addFields({
-        name: "Joined " + msg.guild.toString() + " at " + memberCurl.joinedAt.toDateString().slice(4).replace(/ 0/gi, " "),
-        value: ougi.toHumanTime(memberCurl.joinedAt) + " ago."
+        name: joinedAtFieldTemplate
+          .replace(/{guild}/g, msg.guild.toString())
+          .replace(/{date}/g, memberCurl.joinedAt.toDateString().slice(4).replace(/ 0/gi, " ")),
+        value: timeAgoTemplate.replace(/{time}/g, ougi.toHumanTime(memberCurl.joinedAt))
       }).addFields({
-        name: "__Most distinctive role__",
+        name: await ougi.text(msg, "curl_mostDistinctiveRole"),
         value: memberCurl.roles.hoist?.toString() || await ougi.text(msg, "noDistinctRole")
       });
 

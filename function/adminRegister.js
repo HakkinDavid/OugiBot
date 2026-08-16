@@ -8,11 +8,12 @@ module.exports = async function (arguments, msg) {
     const mentionedUsers = Array.from(msg.mentions.users?.keys?.() || []);
 
     if (action !== "add" && action !== "remove") {
-        msg.channel.send("Usage: add|remove @users");
+        msg.channel.send(await ougi.text(msg, "admin_usage"));
         return;
     }
     if (!mentionedUsers.length) {
-        msg.channel.send("You must mention user(s) to " + (action === "add" ? "register" : "remove") + " as administrators.");
+        const mentionRequiredTemplate = await ougi.text(msg, "admin_mentionRequired");
+        msg.channel.send(mentionRequiredTemplate.replace(/{action}/g, action === "add" ? "register" : "remove"));
         return;
     }
 
@@ -25,11 +26,11 @@ module.exports = async function (arguments, msg) {
         // Remove each mentioned user ID if present (excluding self and guild owner)
         for (const id of mentionedUsers) {
             if (id === msg.author.id) {
-                msg.channel.send("⚠️ You cannot remove yourself from administrator list.");
+                msg.channel.send(await ougi.text(msg, "admin_cantRemoveSelf"));
                 continue;
             }
             if (id === msg.guild?.ownerId) {
-                msg.channel.send("⚠️ Guild Owner cannot be removed from administrator list.");
+                msg.channel.send(await ougi.text(msg, "admin_cantRemoveOwner"));
                 continue;
             }
             ougi.db().removeGuildAdmin(msg.guildId, id);
@@ -37,9 +38,11 @@ module.exports = async function (arguments, msg) {
     }
 
     // Confirmation message
-    const actionText = action === "add" ? "Added administrators:" : "Removed administrators:";
+    const actionText = action === "add" ? await ougi.text(msg, "admin_addedHeader") : await ougi.text(msg, "admin_removedHeader");
     const currentAdmins = ougi.db().getGuildAdmins(msg.guildId);
     const adminsDisplay = currentAdmins.length > 0 ? `\`\`\`\n${currentAdmins.join("\n")}\n\`\`\`` : "`None`";
+    const currentAdminsHeader = await ougi.text(msg, "admin_currentAdmins");
+    const authNote = await ougi.text(msg, "admin_authNote");
 
-    msg.channel.send(`${actionText}\n\`\`\`\n${mentionedUsers.join("\n")}\n\`\`\`\nCurrent custom administrators:\n${adminsDisplay}\n*(Note: Owner and users with Discord Administrator permissions are always authorized).*`);
+    msg.channel.send(`${actionText}\n\`\`\`\n${mentionedUsers.join("\n")}\n\`\`\`\n${currentAdminsHeader}\n${adminsDisplay}\n${authNote}`);
 }

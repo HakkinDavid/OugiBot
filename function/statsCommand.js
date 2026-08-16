@@ -1,6 +1,6 @@
 module.exports =
 
-function (msg) {
+async function (msg) {
   let emoji = 0;
   let guilds = 0;
   let members = 0;
@@ -9,15 +9,24 @@ function (msg) {
     members += g.memberCount-1;
     guilds++;
   });
+
+  const membersField = await ougi.text(msg, "stats_membersField");
+  const membersVal = (await ougi.text(msg, "stats_membersValue")).replace(/{count}/g, members);
+  const guildsField = await ougi.text(msg, "stats_guildsField");
+  const guildsVal = (await ougi.text(msg, "stats_guildsValue")).replace(/{count}/g, guilds);
+  const emojiField = await ougi.text(msg, "stats_emojiField");
+  const emojiVal = (await ougi.text(msg, "stats_emojiValue")).replace(/{count}/g, emoji);
+  const creatorCredit = (await ougi.text(msg, "stats_creatorCredit")).replace(/{creator}/g, client.users.cache.get(davidUserID).username);
+
   let embed = new Discord.EmbedBuilder()
-  .addFields({name: "Users in touch", value: "`" + members + "` users in total."})
-  .addFields({name: "Discord servers Ougi's in", value: "`" + guilds + "` Discord servers in total."})
-  .addFields({name: "Emoji available for Ougi's usage", value: "`" + emoji + "` emoji in total."})
+  .addFields({name: membersField, value: membersVal})
+  .addFields({name: guildsField, value: guildsVal})
+  .addFields({name: emojiField, value: emojiVal})
   .setAuthor({name: "Ougi [BOT]", icon: client.user.avatarURL({dynamic: true, size: 4096})})
-  .addFields({name: "\u200b", value: "Ougi was created by `" + client.users.cache.get(davidUserID).username + "`"})
+  .addFields({name: "\u200b", value: creatorCredit})
   .setColor("#9C0049")
   .setThumbnail(client.users.cache.get(davidUserID).avatarURL({dynamic: true, size: 256}))
   .setTimestamp()
-  .setFooter({text: "statsEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})});
+  .setFooter({text: await ougi.text(msg, "stats_footer"), icon: client.user.avatarURL({dynamic: true, size: 4096})});
   msg.channel.send({embeds: [embed]})
 }

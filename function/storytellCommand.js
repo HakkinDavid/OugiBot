@@ -11,7 +11,7 @@ module.exports = async function storytellCommand(args, msg) {
   const channelId = msg.channel.id;
 
   if (activeSessions[channelId]) {
-    msg.channel.send("A storytelling session is already active in this channel! Type your response to participate.").catch(console.error);
+    msg.channel.send(await ougi.text(msg, "storytell_alreadyActive")).catch(console.error);
     return;
   }
 
@@ -37,11 +37,12 @@ module.exports = async function storytellCommand(args, msg) {
 
   activeSessions[channelId] = session;
 
+  const startDescTemplate = await ougi.text(msg, "storytell_startDesc");
   const startEmbed = new EmbedBuilder()
-    .setTitle("📖 Interactive Storytelling RPG Session!")
-    .setDescription(`**Scenario:**\n*"${scenario}"*\n\n**Instructions:**\nEach participant gets **1 turn** to type a sentence continuing the story. You have **1 minute** between responses before Ougi judges your collective fate! Have a heads up with **5 minutes since this message was sent**.`)
+    .setTitle(await ougi.text(msg, "storytell_startTitle"))
+    .setDescription(startDescTemplate.replace(/{scenario}/g, scenario))
     .setColor("#9B59B6")
-    .setFooter({ text: "Type your story turn directly into this channel!", iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) })
+    .setFooter({ text: await ougi.text(msg, "storytell_startFooter"), iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) })
     .setTimestamp();
 
   await msg.channel.send({ embeds: [startEmbed] });
@@ -49,9 +50,9 @@ module.exports = async function storytellCommand(args, msg) {
   const filter = m => !m.author.bot && m.content.length > 0 && !ougi.helperFunctions.checkForPrefixMsg(m);
   const collector = msg.channel.createMessageCollector({ filter, time: 5 * 60 * 1000 });
 
-  collector.on('collect', m => {
+  collector.on('collect', async m => {
     if (session.participants.has(m.author.id)) {
-      m.reply("You have already taken your turn in this story session!").catch(console.error);
+      m.reply(await ougi.text(msg, "storytell_alreadyTakenTurn")).catch(console.error);
       return;
     }
 
@@ -63,11 +64,11 @@ module.exports = async function storytellCommand(args, msg) {
     collector.resetTimer({ time: 1 * 60 * 1000 });
   });
 
-    collector.on('end', async () => {
+  collector.on('end', async () => {
     delete activeSessions[channelId];
 
     if (session.turns.length === 0) {
-      msg.channel.send("The storytelling session expired with no participants.").catch(console.error);
+      msg.channel.send(await ougi.text(msg, "storytell_expiredNoParticipants")).catch(console.error);
       return;
     }
 
@@ -102,11 +103,19 @@ module.exports = async function storytellCommand(args, msg) {
       db.saveUser(msg.guildId, userId, user);
     }
 
+    const rewardMsgTemplate = await ougi.text(msg, "storytell_rewardAll");
+    const penaltyMsgTemplate = await ougi.text(msg, "storytell_penaltyAll");
+    const outcomeNotice = isReward
+      ? rewardMsgTemplate.replace(/{amount}/g, rewardAmount).replace(/{currency}/g, currencySymbol)
+      : penaltyMsgTemplate.replace(/{amount}/g, rewardAmount).replace(/{currency}/g, currencySymbol);
+
+    const participantsFooterTemplate = await ougi.text(msg, "storytell_participantsFooter");
+
     const endEmbed = new EmbedBuilder()
-      .setTitle("🎭 Storytelling Session Concluded!")
-      .setDescription(`**Conclusion:**\n${aiResult.slice(0, 1500)}\n\n${isReward ? `🎉 All participants earned **+${rewardAmount} ${currencySymbol}**!` : `💀 All participants lost **-${rewardAmount} ${currencySymbol}**!`}`)
+      .setTitle(await ougi.text(msg, "storytell_concludedTitle"))
+      .setDescription(`**Conclusion:**\n${aiResult.slice(0, 1500)}\n\n${outcomeNotice}`)
       .setColor(isReward ? "#00FF00" : "#FF0000")
-      .setFooter({ text: `Participants: ${session.participants.size}`, iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) })
+      .setFooter({ text: participantsFooterTemplate.replace(/{count}/g, session.participants.size), iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) })
       .setTimestamp();
 
     await msg.channel.send({ embeds: [endEmbed] });

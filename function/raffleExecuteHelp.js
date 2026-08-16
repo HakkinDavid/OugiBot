@@ -3,7 +3,7 @@ module.exports = async function (msg) {
   if (msg.channel.type !== Discord.ChannelType.GuildText) {
     embed.addFields({ name: await ougi.text(msg, "onlyGuilds"), value: ":warning: " + await ougi.text(msg, "mustGuild") });
   }
-  embed.setDescription("Manually finish and draw winners for an ongoing raffle before its scheduled end duration.")
+  embed.setDescription(await ougi.text(msg, "raffleExecuteHelpDesc"))
     .addFields({ name: await ougi.text(msg, "specialPermission"), value: ":warning: " + await ougi.text(msg, "onlyOwner") })
     .addFields({ name: await ougi.text(msg, "example"), value: "Reply to the ongoing raffle message with:\n`ougi raffle-execute`" });
 

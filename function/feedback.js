@@ -11,7 +11,7 @@ async function (msg, intentional) {
   const surveyResult = ougi.db().findTakeableSurvey(msg.author.id);
   if (!surveyResult) {
     if (intentional) {
-      msg.channel.send("There aren't any new surveys for you.");
+      msg.channel.send(await ougi.text(msg, "feedback_noSurveys"));
     }
     return;
   }
@@ -19,20 +19,21 @@ async function (msg, intentional) {
   const surveyOBJ = surveyResult.surveyOBJ;
   /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
   let embed = new Discord.EmbedBuilder()
-  .setTitle("Enjoying Ougi so far?")
-  .setDescription("If so, that's really heartwarming. Mind taking a second to answer the following question?\nUse the reactions I put below.")
+  .setTitle(await ougi.text(msg, "feedback_enjoyingTitle"))
+  .setDescription(await ougi.text(msg, "feedback_enjoyingDesc"))
   .addFields({name: surveyOBJ.q, value: surveyOBJ.d})
   .setColor(surveyOBJ.color)
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/news.png?raw=true");
 
   let collectedEmbed = new Discord.EmbedBuilder()
-  .setTitle("Survey timeout ended.")
-  .setDescription("Your feedback is really important for Ougi. Thanks for voting!")
-  .addFields({name: "\u200b", value: "If you'd like to check for surveys. Execute `ougi survey`."})
+  .setTitle(await ougi.text(msg, "feedback_timeoutTitle"))
+  .setDescription(await ougi.text(msg, "feedback_timeoutDesc"))
+  .addFields({name: "\u200b", value: await ougi.text(msg, "feedback_checkCommand")})
   .setColor(surveyOBJ.color);
 
   if (surveyOBJ.url != null) {
-    embed.addFields({name: "\u200b", value: "Feeling generous enough to spend a couple extra minutes? I'd be so glad to hear your thoughts in [this survey](" + surveyOBJ.url + ")."});
+    const extraSurveyTemplate = await ougi.text(msg, "feedback_spendMinutes");
+    embed.addFields({name: "\u200b", value: extraSurveyTemplate.replace(/{url}/g, surveyOBJ.url)});
   }
   ougi.db().markSurveySeen(msg.author.id, takeableSurvey);
   ougi.db().incrementSurveyPoppedUp(takeableSurvey);

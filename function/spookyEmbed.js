@@ -20,8 +20,8 @@ module.exports =
         let thisMessage = arguments.join(" ");
         let breakChocolate = thisMessage.split("::").slice(1);
         if (breakChocolate.length < 1) {
-            msg.channel.send("Please provide at least one argument in order to create an embed. For more information, execute the following command.\n> ougi help embed");
-            return
+            msg.channel.send(await ougi.text(msg, "spooky_needOneArg"));
+            return;
         }
         let fieldsArray = [];
         let fieldsTitles = [];
@@ -53,23 +53,23 @@ module.exports =
                     material = material.slice(1)
                 }
                 if (material.length > 1024) {
-                    msg.channel.send("Fields must not exceed 1024 characters long.");
-                    return
+                    msg.channel.send(await ougi.text(msg, "spooky_fieldLimit"));
+                    return;
                 }
                 if (material.length < 1) {
                     material = "\u200b";
                 }
                 if (fieldsArray.length == 25) {
-                    msg.channel.send("Maximum number of fields is 25.");
-                    return
+                    msg.channel.send(await ougi.text(msg, "spooky_maxFields"));
+                    return;
                 }
                 fieldsArray.push(material);
             }
             else if (material.startsWith("deletefield ")) {
                 material = material.substring(12);
                 if (isNaN(material)) {
-                    msg.channel.send("Please specify an index of field to delete.");
-                    return
+                    msg.channel.send(await ougi.text(msg, "spooky_deleteFieldIndex"));
+                    return;
                 }
                 if (material <= 1) {
                     material = 1
@@ -83,23 +83,23 @@ module.exports =
                     material = material.slice(1)
                 }
                 if (material.length > 1024) {
-                    msg.channel.send("Subtitles must not exceed 1024 characters long.");
-                    return
+                    msg.channel.send(await ougi.text(msg, "spooky_subtitleLimit"));
+                    return;
                 }
                 if (material.length < 1) {
                     material = "\u200b";
                 }
                 if (fieldsTitles.length == 25) {
-                    msg.channel.send("Maximum number of subtitles is 25.");
-                    return
+                    msg.channel.send(await ougi.text(msg, "spooky_maxSubtitles"));
+                    return;
                 }
                 fieldsTitles.push(material);
             }
             else if (material.startsWith("deletesubtitle ")) {
                 material = material.substring(15);
                 if (isNaN(material)) {
-                    msg.channel.send("Please specify an index of subtitle to delete.");
-                    return
+                    msg.channel.send(await ougi.text(msg, "spooky_deleteSubtitleIndex"));
+                    return;
                 }
                 if (material <= 1) {
                     material = 1
@@ -110,16 +110,16 @@ module.exports =
             else if (material.startsWith("title ")) {
                 material = material.substring(6);
                 if (material.length < 1 || material.length > 256) {
-                    msg.channel.send("Title must be between 1 and 256 characters long.");
-                    return
+                    msg.channel.send(await ougi.text(msg, "spooky_titleLimit"));
+                    return;
                 }
                 spookyConstructor.setTitle(material)
             }
             else if (material.startsWith("save ")) {
                 material = material.substring(5);
                 if (material.length < 1 || material.length > 100) {
-                    msg.channel.send("Preset name must be between 1 and 100 characters long.");
-                    return
+                    msg.channel.send(await ougi.text(msg, "spooky_presetNameLimit"));
+                    return;
                 }
                 breakChocolate.splice(i, 1);
                 presetName = material;
@@ -130,23 +130,23 @@ module.exports =
                 if (material.startsWith("<@") && material.endsWith(">")) {
                     let mentionedUser = material.slice(2, material.length - 1).replace("!", "");
                     if (!client.users.cache.has(mentionedUser)) {
-                        msg.channel.send("You must mention an user to share this preset with.");
-                        return
+                        msg.channel.send(await ougi.text(msg, "spooky_mentionShare"));
+                        return;
                     }
                     sharedWith.push(mentionedUser);
                     breakChocolate.splice(i, 1);
                     i--;
                 }
                 else {
-                    msg.channel.send("You must mention an user to share this preset with.");
-                    return
+                    msg.channel.send(await ougi.text(msg, "spooky_mentionShare"));
+                    return;
                 }
             }
             else if (material.startsWith("load ")) {
                 material = material.substring(5);
                 if (material.length < 1 || material.length > 100) {
-                    msg.channel.send("Preset name must be between 1 and 100 characters long.");
-                    return
+                    msg.channel.send(await ougi.text(msg, "spooky_presetNameLimit"));
+                    return;
                 }
                 let myLoad = ougi.db().loadEmbedPresets();
                 let aPreset = material + "::" + msg.author.id;
@@ -159,8 +159,9 @@ module.exports =
                     i--
                 }
                 else {
-                    msg.channel.send("None of your presets is called `" + material + "`.");
-                    return
+                    const noPresetTemplate = await ougi.text(msg, "spooky_noSuchPreset");
+                    msg.channel.send(noPresetTemplate.replace(/{preset}/g, material));
+                    return;
                 }
             }
             else if (material.startsWith("list")) {
@@ -173,8 +174,8 @@ module.exports =
                     }
                 }
                 if (listOfPresets.length < 1) {
-                    msg.channel.send("You haven't saved any preset.");
-                    return
+                    msg.channel.send(await ougi.text(msg, "spooky_noPresetsSaved"));
+                    return;
                 }
                 breakChocolate.splice(i, 1);
                 i--;
@@ -182,26 +183,27 @@ module.exports =
             else if (material.startsWith("delete ")) {
                 material = material.substring(7);
                 if (material.length < 1 || material.length > 100) {
-                    msg.channel.send("Preset name must be between 1 and 100 characters long.");
-                    return
+                    msg.channel.send(await ougi.text(msg, "spooky_presetNameLimit"));
+                    return;
                 }
                 let aPreset = material + "::" + msg.author.id;
                 ougi.db().deleteEmbedPreset(aPreset);
                 breakChocolate.splice(i, 1);
-                msg.channel.send("Deleted preset `" + material + "`.");
+                const deletedPresetTemplate = await ougi.text(msg, "spooky_deletedPreset");
+                msg.channel.send(deletedPresetTemplate.replace(/{preset}/g, material));
                 i--;
             }
             else if (material.startsWith("author ")) {
                 material = material.substring(7);
                 if (material.length < 1 || material.length > 256) {
-                    msg.channel.send("Author name must be between 1 and 256 characters long.");
-                    return
+                    msg.channel.send(await ougi.text(msg, "spooky_authorNameLimit"));
+                    return;
                 }
                 if (material.startsWith("<@") && material.endsWith(">")) {
                     let mentionedUser = material.slice(2, material.length - 1).replace("!", "");
                     if (!client.users.cache.has(mentionedUser)) {
-                        msg.channel.send("Author name must be either a valid user mention or plain text.");
-                        return
+                        msg.channel.send(await ougi.text(msg, "spooky_authorValidUser"));
+                        return;
                     }
                     authorArray[0] = client.users.cache.get(mentionedUser).username;
                 }
@@ -212,13 +214,13 @@ module.exports =
             else if (material.startsWith("authorurl ")) {
                 material = material.substring(10);
                 if (!material.includes(".")) {
-                    msg.channel.send("Author URL must be valid. Make sure you add a Top Level Domain (e.g. `.com`, `.net`, `.boo`).").catch(console.error);
-                    return
+                    msg.channel.send(await ougi.text(msg, "spooky_authorUrlTld")).catch(console.error);
+                    return;
                 }
 
                 if (material.startsWith("http:")) {
-                    msg.channel.send("Make sure the provided author URL uses Hyper Text Transfer Protocol Secure (`https`).").catch(console.error);
-                    return
+                    msg.channel.send(await ougi.text(msg, "spooky_authorUrlHttps")).catch(console.error);
+                    return;
                 }
 
                 if (!material.startsWith("https://")) {
@@ -229,24 +231,24 @@ module.exports =
             else if (material.startsWith("description ")) {
                 material = material.substring(12);
                 if (material.length < 1 || material.length > 2048) {
-                    msg.channel.send("Description must be between 1 and 2048 characters long.");
-                    return
+                    msg.channel.send(await ougi.text(msg, "spooky_descriptionLimit"));
+                    return;
                 }
                 spookyConstructor.setDescription(material)
             }
             else if (material.startsWith("desc ")) {
                 material = material.substring(5);
                 if (material.length < 1 || material.length > 2048) {
-                    msg.channel.send("Description must be between 1 and 2048 characters long.");
-                    return
+                    msg.channel.send(await ougi.text(msg, "spooky_descriptionLimit"));
+                    return;
                 }
                 spookyConstructor.setDescription(material)
             }
             else if (material.startsWith("footer ")) {
                 material = material.substring(7);
                 if (material.length < 1 || material.length > 2048) {
-                    msg.channel.send("Footer must be between 1 and 2048 characters long.");
-                    return
+                    msg.channel.send(await ougi.text(msg, "spooky_footerLimit"));
+                    return;
                 }
                 footerArray[0] = material + " | spookyEmbed by " + msg.author.username;
             }
@@ -255,15 +257,15 @@ module.exports =
                 if (material.startsWith("<@") && material.endsWith(">")) {
                     let mentionedUser = material.slice(2, material.length - 1).replace("!", "");
                     if (!client.users.cache.has(mentionedUser)) {
-                        msg.channel.send("Footer icon must be an attached image, image URL or an user mention. Else, you may specify `guild`, `myself` or `ougi` as icons.");
-                        return
+                        msg.channel.send(await ougi.text(msg, "spooky_footerIconRequirement"));
+                        return;
                     }
                     footerArray[1] = client.users.cache.get(mentionedUser).avatarURL({ dynamic: true, size: 4096 });
                 }
                 else if (material.startsWith("file")) {
                     if (attachmentsForEmbed.length < 1) {
-                        msg.channel.send("You didn't attach any files.");
-                        return
+                        msg.channel.send(await ougi.text(msg, "spooky_noFilesAttached"));
+                        return;
                     }
                     material = material.substring(4);
                     if (material.startsWith(" ")) {
@@ -273,27 +275,28 @@ module.exports =
                         material = 1;
                     }
                     if (isNaN(material)) {
-                        msg.channel.send("Please specify which attached file to use as footer icon (index number) or don't specify any index to use the first one.");
-                        return
+                        msg.channel.send(await ougi.text(msg, "spooky_fileIndexPrompt"));
+                        return;
                     }
                     if (material < 1) {
                         material = 1;
                     }
                     material--;
                     if (material > attachmentsForEmbed.length) {
-                        msg.channel.send("That's not a valid file index (your message had " + attachmentsForEmbed.length + "), you may not specify any index to use the first one.");
-                        return
+                        const invalidFileIdxTemplate = await ougi.text(msg, "spooky_invalidFileIndex");
+                        msg.channel.send(invalidFileIdxTemplate.replace(/{count}/g, attachmentsForEmbed.length));
+                        return;
                     }
                     if (!isImageUrl(attachmentsForEmbed[material])) {
-                        msg.channel.send("Footer icon must be a valid image.");
-                        return
+                        msg.channel.send(await ougi.text(msg, "spooky_fileMustBeImage"));
+                        return;
                     }
                     footerArray[1] = attachmentsForEmbed[material];
                 }
                 else {
                     if (!isImageUrl(material)) {
-                        msg.channel.send("Footer icon must be an attached image, image URL or an user mention. Else, you may specify `guild`, `myself` or `ougi` as icons.");
-                        return
+                        msg.channel.send(await ougi.text(msg, "spooky_footerIconRequirement"));
+                        return;
                     }
                     footerArray[1] = material;
                 }
@@ -303,15 +306,15 @@ module.exports =
                 if (material.startsWith("<@") && material.endsWith(">")) {
                     let mentionedUser = material.slice(2, material.length - 1).replace("!", "");
                     if (!client.users.cache.has(mentionedUser)) {
-                        msg.channel.send("Author avatar must be an attached image, image URL or an user mention. Else, you may specify `guild`, `myself` or `ougi` as avatar.");
-                        return
+                        msg.channel.send(await ougi.text(msg, "spooky_avatarRequirement"));
+                        return;
                     }
                     authorArray[1] = client.users.cache.get(mentionedUser).avatarURL({ dynamic: true, size: 4096 });
                 }
                 else if (material.startsWith("file")) {
                     if (attachmentsForEmbed.length < 1) {
-                        msg.channel.send("You didn't attach any files.");
-                        return
+                        msg.channel.send(await ougi.text(msg, "spooky_noFilesAttached"));
+                        return;
                     }
                     material = material.substring(4);
                     if (material.startsWith(" ")) {
@@ -321,27 +324,28 @@ module.exports =
                         material = 1;
                     }
                     if (isNaN(material)) {
-                        msg.channel.send("Please specify which attached file to use as author avatar (index number) or don't specify any index to use the first one.");
-                        return
+                        msg.channel.send(await ougi.text(msg, "spooky_fileIndexPrompt"));
+                        return;
                     }
                     if (material < 1) {
                         material = 1;
                     }
                     material--;
                     if (material > attachmentsForEmbed.length) {
-                        msg.channel.send("That's not a valid file index (your message had " + attachmentsForEmbed.length + "), you may not specify any index to use the first one.");
-                        return
+                        const invalidFileIdxTemplate = await ougi.text(msg, "spooky_invalidFileIndex");
+                        msg.channel.send(invalidFileIdxTemplate.replace(/{count}/g, attachmentsForEmbed.length));
+                        return;
                     }
                     if (!isImageUrl(attachmentsForEmbed[material])) {
-                        msg.channel.send("Author avatar must be a valid image.");
-                        return
+                        msg.channel.send(await ougi.text(msg, "spooky_fileMustBeImage"));
+                        return;
                     }
                     authorArray[1] = attachmentsForEmbed[material];
                 }
                 else {
                     if (!isImageUrl(material)) {
-                        msg.channel.send("Author avatar must be an attached image, image URL or an user mention. Else, you may specify `guild`, `myself` or `ougi` as avatar.");
-                        return
+                        msg.channel.send(await ougi.text(msg, "spooky_avatarRequirement"));
+                        return;
                     }
                     authorArray[1] = material;
                 }
@@ -351,15 +355,15 @@ module.exports =
                 if (material.startsWith("<@") && material.endsWith(">")) {
                     let mentionedUser = material.slice(2, material.length - 1).replace("!", "");
                     if (!client.users.cache.has(mentionedUser)) {
-                        msg.channel.send("Thumbnail must be an attached image, image URL or an user mention. Else, you may specify `guild`, `myself` or `ougi` as thumbnail.");
-                        return
+                        msg.channel.send(await ougi.text(msg, "spooky_thumbnailRequirement"));
+                        return;
                     }
                     spookyConstructor.setThumbnail(client.users.cache.get(mentionedUser).avatarURL({ dynamic: true, size: 4096 }));
                 }
                 else if (material.startsWith("file")) {
                     if (attachmentsForEmbed.length < 1) {
-                        msg.channel.send("You didn't attach any files.");
-                        return
+                        msg.channel.send(await ougi.text(msg, "spooky_noFilesAttached"));
+                        return;
                     }
                     material = material.substring(4);
                     if (material.startsWith(" ")) {
@@ -369,27 +373,28 @@ module.exports =
                         material = 1;
                     }
                     if (isNaN(material)) {
-                        msg.channel.send("Please specify which attached file to use as thumbnail (index number) or don't specify any index to use the first one.");
-                        return
+                        msg.channel.send(await ougi.text(msg, "spooky_fileIndexPrompt"));
+                        return;
                     }
                     if (material < 1) {
                         material = 1;
                     }
                     material--;
                     if (material > attachmentsForEmbed.length) {
-                        msg.channel.send("That's not a valid file index (your message had " + attachmentsForEmbed.length + "), you may not specify any index to use the first one.");
-                        return
+                        const invalidFileIdxTemplate = await ougi.text(msg, "spooky_invalidFileIndex");
+                        msg.channel.send(invalidFileIdxTemplate.replace(/{count}/g, attachmentsForEmbed.length));
+                        return;
                     }
                     if (!isImageUrl(attachmentsForEmbed[material])) {
-                        msg.channel.send("Thumbnail must be a valid image.");
-                        return
+                        msg.channel.send(await ougi.text(msg, "spooky_fileMustBeImage"));
+                        return;
                     }
                     spookyConstructor.setThumbnail(attachmentsForEmbed[material]);
                 }
                 else {
                     if (!isImageUrl(material)) {
-                        msg.channel.send("Thumbnail must be an attached image, image URL or an user mention. Else, you may specify `guild`, `myself` or `ougi` as thumbnail.");
-                        return
+                        msg.channel.send(await ougi.text(msg, "spooky_thumbnailRequirement"));
+                        return;
                     }
                     spookyConstructor.setThumbnail(material);
                 }
@@ -399,15 +404,15 @@ module.exports =
                 if (material.startsWith("<@") && material.endsWith(">")) {
                     let mentionedUser = material.slice(2, material.length - 1).replace("!", "");
                     if (!client.users.cache.has(mentionedUser)) {
-                        msg.channel.send("Image must be an attached image, image URL or an user mention. Else, you may specify `guild`, `myself` or `ougi` as image.");
-                        return
+                        msg.channel.send(await ougi.text(msg, "spooky_imageRequirement"));
+                        return;
                     }
                     spookyConstructor.setImage(client.users.cache.get(mentionedUser).avatarURL({ dynamic: true, size: 4096 }));
                 }
                 else if (material.startsWith("file")) {
                     if (attachmentsForEmbed.length < 1) {
-                        msg.channel.send("You didn't attach any files.");
-                        return
+                        msg.channel.send(await ougi.text(msg, "spooky_noFilesAttached"));
+                        return;
                     }
                     material = material.substring(4);
                     if (material.startsWith(" ")) {
@@ -417,27 +422,28 @@ module.exports =
                         material = 1;
                     }
                     if (isNaN(material)) {
-                        msg.channel.send("Please specify which attached file to use as image (index number) or don't specify any index to use the first one.");
-                        return
+                        msg.channel.send(await ougi.text(msg, "spooky_fileIndexPrompt"));
+                        return;
                     }
                     if (material < 1) {
                         material = 1;
                     }
                     material--;
                     if (material > attachmentsForEmbed.length) {
-                        msg.channel.send("That's not a valid file index (your message had " + attachmentsForEmbed.length + "), you may not specify any index to use the first one.");
-                        return
+                        const invalidFileIdxTemplate = await ougi.text(msg, "spooky_invalidFileIndex");
+                        msg.channel.send(invalidFileIdxTemplate.replace(/{count}/g, attachmentsForEmbed.length));
+                        return;
                     }
                     if (!isImageUrl(attachmentsForEmbed[material])) {
-                        msg.channel.send("Specified file must be a valid image.");
-                        return
+                        msg.channel.send(await ougi.text(msg, "spooky_fileMustBeImage"));
+                        return;
                     }
                     spookyConstructor.setImage(attachmentsForEmbed[material]);
                 }
                 else {
                     if (!isImageUrl(material)) {
-                        msg.channel.send("Image must be an attached image, image URL or an user mention. Else, you may specify `guild`, `myself` or `ougi` as image.");
-                        return
+                        msg.channel.send(await ougi.text(msg, "spooky_imageRequirement"));
+                        return;
                     }
                     spookyConstructor.setImage(material);
                 }
@@ -445,12 +451,12 @@ module.exports =
             else if (material.startsWith("url ")) {
                 material = material.substring(4);
                 if (!material.includes(".")) {
-                    msg.channel.send("That doesn't look like an URL. Make sure you add a Top Level Domain (e.g. `.com`, `.net`, `.boo`).").catch(console.error);
-                    return
+                    msg.channel.send(await ougi.text(msg, "spooky_invalidUrl")).catch(console.error);
+                    return;
                 }
                 if (material.startsWith("http:")) {
-                    msg.channel.send("Make sure the provided URL uses Hyper Text Transfer Protocol Secure (`https`).").catch(console.error);
-                    return
+                    msg.channel.send(await ougi.text(msg, "spooky_urlHttps")).catch(console.error);
+                    return;
                 }
 
                 if (!material.startsWith("https://")) {
@@ -483,8 +489,8 @@ module.exports =
                     let rgbArray = material.split(",");
                     if (rgbArray.length <= 3 && !isNaN(rgbArray[0]) && !isNaN(rgbArray[1]) && !isNaN(rgbArray[2])) {
                         if (rgbArray[0] > 255 || rgbArray[1] > 255 || rgbArray[2] > 255) {
-                            msg.channel.send("Please provide a valid hexadecimal color, RGB color (separated by commas) or a supported color name. You may specify `random` to get a random color.");
-                            return
+                            msg.channel.send(await ougi.text(msg, "spooky_colorRequirement"));
+                            return;
                         }
                         spookyConstructor.setColor(material);
                     }
@@ -498,15 +504,15 @@ module.exports =
                             spookyConstructor.setColor(material);
                         }
                         else {
-                            msg.channel.send("Please provide a valid hexadecimal color, RGB color (separated by commas) or a supported color name. You may specify `random` to get a random color.");
-                            return
+                            msg.channel.send(await ougi.text(msg, "spooky_colorRequirement"));
+                            return;
                         }
                     }
                 }
             }
             else {
-                msg.channel.send("Perhaps you're doing it wrong. Refer to the following command for usage information.\n> ougi help embed");
-                return
+                msg.channel.send(await ougi.text(msg, "spooky_syntaxHelp"));
+                return;
             }
         }
         if (footerArray[0] != undefined && footerArray[1] == undefined) {
@@ -573,27 +579,28 @@ module.exports =
                         msg.delete().catch(O_o => { })
                     }, 2000, msg
                 )
-            ).catch(err => {
+            ).catch(async err => {
                 console.error("Error sending spookyEmbed:", err);
-                msg.channel.send("Failed to send embed. Make sure your title, description, or fields are valid and non-empty.").catch(console.error);
+                msg.channel.send(await ougi.text(msg, "spooky_failedToSend")).catch(console.error);
             });
         }
 
         if (presetName.length >= 1) {
             if (breakChocolate.length < 1) {
-                msg.channel.send("Your embed must not be empty.");
-                return
+                msg.channel.send(await ougi.text(msg, "spooky_embedEmpty"));
+                return;
             }
             let personalizedPresetName = presetName + "::" + msg.author.id;
             ougi.db().saveEmbedPreset(personalizedPresetName, breakChocolate);
 
-            msg.channel.send("Saved preset as `" + presetName + "`, it's now available for you to use as template. Include `::load " + presetName + "` as command option whenever you want to use it.");
+            const savedPresetTemplate = await ougi.text(msg, "spooky_savedPreset");
+            msg.channel.send(savedPresetTemplate.replace(/{preset}/g, presetName));
         }
 
         if (sharedWith.length >= 1) {
             if (breakChocolate.length < 1) {
-                msg.channel.send("Your embed must not be empty.");
-                return
+                msg.channel.send(await ougi.text(msg, "spooky_embedEmpty"));
+                return;
             }
             let circleOfSharing = [];
             for (i = 0; i < sharedWith.length; i++) {
@@ -602,9 +609,19 @@ module.exports =
                 ougi.db().saveEmbedPreset(everyPresetShare, breakChocolate);
             }
 
-            msg.channel.send("Shared preset as `" + msg.author.username + "'s preset` with `" + circleOfSharing.join("`, `") + "`. It's now available for them to use as template until it's overwritten by another share of yours. In order to keep it, they must load and save it under another name. Tell them to include `::load " + msg.author.username + "'s preset` as command option whenever they want to use it.");
+            const sharedPresetTemplate = await ougi.text(msg, "spooky_sharedPreset");
+            msg.channel.send(
+                sharedPresetTemplate
+                    .replace(/{user}/g, msg.author.username)
+                    .replace(/{circle}/g, circleOfSharing.join("`, `"))
+            );
         }
         if (listOfPresets.length >= 1) {
-            msg.channel.send("List of " + msg.author.username + "'s embed presets:\n`" + listOfPresets.join("`, `") + "`");
+            const listHeaderTemplate = await ougi.text(msg, "spooky_listHeader");
+            msg.channel.send(
+                listHeaderTemplate
+                    .replace(/{user}/g, msg.author.username)
+                    .replace(/{list}/g, listOfPresets.join("`, `"))
+            );
         }
     }

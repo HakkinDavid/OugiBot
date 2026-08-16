@@ -13,7 +13,7 @@ module.exports = async function (msg) {
 
         const permissions = vcChannel.permissionsFor(msg.client.user);
         if (permissions && (!permissions.has('Connect') || !permissions.has('Speak'))) {
-            await msg.channel.send("I need permissions to connect and speak in your voice channel.");
+            await msg.channel.send(await ougi.text(msg, "voice_needPermissions"));
             return;
         }
 
@@ -63,15 +63,15 @@ module.exports = async function (msg) {
         // Command: loop
         if (command === "loop" || (command === "music" && subCommand === "loop")) {
             if (!vc[msg.guildId] || !vc[msg.guildId].queue || vc[msg.guildId].queue.length === 0) {
-                await msg.channel.send("There is no active music queue to loop.");
+                await msg.channel.send(await ougi.text(msg, "music_noQueueToLoop"));
                 return;
             }
             vc[msg.guildId].isLooping = true;
             const embed = new Discord.EmbedBuilder()
-                .setTitle("🔂 Queue Loop Enabled")
-                .setDescription("The current music queue will now repeat indefinitely.")
+                .setTitle(await ougi.text(msg, "music_loopEnabledTitle"))
+                .setDescription(await ougi.text(msg, "music_loopEnabledDesc"))
                 .setColor("#230347")
-                .setFooter({ text: "musicLoop by Ougi", iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) });
+                .setFooter({ text: await ougi.text(msg, "music_loopFooter"), iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) });
             await msg.channel.send({ embeds: [embed] });
             return;
         }
@@ -79,15 +79,15 @@ module.exports = async function (msg) {
         // Command: unloop
         if (command === "unloop" || (command === "music" && subCommand === "unloop")) {
             if (!vc[msg.guildId]) {
-                await msg.channel.send("There is no active music playback to unloop.");
+                await msg.channel.send(await ougi.text(msg, "music_noPlaybackToUnloop"));
                 return;
             }
             vc[msg.guildId].isLooping = false;
             const embed = new Discord.EmbedBuilder()
-                .setTitle("➡️ Queue Loop Disabled")
-                .setDescription("The music queue will now play once and end when finished.")
+                .setTitle(await ougi.text(msg, "music_loopDisabledTitle"))
+                .setDescription(await ougi.text(msg, "music_loopDisabledDesc"))
                 .setColor("#230347")
-                .setFooter({ text: "musicLoop by Ougi", iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) });
+                .setFooter({ text: await ougi.text(msg, "music_loopFooter"), iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) });
             await msg.channel.send({ embeds: [embed] });
             return;
         }
@@ -96,22 +96,31 @@ module.exports = async function (msg) {
         if (command === "queue" || (command === "music" && ["list", "queue", "playlist"].includes(subCommand))) {
             const guildQueue = vc[msg.guildId]?.queue || [];
             if (!guildQueue.length) {
-                await msg.channel.send("The music queue is currently empty.");
+                await msg.channel.send(await ougi.text(msg, "music_queueEmpty"));
                 return;
             }
 
             const cacheManager = ougi.audioCacheManager || require('./audioCacheManager');
             const isLooping = !!vc[msg.guildId]?.isLooping;
+            const nowPlayingPrefix = await ougi.text(msg, "music_nowPlaying");
             const queueList = guildQueue.map((s, idx) => {
                 const cachedTag = cacheManager.has(s.url) ? ' ⚡' : '';
-                return `${idx === 0 ? '**Now Playing:**' : `\`${idx}.\``} [${s.title}](${s.url})${cachedTag} (\`${s.duration}\`)`;
+                return `${idx === 0 ? `**${nowPlayingPrefix}**` : `\`${idx}.\``} [${s.title}](${s.url})${cachedTag} (\`${s.duration}\`)`;
             }).slice(0, 10).join('\n');
 
+            const queueFooterTemplate = await ougi.text(msg, "music_queueFooter");
+            const loopStatusText = isLooping ? await ougi.text(msg, "music_loopEnabledTag") : await ougi.text(msg, "music_loopDisabledTag");
+
             const queueEmbed = new Discord.EmbedBuilder()
-                .setTitle("Ougi Music Queue")
+                .setTitle(await ougi.text(msg, "music_queueTitle"))
                 .setDescription(queueList)
                 .setColor("#230347")
-                .setFooter({ text: `Total songs: ${guildQueue.length} | Loop: ${isLooping ? 'Enabled 🔂' : 'Disabled ➡️'} | ⚡ = Preloaded`, iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) });
+                .setFooter({
+                    text: queueFooterTemplate
+                        .replace(/{total}/g, guildQueue.length)
+                        .replace(/{loopStatus}/g, loopStatusText),
+                    iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 })
+                });
 
             await msg.channel.send({ embeds: [queueEmbed] });
             return;
@@ -187,8 +196,8 @@ module.exports = async function (msg) {
             .setDescription(`[${songInfo.title}](${songInfo.url})${isPrecached ? ' ⚡ *(Cached)*' : ''}`)
             .setThumbnail(songInfo.thumbnail)
             .setColor("#230347")
-            .addFields({ name: "Duration", value: `\`${songInfo.duration}\``, inline: true })
-            .setFooter({ text: "musicEmbed by Ougi", iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) });
+            .addFields({ name: await ougi.text(msg, "music_durationField"), value: `\`${songInfo.duration}\``, inline: true })
+            .setFooter({ text: await ougi.text(msg, "music_footer"), iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) });
 
         await msg.channel.send({ embeds: [embed] });
 

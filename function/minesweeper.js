@@ -24,9 +24,10 @@ async function (msg) {
   let treasures = [];
   let fillers = [];
   let mine = [];
+  const footerTemplate = await ougi.text(msg, "minesweeper_footer");
   let minesweeperEmbed = new Discord.EmbedBuilder()
     .setColor(embedColor)
-    .setFooter({text: "minesweeperEmbed by Ougi & " + msg.author.username, icon: client.user.avatarURL({dynamic: true, size: 4096})})
+    .setFooter({text: footerTemplate.replace(/{username}/g, msg.author.username), icon: client.user.avatarURL({dynamic: true, size: 4096})})
     .setThumbnail(icon);
   for (i=0; breakChocolate.length > i; i++) {
     let material = breakChocolate[i];
@@ -36,42 +37,42 @@ async function (msg) {
     if (material.startsWith("title ")) {
       material = material.substring(6);
       if (material.length < 1 || material.length > 256) {
-        msg.channel.send("Title must be between 1 and 256 characters long.");
-        return
+        msg.channel.send(await ougi.text(msg, "minesweeper_titleLimit"));
+        return;
       }
       minesweeperEmbed.setTitle(material)
     }
     else if (material.startsWith("fill ")) {
       material = material.substring(5);
       if (material.length < 1 || material.length > 60) {
-        msg.channel.send("That filling content is excessively long.");
-        return
+        msg.channel.send(await ougi.text(msg, "minesweeper_fillTooLong"));
+        return;
       }
       fillers.push(material);
     }
     else if (material.startsWith("treasure ")) {
       material = material.substring(9);
       if (material.length < 1 || material.length > 60) {
-        msg.channel.send("That treasure content is excessively long.");
-        return
+        msg.channel.send(await ougi.text(msg, "minesweeper_treasureTooLong"));
+        return;
       }
       treasures.push(material);
     }
     else if (material.startsWith("difficulty ")) {
       material = material.substring(11);
       if (isNaN(material)) {
-        msg.channel.send("Difficulty must be a number between 1 and 10");
-        return
+        msg.channel.send(await ougi.text(msg, "minesweeper_difficultyRange"));
+        return;
       }
       if (material < 1 || material > 10) {
-        msg.channel.send("Difficulty must be a number between 1 and 10");
-        return
+        msg.channel.send(await ougi.text(msg, "minesweeper_difficultyRange"));
+        return;
       }
       difficulty = material;
     }
     else {
-      msg.channel.send("Perhaps you're doing it wrong. Refer to the following command for usage information.\n> ougi help minesweeper");
-      return
+      msg.channel.send(await ougi.text(msg, "minesweeper_syntaxHelp"));
+      return;
     }
   }
   if (treasures.length < 1) {

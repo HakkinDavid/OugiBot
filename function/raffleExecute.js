@@ -12,9 +12,12 @@ module.exports = async function (raffleGuildId, raffleIdx) {
         raffle.winners = await ougi.pickWinners(raffle.participants, raffle.config.winnersCount);
         raffle.finished = true;
 
-        await msg.edit({ content: "The results are in!", embeds: [raffle.embed] });
+        const resultsInText = await ougi.text(raffleGuildId, "raffle_resultsIn");
+        const winnersHeader = await ougi.text(raffleGuildId, "raffle_winnersHeader");
+
+        await msg.edit({ content: resultsInText, embeds: [raffle.embed] });
         await msg.reply(
-            `**Winners**\n${raffle.winners.map(w => `${w.name} (${Discord.userMention(w.id)})`).join("\n")}`
+            `${winnersHeader}\n${raffle.winners.map(w => `${w.name} (${Discord.userMention(w.id)})`).join("\n")}`
         );
 
         ougi.db().saveRaffles();

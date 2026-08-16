@@ -8,13 +8,13 @@ module.exports = async function payCommand(args, msg) {
 
     const targetUser = msg.mentions.users.first();
     if (!targetUser || targetUser.bot || targetUser.id === msg.author.id) {
-        msg.channel.send("Please mention a valid server member to send money to.");
+        msg.channel.send(await ougi.text(msg, "pay_invalidMember"));
         return;
     }
 
     const amount = parseInt(args.find(arg => !arg.startsWith("<@")), 10);
     if (isNaN(amount) || amount <= 0) {
-        msg.channel.send("Please specify a valid positive amount of currency to transfer.");
+        msg.channel.send(await ougi.text(msg, "pay_invalidAmount"));
         return;
     }
 
@@ -24,7 +24,7 @@ module.exports = async function payCommand(args, msg) {
     const sender = db.getUser(guildId, msg.author.id);
 
     if ((sender.money || 0) < amount) {
-        msg.channel.send("You do not have enough funds to complete this transfer.");
+        msg.channel.send(await ougi.text(msg, "economy_insufficientFunds"));
         return;
     }
 
@@ -34,11 +34,18 @@ module.exports = async function payCommand(args, msg) {
     db.saveUser(guildId, msg.author.id, sender);
     db.saveUser(guildId, targetUser.id, receiver);
 
+    const descTemplate = await ougi.text(msg, "pay_transferDesc");
+    const renderedDesc = descTemplate
+        .replace(/{sender}/g, msg.author.username)
+        .replace(/{amount}/g, amount)
+        .replace(/{currency}/g, guildEco.currency)
+        .replace(/{receiver}/g, targetUser.username);
+
     const embed = new EmbedBuilder()
-        .setTitle("💸 Currency Transfer")
-        .setDescription(`**${msg.author.username}** transferred **${amount} ${guildEco.currency}** to **${targetUser.username}**!`)
+        .setTitle(await ougi.text(msg, "pay_transferTitle"))
+        .setDescription(renderedDesc)
         .setColor("#00FF88")
-        .setFooter({ text: "Ougi Economy System", iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) })
+        .setFooter({ text: await ougi.text(msg, "economy_footer"), iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) })
         .setTimestamp();
 
     msg.channel.send({ embeds: [embed] });

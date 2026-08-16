@@ -1,12 +1,13 @@
 module.exports =
 
-function (arguments, msg, isEdit) {
+async function (arguments, msg, isEdit) {
   let channelID = msg.channel.id;
-  let response = ["I ran out of ammo. Delete or edit some messages in this channel in order to snipe them!", "Can't. There is nothing I can snipe from this channel.", "Sadly, no.", "The zone's clear.", "Oh frick. I missed the shot."];
+  let responseKeys = ["snipe_noAmmo1", "snipe_noAmmo2", "snipe_noAmmo3", "snipe_noAmmo4", "snipe_noAmmo5"];
 
   if (ammo[channelID] == undefined && !isEdit || reloadedAmmo[channelID] == undefined && isEdit) {
-    msg.channel.send(response[Math.floor(Math.random()*response.length)]);
-    return
+    const randomKey = responseKeys[Math.floor(Math.random() * responseKeys.length)];
+    msg.channel.send(await ougi.text(msg, randomKey));
+    return;
   }
 
   let myAmmo = ammo[channelID];
@@ -17,18 +18,18 @@ function (arguments, msg, isEdit) {
   let index = arguments * 1 - 1;
 
   if (isNaN(index)) {
-    msg.channel.send("Uh, please provide a valid number (deleted messages are sorted from last to first) or leave it blank for fetching the last deleted message.").catch(console.error);
-    return
+    msg.channel.send(await ougi.text(msg, "snipe_invalidNumber")).catch(console.error);
+    return;
   }
 
   if (index <= 0) {
-    index = 0
+    index = 0;
   }
 
   let displayIndex = index + 1;
   if (displayIndex > maxIndex) {
-    msg.channel.send("That's not a message index number yet.").catch(console.error);
-    return
+    msg.channel.send(await ougi.text(msg, "snipe_indexOutOfRange")).catch(console.error);
+    return;
   }
 
   let bullet = myAmmo[index];
@@ -38,7 +39,7 @@ function (arguments, msg, isEdit) {
   let action = options[Math.floor(Math.random()*options.length)];
   let snipers = ["a Bolt-Action Sniper Rifle", "a Semi-Automatic Sniper Rifle", "a Hunting Rifle", "a Heavy Sniper Rifle", "an Automatic Sniper Rifle", "a Storm Scout Sniper Rifle"];
   let snipedWith = snipers[Math.floor(Math.random()*snipers.length)];
-  let kindOfRare = ["Common", "Uncommon", "Rare", "Epic", "Legendary"]
+  let kindOfRare = ["Common", "Uncommon", "Rare", "Epic", "Legendary"];
   let rarity = kindOfRare[Math.floor(Math.random()*kindOfRare.length)];
   let footerLogo;
 
@@ -49,18 +50,30 @@ function (arguments, msg, isEdit) {
     footerLogo = msg.guild.iconURL();
   }
 
+  const footerTemplate = await ougi.text(msg, "snipe_footerFormat");
+  const renderedFooter = footerTemplate
+    .replace(/{action}/g, action)
+    .replace(/{author}/g, bullet.author)
+    .replace(/{distance}/g, distance)
+    .replace(/{weapon}/g, snipedWith)
+    .replace(/{rarity}/g, rarity)
+    .replace(/{maxIndex}/g, maxIndex);
+
+  const saidTemplate = await ougi.text(msg, "snipe_said");
+
   let embed = new Discord.EmbedBuilder()
   .setColor("#7F0037")
   .setAuthor({name: "Ougi [BOT]", icon: client.user.avatarURL({dynamic: true, size: 4096})})
   .setThumbnail(bullet.pfp)
-  .setFooter({text: "Ougi " + action + " " + bullet.author + " (" + distance + " m)" + " with " + snipedWith + " (" + rarity + "). This channel has " + maxIndex + " snipeable messages.", icon: footerLogo});
+  .setFooter({text: renderedFooter, icon: footerLogo});
   if (bullet.text != "") {
+    const fieldHeader = saidTemplate.replace(/{author}/g, bullet.author) + " <:quote:730061725755375667>";
     if (bullet.text.length < 1024) {
-      embed.addFields({name: bullet.author + " said <:quote:730061725755375667>", value: bullet.text})
+      embed.addFields({name: fieldHeader, value: bullet.text});
     }
     else {
-      embed.addFields({name: bullet.author + " said <:quote:730061725755375667>", value: bullet.text.slice(0, 1024)})
-      embed.addFields({name: "\u200b", value: bullet.text.slice(1024)})
+      embed.addFields({name: fieldHeader, value: bullet.text.slice(0, 1024)});
+      embed.addFields({name: "\u200b", value: bullet.text.slice(1024)});
     }
   }
   else {

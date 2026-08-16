@@ -7,7 +7,7 @@ async function (msg) {
     const guildEco = db.getGuildEconomy(msg.guildId);
 
     if (guildEco.disabled) {
-        msg.channel.send("Economy is not enabled in this Discord server.");
+        msg.channel.send(await ougi.text(msg, "economy_disabled"));
         return;
     }
 
@@ -16,25 +16,30 @@ async function (msg) {
 
     if (user.worked && (rn - user.worked) <= guildEco.cooldown * 1000) {
         const remaining = ((guildEco.cooldown * 1000) - (rn - user.worked)) / 1000;
-        msg.channel.send("You're working too often, get some rest. `Cooldown: " + remaining + " seconds`");
+        const cooldownTemplate = await ougi.text(msg, "work_cooldown");
+        msg.channel.send(cooldownTemplate.replace(/{remaining}/g, remaining));
         return;
     }
 
     user.worked = rn;
     db.saveUser(msg.guildId, msg.author.id, user);
 
+    const workingTitleTemplate = await ougi.text(msg, "work_workingTitle");
     let embed = new Discord.EmbedBuilder()
-        .setTitle(msg.author.username + " is working...")
+        .setTitle(workingTitleTemplate.replace(/{username}/g, msg.author.username))
         .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/loading.gif?raw=true")
         .setColor("#00D0D0");
 
-    msg.channel.send({ embeds: [embed] }).then(message => {
+    msg.channel.send({ embeds: [embed] }).then(async message => {
+        const rewardTitleTemplate = await ougi.text(msg, "work_rewardTitle");
+        const rewardDescTemplate = await ougi.text(msg, "work_rewardDesc");
+        const earned = ougi.economy('add', msg, { reason: 'work' });
         setTimeout(function () {
             message.delete();
             let workEmbed = new Discord.EmbedBuilder()
-                .setTitle("Here's your well deserved money " + msg.author.username + "!")
+                .setTitle(rewardTitleTemplate.replace(/{username}/g, msg.author.username))
                 .setThumbnail(msg.author.avatarURL({ dynamic: true, size: 4096 }))
-                .setDescription("You've earned " + guildEco.currency + ougi.economy('add', msg, { reason: 'work' }))
+                .setDescription(rewardDescTemplate.replace(/{currency}/g, guildEco.currency).replace(/{amount}/g, earned))
                 .setColor("#281E87");
             message.channel.send({ embeds: [workEmbed] });
         }, Math.floor(Math.random() * 10000));

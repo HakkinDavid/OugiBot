@@ -6,7 +6,7 @@ module.exports = async function (msg) {
     const participants = parseInt(args[3], 10) || 50;
 
     if (!guildId) {
-        msg.channel.send("Usage: `#ougi raffle-license <guild_id> [duration_hours] [concurrent_limit] [participant_limit]`");
+        msg.channel.send(await ougi.text(msg, "raffle_licenseUsage"));
         return;
     }
 
@@ -17,5 +17,12 @@ module.exports = async function (msg) {
 
     ougi.db().saveRaffles();
 
-    msg.channel.send(`✅ Updated raffle license for guild \`${guildId}\`:\n• **Licensed Until:** ${new Date(guildRaffles.licensedUntil).toISOString()}\n• **Concurrent Limit:** ${concurrent}\n• **Participant Limit:** ${participants}`);
+    const licenseUpdatedTemplate = await ougi.text(msg, "raffle_licenseUpdated");
+    msg.channel.send(
+        licenseUpdatedTemplate
+            .replace(/{guildId}/g, guildId)
+            .replace(/{until}/g, new Date(guildRaffles.licensedUntil).toISOString())
+            .replace(/{concurrent}/g, concurrent)
+            .replace(/{participants}/g, participants)
+    );
 };

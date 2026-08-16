@@ -4,23 +4,21 @@ async function (msg) {
   if (!(await ougi.guildCheck(msg))) return;
   let phrases = ["sike", "say a bad word", "snipe"];
   let remove = phrases[Math.floor(Math.random()*phrases.length)];
+  let out1 = (await ougi.text(msg, "remove_output1")).replace(/{remove}/g, remove).replace(/{guild}/g, msg.guild.toString());
+  let out2 = (await ougi.text(msg, "remove_output2")).replace(/{remove}/g, remove).replace(/{guild}/g, msg.guild.toString());
   let afterOptions = [
-    "I'll stop reacting to `" + remove + "` in " + msg.guild.toString() + ".",
-    "Alright, I've blacklisted `" + remove + "` in " + msg.guild.toString() + ".",
+    out1,
+    out2,
   ];
   let answer = afterOptions[Math.floor(Math.random()*afterOptions.length)];
-  let embed = new Discord.EmbedBuilder()
-  .setTitle("Ougi's `blacklist` command")
-  .setAuthor({name: "Ougi [BOT]", icon: client.user.avatarURL({dynamic: true, size: 4096})})
-  .setColor("#230347")
-  .setDescription("Use this command to blacklist a trigger in this Discord server, Ougi will start ignoring that input.")
-  .addFields({name: "Special permission required", value: ":warning: You must be the owner of whatever Discord server you run this command in."})
-  .setFooter({text: "helpEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
-  .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true")
+  let embed = await ougi.helpPreset(msg, "blacklist");
+  let blTemplate = await ougi.text(msg, "command_blacklistedInGuild");
+  embed.setDescription(await ougi.text(msg, "removeHelpDesc"))
+  .addFields({name: await ougi.text(msg, "specialPermission"), value: ":warning: " + await ougi.text(msg, "onlyOwner")})
   .addFields({name: await ougi.text(msg, "example"), value: "`ougi blacklist " + remove + "`"})
   .addFields({name: await ougi.text(msg, "output"), value: answer})
-  .addFields({name: "After that, if anyone executes the following", value: "`ougi " + remove + "`"})
-  .addFields({name: await ougi.text(msg, "output"), value: "Sorry, that's blacklisted in " + msg.guild.toString() + "."})
+  .addFields({name: await ougi.text(msg, "remove_afterExecutionField"), value: "`ougi " + remove + "`"})
+  .addFields({name: await ougi.text(msg, "output"), value: blTemplate.replace(/{guild}/g, msg.guild.toString())});
 
   msg.channel.send({embeds: [embed]}).catch(console.error);
 }

@@ -18,7 +18,8 @@ module.exports = async function dailyCommand(args, msg) {
         const remainingMs = cooldown - (now - user.last_daily);
         const hours = Math.floor(remainingMs / (1000 * 60 * 60));
         const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
-        msg.channel.send(`You have already claimed your daily bonus! Come back in **${hours}h ${minutes}m**.`);
+        const cooldownTemplate = await ougi.text(msg, "daily_cooldown");
+        msg.channel.send(cooldownTemplate.replace(/{hours}/g, hours).replace(/{minutes}/g, minutes));
         return;
     }
 
@@ -27,11 +28,17 @@ module.exports = async function dailyCommand(args, msg) {
     user.last_daily = now;
     db.saveUser(guildId, userId, user);
 
+    const descTemplate = await ougi.text(msg, "daily_claimedDesc");
+    const renderedDesc = descTemplate
+        .replace(/{reward}/g, dailyReward)
+        .replace(/{currency}/g, guildEco.currency)
+        .replace(/{balance}/g, user.money);
+
     const embed = new EmbedBuilder()
-        .setTitle("☀️ Daily Bonus Claimed!")
-        .setDescription(`You received **${dailyReward} ${guildEco.currency}** for logging in today!\nYour new balance: **${user.money} ${guildEco.currency}**`)
+        .setTitle(await ougi.text(msg, "daily_claimedTitle"))
+        .setDescription(renderedDesc)
         .setColor("#FFD700")
-        .setFooter({ text: "Ougi Economy System", iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) })
+        .setFooter({ text: await ougi.text(msg, "economy_footer"), iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) })
         .setTimestamp();
 
     msg.channel.send({ embeds: [embed] });

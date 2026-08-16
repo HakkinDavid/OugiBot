@@ -7,11 +7,11 @@ async function (msg, vcChannel) {
   }
   if (vc[msg.guildId].length < 2) {
     let queueEmbed = new Discord.EmbedBuilder()
-    .setTitle("Queue is over!")
+    .setTitle(await ougi.text(msg, "music_queueOver"))
     .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/ougimusic.png?raw=true")
     .setAuthor({name: "Ougi [BOT]", icon: client.user.avatarURL({dynamic: true, size: 4096})})
     .setColor("#230347")
-    .setFooter({text: "queueEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
+    .setFooter({text: await ougi.text(msg, "music_queueEmbedFooter"), icon: client.user.avatarURL({dynamic: true, size: 4096})})
     .setTimestamp();
     msg.channel.send({embeds: [queueEmbed]}).catch(console.error);
     await vcChannel.leave();
@@ -36,11 +36,11 @@ async function (msg, vcChannel) {
     await connection.play(await ytdl(anURL, { filter: 'audioonly', quality: 'highestaudio' }), { type: 'opus' });
     connection.on("error", async (error) => {
       let queueEmbed = new Discord.EmbedBuilder()
-      .setTitle("An error occured while playing this video. Seems like it's blocked for external use by YouTube.")
+      .setTitle(await ougi.text(msg, "music_playbackError"))
       .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/ougimusic.png?raw=true")
       .setAuthor({name: "Ougi [BOT]", icon: client.user.avatarURL({dynamic: true, size: 4096})})
       .setColor("#230347")
-      .setFooter({text: "queueEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
+      .setFooter({text: await ougi.text(msg, "music_queueEmbedFooter"), icon: client.user.avatarURL({dynamic: true, size: 4096})})
       .setTimestamp();
       msg.channel.send({embeds: [queueEmbed]}).catch(console.error);
       ougi.queue(msg, vcChannel);
@@ -56,7 +56,7 @@ async function (msg, vcChannel) {
       }
     }, durationInMilliseconds + 2000);
     let musicalEmbed = new Discord.EmbedBuilder()
-    .setTitle("Music with Ougi")
+    .setTitle(await ougi.text(msg, "music_title"))
     .setAuthor({name: "Ougi [BOT]", icon: client.user.avatarURL({dynamic: true, size: 4096})})
     .setColor("#230347")
     .setDescription("Now playing")

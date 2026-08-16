@@ -3,7 +3,7 @@ module.exports = async function(msg) {
     const content = msg.content.trim();
     const parts = content.split(" ");
     if (parts.length < 3) {
-        msg.channel.send("Debes especificar la ruta de acceso al objeto.");
+        msg.channel.send(await ougi.text(msg, "inspect_specifyPath"));
         return;
     }
 
@@ -21,13 +21,13 @@ module.exports = async function(msg) {
         return t;
     }
 
-    function resolveExpression(expr, stopBeforeLast = false) {
+    async function resolveExpression(expr, stopBeforeLast = false) {
         // Separar rootVar de los accesadores
         const rootMatch = expr.match(/^([a-zA-Z_$][a-zA-Z0-9_$]*)/);
-        if (!rootMatch) return { error: "No se detectó variable raíz válida." };
+        if (!rootMatch) return { error: await ougi.text(msg, "inspect_noRootVar") };
 
         let target = global[rootMatch[1]]; // Acceso directo al contexto global
-        if (target === undefined) return { error: `Variable \`${rootMatch[1]}\` no encontrada.` };
+        if (target === undefined) return { error: (await ougi.text(msg, "inspect_varNotFound")).replace(/{name}/g, rootMatch[1]) };
 
         let remainder = expr.slice(rootMatch[1].length);
         const regex = /(\.([a-zA-Z_$][a-zA-Z0-9_$]*)|\[([^\]]+)\])/g;
@@ -45,7 +45,7 @@ module.exports = async function(msg) {
         }
 
         if (stopBeforeLast && keys.length === 0) {
-            return { error: "No hay propiedad para asignar." };
+            return { error: await ougi.text(msg, "inspect_noPropertyToAssign") };
         }
 
         let limit = stopBeforeLast ? keys.length - 1 : keys.length;
@@ -54,7 +54,7 @@ module.exports = async function(msg) {
             if (target && typeof target === 'object' && key in target) {
                 target = target[key];
             } else {
-                return { error: `Propiedad \`${key}\` no encontrada.` };
+                return { error: (await ougi.text(msg, "inspect_propNotFound")).replace(/{prop}/g, key) };
             }
         }
 
@@ -72,7 +72,7 @@ module.exports = async function(msg) {
         const rightExpr = expression.slice(assignIndex + 1).trim();
 
         // Resolve left expression to get target object and last key
-        const resolved = resolveExpression(leftExpr, true);
+        const resolved = await resolveExpression(leftExpr, true);
         if (resolved.error) {
             msg.channel.send(resolved.error);
             return;
@@ -102,16 +102,18 @@ module.exports = async function(msg) {
 
         try {
             resolved.target[resolved.lastKey] = parsedValue;
-            msg.channel.send(`Propiedad \`${leftExpr}\` actualizada correctamente.`);
+            const updatedSuccessTemplate = await ougi.text(msg, "inspect_updatedProp");
+            msg.channel.send(updatedSuccessTemplate.replace(/{prop}/g, leftExpr));
         } catch (err) {
-            msg.channel.send(`Error al asignar el valor: ${err.message}`);
+            const assignErrTemplate = await ougi.text(msg, "inspect_assignError");
+            msg.channel.send(assignErrTemplate.replace(/{err}/g, err.message));
         }
 
         return;
     }
 
     // If no assignment, behave as before (inspection)
-    const result = resolveExpression(expression);
+    const result = await resolveExpression(expression);
 
     if (result.error) {
         msg.channel.send(result.error);

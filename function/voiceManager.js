@@ -651,7 +651,8 @@ module.exports = {
 
         } catch (err) {
             console.error(`Error streaming ${song.title}:`, err);
-            msg.channel.send(`⚠️ Unable to play **${song.title}** (stream unavailable or restricted). Skipping...`).catch(() => {});
+            const unableMsgTemplate = await ougi.text(msg, "music_unableToPlay");
+            msg.channel.send(unableMsgTemplate.replace(/{title}/g, song.title)).catch(() => {});
             session.queue.shift();
             if (session.queue.length > 0) {
                 this.playMusic(msg, vcChannel);

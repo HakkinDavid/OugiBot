@@ -26,8 +26,9 @@ async function (arguments, msg) {
   let newNameList = ougi.miniArrays(emojiNameList, 14);
   let willShow = newList[page];
   let willShowN = newNameList[page];
+  const titleTemplate = await ougi.text(msg, "emoji_listTitle");
   let embed = new Discord.EmbedBuilder()
-    .setTitle("spookyEmoji List | Page " + displayPage)
+    .setTitle(titleTemplate.replace(/{page}/g, displayPage))
     .setColor("#C93A57")
     .setFooter({text: (await ougi.text(msg, "emojiListFooter")).replace(/{emoji}/gi, howMany).replace(/{numpage}/gi, pageMax), icon: client.user.avatarURL({dynamic: true, size: 4096})});
     for (i = 0; i < willShow.length; i+=2) {

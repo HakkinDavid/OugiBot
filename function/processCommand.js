@@ -29,15 +29,15 @@ module.exports = async function (msg) {
     const userBan = ougi.db().checkBan(msg.author.id);
     if (userBan) {
         if (userBan.expired) {
-            await msg.channel.send("Your ban sentence has expired.");
+            await msg.channel.send(await ougi.text(msg, "ban_expiredSentence"));
         } else if (userBan.active) {
             const banEmbed = new EmbedBuilder()
                 .setColor("#20064F")
-                .setTitle("It's a beautiful day outside...")
-                .setDescription("Yoinks! Your right to use Ougi has been forfeited because of an inappropriate usage.")
+                .setTitle(await ougi.text(msg, "ban_activeTitle"))
+                .setDescription(await ougi.text(msg, "ban_activeDesc"))
                 .addFields(
-                    { name: "Ban expires until", value: `<t:${Math.floor(userBan.until / 1000)}:f>` },
-                    { name: "Reason", value: userBan.reason || "No reason provided" }
+                    { name: await ougi.text(msg, "ban_expiresField"), value: `<t:${Math.floor(userBan.until / 1000)}:f>` },
+                    { name: await ougi.text(msg, "ban_reasonField"), value: userBan.reason || await ougi.text(msg, "ban_noReason") }
                 );
             await msg.channel.send({ embeds: [banEmbed] });
             return;
@@ -47,7 +47,8 @@ module.exports = async function (msg) {
     // Blacklist check
     if (msg.channel.type === ChannelType.GuildText) {
         if (ougi.db().isBlacklisted(msg.guildId, spookyCommand) || ougi.db().isBlacklisted(msg.guildId, parts.slice(1).join(' '))) {
-            await msg.channel.send(`Sorry, that's blacklisted in ${msg.guild.toString()}.`).catch(console.error);
+            const blTemplate = await ougi.text(msg, "command_blacklistedInGuild");
+            await msg.channel.send(blTemplate.replace(/{guild}/g, msg.guild.toString())).catch(console.error);
             return;
         }
         ougi.guildLog(msg);

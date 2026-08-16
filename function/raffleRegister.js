@@ -3,16 +3,17 @@ module.exports = async function (arguments, msg) {
 
     const participantName = msg.content.slice(msg.content.toLowerCase().indexOf("raffle-register") + "raffle-register".length).trim();
     if (!participantName.trim()) {
-        msg.channel.send("Error: Please provide a name to register.");
+        msg.channel.send(await ougi.text(msg, "raffle_registerProvideName"));
         return;
     }
     const nicknames = ougi.db().getNicknames(msg.guildId);
     const existingNicknames = Object.values(nicknames);
     if (existingNicknames.some(name => name.toLowerCase() === participantName.toLowerCase())) {
-        msg.channel.send("Error: This name has already been registered by another user.");
+        msg.channel.send(await ougi.text(msg, "raffle_registerNameTaken"));
         return;
     }
     ougi.db().setNickname(msg.guildId, msg.author.id, participantName);
-    msg.channel.send(`You have been registered as: ${participantName}`);
+    const registerSuccessTemplate = await ougi.text(msg, "raffle_registerSuccess");
+    msg.channel.send(registerSuccessTemplate.replace(/{name}/g, participantName));
     return;
 }

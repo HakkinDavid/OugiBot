@@ -1,19 +1,15 @@
 module.exports =
 
 async function (msg) {
-  let embed = new Discord.EmbedBuilder()
-  .setTitle("Ougi's `remindbump` command")
-  .setAuthor({name: "Ougi [BOT]", icon: client.user.avatarURL({dynamic: true, size: 4096})})
-  .setColor("#230347")
-  .setFooter({text: "helpEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
-  .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true");
   if (!(await ougi.guildCheck(msg))) return;
-  embed.setDescription("Use this command to set a channel to remind users to bump this Discord server. If no channel is mentioned, Ougi will use the channel you run the command in. You may as well specify a role to ping!")
+  let embed = await ougi.helpPreset(msg, "remindbump");
+  let outputTemplate = await ougi.text(msg, "remindbump_output");
+  embed.setDescription(await ougi.text(msg, "remindbumpHelpDesc"))
   .addFields({ name: await ougi.text(msg, "specialPermission"), value: ":warning: " + await ougi.text(msg, "onlyOwner") })
   .addFields({name: await ougi.text(msg, "example"), value: "`ougi remindbump `" + msg.channel.toString() + "` @role `"})
-  .addFields({name: await ougi.text(msg, "output"), value: "I'll remind @role to bump in " + msg.channel.toString() + "."})
-  .addFields({name: "You may also disable this function", value: "`ougi remindbump disable`"})
-  .addFields({name: await ougi.text(msg, "output"), value: "Bump reminder channel successfully disabled."})
+  .addFields({name: await ougi.text(msg, "output"), value: outputTemplate.replace(/{channel}/g, msg.channel.toString())})
+  .addFields({name: await ougi.text(msg, "remindbump_disableField"), value: "`ougi remindbump disable`"})
+  .addFields({name: await ougi.text(msg, "output"), value: await ougi.text(msg, "remindbump_disableOutput")});
 
   msg.channel.send({embeds: [embed]}).catch(console.error);
 }

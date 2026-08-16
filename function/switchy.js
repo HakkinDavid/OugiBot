@@ -1,14 +1,16 @@
 module.exports =
 
-function (arguments, msg) {
+async function (arguments, msg) {
   if (arguments == instanceID) {
     if (global.TEASEABLE) {
       const TEASEABLE = false;
-      msg.channel.send("Instance `" + instanceID + "` listening exclusively to `" + instanceID + "::Ougi` prefix until it's terminated or switched back.").catch(console.error);
+      const exclusiveTemplate = await ougi.text(msg, "switchy_exclusive");
+      msg.channel.send(exclusiveTemplate.replace(/{instanceID}/g, instanceID)).catch(console.error);
     }
     else {
       const TEASEABLE = true;
-      msg.channel.send("Instance `" + instanceID + "` listening to all input.").catch(console.error);
+      const allTemplate = await ougi.text(msg, "switchy_all");
+      msg.channel.send(allTemplate.replace(/{instanceID}/g, instanceID)).catch(console.error);
     }
   }
 }

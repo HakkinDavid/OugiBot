@@ -16,8 +16,8 @@ async function (msg) {
   let thisSurvey = arguments.join(" ");
   let breakChocolate = thisSurvey.split("::").slice(1);
   if (breakChocolate.length < 2) {
-    msg.channel.send("You must include a survey ID and a description.")
-    return
+    msg.channel.send(await ougi.text(msg, "survey_notifyMissingFields"));
+    return;
   }
   let surveyID, notification;
   for (i=0; breakChocolate.length > i; i++) {
@@ -35,24 +35,25 @@ async function (msg) {
     }
   }
   if (surveyID == null || notification == null || notification.length < 1 || notification.length > 1024) {
-    msg.channel.send("You must include a survey ID and a description that's 1 to 1024 characters long.")
-    return
+    msg.channel.send(await ougi.text(msg, "survey_notifyMissingFields"));
+    return;
   }
   let mySurvey = ougi.db().getSurvey(surveyID);
   if (!mySurvey) {
-    msg.channel.send("Not a survey ID yet.");
+    msg.channel.send(await ougi.text(msg, "survey_notSurveyId"));
     return;
   }
   let upvoters = mySurvey.yes;
+  const descTemplate = await ougi.text(msg, "survey_notificationDesc");
   let embed = new Discord.EmbedBuilder()
-  .setTitle('Survey unique notification')
-  .setDescription("You're receiving this feedback notification since you upvoted the following survey at least once.\n<:unknown_emoji:731996283790950420> **Question:** *" + mySurvey.q + "*")
+  .setTitle(await ougi.text(msg, "survey_notificationTitle"))
+  .setDescription(descTemplate.replace(/{question}/g, mySurvey.q))
   .addFields({name: "\u200b", value: notification})
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/news.png?raw=true")
   .setColor(mySurvey.color)
   .setTimestamp()
   .setAuthor({name: "Ougi [BOT]", icon: client.user.avatarURL({dynamic: true, size: 4096})})
-  .setFooter({text: "surveyNotificationEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})});
+  .setFooter({text: await ougi.text(msg, "survey_notificationFooter"), icon: client.user.avatarURL({dynamic: true, size: 4096})});
   let names = [];
   let mod = 0;
   for (let i = 0; upvoters.length > i; i++) {

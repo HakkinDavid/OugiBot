@@ -23,7 +23,7 @@ async function (arguments, msg) {
   }
 
   if (breakChocolate.length !== 2){
-    msg.channel.send("Do you want to teach me something? Looks like you're doing it wrong. Use the following command for some help.\n> ougi help learn").catch(console.error);
+    msg.channel.send(await ougi.text(msg, "learn_wrongSyntax")).catch(console.error);
     return
   }
 
@@ -49,34 +49,41 @@ async function (arguments, msg) {
   }
 
   if (trigger.length < niceCharacterAmount){
-    msg.channel.send("Please provide a trigger phrase of at least " + niceCharacterAmount.toString() + " characters long.").catch(console.error);
+    const trigMinTemplate = await ougi.text(msg, "learn_triggerMinLength");
+    msg.channel.send(trigMinTemplate.replace(/{count}/g, niceCharacterAmount.toString())).catch(console.error);
     return
   }
 
   if (response.length < niceCharacterAmount){
-    msg.channel.send("Please provide a response phrase of at least " + niceCharacterAmount.toString() + " characters long.").catch(console.error);
+    const respMinTemplate = await ougi.text(msg, "learn_responseMinLength");
+    msg.channel.send(respMinTemplate.replace(/{count}/g, niceCharacterAmount.toString())).catch(console.error);
     return
   }
 
   if (trigger.length > maxCharacterAmount){
-    msg.channel.send("Please provide a trigger phrase of " + maxCharacterAmount.toString() + " or less characters long.").catch(console.error);
+    const trigMaxTemplate = await ougi.text(msg, "learn_triggerMaxLength");
+    msg.channel.send(trigMaxTemplate.replace(/{count}/g, maxCharacterAmount.toString())).catch(console.error);
     return
   }
 
   if (response.length > maxCharacterAmount){
-    msg.channel.send("Please provide a response phrase of " + maxCharacterAmount.toString() + " or less characters long.").catch(console.error);
+    const respMaxTemplate = await ougi.text(msg, "learn_responseMaxLength");
+    msg.channel.send(respMaxTemplate.replace(/{count}/g, maxCharacterAmount.toString())).catch(console.error);
     return
   }
 
+  const learnSuccess1Template = await ougi.text(msg, "learn_success1");
+  const learnSuccess2Template = await ougi.text(msg, "learn_success2");
+
   let afterOptions = [
-    "I'll start replying `" + response + "` when anyone says `" + trigger + "`",
-    "Of course I already knew I should say `" + response + "` when anyone says `" + trigger + "`, I was just making sure you knew too~",
+    learnSuccess1Template.replace(/{response}/g, response).replace(/{trigger}/g, trigger),
+    learnSuccess2Template.replace(/{response}/g, response).replace(/{trigger}/g, trigger),
   ];
   let answer = afterOptions[Math.floor(Math.random()*afterOptions.length)];
-  answer += "\n\nPro tip: Delete phrases by using\n> ougi forget [trigger] :: [response]";
+  answer += await ougi.text(msg, "learn_proTip");
   let potentialLinks = response.match(/https{0,1}:\/\//gi) || [];
   if (potentialLinks.length > 0 && msg.author.id !== davidUserID) {
-    answer = answer + "\n\n```P.S. Since this response seems to include media, and because learn command is Ougi's main source of public replies, it will be audited by Ougi's developer (just to make sure nothing NSFW or illegal is stored).```";
+    answer = answer + (await ougi.text(msg, "learn_mediaAuditPs"));
   }
 
   let embed = new Discord.EmbedBuilder()
@@ -88,7 +95,7 @@ async function (arguments, msg) {
 
   const added = ougi.db().addKBReply(trigger, response);
   if (!added) {
-    msg.channel.send("Sorry, that response for this trigger already exists.").catch(console.error);
+    msg.channel.send(await ougi.text(msg, "learn_alreadyExists")).catch(console.error);
     return;
   }
 

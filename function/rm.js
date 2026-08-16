@@ -36,19 +36,23 @@ async function (arguments, msg) {
   }
 
   if (trigger.startsWith("help") || trigger.startsWith("blacklist") || trigger.startsWith("setlog") || trigger.startsWith("allow") || ougi.helperFunctions.checkForPrefixStr(trigger, msg.guildId)) {
-    msg.channel.send("This command can't be blacklisted.");
-    return
+    msg.channel.send(await ougi.text(msg, "rm_cantBlacklist"));
+    return;
   }
 
+  const stopReactingTemplate = await ougi.text(msg, "rm_stopReacting");
+  const blacklistedTemplate = await ougi.text(msg, "rm_blacklisted");
+
   let afterOptions = [
-    "I'll stop reacting to `" + trigger + "` in " + msg.guild.toString() + ".",
-    "Alright, I've blacklisted `" + trigger + "` in " + msg.guild.toString() + ".",
+    stopReactingTemplate.replace(/{trigger}/g, trigger).replace(/{guild}/g, msg.guild.toString()),
+    blacklistedTemplate.replace(/{trigger}/g, trigger).replace(/{guild}/g, msg.guild.toString()),
   ];
   let answer = afterOptions[Math.floor(Math.random()*afterOptions.length)];
 
   const isAlreadyBlacklisted = ougi.db().getBlacklist(msg.guildId).some(t => t.toLowerCase() === trigger.toLowerCase());
   if (isAlreadyBlacklisted) {
-    msg.channel.send("Sorry, that trigger is already blacklisted in " + msg.guild.toString() + ".").catch(console.error);
+    const alreadyBlTemplate = await ougi.text(msg, "rm_alreadyBlacklisted");
+    msg.channel.send(alreadyBlTemplate.replace(/{trigger}/g, trigger).replace(/{guild}/g, msg.guild.toString())).catch(console.error);
     return;
   }
 

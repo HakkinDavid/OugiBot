@@ -20,12 +20,13 @@ module.exports = async function imageCommand(arguments, msg) {
     const imageBuffer = await response.buffer();
     const imageAttachment = new AttachmentBuilder(imageBuffer, { name: "ougi-generated-image.png" });
 
+    const footerTemplate = await ougi.text(msg, "image_promptFooter");
     const spookyImage = new EmbedBuilder()
       .setTitle(await ougi.text(msg, "genImg"))
       .setDescription(prompt)
       .setImage("attachment://ougi-generated-image.png")
       .setFooter({
-        text: `imageEmbed by Ougi, prompt by ${msg.author.username}`,
+        text: footerTemplate.replace(/{username}/g, msg.author.username),
         iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 })
       })
       .setTimestamp()

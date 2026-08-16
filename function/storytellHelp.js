@@ -10,7 +10,7 @@ module.exports = async function (msg) {
     })
     .addFields({
       name: await ougi.text(msg, "output"),
-      value: "Starts a 5-minute interactive story collector in the channel where participants earn rewards or take penalties based on Ougi's evaluation."
+      value: await ougi.text(msg, "storytell_output")
     });
 
   msg.channel.send({ embeds: [embed] }).catch(console.error);

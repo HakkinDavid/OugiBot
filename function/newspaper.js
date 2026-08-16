@@ -6,26 +6,32 @@ async function (arguments, msg) {
   let index = arguments * 1 - 1;
 
   if (isNaN(index)) {
-    msg.channel.send("Uh, please provide a valid number (news are sorted from last to first) or leave it blank to preview the latest announcement.").catch(console.error);
-    return
+    msg.channel.send(await ougi.text(msg, "news_invalidNumber")).catch(console.error);
+    return;
   }
 
   if (index <= 0) {
-    index = 0
+    index = 0;
   }
 
   let displayIndex = index + 1;
   if (displayIndex > maxIndex) {
-    msg.channel.send("That's not a news index number yet.").catch(console.error);
-    return
+    msg.channel.send(await ougi.text(msg, "news_indexOutOfRange")).catch(console.error);
+    return;
   }
 
   let news = paper[index];
   let thatType = news.type;
+  const footerTemplate = await ougi.text(msg, "news_footerFormat");
+  const renderedFooter = footerTemplate
+    .replace(/{sent}/g, news.sent)
+    .replace(/{page}/g, displayIndex)
+    .replace(/{max}/g, maxIndex);
+
   let spookyConstructor = new Discord.EmbedBuilder()
   .setTitle(news.title)
   .setDescription(news.desc)
-  .setFooter({text: "newspaperEmbed by Ougi | Date: " + news.sent + " | Page " + displayIndex + " of " + maxIndex})
+  .setFooter({text: renderedFooter})
   .setColor("#F5F2F2")
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/news.png?raw=true");
   if (thatType == "info") {

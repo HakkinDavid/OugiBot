@@ -1,19 +1,15 @@
 module.exports =
 
 async function (msg) {
-  let embed = new Discord.EmbedBuilder()
-  .setTitle("Ougi's `setnews` command")
-  .setAuthor({name: "Ougi [BOT]", icon: client.user.avatarURL({dynamic: true, size: 4096})})
-  .setColor("#230347")
-  .setFooter({text: "helpEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
-  .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true");
   if (!(await ougi.guildCheck(msg))) return;
-  embed.setDescription("Use this command to set a channel where to send important announcements and updates about Ougi. If no channel is mentioned, Ougi will use the channel you run the command in.")
-  .addFields({name: "Special permission required", value: ":warning: You must be the owner of whatever Discord server you run this command in."})
+  let embed = await ougi.helpPreset(msg, "setnews");
+  let outputTemplate = await ougi.text(msg, "setnews_output");
+  embed.setDescription(await ougi.text(msg, "setnewsHelpDesc"))
+  .addFields({name: await ougi.text(msg, "specialPermission"), value: ":warning: " + await ougi.text(msg, "onlyOwner")})
   .addFields({name: await ougi.text(msg, "example"), value: "`ougi setnews `" + msg.channel.toString() + "` `"})
-  .addFields({name: await ougi.text(msg, "output"), value: "I'll start sending updates and related information into " + msg.channel.toString() + "."})
-  .addFields({name: "You may also disable this function", value: "`ougi setnews disable`"})
-  .addFields({name: await ougi.text(msg, "output"), value: "Newsletter channel successfully disabled."})
+  .addFields({name: await ougi.text(msg, "output"), value: outputTemplate.replace(/{channel}/g, msg.channel.toString())})
+  .addFields({name: await ougi.text(msg, "setnews_disableField"), value: "`ougi setnews disable`"})
+  .addFields({name: await ougi.text(msg, "output"), value: await ougi.text(msg, "setnews_disableOutput")});
 
   msg.channel.send({embeds: [embed]}).catch(console.error);
 }

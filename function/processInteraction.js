@@ -22,11 +22,11 @@ module.exports = async function (interaction) {
     if (userBan && userBan.active) {
         const banEmbed = new EmbedBuilder()
             .setColor("#20064F")
-            .setTitle("It's a beautiful day outside...")
-            .setDescription("Yoinks! Your right to use Ougi has been forfeited because of an inappropriate usage.")
+            .setTitle(await ougi.text(interaction, "ban_activeTitle"))
+            .setDescription(await ougi.text(interaction, "ban_activeDesc"))
             .addFields(
-                { name: "Ban expires until", value: `<t:${Math.floor(userBan.until / 1000)}:f>` },
-                { name: "Reason", value: userBan.reason || "No reason provided" }
+                { name: await ougi.text(interaction, "ban_expiresField"), value: `<t:${Math.floor(userBan.until / 1000)}:f>` },
+                { name: await ougi.text(interaction, "ban_reasonField"), value: userBan.reason || await ougi.text(interaction, "ban_noReason") }
             );
         if (interaction.replied || interaction.deferred) {
             await interaction.followUp({ embeds: [banEmbed], flags: MessageFlags.Ephemeral }).catch(console.error);
@@ -38,7 +38,7 @@ module.exports = async function (interaction) {
 
     // Blacklist check
     if (interaction.guildId && ougi.db().isBlacklisted(interaction.guildId, 'translate')) {
-        const blMsg = `Sorry, translation is blacklisted in this server.`;
+        const blMsg = await ougi.text(interaction, "interaction_translateBlacklisted");
         if (interaction.replied || interaction.deferred) {
             await interaction.followUp({ content: blMsg, flags: MessageFlags.Ephemeral }).catch(console.error);
         } else {

@@ -13,15 +13,21 @@ async function (arguments, msg) {
     }
 
     if (sayMessage.length <= 0) {
-      var options = ["Say what ???", "Can anyone lend me some emptiness? This homie wants some but I ate all of mine yesterday.", "Imagine talking", "Ara ara", "?"];
+      var options = [
+        await ougi.text(msg, "say_empty1"),
+        await ougi.text(msg, "say_empty2"),
+        await ougi.text(msg, "say_empty3"),
+        await ougi.text(msg, "say_empty4"),
+        await ougi.text(msg, "say_empty5")
+      ];
       var response = options[Math.floor(Math.random()*options.length)];
       msg.channel.send(response).catch(console.error);
-      return
+      return;
     }
 
     if (sayMessage.includes("<@") && msg.content.includes(">")) {
-      msg.channel.send("Avoid pings. What? Isn't that a ping?").catch(console.error);
-      return
+      msg.channel.send(await ougi.text(msg, "say_avoidPings")).catch(console.error);
+      return;
     }
 
     var finalMessage = sayMessage.toString();

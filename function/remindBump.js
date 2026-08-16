@@ -12,12 +12,12 @@ async function (arguments, msg) {
     if (arguments[0] == "disable") {
       if (ougi.db().getBumpConfig(msg.guildId)){
         ougi.db().deleteBumpConfig(msg.guildId);
-        msg.channel.send("Bump reminder channel successfully disabled.");
-        return
+        msg.channel.send(await ougi.text(msg, "remindBump_disabled"));
+        return;
       }
       else {
-        msg.channel.send("There was no bump reminder channel set.");
-        return
+        msg.channel.send(await ougi.text(msg, "remindBump_notSet"));
+        return;
       }
     }
     else {
@@ -26,7 +26,12 @@ async function (arguments, msg) {
     }
   }
 
-  msg.channel.send("I'll remind " + (guildBumpRole ? "<@&" + guildBumpRole + ">" : "you all") + " to bump in <#"+ guildBump +">.");
+  const willRemindTemplate = await ougi.text(msg, "remindBump_willRemind");
+  msg.channel.send(
+    willRemindTemplate
+      .replace(/{target}/g, (guildBumpRole ? "<@&" + guildBumpRole + ">" : "you all"))
+      .replace(/{channel}/g, guildBump)
+  );
 
   const currentConfig = ougi.db().getBumpConfig(msg.guildId) || { channel: guildBump, role: guildBumpRole, next_bump: null, reminded: false };
   currentConfig.channel = guildBump;

@@ -8,10 +8,15 @@ async function (arguments, msg) {
   let prefix = arguments.join(" ");
 
   if (arguments.length < 1) {
-    msg.channel.send("You must specify a new prefix for Ougi. Refer to the following command for help.\n> ougi help prefix");
-    return
+    msg.channel.send(await ougi.text(msg, "prefix_specifyNew"));
+    return;
   }
-  msg.channel.send("Prefix for Ougi in " + msg.guild.toString() + " set as `" + prefix + "`.");
+  const prefixSuccessTemplate = await ougi.text(msg, "prefix_setSuccess");
+  msg.channel.send(
+    prefixSuccessTemplate
+      .replace(/{guild}/g, msg.guild.toString())
+      .replace(/{prefix}/g, prefix)
+  );
 
   ougi.db().setPrefix(msg.guildId, prefix);
 }

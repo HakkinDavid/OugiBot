@@ -4,11 +4,11 @@ module.exports = async function (arguments, msg) {
 
     const { data: guildRaffles, isNew } = ougi.db().getOrCreateGuildRaffles(msg.guildId);
     if (isNew) {
-        msg.channel.send("Inited raffles configuration for this server. Provisional license expires in 1 hour.");
+        msg.channel.send(await ougi.text(msg, "raffle_licenseInited"));
     }
 
     if (guildRaffles.licensedUntil < Date.now()) {
-        msg.channel.send("Your raffles license has expired. Renew by supporting the bot on Patreon or PayPal.\n`ougi patreon`");
+        msg.channel.send(await ougi.text(msg, "raffle_licenseExpired"));
         return;
     }
 
@@ -16,31 +16,33 @@ module.exports = async function (arguments, msg) {
     if (arguments[0] == "list") {
         if (arguments[1] == "clear") {
             guildRaffles.presetList = null;
-            msg.channel.send("Preset participant list has been cleared for this server.");
+            msg.channel.send(await ougi.text(msg, "raffle_listCleared"));
         }
         else {
             // Extract the remainder of the message content after the command
             let afterListCmd = msg.content.slice(msg.content.toLowerCase().indexOf("raffle") + "raffle".length).trim();
             afterListCmd = afterListCmd.slice(afterListCmd.toLowerCase().indexOf("list") + "list".length).trim();
             if (!afterListCmd) {
-                msg.channel.send("Usage: `ougi raffle list <participant nicknames, each with a number of entries>` or `ougi raffle list clear`.");
+                msg.channel.send(await ougi.text(msg, "raffle_listUsage"));
                 return;
             }
             guildRaffles.presetList = afterListCmd;
-            msg.channel.send("Preset participant list has been set for this server.");
+            msg.channel.send(await ougi.text(msg, "raffle_listSet"));
         }
         ougi.db().saveRaffles();
         return;
     }
     if (arguments[0] == "clear") {
         guildRaffles.ongoingRaffles = [];
-        msg.channel.send("Raffles have been cleared. You are allowed to run " + guildRaffles.allowedConcurrentRaffles + " concurrent raffles.");
+        const clearedTemplate = await ougi.text(msg, "raffle_cleared");
+        msg.channel.send(clearedTemplate.replace(/{allowed}/g, guildRaffles.allowedConcurrentRaffles));
         ougi.db().saveRaffles();
         return;
     }
 
     if (guildRaffles.ongoingRaffles.length >= guildRaffles.allowedConcurrentRaffles) {
-        msg.channel.send(`Your current license supports up to ${guildRaffles.allowedConcurrentRaffles} concurrent raffles. Clear them out with \`ougi raffle clear\` or consider upgrading your plan.`);
+        const maxConcurrentTemplate = await ougi.text(msg, "raffle_maxConcurrent");
+        msg.channel.send(maxConcurrentTemplate.replace(/{allowed}/g, guildRaffles.allowedConcurrentRaffles));
         return;
     }
 
@@ -74,7 +76,7 @@ module.exports = async function (arguments, msg) {
     }
     // Validation: require at least a list and ::title
     if ((!listStr || !listStr.trim()) || !slices.title) {
-        msg.channel.send("Error: Missing required fields. Please provide at least `::list` (participants) and `::title`.\nIf you want to set a preset list, use `ougi raffle list <your list>`.");
+        msg.channel.send(await ougi.text(msg, "raffle_missingFields"));
         return;
     }
 
@@ -96,7 +98,8 @@ module.exports = async function (arguments, msg) {
     }
 
     if (participants.length > guildRaffles.allowedParticipants) {
-        msg.channel.send(`Participant count exceeds the allowed limit of ${guildRaffles.allowedParticipants}.`);
+        const participantLimitTemplate = await ougi.text(msg, "raffle_participantLimit");
+        msg.channel.send(participantLimitTemplate.replace(/{allowed}/g, guildRaffles.allowedParticipants));
         return;
     }
 
@@ -116,7 +119,7 @@ module.exports = async function (arguments, msg) {
                 durationMinutes = parseInt(match[1], 10);
             } else {
                 // Invalid duration format
-                msg.channel.send("Invalid duration format. Please specify duration as `XXh YYm` or `YYm` (e.g., `1h 30m` or `45m`).");
+                msg.channel.send(await ougi.text(msg, "raffle_invalidDuration"));
                 return;
             }
         }
@@ -134,14 +137,14 @@ module.exports = async function (arguments, msg) {
     const embed = {
         title: title,
         fields: [
-            { name: 'Duration', value: slices.duration || `${durationMinutes}m`, inline: true },
-            { name: 'Winners', value: winnersCount.toString(), inline: true },
-            { name: 'Participants', value: participants.length.toString(), inline: true },
+            { name: await ougi.text(msg, "raffle_fieldDuration"), value: slices.duration || `${durationMinutes}m`, inline: true },
+            { name: await ougi.text(msg, "raffle_fieldWinners"), value: winnersCount.toString(), inline: true },
+            { name: await ougi.text(msg, "raffle_fieldParticipants"), value: participants.length.toString(), inline: true },
         ],
         description: mention ? `${mention}` : '',
         color: 0x00FF00,
         footer: {
-            text: "Cryptosecure raffles powered by Ougi. Bring us to your Discord!"
+            text: await ougi.text(msg, "raffle_footer")
         }
     };
 

@@ -15,7 +15,7 @@ module.exports = async function (msg) {
 
   const permissions = memberVC.permissionsFor(msg.client?.user || client?.user);
   if (permissions && (!permissions.has('Connect') || !permissions.has('Speak'))) {
-    return msg.channel.send("I need permissions to connect and speak in your voice channel.");
+    return msg.channel.send(await ougi.text(msg, "voice_needPermissions"));
   }
 
   const cleanedContent = msg.content.replace(/\s+/g, ' ').trim();
@@ -43,7 +43,7 @@ module.exports = async function (msg) {
 
   textToSpeak = textToSpeak.replace(/[\+\*\?\^\$\(\)\[\]\{\}\|\\\&\/\@]/g, "").trim();
   if (!textToSpeak) {
-    return msg.channel.send("Please specify a sentence for me to read out loud.");
+    return msg.channel.send(await ougi.text(msg, "voice_specifySentence"));
   }
 
   try {
@@ -55,7 +55,7 @@ module.exports = async function (msg) {
     });
 
     if (!ttsUrls || !ttsUrls.length) {
-      return msg.channel.send("Failed to generate TTS audio.");
+      return msg.channel.send(await ougi.text(msg, "voice_ttsFail"));
     }
 
     await ougi.voiceManager.playTts(msg, memberVC, ttsUrls);

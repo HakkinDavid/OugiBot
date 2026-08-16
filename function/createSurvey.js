@@ -17,8 +17,8 @@ module.exports =
     let breakChocolate = thisMessage.split("::").slice(1);
     let questionDesc, surveyQuestion, questionID, surveyURL, surveyColor = "9E32A8";
     if (breakChocolate.length < 3) {
-      msg.channel.send("You must include a question, question ID, a description and optionally a featured survey URL and a color.")
-      return
+      msg.channel.send(await ougi.text(msg, "survey_missingFields"));
+      return;
     }
     for (i = 0; breakChocolate.length > i; i++) {
       let material = breakChocolate[i];
@@ -63,8 +63,8 @@ module.exports =
           let rgbArray = material.split(",");
           if (rgbArray.length <= 3 && !isNaN(rgbArray[0]) && !isNaN(rgbArray[1]) && !isNaN(rgbArray[2])) {
             if (rgbArray[0] > 255 || rgbArray[1] > 255 || rgbArray[2] > 255) {
-              msg.channel.send("Please provide a valid hexadecimal color, RGB color (separated by commas) or a supported color name.");
-              return
+              msg.channel.send(await ougi.text(msg, "survey_invalidColor"));
+              return;
             }
             surveyColor = material;
           }
@@ -78,20 +78,20 @@ module.exports =
               surveyColor = material;
             }
             else {
-              msg.channel.send("Please provide a valid hexadecimal color, RGB color (separated by commas) or a supported color name.");
-              return
+              msg.channel.send(await ougi.text(msg, "survey_invalidColor"));
+              return;
             }
           }
         }
       }
       else {
-        msg.channel.send("Wrong syntax.");
-        return
+        msg.channel.send(await ougi.text(msg, "survey_wrongSyntax"));
+        return;
       }
     }
     if (surveyQuestion == null || questionDesc == null || questionID == null) {
-      msg.channel.send("You must include a question, question ID, a description and optionally a featured survey URL and a color.")
-      return
+      msg.channel.send(await ougi.text(msg, "survey_missingFields"));
+      return;
     }
     let startDate = new Date().getTime();
     ougi.db().upsertSurvey(questionID, {

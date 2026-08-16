@@ -23,7 +23,7 @@ async function (arguments, msg) {
   }
 
   if (breakChocolate.length !== 2){
-    msg.channel.send("Do you want to make me forget something? Looks like you're wearing your sunglasses wrong. Use the following command for some help.\n> ougi help forget").catch(console.error);
+    msg.channel.send(await ougi.text(msg, "forget_wrongSyntax")).catch(console.error);
     return
   }
 
@@ -49,28 +49,35 @@ async function (arguments, msg) {
   }
 
   if (trigger.length < niceCharacterAmount){
-    msg.channel.send("Please provide a trigger phrase of at least " + niceCharacterAmount.toString() + " characters long.").catch(console.error);
+    const trigMinTemplate = await ougi.text(msg, "learn_triggerMinLength");
+    msg.channel.send(trigMinTemplate.replace(/{count}/g, niceCharacterAmount.toString())).catch(console.error);
     return
   }
 
   if (response.length < niceCharacterAmount){
-    msg.channel.send("Please provide a response phrase of at least " + niceCharacterAmount.toString() + " characters long.").catch(console.error);
+    const respMinTemplate = await ougi.text(msg, "learn_responseMinLength");
+    msg.channel.send(respMinTemplate.replace(/{count}/g, niceCharacterAmount.toString())).catch(console.error);
     return
   }
 
   if (trigger.length > maxCharacterAmount){
-    msg.channel.send("Please provide a trigger phrase of " + maxCharacterAmount.toString() + " or less characters long.").catch(console.error);
+    const trigMaxTemplate = await ougi.text(msg, "learn_triggerMaxLength");
+    msg.channel.send(trigMaxTemplate.replace(/{count}/g, maxCharacterAmount.toString())).catch(console.error);
     return
   }
 
   if (response.length > maxCharacterAmount){
-    msg.channel.send("Please provide a response phrase of " + maxCharacterAmount.toString() + " or less characters long.").catch(console.error);
+    const respMaxTemplate = await ougi.text(msg, "learn_responseMaxLength");
+    msg.channel.send(respMaxTemplate.replace(/{count}/g, maxCharacterAmount.toString())).catch(console.error);
     return
   }
 
+  const forgetSuccess1Template = await ougi.text(msg, "forget_success1");
+  const forgetSuccess2Template = await ougi.text(msg, "forget_success2");
+
   let afterOptions = [
-    "I'll stop replying `" + response + "` when anyone says `" + trigger + "`",
-    "Of course I already knew I shouldn't say `" + response + "` when anyone says `" + trigger + "`",
+    forgetSuccess1Template.replace(/{response}/g, response).replace(/{trigger}/g, trigger),
+    forgetSuccess2Template.replace(/{response}/g, response).replace(/{trigger}/g, trigger),
   ];
   let answer = afterOptions[Math.floor(Math.random()*afterOptions.length)];
 
@@ -86,5 +93,5 @@ async function (arguments, msg) {
     client.channels.cache.get(consoleLogging).send({embeds: [embed]});
     return;
   }
-  msg.channel.send("Sorry, this response doesn't match any from this trigger.").catch(console.error);
+  msg.channel.send(await ougi.text(msg, "forget_notFound")).catch(console.error);
 }

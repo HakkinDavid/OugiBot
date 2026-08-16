@@ -9,13 +9,8 @@ async function (msg) {
     "本当は初めから\n全て分かっていたと\n全てが終わってから\nやっと分かるいつも\n謎を解き明かす鍵は\n今もその手の中\n..."
   ];
   let thatIndex = Math.floor(Math.random()*videos.length);
-  var embed = new Discord.EmbedBuilder()
-  .setTitle("Ougi's `lyrics` command")
-  .setAuthor({name: "Ougi [BOT]", icon: client.user.avatarURL({dynamic: true, size: 4096})})
-  .setColor("#230347")
-  .setDescription("Use this command to get a specified song's lyrics. You may as well not specify any song at all to get lyrics for the currently playing song from your music queue.")
-  .setFooter({text: "helpEmbed by Ougi", icon: client.user.avatarURL({dynamic: true, size: 4096})})
-  .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true")
+  var embed = await ougi.helpPreset(msg, "lyrics");
+  embed.setDescription(await ougi.text(msg, "lyricsHelpDesc"))
   .addFields({name: await ougi.text(msg, "example"), value: "`ougi lyrics " + videos[thatIndex] + "`"})
   .addFields({name: await ougi.text(msg, "output"), value: lyrics[thatIndex]});
   msg.channel.send({embeds: [embed]}).catch(console.error);

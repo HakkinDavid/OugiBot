@@ -11,30 +11,31 @@ async function (arguments, msg) {
     if (arguments[0] == "disable") {
       if (ougi.db().getNewsChannel(msg.guildId)){
         ougi.db().deleteNewsChannel(msg.guildId);
-        msg.channel.send("Newsletter channel successfully disabled.");
-        return
+        msg.channel.send(await ougi.text(msg, "news_disabled"));
+        return;
       }
       else {
-        msg.channel.send("There was no newsletter channel set.");
-        return
+        msg.channel.send(await ougi.text(msg, "news_notSet"));
+        return;
       }
     }
     else if (arguments[0].startsWith("<#") && arguments[0].endsWith(">")) {
       let channelMention = arguments[0];
       channelMention = channelMention.slice(2, -1);
       if (!msg.guild.channels.cache.has(channelMention)) {
-        msg.channel.send("Huh? Looks like you're using this command wrong. Refer to the following command for help.\n> ougi help setnews");
-        return
+        msg.channel.send(await ougi.text(msg, "news_usageHelp"));
+        return;
       }
       guildNews = channelMention;
     }
     else {
-      msg.channel.send("Huh? Looks like you're using this command wrong. Refer to the following command for help.\n> ougi help setnews");
-      return
+      msg.channel.send(await ougi.text(msg, "news_usageHelp"));
+      return;
     }
   }
 
-  msg.channel.send("I'll start sending updates and related information into <#"+ guildNews +">.");
+  const newsSetTemplate = await ougi.text(msg, "news_channelSetDesc");
+  msg.channel.send(newsSetTemplate.replace(/{channel}/g, guildNews));
 
   ougi.db().setNewsChannel(msg.guildId, guildNews);
 }
