@@ -1,3 +1,5 @@
+In OugiBot, files inside `function/` are loaded dynamically via `requireAll` at launch (`fan.js`) and bound directly to `global.ougi.<filename>`.
+
 ### 1. Standard Commands (`ougi <command>` / Configured Prefix)
 
 Dispatched via `commandMap` and command conditions in [processCommand.js](../function/processCommand.js).
