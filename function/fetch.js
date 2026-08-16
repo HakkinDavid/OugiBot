@@ -30,13 +30,7 @@ function downloadFile(url, dest) {
           try {
             if (isSqliteHeader(tempDest)) {
               try {
-                const dbName = path.basename(dest, '.db');
-                if (global.ougi && typeof global.ougi.db === 'function') {
-                  const dbManager = global.ougi.db();
-                  if (dbManager && typeof dbManager.closeDb === 'function') {
-                    dbManager.closeDb(dbName);
-                  }
-                }
+                ougi.db().closeDb(path.basename(dest, '.db'));
               } catch {}
               fs.renameSync(tempDest, dest);
               resolve();

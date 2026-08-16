@@ -4,13 +4,12 @@ const translate = require('@vitalets/google-translate-api');
 
 module.exports = async function text(msg, stringID, dynamic = false, raw = false) {
     let langCode = 'en';
-    const dbManager = ougi.db();
 
     if (typeof msg === 'object') {
-        const userLang = dbManager.getLang(msg.author.id);
+        const userLang = ougi.db().getLang(msg.author.id);
         if (userLang) langCode = userLang;
         if (msg.channel?.type === ChannelType.GuildText) {
-            const guildLang = dbManager.getLang(msg.guildId);
+            const guildLang = ougi.db().getLang(msg.guildId);
             if (guildLang) langCode = guildLang;
         }
     } else if (typeof msg === 'string') {
@@ -24,14 +23,14 @@ module.exports = async function text(msg, stringID, dynamic = false, raw = false
         const potentialLinks = returnableString.match(/https?:\/\//gi) || [];
         if (potentialLinks.length > 0) return raw ? { value: returnableString } : returnableString;
 
-        const cachedDynamic = dbManager.getDynamicLocale(langCode, stringID);
+        const cachedDynamic = ougi.db().getDynamicLocale(langCode, stringID);
         if (cachedDynamic) {
             returnableString = cachedDynamic.value;
             if (raw) return { value: returnableString, fromCode: cachedDynamic.fromCode };
             return returnableString;
         }
 
-        const langPhrases = dbManager.getDynamicLocalesForLang(langCode);
+        const langPhrases = ougi.db().getDynamicLocalesForLang(langCode);
         const keyedTranslations = Object.keys(langPhrases);
         if (keyedTranslations.length > 0) {
             const mostSimilar = stringSimilarity.findBestMatch(stringID, keyedTranslations).bestMatch;
@@ -65,7 +64,7 @@ module.exports = async function text(msg, stringID, dynamic = false, raw = false
             console.error(err);
         }
 
-        dbManager.saveDynamicLocale(langCode, stringID, returnableString, fromCode);
+        ougi.db().saveDynamicLocale(langCode, stringID, returnableString, fromCode);
         return raw ? { value: returnableString, fromCode, stringEmoji, stringDiscordEmoji } : returnableString;
     }
 
@@ -74,7 +73,7 @@ module.exports = async function text(msg, stringID, dynamic = false, raw = false
 
     if (returnableString === null && ougi.localization.en[stringID]) {
         if (langCode === 'mx') langCode = 'es';
-        const cachedStatic = dbManager.getStaticLocale(langCode, stringID);
+        const cachedStatic = ougi.db().getStaticLocale(langCode, stringID);
         if (cachedStatic) return cachedStatic;
 
         try {
@@ -84,7 +83,7 @@ module.exports = async function text(msg, stringID, dynamic = false, raw = false
             console.error(err);
         }
 
-        dbManager.saveStaticLocale(langCode, stringID, returnableString);
+        ougi.db().saveStaticLocale(langCode, stringID, returnableString);
     }
 
     return returnableString;
