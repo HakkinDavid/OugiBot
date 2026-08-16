@@ -213,7 +213,7 @@ client.on('interactionCreate', async (interaction) => {
     if (!ougi.startup()) return;
     if (ougi.db().isIgnored(interaction.user.id)) {
         if (interaction.isRepliable()) {
-            await interaction.reply({ content: "You are currently opted out from using Ougi.", flags: Discord.MessageFlags.Ephemeral }).catch(console.error);
+            await interaction.reply({ content: await ougi.text(interaction, "interaction_optedOut"), flags: Discord.MessageFlags.Ephemeral }).catch(console.error);
         }
         return;
     }

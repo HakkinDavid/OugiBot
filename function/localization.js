@@ -755,7 +755,8 @@ module.exports =
         "setnews_disableField": "You may also disable this function",
         "setnews_disableOutput": "Newsletter channel successfully disabled.",
         "subscribe_helpOutput": "Thanks for subscribing, {user}!",
-        "unsubscribe_helpOutput": "You've successfully unsubscribed Ougi's announcements."
+        "unsubscribe_helpOutput": "You've successfully unsubscribed Ougi's announcements.",
+        "interaction_optedOut": "You are currently opted out from using Ougi."
     },
     "es": {
         "helpTitle": "Página de ayuda con Ougi",
