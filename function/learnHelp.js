@@ -13,10 +13,10 @@ async function (msg) {
   ];
   var answer = afterOptions[Math.floor(Math.random()*afterOptions.length)];
   var embed = await ougi.helpPreset(msg, "learn");
-  embed.setDescription(await ougi.text({ msg, stringID: "learnHelpDesc" }))
+  embed.setDescription(await ougi.text({ msg, stringID: "learnHelpDesc", values: { separator: "::" } }))
   .addFields({name: await ougi.text({ msg, stringID: "example" }), value: "`ougi learn " + trigger + " :: " + response + "`"})
   .addFields({name: await ougi.text({ msg, stringID: "output" }), value: answer})
-  .addFields({name: "Note", value: await ougi.text({ msg, stringID: "learn_note" })})
+  .addFields({name: "Note", value: await ougi.text({ msg, stringID: "learn_note", values: { prefix: "\`ougi\`" } })})
   .addFields({name: await ougi.text({ msg, stringID: "learn_usingTrigger" }), value: "`ougi " + trigger + "`"})
   .addFields({name: await ougi.text({ msg, stringID: "learn_ougiWillReply" }), value: response})
   .addFields({name: await ougi.text({ msg, stringID: "learn_tryingForget" }), value: "`ougi help forget`"});

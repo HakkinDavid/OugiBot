@@ -7,7 +7,10 @@ async function (arguments, msg) {
       msg.channel.send(await ougi.text({
         msg,
         stringID: "switchy_exclusive",
-        values: { instanceID }
+        values: {
+          instanceID,
+          prefix: "`" + instanceID + "::Ougi`"
+        }
       })).catch(console.error);
     }
     else {

@@ -7,7 +7,16 @@ module.exports = async function (msg) {
     })
     .addFields({
       name: await ougi.text({ msg, stringID: "minesweeper_optionsField" }),
-      value: await ougi.text({ msg, stringID: "minesweeper_optionsDesc" })
+      value: await ougi.text({
+        msg,
+        stringID: "minesweeper_optionsDesc",
+        values: {
+          titleOption: "`::title <text>`",
+          fillOption: "`::fill <emoji/text>`",
+          treasureOption: "`::treasure <emoji/text>`",
+          difficultyOption: "`::difficulty <1-10>`"
+        }
+      })
     });
 
   msg.channel.send({ embeds: [embed] }).catch(console.error);

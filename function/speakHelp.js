@@ -12,7 +12,7 @@ async function (msg) {
     }
   }))
   .addFields({name: await ougi.text({ msg, stringID: "example" }), value: "`ougi speak " + examplePhrases[Math.floor(Math.random()*examplePhrases.length)] + "`"})
-  .addFields({name: await ougi.text({ msg, stringID: "speakSpecificLang" }), value: "`ougi speak ::ja " + examplePhrases2[Math.floor(Math.random()*examplePhrases2.length)] + "`"})
+  .addFields({name: await ougi.text({ msg, stringID: "speakSpecificLang", values: { separator: "::" } }), value: "`ougi speak ::ja " + examplePhrases2[Math.floor(Math.random()*examplePhrases2.length)] + "`"})
 
   msg.channel.send({embeds: [embed]}).catch(console.error);
 }

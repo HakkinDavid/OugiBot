@@ -8,7 +8,7 @@ async function (arguments, msg) {
   let prefix = arguments.join(" ");
 
   if (arguments.length < 1) {
-    msg.channel.send(await ougi.text({ msg, stringID: "prefix_specifyNew" }));
+    msg.channel.send(await ougi.text({ msg, stringID: "prefix_specifyNew", values: { command: "ougi help prefix" } }));
     return;
   }
   msg.channel.send(

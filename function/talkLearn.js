@@ -23,7 +23,7 @@ async function (arguments, msg) {
   }
 
   if (breakChocolate.length !== 2){
-    msg.channel.send(await ougi.text({ msg, stringID: "learn_wrongSyntax" })).catch(console.error);
+    msg.channel.send(await ougi.text({ msg, stringID: "learn_wrongSyntax", values: { command: "ougi help learn" } })).catch(console.error);
     return
   }
 
@@ -73,7 +73,7 @@ async function (arguments, msg) {
     await ougi.text({ msg, stringID: "learn_success2", values: { response, trigger } }),
   ];
   let answer = afterOptions[Math.floor(Math.random()*afterOptions.length)];
-  answer += await ougi.text({ msg, stringID: "learn_proTip" });
+  answer += await ougi.text({ msg, stringID: "learn_proTip", values: { command: "ougi forget [trigger] :: [response]" } });
   let potentialLinks = response.match(/https{0,1}:\/\//gi) || [];
   if (potentialLinks.length > 0 && msg.author.id !== davidUserID) {
     answer = answer + (await ougi.text({ msg, stringID: "learn_mediaAuditPs" }));

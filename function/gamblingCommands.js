@@ -34,7 +34,7 @@ module.exports = async function gamblingCommands(args, msg, subCommand) {
     if (subCommand === 'coinflip') {
         const choice = (args[1] || 'heads').toLowerCase();
         if (choice !== 'heads' && choice !== 'tails') {
-            msg.channel.send(await ougi.text({ msg, stringID: "coinflip_invalidChoice" }));
+            msg.channel.send(await ougi.text({ msg, stringID: "coinflip_invalidChoice", values: { heads: "`heads`", tails: "`tails`", example: "`ougi coinflip 50 heads`" } }));
             return;
         }
         const outcome = Math.random() < 0.5 ? 'heads' : 'tails';

@@ -70,7 +70,7 @@ async function (msg) {
       difficulty = material;
     }
     else {
-      msg.channel.send(await ougi.text({ msg, stringID: "minesweeper_syntaxHelp" }));
+      msg.channel.send(await ougi.text({ msg, stringID: "minesweeper_syntaxHelp", values: { command: "ougi help minesweeper" } }));
       return;
     }
   }

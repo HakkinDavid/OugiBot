@@ -15,7 +15,7 @@ async function (msg) {
     }
   });
   var embed = await ougi.helpPreset(msg, "forget");
-  embed.setDescription(await ougi.text({ msg, stringID: "forgetHelpDesc" }))
+  embed.setDescription(await ougi.text({ msg, stringID: "forgetHelpDesc", values: { separator: "::" } }))
   .addFields({name: await ougi.text({ msg, stringID: "example" }), value: "`ougi forget " + trigger + " :: " + response + "`"})
   .addFields({name: await ougi.text({ msg, stringID: "output" }), value: answer});
 

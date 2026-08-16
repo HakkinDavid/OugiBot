@@ -6,7 +6,11 @@ module.exports = async function (msg) {
     const participants = parseInt(args[3], 10) || 50;
 
     if (!guildId) {
-        msg.channel.send(await ougi.text({ msg, stringID: "raffle_licenseUsage" }));
+        msg.channel.send(await ougi.text({
+            msg,
+            stringID: "raffle_licenseUsage",
+            values: { usage: "`#ougi raffle-license <guild_id> [duration_hours] [concurrent_limit] [participant_limit]`" }
+        }));
         return;
     }
 

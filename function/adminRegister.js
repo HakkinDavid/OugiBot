@@ -8,7 +8,7 @@ module.exports = async function (arguments, msg) {
     const mentionedUsers = Array.from(msg.mentions.users?.keys?.() || []);
 
     if (action !== "add" && action !== "remove") {
-        msg.channel.send(await ougi.text({ msg, stringID: "admin_usage" }));
+        msg.channel.send(await ougi.text({ msg, stringID: "admin_usage", values: { usage: "add|remove @users" } }));
         return;
     }
     if (!mentionedUsers.length) {

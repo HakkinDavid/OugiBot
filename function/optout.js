@@ -7,7 +7,7 @@ async function (msg) {
   .setAuthor({name: "Ougi [BOT]", icon: client.user.avatarURL({dynamic: true, size: 4096})})
   .setColor("#230347")
   .setDescription(await ougi.text({ msg, stringID: "optout_desc" }))
-  .addFields({name: await ougi.text({ msg, stringID: "optout_fieldName" }), value: await ougi.text({ msg, stringID: "optout_fieldValue" })})
+  .addFields({name: await ougi.text({ msg, stringID: "optout_fieldName" }), value: await ougi.text({ msg, stringID: "optout_fieldValue", values: { phrase: "`I want to start using Ougi [BOT].`" } })})
   .setFooter({text: await ougi.text({ msg, stringID: "optout_footer" }), icon: client.user.avatarURL({dynamic: true, size: 4096})})
   .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/help.png?raw=true")
   msg.channel.send({embeds: [embed]});

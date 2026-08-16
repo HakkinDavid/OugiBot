@@ -8,7 +8,11 @@ module.exports = async function (arguments, msg) {
     }
 
     if (guildRaffles.licensedUntil < Date.now()) {
-        msg.channel.send(await ougi.text({ msg, stringID: "raffle_licenseExpired" }));
+        msg.channel.send(await ougi.text({
+            msg,
+            stringID: "raffle_licenseExpired",
+            values: { command: "`ougi patreon`" }
+        }));
         return;
     }
 
@@ -23,7 +27,14 @@ module.exports = async function (arguments, msg) {
             let afterListCmd = msg.content.slice(msg.content.toLowerCase().indexOf("raffle") + "raffle".length).trim();
             afterListCmd = afterListCmd.slice(afterListCmd.toLowerCase().indexOf("list") + "list".length).trim();
             if (!afterListCmd) {
-                msg.channel.send(await ougi.text({ msg, stringID: "raffle_listUsage" }));
+                msg.channel.send(await ougi.text({
+                    msg,
+                    stringID: "raffle_listUsage",
+                    values: {
+                        usage1: "`ougi raffle list <participant nicknames, each with a number of entries>`",
+                        usage2: "`ougi raffle list clear`"
+                    }
+                }));
                 return;
             }
             guildRaffles.presetList = afterListCmd;
@@ -47,7 +58,10 @@ module.exports = async function (arguments, msg) {
         msg.channel.send(await ougi.text({
             msg,
             stringID: "raffle_maxConcurrent",
-            values: { allowed: guildRaffles.allowedConcurrentRaffles }
+            values: {
+                allowed: guildRaffles.allowedConcurrentRaffles,
+                command: "`ougi raffle clear`"
+            }
         }));
         return;
     }
@@ -82,7 +96,15 @@ module.exports = async function (arguments, msg) {
     }
     // Validation: require at least a list and ::title
     if ((!listStr || !listStr.trim()) || !slices.title) {
-        msg.channel.send(await ougi.text({ msg, stringID: "raffle_missingFields" }));
+        msg.channel.send(await ougi.text({
+            msg,
+            stringID: "raffle_missingFields",
+            values: {
+                listOption: "`::list`",
+                titleOption: "`::title`",
+                command: "`ougi raffle list <your list>`"
+            }
+        }));
         return;
     }
 
@@ -128,7 +150,16 @@ module.exports = async function (arguments, msg) {
                 durationMinutes = parseInt(match[1], 10);
             } else {
                 // Invalid duration format
-                msg.channel.send(await ougi.text({ msg, stringID: "raffle_invalidDuration" }));
+                msg.channel.send(await ougi.text({
+                    msg,
+                    stringID: "raffle_invalidDuration",
+                    values: {
+                        format1: "`XXh YYm`",
+                        format2: "`YYm`",
+                        example1: "`1h 30m`",
+                        example2: "`45m`"
+                    }
+                }));
                 return;
             }
         }

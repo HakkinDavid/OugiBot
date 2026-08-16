@@ -100,7 +100,7 @@ module.exports =
       default:
         embed
           .setDescription(await ougi.text({ msg, stringID: "embedHelpDescription", values: { commandName: "`ougi embed`" } }))
-          .addFields({ name: await ougi.text({ msg, stringID: "embedHelpDisclaimer" }), value: await ougi.text({ msg, stringID: "embedExtraHelp" }) + "\n" + await ougi.text({ msg, stringID: "example" }) + "\n`ougi help embed author`" })
+          .addFields({ name: await ougi.text({ msg, stringID: "embedHelpDisclaimer" }), value: await ougi.text({ msg, stringID: "embedExtraHelp", values: { command: "`ougi help embed`" } }) + "\n" + await ougi.text({ msg, stringID: "example" }) + "\n`ougi help embed author`" })
           .addFields({ name: await ougi.text({ msg, stringID: "embedOptionsList" }), value: "`::author`, `::authorurl`, `::avatar`, `::title`, `::url`, `::description`, `::subtitle`, `::field`, `::color`, `::thumbnail`, `::image`, `::footer`, `::icon`, `::timestamp`, `::deletefield`, `::deletesubtitle`, `::save`, `::load`, `::share`, `::delete`, `::list`" })
           .addFields({ name: await ougi.text({ msg, stringID: "embedRequireImageTitle" }), value: await ougi.text({ msg, stringID: "embedRequireImage", values: { guildOption: "`guild`", userselfOption: "`myself`", ougiOption: "`ougi`" } }) })
           .addFields({ name: await ougi.text({ msg, stringID: "embedAttachedImageTitle" }), value: await ougi.text({ msg, stringID: "embedAttachedImage", values: { fileOption: "`file`" } }) + "\n__" + await ougi.text({ msg, stringID: "example" }) + "__\n`::avatar file`\n`::thumbnail file 2`\n`::image file 3`\n`::icon file 4`" })

@@ -23,7 +23,7 @@ async function (arguments, msg) {
   }
 
   if (breakChocolate.length !== 2){
-    msg.channel.send(await ougi.text({ msg, stringID: "forget_wrongSyntax" })).catch(console.error);
+    msg.channel.send(await ougi.text({ msg, stringID: "forget_wrongSyntax", values: { command: "ougi help forget" } })).catch(console.error);
     return
   }
 

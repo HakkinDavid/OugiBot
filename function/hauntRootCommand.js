@@ -7,7 +7,7 @@ async function (arguments, msg) {
   let userID = arguments[0];
   let hauntedContent = arguments.slice(1).join(" ");
   if (!userID || !hauntedContent) {
-    return msg.channel.send(await ougi.text({ lang: 'en', stringID: "root_hauntUsage" }));
+    return msg.channel.send(await ougi.text({ lang: 'en', stringID: "root_hauntUsage", values: { usage: "`#ougi haunt <user_id> <message>`" } }));
   }
   try {
     const targetUser = await client.users.fetch(userID);

@@ -6,7 +6,7 @@ module.exports = async function remindMe(msg) {
   const content = msg.content.trim().slice(msg.content.indexOf("reminder") + "reminder".length).trim();
   
   if (!content || !content.includes("::")) {
-    msg.channel.send(await ougi.text({ msg, stringID: "remind_specifyDuration" })).catch(console.error);
+    msg.channel.send(await ougi.text({ msg, stringID: "remind_specifyDuration", values: { separator: "`::`", example: "`ougi reminder 10m :: Turn off the oven`" } })).catch(console.error);
     return;
   }
 
@@ -31,7 +31,7 @@ module.exports = async function remindMe(msg) {
     if (!isNaN(rawNum) && rawNum > 0) {
       durationMs = rawNum * 60 * 1000;
     } else {
-      msg.channel.send(await ougi.text({ msg, stringID: "remind_invalidFormat" })).catch(console.error);
+      msg.channel.send(await ougi.text({ msg, stringID: "remind_invalidFormat", values: { example1: "`10m`", example2: "`2h`", example3: "`1d`", example4: "`30s`" } })).catch(console.error);
       return;
     }
   }

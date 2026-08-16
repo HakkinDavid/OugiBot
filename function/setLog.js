@@ -23,13 +23,13 @@ async function (arguments, msg) {
       let channelMention = arguments[0];
       channelMention = channelMention.slice(2, -1);
       if (!msg.guild.channels.cache.has(channelMention)) {
-        msg.channel.send(await ougi.text({ msg, stringID: "log_usageHelp" }));
+        msg.channel.send(await ougi.text({ msg, stringID: "log_usageHelp", values: { command: "ougi help setlog" } }));
         return;
       }
       guildLogger = channelMention;
     }
     else {
-      msg.channel.send(await ougi.text({ msg, stringID: "log_usageHelp" }));
+      msg.channel.send(await ougi.text({ msg, stringID: "log_usageHelp", values: { command: "ougi help setlog" } }));
       return;
     }
   }

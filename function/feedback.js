@@ -28,7 +28,7 @@ async function (msg, intentional) {
   let collectedEmbed = new Discord.EmbedBuilder()
   .setTitle(await ougi.text({ msg, stringID: "feedback_timeoutTitle" }))
   .setDescription(await ougi.text({ msg, stringID: "feedback_timeoutDesc" }))
-  .addFields({name: "\u200b", value: await ougi.text({ msg, stringID: "feedback_checkCommand" })})
+  .addFields({name: "\u200b", value: await ougi.text({ msg, stringID: "feedback_checkCommand", values: { command: "`ougi survey`" } })})
   .setColor(surveyOBJ.color);
 
   if (surveyOBJ.url != null) {

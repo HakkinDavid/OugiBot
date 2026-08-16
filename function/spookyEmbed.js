@@ -20,7 +20,7 @@ module.exports =
         let thisMessage = arguments.join(" ");
         let breakChocolate = thisMessage.split("::").slice(1);
         if (breakChocolate.length < 1) {
-            msg.channel.send(await ougi.text({ msg, stringID: "spooky_needOneArg" }));
+            msg.channel.send(await ougi.text({ msg, stringID: "spooky_needOneArg", values: { command: "ougi help embed" } }));
             return;
         }
         let fieldsArray = [];
@@ -224,12 +224,12 @@ module.exports =
             else if (material.startsWith("authorurl ")) {
                 material = material.substring(10);
                 if (!material.includes(".")) {
-                    msg.channel.send(await ougi.text({ msg, stringID: "spooky_authorUrlTld" })).catch(console.error);
+                    msg.channel.send(await ougi.text({ msg, stringID: "spooky_authorUrlTld", values: { tldExamples: "`.com`, `.net`, `.boo`" } })).catch(console.error);
                     return;
                 }
 
                 if (material.startsWith("http:")) {
-                    msg.channel.send(await ougi.text({ msg, stringID: "spooky_authorUrlHttps" })).catch(console.error);
+                    msg.channel.send(await ougi.text({ msg, stringID: "spooky_authorUrlHttps", values: { protocol: "`https`" } })).catch(console.error);
                     return;
                 }
 
@@ -267,7 +267,7 @@ module.exports =
                 if (material.startsWith("<@") && material.endsWith(">")) {
                     let mentionedUser = material.slice(2, material.length - 1).replace("!", "");
                     if (!client.users.cache.has(mentionedUser)) {
-                        msg.channel.send(await ougi.text({ msg, stringID: "spooky_footerIconRequirement" }));
+                        msg.channel.send(await ougi.text({ msg, stringID: "spooky_footerIconRequirement", values: { guildOption: "`guild`", myselfOption: "`myself`", ougiOption: "`ougi`" } }));
                         return;
                     }
                     footerArray[1] = client.users.cache.get(mentionedUser).avatarURL({ dynamic: true, size: 4096 });
@@ -310,7 +310,7 @@ module.exports =
                 }
                 else {
                     if (!isImageUrl(material)) {
-                        msg.channel.send(await ougi.text({ msg, stringID: "spooky_footerIconRequirement" }));
+                        msg.channel.send(await ougi.text({ msg, stringID: "spooky_footerIconRequirement", values: { guildOption: "`guild`", myselfOption: "`myself`", ougiOption: "`ougi`" } }));
                         return;
                     }
                     footerArray[1] = material;
@@ -321,7 +321,7 @@ module.exports =
                 if (material.startsWith("<@") && material.endsWith(">")) {
                     let mentionedUser = material.slice(2, material.length - 1).replace("!", "");
                     if (!client.users.cache.has(mentionedUser)) {
-                        msg.channel.send(await ougi.text({ msg, stringID: "spooky_avatarRequirement" }));
+                        msg.channel.send(await ougi.text({ msg, stringID: "spooky_avatarRequirement", values: { guildOption: "`guild`", myselfOption: "`myself`", ougiOption: "`ougi`" } }));
                         return;
                     }
                     authorArray[1] = client.users.cache.get(mentionedUser).avatarURL({ dynamic: true, size: 4096 });
@@ -364,7 +364,7 @@ module.exports =
                 }
                 else {
                     if (!isImageUrl(material)) {
-                        msg.channel.send(await ougi.text({ msg, stringID: "spooky_avatarRequirement" }));
+                        msg.channel.send(await ougi.text({ msg, stringID: "spooky_avatarRequirement", values: { guildOption: "`guild`", myselfOption: "`myself`", ougiOption: "`ougi`" } }));
                         return;
                     }
                     authorArray[1] = material;
@@ -375,7 +375,7 @@ module.exports =
                 if (material.startsWith("<@") && material.endsWith(">")) {
                     let mentionedUser = material.slice(2, material.length - 1).replace("!", "");
                     if (!client.users.cache.has(mentionedUser)) {
-                        msg.channel.send(await ougi.text({ msg, stringID: "spooky_thumbnailRequirement" }));
+                        msg.channel.send(await ougi.text({ msg, stringID: "spooky_thumbnailRequirement", values: { guildOption: "`guild`", myselfOption: "`myself`", ougiOption: "`ougi`" } }));
                         return;
                     }
                     spookyConstructor.setThumbnail(client.users.cache.get(mentionedUser).avatarURL({ dynamic: true, size: 4096 }));
@@ -418,7 +418,7 @@ module.exports =
                 }
                 else {
                     if (!isImageUrl(material)) {
-                        msg.channel.send(await ougi.text({ msg, stringID: "spooky_thumbnailRequirement" }));
+                        msg.channel.send(await ougi.text({ msg, stringID: "spooky_thumbnailRequirement", values: { guildOption: "`guild`", myselfOption: "`myself`", ougiOption: "`ougi`" } }));
                         return;
                     }
                     spookyConstructor.setThumbnail(material);
@@ -429,7 +429,7 @@ module.exports =
                 if (material.startsWith("<@") && material.endsWith(">")) {
                     let mentionedUser = material.slice(2, material.length - 1).replace("!", "");
                     if (!client.users.cache.has(mentionedUser)) {
-                        msg.channel.send(await ougi.text({ msg, stringID: "spooky_imageRequirement" }));
+                        msg.channel.send(await ougi.text({ msg, stringID: "spooky_imageRequirement", values: { guildOption: "`guild`", myselfOption: "`myself`", ougiOption: "`ougi`" } }));
                         return;
                     }
                     spookyConstructor.setImage(client.users.cache.get(mentionedUser).avatarURL({ dynamic: true, size: 4096 }));
@@ -472,7 +472,7 @@ module.exports =
                 }
                 else {
                     if (!isImageUrl(material)) {
-                        msg.channel.send(await ougi.text({ msg, stringID: "spooky_imageRequirement" }));
+                        msg.channel.send(await ougi.text({ msg, stringID: "spooky_imageRequirement", values: { guildOption: "`guild`", myselfOption: "`myself`", ougiOption: "`ougi`" } }));
                         return;
                     }
                     spookyConstructor.setImage(material);
@@ -481,11 +481,11 @@ module.exports =
             else if (material.startsWith("url ")) {
                 material = material.substring(4);
                 if (!material.includes(".")) {
-                    msg.channel.send(await ougi.text({ msg, stringID: "spooky_invalidUrl" })).catch(console.error);
+                    msg.channel.send(await ougi.text({ msg, stringID: "spooky_invalidUrl", values: { tldExamples: "`.com`, `.net`, `.boo`" } })).catch(console.error);
                     return;
                 }
                 if (material.startsWith("http:")) {
-                    msg.channel.send(await ougi.text({ msg, stringID: "spooky_urlHttps" })).catch(console.error);
+                    msg.channel.send(await ougi.text({ msg, stringID: "spooky_urlHttps", values: { protocol: "`https`" } })).catch(console.error);
                     return;
                 }
 
@@ -519,7 +519,7 @@ module.exports =
                     let rgbArray = material.split(",");
                     if (rgbArray.length <= 3 && !isNaN(rgbArray[0]) && !isNaN(rgbArray[1]) && !isNaN(rgbArray[2])) {
                         if (rgbArray[0] > 255 || rgbArray[1] > 255 || rgbArray[2] > 255) {
-                            msg.channel.send(await ougi.text({ msg, stringID: "spooky_colorRequirement" }));
+                            msg.channel.send(await ougi.text({ msg, stringID: "spooky_colorRequirement", values: { randomOption: "`random`" } }));
                             return;
                         }
                         spookyConstructor.setColor(material);
@@ -534,14 +534,14 @@ module.exports =
                             spookyConstructor.setColor(material);
                         }
                         else {
-                            msg.channel.send(await ougi.text({ msg, stringID: "spooky_colorRequirement" }));
+                            msg.channel.send(await ougi.text({ msg, stringID: "spooky_colorRequirement", values: { randomOption: "`random`" } }));
                             return;
                         }
                     }
                 }
             }
             else {
-                msg.channel.send(await ougi.text({ msg, stringID: "spooky_syntaxHelp" }));
+                msg.channel.send(await ougi.text({ msg, stringID: "spooky_syntaxHelp", values: { command: "ougi help embed" } }));
                 return;
             }
         }
@@ -627,7 +627,8 @@ module.exports =
                 msg,
                 stringID: "spooky_savedPreset",
                 values: {
-                    preset: presetName
+                    preset: presetName,
+                    commandOption: "`::load " + presetName + "`"
                 }
             }));
         }
@@ -649,7 +650,8 @@ module.exports =
                 stringID: "spooky_sharedPreset",
                 values: {
                     user: msg.author.username,
-                    circle: circleOfSharing.join("`, `")
+                    circle: circleOfSharing.join("`, `"),
+                    commandOption: "`::load " + msg.author.username + "'s preset`"
                 }
             }));
         }
