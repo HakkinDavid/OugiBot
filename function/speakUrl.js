@@ -65,82 +65,40 @@ function isValidRedditTitle(title) {
 }
 
 /**
- * Extracts content from Reddit posts (using HTML shreddit tags, JSON API, Arctic Shift API or Pullpush fallback)
+ * Extracts content from Reddit posts via Reddit Post APIs (Arctic Shift / Pullpush)
  */
 async function extractRedditContent(urlStr) {
-  const headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-    'Accept-Language': 'es-ES,es;q=0.9,en;q=0.8'
-  };
-
   let title = '';
   let body = '';
   const postId = getRedditPostId(urlStr);
 
-  // 1. Try HTML scraping with Cheerio
+  if (!postId) {
+    return { title: '', body: '' };
+  }
+
+  // 1. Fetch from Arctic Shift Reddit API
   try {
-    const response = await axios.get(urlStr, { headers, timeout: 8000 });
-    if (response.data && !response.data.includes('blocked by network security')) {
-      const $ = cheerio.load(response.data);
-
-      const shredditTitle = $('shreddit-title').attr('title') || $('shreddit-title').text().trim();
-      const postAttrTitle = $('shreddit-post').attr('post-title');
-      const metaTitle = $('title').text().replace(/\s*:\s*r\/[^\s]+.*$/i, '').replace(/\s*-\s*Reddit$/i, '').trim();
-
-      if (isValidRedditTitle(shredditTitle)) title = shredditTitle;
-      else if (isValidRedditTitle(postAttrTitle)) title = postAttrTitle;
-      else if (isValidRedditTitle(metaTitle)) title = metaTitle;
-
-      // Extract post body from <shreddit-post>
-      const shredditPost = $('shreddit-post');
-      if (shredditPost.length > 0) {
-        const textBody = shredditPost.find('[slot="text-body"], .text-neutral-content, [data-post-click-location="text-body"]');
-        if (textBody.length > 0) {
-          body = textBody.text().trim();
-        } else {
-          const postClone = shredditPost.clone();
-          postClone.find('shreddit-comment-tree, shreddit-comment, [slot="comment"], [slot="action-row"], [slot="credit-bar"], button, svg, [slot="post-media-container"]').remove();
-          body = postClone.text().trim();
-        }
-      }
+    const arcticRes = await axios.get(`https://arctic-shift.photon-reddit.com/api/posts/ids?ids=${postId}`, {
+      headers: { 'User-Agent': 'OugiBot/2.0' },
+      timeout: 8000
+    });
+    const postData = arcticRes.data?.data?.[0];
+    if (postData) {
+      if (postData.title && isValidRedditTitle(postData.title)) title = postData.title;
+      if (postData.selftext) body = postData.selftext;
     }
-  } catch (err) {
-    // HTML scraping might fail due to Reddit bot protection; fallback to APIs
-  }
+  } catch (err) {}
 
-  // 2. Fallback to Reddit JSON API if either title or body is missing/blocked
-  if (!isValidRedditTitle(title) || !body) {
+  // 2. Fallback: Pullpush Reddit API
+  if (!title || !body) {
     try {
-      const jsonUrl = urlStr.split('?')[0].replace(/\/$/, '') + '.json';
-      const jsonRes = await axios.get(jsonUrl, { headers, timeout: 8000 });
-      const postData = jsonRes.data?.[0]?.data?.children?.[0]?.data;
-      if (postData) {
-        if (!isValidRedditTitle(title) && postData.title) title = postData.title;
-        if (!body && postData.selftext) body = postData.selftext;
-      }
-    } catch (err) {}
-  }
-
-  // 3. Fallback: Arctic Shift Public Reddit API
-  if ((!isValidRedditTitle(title) || !body) && postId) {
-    try {
-      const arcticRes = await axios.get(`https://arctic-shift.photon-reddit.com/api/posts/ids?ids=${postId}`, { timeout: 8000 });
-      const postData = arcticRes.data?.data?.[0];
-      if (postData) {
-        if (!isValidRedditTitle(title) && postData.title) title = postData.title;
-        if (!body && postData.selftext) body = postData.selftext;
-      }
-    } catch (err) {}
-  }
-
-  // 4. Fallback: Pullpush Public Reddit API
-  if ((!isValidRedditTitle(title) || !body) && postId) {
-    try {
-      const ppRes = await axios.get(`https://api.pullpush.io/reddit/search/submission/?ids=${postId}`, { timeout: 8000 });
+      const ppRes = await axios.get(`https://api.pullpush.io/reddit/search/submission/?ids=${postId}`, {
+        headers: { 'User-Agent': 'OugiBot/2.0' },
+        timeout: 8000
+      });
       const postData = ppRes.data?.data?.[0];
       if (postData) {
-        if (!isValidRedditTitle(title) && postData.title) title = postData.title;
+        if (!title && postData.title && isValidRedditTitle(postData.title)) title = postData.title;
         if (!body && postData.selftext) body = postData.selftext;
       }
     } catch (err) {}
