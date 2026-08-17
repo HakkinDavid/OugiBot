@@ -1,11 +1,72 @@
 const Database = require('better-sqlite3');
 const path = require('node:path');
 const fs = require('fs');
+const crypto = require('node:crypto');
 
 class OugiDatabaseManager {
     constructor() {
         this.databases = {};
+        this.dirty = new Set();
+        this.fileHashes = {};
         this.init();
+    }
+
+    markDirty(name) {
+        if (!name) return;
+        const canonical = path.basename(name, '.db');
+        this.dirty.add(canonical);
+    }
+
+    isDirty(name) {
+        if (!name) return false;
+        const canonical = path.basename(name, '.db');
+        return this.dirty.has(canonical);
+    }
+
+    clearDirty(name) {
+        if (!name) return;
+        const canonical = path.basename(name, '.db');
+        this.dirty.delete(canonical);
+    }
+
+    getFileHash(name) {
+        if (!name) return null;
+        const canonical = path.basename(name, '.db');
+        const dbPath = path.join(__dirname, '..', `${canonical}.db`);
+        if (!fs.existsSync(dbPath)) return null;
+        try {
+            const buffer = fs.readFileSync(dbPath);
+            return crypto.createHash('sha256').update(buffer).digest('hex');
+        } catch {
+            return null;
+        }
+    }
+
+    recordFileHash(name) {
+        if (!name) return null;
+        const canonical = path.basename(name, '.db');
+        const hash = this.getFileHash(canonical);
+        if (hash) {
+            this.fileHashes[canonical] = hash;
+        }
+        this.clearDirty(canonical);
+        return hash;
+    }
+
+    hasFileChanged(name) {
+        if (!name) return false;
+        const canonical = path.basename(name, '.db');
+        const currentHash = this.getFileHash(canonical);
+        if (!currentHash) return false;
+        const lastHash = this.fileHashes[canonical];
+        return !lastHash || currentHash !== lastHash;
+    }
+
+    initHashes() {
+        const dbKeys = ['settings', 'responses', 'embedPresets', 'localesCache', 'dynamicLocales', 'raffles', 'economy', 'newsChannel'];
+        for (const key of dbKeys) {
+            this.recordFileHash(key);
+        }
     }
 
     getDb(name) {
@@ -183,6 +244,9 @@ class OugiDatabaseManager {
         global.reloadedAmmo = {};
         global.interactions = {};
 
+        this.dirty.clear();
+        this.fileHashes = {};
+
         global.database = {
             settings: { id: channels.settings, file: './settings.db', done: false },
             backup: { id: channels.backup, file: './responses.db', done: false },
@@ -212,6 +276,7 @@ class OugiDatabaseManager {
         const db = this.getDb(dbName);
         const stmt = db.prepare(`INSERT INTO ${tableName} (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value=excluded.value`);
         stmt.run(key, typeof value === 'object' ? JSON.stringify(value) : String(value));
+        this.markDirty(dbName);
     }
 
     getKV(dbName, tableName, key, parseJson = true) {
@@ -259,6 +324,7 @@ class OugiDatabaseManager {
             }
         });
         transaction(kb);
+        this.markDirty('responses');
     }
 
     loadLocalesCache() {
@@ -280,6 +346,7 @@ class OugiDatabaseManager {
     saveStaticLocale(lang, stringId, translation) {
         const db = this.getDb('localesCache');
         db.prepare(`INSERT INTO locales (lang, string_id, translation) VALUES (?, ?, ?) ON CONFLICT(lang, string_id) DO UPDATE SET translation=excluded.translation`).run(lang, stringId, translation);
+        this.markDirty('localesCache');
     }
 
     loadDynamicLocales() {
@@ -301,6 +368,7 @@ class OugiDatabaseManager {
     saveDynamicLocale(lang, stringId, value, fromCode) {
         const db = this.getDb('dynamicLocales');
         db.prepare(`INSERT INTO dynamic_locales (lang, string_id, value, from_code) VALUES (?, ?, ?, ?) ON CONFLICT(lang, string_id) DO UPDATE SET value=excluded.value, from_code=excluded.from_code`).run(lang, stringId, value, fromCode || null);
+        this.markDirty('dynamicLocales');
     }
 
     loadRaffles() {
@@ -323,12 +391,14 @@ class OugiDatabaseManager {
         const db = this.getDb('embedPresets');
         const stmt = db.prepare('INSERT INTO presets (preset_key, data) VALUES (?, ?) ON CONFLICT(preset_key) DO UPDATE SET data=excluded.data');
         stmt.run(presetKey, JSON.stringify(data));
+        this.markDirty('embedPresets');
     }
 
     deleteEmbedPreset(presetKey) {
         const db = this.getDb('embedPresets');
         const stmt = db.prepare('DELETE FROM presets WHERE preset_key = ?');
         stmt.run(presetKey);
+        this.markDirty('embedPresets');
     }
 
     loadNews() {
@@ -355,6 +425,7 @@ class OugiDatabaseManager {
         let row = db.prepare('SELECT * FROM guild_economy WHERE guild_id = ?').get(guildId);
         if (!row) {
             db.prepare(`INSERT OR IGNORE INTO guild_economy (guild_id) VALUES (?)`).run(guildId);
+            this.markDirty('economy');
             row = db.prepare('SELECT * FROM guild_economy WHERE guild_id = ?').get(guildId);
         }
         return {
@@ -389,6 +460,7 @@ class OugiDatabaseManager {
             config.cooldown ?? 10,
             config.disabled ? 1 : 0
         );
+        this.markDirty('economy');
     }
 
     getUser(guildId, userId) {
@@ -396,6 +468,7 @@ class OugiDatabaseManager {
         let row = db.prepare('SELECT * FROM user_economy WHERE guild_id = ? AND user_id = ?').get(guildId, userId);
         if (!row) {
             db.prepare(`INSERT OR IGNORE INTO user_economy (guild_id, user_id) VALUES (?, ?)`).run(guildId, userId);
+            this.markDirty('economy');
             row = db.prepare('SELECT * FROM user_economy WHERE guild_id = ? AND user_id = ?').get(guildId, userId);
         }
         return { guild_id: row.guild_id, user_id: row.user_id, money: row.money, xp: row.xp, level: row.level, worked: row.worked, last_daily: row.last_daily };
@@ -410,6 +483,7 @@ class OugiDatabaseManager {
                 money=excluded.money, xp=excluded.xp, level=excluded.level,
                 worked=excluded.worked, last_daily=excluded.last_daily
         `).run(guildId, userId, data.money ?? 0, data.xp ?? 0, data.level ?? 0, data.worked ?? 0, data.last_daily ?? 0);
+        this.markDirty('economy');
     }
 
     getUserInventory(guildId, userId) {
@@ -421,6 +495,7 @@ class OugiDatabaseManager {
             INSERT INTO user_inventory (guild_id, user_id, item_id, quantity) VALUES (?, ?, ?, ?)
             ON CONFLICT(guild_id, user_id, item_id) DO UPDATE SET quantity=quantity + excluded.quantity
         `).run(guildId, userId, itemId, qty);
+        this.markDirty('economy');
     }
 
     getUserBadges(guildId, userId) {
@@ -429,6 +504,7 @@ class OugiDatabaseManager {
 
     addBadge(guildId, userId, badgeId) {
         this.getDb('economy').prepare(`INSERT OR IGNORE INTO user_badges (guild_id, user_id, badge_id, earned_at) VALUES (?, ?, ?, ?)`).run(guildId, userId, badgeId, Date.now());
+        this.markDirty('economy');
     }
 
     getShopItems(guildId) {
@@ -440,10 +516,12 @@ class OugiDatabaseManager {
             INSERT INTO shop_items (guild_id, item_id, name, price, role_id) VALUES (?, ?, ?, ?, ?)
             ON CONFLICT(guild_id, item_id) DO UPDATE SET name=excluded.name, price=excluded.price, role_id=excluded.role_id
         `).run(guildId, itemId, name, price, roleId);
+        this.markDirty('economy');
     }
 
     removeShopItem(guildId, itemId) {
         this.getDb('economy').prepare('DELETE FROM shop_items WHERE guild_id = ? AND item_id = ?').run(guildId, itemId);
+        this.markDirty('economy');
     }
 
     getLeaderboard(guildId, limit = 10) {

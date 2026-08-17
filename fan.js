@@ -193,6 +193,7 @@ async function syncData() {
 client.once('ready', async () => {
     try {
         await syncData();
+        ougi.db().initHashes();
         await client.application?.commands.set([
             {
                 name: 'Translate',
@@ -348,8 +349,11 @@ setInterval(async () => {
     if (!TEASEABLE || !ougi.startup()) return;
     ougi.db().checkpointAll();
     for (const [key, data] of Object.entries(database)) {
-        if (fs.existsSync(data.file)) {
-            await ougi.backup(data.file, data.id);
+        if (fs.existsSync(data.file) && (ougi.db().isDirty(data.file) || ougi.db().hasFileChanged(data.file))) {
+            const success = await ougi.backup(data.file, data.id);
+            if (success) {
+                ougi.db().recordFileHash(data.file);
+            }
         }
     }
 }, 300_000);

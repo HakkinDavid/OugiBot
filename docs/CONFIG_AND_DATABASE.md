@@ -245,7 +245,7 @@ To prevent data loss on ephemerally hosted platforms (such as Heroku or containe
 | `economy` | `./economy.db` | `1536866624253075527` | Guild economy & user balance/XP records |
 
 ### Background Synchronization Intervals
-- **Data Backup Interval (every 5 minutes / 300,000 ms in `fan.js`)**: Writes local state to disk and uploads file attachments to respective Discord backup channels via `ougi.backup()`.
+- **Data Backup Interval (every 5 minutes / 300,000 ms in `fan.js`)**: Executes `ougi.db().checkpointAll()` and checks each database for modifications using dirty flags (`ougi.db().isDirty()`) and SHA-256 hash comparisons (`ougi.db().hasFileChanged()`). Backups via `ougi.backup()` are only dispatched to Discord channels if changes have occurred, preventing redundant network uploads.
 - **Data Sync Interval (every 30 seconds / 30,000 ms in `fan.js`)**: Executes `ougi.fetch()` for any unsynced database file to download the latest attachment from Discord if local files are missing or incomplete.
 
 ---
