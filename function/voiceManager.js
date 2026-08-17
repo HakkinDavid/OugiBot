@@ -715,7 +715,6 @@ module.exports = {
                         },
                         timeout: 10000
                     });
-
                     await new Promise((chunkResolve) => {
                         const ttsProc = spawn('ffmpeg', [
                             '-loglevel', 'error',
@@ -724,6 +723,7 @@ module.exports = {
                             '-analyzeduration', '0',
                             '-probesize', '32',
                             '-i', 'pipe:0',
+                            '-af', 'volume=2.2,alimiter=limit=0.95',
                             '-f', 's16le',
                             '-ar', '48000',
                             '-ac', '2',
