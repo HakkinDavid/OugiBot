@@ -1,17 +1,38 @@
+const { PermissionFlagsBits } = require('discord.js');
+
 module.exports = async function (arguments, msg) {
     if (!(await ougi.guildCheck(msg))) return;
-    if (!(await ougi.adminCheck(msg))) return;
+
+    const authorId = msg.author?.id ?? msg.user?.id;
+    let member = msg.member;
+    if (!member && msg.guild?.members) {
+        member = msg.guild.members.cache.get(authorId) ?? await msg.guild.members.fetch(authorId).catch(() => null);
+    }
+    const isOwnerOrDiscordAdmin = msg.guild?.ownerId === authorId || 
+        (member && (member.permissions.has(PermissionFlagsBits.Administrator) || member.permissions.has(PermissionFlagsBits.ManageGuild)));
+
+    if (!isOwnerOrDiscordAdmin) {
+        msg.channel.send(await ougi.text({ msg, stringID: "mustOwnOrAdmin" }));
+        return;
+    }
 
     // Action: add or remove
-    const action = arguments[0];
-    // Extract mentioned user IDs from the message
-    const mentionedUsers = Array.from(msg.mentions.users?.keys?.() || []);
+    const action = arguments[0]?.toLowerCase();
+    // Extract mentioned user IDs or raw snowflake IDs from arguments
+    const mentionedUsers = new Set(Array.from(msg.mentions?.users?.keys?.() || []));
+    for (let i = 1; i < arguments.length; i++) {
+        const idMatch = arguments[i].match(/^\d{17,20}$/);
+        if (idMatch) {
+            mentionedUsers.add(idMatch[0]);
+        }
+    }
+    const targetIds = Array.from(mentionedUsers);
 
     if (action !== "add" && action !== "remove") {
         msg.channel.send(await ougi.text({ msg, stringID: "admin_usage", values: { usage: "add|remove @users" } }));
         return;
     }
-    if (!mentionedUsers.length) {
+    if (!targetIds.length) {
         msg.channel.send(await ougi.text({
             msg,
             stringID: "admin_mentionRequired",
@@ -23,14 +44,12 @@ module.exports = async function (arguments, msg) {
     }
 
     if (action === "add") {
-        // Add each mentioned user ID if not already present
-        for (const id of mentionedUsers) {
+        for (const id of targetIds) {
             ougi.db().addGuildAdmin(msg.guildId, id);
         }
     } else if (action === "remove") {
-        // Remove each mentioned user ID if present (excluding self and guild owner)
-        for (const id of mentionedUsers) {
-            if (id === msg.author.id) {
+        for (const id of targetIds) {
+            if (id === authorId) {
                 msg.channel.send(await ougi.text({ msg, stringID: "admin_cantRemoveSelf" }));
                 continue;
             }
@@ -49,5 +68,5 @@ module.exports = async function (arguments, msg) {
     const currentAdminsHeader = await ougi.text({ msg, stringID: "admin_currentAdmins" });
     const authNote = await ougi.text({ msg, stringID: "admin_authNote" });
 
-    msg.channel.send(`${actionText}\n\`\`\`\n${mentionedUsers.join("\n")}\n\`\`\`\n${currentAdminsHeader}\n${adminsDisplay}\n${authNote}`);
-}
+    msg.channel.send(`${actionText}\n\`\`\`\n${targetIds.join("\n")}\n\`\`\`\n${currentAdminsHeader}\n${adminsDisplay}\n${authNote}`);
+};

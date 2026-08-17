@@ -1,92 +1,92 @@
-module.exports =
-
-async function (msg) {
+module.exports = async function (msg) {
   if (msg.author.id == davidUserID) {
-    while (msg.content.includes('  ')) {
-      msg.content = msg.content.replace('  ', ' ')
-    }
-    while (msg.content.includes('\n\n')) {
-      msg.content = msg.content.replace('\n\n', '\n')
-    }
-    let spookyCake = msg.content;
-    let spookySlices = spookyCake.toLowerCase().split(" ");
-    let hauntedCommand = spookySlices[1];
-    let arguments = spookySlices.slice(2);
+    let rawSlices = msg.content.replace(/\s+/g, ' ').replace(/\n+/g, ' ').trim().split(" ");
+    let hauntedCommand = rawSlices[1]?.toLowerCase();
+    let args = rawSlices.slice(2);
 
     let embed = new Discord.EmbedBuilder()
-    .setAuthor({name: msg.author.username, icon: msg.author.avatarURL({dynamic: true, size: 4096})})
-    .setDescription("ID `" + msg.author.id + "`")
-    .setColor("#FF008C")
-    .setFooter({text: await ougi.text({ lang: 'en', stringID: "log_globalEmbedFooter" }), icon: client.user.avatarURL({dynamic: true, size: 4096})})
-    .setTimestamp()
+      .setAuthor({ name: msg.author.username, iconURL: msg.author.displayAvatarURL({ dynamic: true, size: 4096 }) })
+      .setDescription("ID `" + msg.author.id + "`")
+      .setColor("#FF008C")
+      .setFooter({ text: await ougi.text({ lang: 'en', stringID: "log_globalEmbedFooter" }) || "Global Log", iconURL: client.user.displayAvatarURL({ dynamic: true, size: 4096 }) })
+      .setTimestamp();
+
     if (hauntedCommand == undefined) {
-      embed.addFields({name: await ougi.text({ lang: 'en', stringID: "root_noTrigger" }), value: "\u200B"})
+      embed.addFields({ name: await ougi.text({ lang: 'en', stringID: "root_noTrigger" }) || "No Command", value: "\u200B" });
+    } else {
+      embed.addFields({ name: await ougi.text({ lang: 'en', stringID: "root_commandField" }) || "Command", value: hauntedCommand });
     }
-    else {
-      embed.addFields({name: await ougi.text({ lang: 'en', stringID: "root_commandField" }), value: hauntedCommand});
-    }
-    if (arguments != "") {
-      const argsFieldName = await ougi.text({ lang: 'en', stringID: "root_argumentsField" });
-      if (arguments.length < 1024) {
-        embed.addFields({name: argsFieldName, value: arguments.join(" ")})
-      }
-      else {
-        embed.addFields({name: argsFieldName, value: arguments.join(" ").slice(0, 1024)})
-        embed.addFields({name: "\u200B", value: arguments.join(" ").slice(1024)})
+
+    const argsString = args.join(" ");
+    if (argsString.length > 0) {
+      const argsFieldName = await ougi.text({ lang: 'en', stringID: "root_argumentsField" }) || "Arguments";
+      if (argsString.length <= 1024) {
+        embed.addFields({ name: argsFieldName, value: argsString });
+      } else {
+        embed.addFields({ name: argsFieldName, value: argsString.slice(0, 1024) });
+        embed.addFields({ name: "\u200B", value: argsString.slice(1024, 2048) });
       }
     }
 
-    client.channels.cache.get(consoleLogging).send({embeds: [embed]}).catch(console.error);
+    const logCh = client.channels.cache.get(consoleLogging) ?? await client.channels.fetch(consoleLogging).catch(() => null);
+    if (logCh) logCh.send({ embeds: [embed] }).catch(console.error);
 
-    switch (hauntedCommand){
+    switch (hauntedCommand) {
       case "help":
-        ougi.helpRootCommand(arguments, msg)
-      break;
+        await ougi.helpRootCommand(args, msg);
+        break;
       case "status":
-        ougi.statusRootCommand(msg)
-      break;
+        await ougi.statusRootCommand(msg);
+        break;
       case "log":
-        ougi.logRootCommand(arguments, msg)
-      break;
+        await ougi.logRootCommand(args, msg);
+        break;
       case "shutdown":
-        ougi.vibeCheckReallyHard(msg)
-      break;
+        await ougi.vibeCheckReallyHard(msg);
+        break;
       case "notifysurvey":
-        ougi.notifySurvey(msg)
-      break;
+        await ougi.notifySurvey(msg);
+        break;
       case "haunt":
-        ougi.hauntRootCommand(arguments, msg)
-      break;
+        await ougi.hauntRootCommand(args, msg);
+        break;
       case "newsletter":
-        ougi.newsletter(msg)
-      break;
+        await ougi.newsletter(msg);
+        break;
       case "switch":
-        ougi.switchy(arguments, msg)
-      break;
+        await ougi.switchy(args, msg);
+        break;
       case "survey":
-        ougi.createSurvey(msg)
-      break;
+        await ougi.createSurvey(msg);
+        break;
       case "ban":
-        ougi.banCommand(msg)
-      break;
+        await ougi.banCommand(msg);
+        break;
       case "patron":
-        ougi.patronCommand(msg)
-      break;
+        await ougi.patronCommand(msg);
+        break;
       case "inspect":
-        ougi.inspectCommand(msg)
-      break;
+        await ougi.inspectCommand(msg);
+        break;
       case "raffle-license":
-        ougi.raffleLicenseCommand ? ougi.raffleLicenseCommand(msg) : require('./raffleLicenseCommand')(msg)
-      break;
+        if (ougi.raffleLicenseCommand) {
+          await ougi.raffleLicenseCommand(msg);
+        } else {
+          await require('./raffleLicenseCommand')(msg);
+        }
+        break;
       default:
-        ougi.undefinedCommand(arguments, msg)
-      break;
+        await ougi.undefinedCommand(args, msg);
+        break;
     }
-  }
-  else {
-    let options = ["Ara ara! Only David-senpai is allowed to access my root commands", "N-nani? Stop it, my senpai. What are you doing?", "Nani? Nani? Nani? What's going on? Why is my senpai calling me out, using my root commands prefix and trying to peek at them?"];
-    let response = options[Math.floor(Math.random()*options.length)];
+  } else {
+    let options = [
+      "Ara ara! Only David-senpai is allowed to access my root commands",
+      "N-nani? Stop it, my senpai. What are you doing?",
+      "Nani? Nani? Nani? What's going on? Why is my senpai calling me out, using my root commands prefix and trying to peek at them?"
+    ];
+    let response = options[Math.floor(Math.random() * options.length)];
     msg.channel.send(response).catch(console.error);
-    return
+    return;
   }
-}
+};

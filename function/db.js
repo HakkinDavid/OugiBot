@@ -486,6 +486,36 @@ class OugiDatabaseManager {
         this.markDirty('economy');
     }
 
+    adjustMoney(guildId, userId, delta) {
+        const db = this.getDb('economy');
+        const user = this.getUser(guildId, userId);
+        const newBalance = (user.money || 0) + delta;
+        if (newBalance < 0) return { success: false, balance: user.money || 0 };
+        db.prepare('UPDATE user_economy SET money = ? WHERE guild_id = ? AND user_id = ?').run(newBalance, guildId, userId);
+        this.markDirty('economy');
+        return { success: true, balance: newBalance };
+    }
+
+    transferMoney(guildId, fromUserId, toUserId, amount) {
+        if (amount <= 0 || !Number.isInteger(amount)) return { success: false, reason: 'invalid_amount' };
+        const db = this.getDb('economy');
+        const tx = db.transaction(() => {
+            const sender = this.getUser(guildId, fromUserId);
+            if ((sender.money || 0) < amount) {
+                return { success: false, reason: 'insufficient_funds', balance: sender.money || 0 };
+            }
+            const recipient = this.getUser(guildId, toUserId);
+            const senderNew = (sender.money || 0) - amount;
+            const recipientNew = (recipient.money || 0) + amount;
+            db.prepare('UPDATE user_economy SET money = ? WHERE guild_id = ? AND user_id = ?').run(senderNew, guildId, fromUserId);
+            db.prepare('UPDATE user_economy SET money = ? WHERE guild_id = ? AND user_id = ?').run(recipientNew, guildId, toUserId);
+            return { success: true, senderBalance: senderNew, recipientBalance: recipientNew };
+        });
+        const result = tx();
+        if (result.success) this.markDirty('economy');
+        return result;
+    }
+
     getUserInventory(guildId, userId) {
         return this.getDb('economy').prepare('SELECT item_id, quantity FROM user_inventory WHERE guild_id = ? AND user_id = ?').all(guildId, userId);
     }
@@ -528,11 +558,42 @@ class OugiDatabaseManager {
         return this.getDb('economy').prepare('SELECT user_id, money, xp, level FROM user_economy WHERE guild_id = ? ORDER BY money DESC LIMIT ?').all(guildId, limit);
     }
 
+    ensureSettingsLoaded() {
+        if (!global.settingsOBJ) {
+            global.settingsOBJ = this.getKV('settings', 'kv', 'settingsOBJ') || {};
+        }
+        if (!global.settingsOBJ.guildBump) global.settingsOBJ.guildBump = {};
+        if (!global.settingsOBJ.banned) global.settingsOBJ.banned = {};
+        if (!global.settingsOBJ.ignored) global.settingsOBJ.ignored = [];
+        if (!global.settingsOBJ.ratelimit) global.settingsOBJ.ratelimit = {};
+        if (!global.settingsOBJ.prefix) global.settingsOBJ.prefix = {};
+        if (!global.settingsOBJ.blacklist) global.settingsOBJ.blacklist = {};
+        if (!global.settingsOBJ.logging) global.settingsOBJ.logging = {};
+        if (!global.settingsOBJ.lang) global.settingsOBJ.lang = {};
+        if (!global.settingsOBJ.guildNews) global.settingsOBJ.guildNews = {};
+        if (!global.settingsOBJ.subscribers) global.settingsOBJ.subscribers = [];
+        if (!global.settingsOBJ.surveys) global.settingsOBJ.surveys = {};
+        if (!global.settingsOBJ.surveysAvailable) global.settingsOBJ.surveysAvailable = {};
+        if (!global.settingsOBJ.AI) global.settingsOBJ.AI = {};
+        if (!global.settingsOBJ.patreonAdLastSeen) global.settingsOBJ.patreonAdLastSeen = {};
+        if (!global.settingsOBJ.interactionsCounter) global.settingsOBJ.interactionsCounter = {};
+        if (!global.settingsOBJ.patrons) global.settingsOBJ.patrons = [];
+        if (!global.settingsOBJ.shortcuts) global.settingsOBJ.shortcuts = {};
+        if (!global.settingsOBJ.nicknames) global.settingsOBJ.nicknames = {};
+        if (!global.settingsOBJ.guildAdmins) global.settingsOBJ.guildAdmins = {};
+        if (!global.knowledgeBase) global.knowledgeBase = this.loadKnowledgeBase() || {};
+        if (!global.rafflesOBJ) global.rafflesOBJ = this.loadRaffles() || {};
+    }
+
     // ─── Settings helpers — lang ─────────────────────────────────────────────
 
-    getLang(id) { return global.settingsOBJ?.lang?.[id] ?? null; }
+    getLang(id) {
+        this.ensureSettingsLoaded();
+        return global.settingsOBJ?.lang?.[id] ?? null;
+    }
 
     setLang(id, code) {
+        this.ensureSettingsLoaded();
         if (code === 'default') {
             delete global.settingsOBJ.lang[id];
         } else {
@@ -543,16 +604,23 @@ class OugiDatabaseManager {
 
     // ─── Settings helpers — prefix ───────────────────────────────────────────
 
-    getPrefix(guildId) { return global.settingsOBJ?.prefix?.[guildId] ?? null; }
+    getPrefix(guildId) {
+        this.ensureSettingsLoaded();
+        return global.settingsOBJ?.prefix?.[guildId] ?? null;
+    }
 
     setPrefix(guildId, prefix) {
+        this.ensureSettingsLoaded();
         global.settingsOBJ.prefix[guildId] = prefix;
         this.saveKV('settings', 'kv', 'settingsOBJ', global.settingsOBJ);
     }
 
     // ─── Settings helpers — logging ───────────────────────────────────────────
 
-    getLogChannel(guildId) { return global.settingsOBJ?.logging?.[guildId] ?? null; }
+    getLogChannel(guildId) {
+        this.ensureSettingsLoaded();
+        return global.settingsOBJ?.logging?.[guildId] ?? null;
+    }
 
     setLogChannel(guildId, channelId) {
         global.settingsOBJ.logging[guildId] = channelId;
@@ -580,14 +648,20 @@ class OugiDatabaseManager {
 
     // ─── Settings helpers — guildBump ─────────────────────────────────────────
 
-    getBumpConfig(guildId) { return global.settingsOBJ?.guildBump?.[guildId] ?? null; }
+    getBumpConfig(guildId = null) {
+        this.ensureSettingsLoaded();
+        if (!guildId) return global.settingsOBJ?.guildBump ?? {};
+        return global.settingsOBJ?.guildBump?.[guildId] ?? null;
+    }
 
     setBumpConfig(guildId, config) {
+        this.ensureSettingsLoaded();
         global.settingsOBJ.guildBump[guildId] = config;
         this.saveKV('settings', 'kv', 'settingsOBJ', global.settingsOBJ);
     }
 
     deleteBumpConfig(guildId) {
+        this.ensureSettingsLoaded();
         delete global.settingsOBJ.guildBump[guildId];
         this.saveKV('settings', 'kv', 'settingsOBJ', global.settingsOBJ);
     }
@@ -816,8 +890,12 @@ class OugiDatabaseManager {
         global.knowledgeBase[trigger].splice(idx, 1);
         if (global.knowledgeBase[trigger].length === 0) {
             delete global.knowledgeBase[trigger];
+            const db = this.getDb('responses');
+            db.prepare(`DELETE FROM responses WHERE trigger = ?`).run(trigger);
+            this.markDirty('responses');
+        } else {
+            this.saveKnowledgeBase(global.knowledgeBase);
         }
-        this.saveKnowledgeBase(global.knowledgeBase);
         return true;
     }
 

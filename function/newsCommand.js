@@ -20,8 +20,8 @@ module.exports = async function newsCommand(arguments, msg) {
       langCode = actualLangCode;
     }
 
-    const guildLang = ougi.db().getLang(msg.guildId);
-    if (!langCode && msg.channel.type === 0 && guildLang) {
+    const guildLang = msg.guildId ? ougi.db().getLang(msg.guildId) : null;
+    if (!langCode && guildLang) {
       actualLangCode = guildLang
         .replace(/mx/gi, "es")
         .replace(/default|auto/gi, "en")
@@ -34,13 +34,13 @@ module.exports = async function newsCommand(arguments, msg) {
     }
 
     const oldestAllowed = new Date(Date.now() - 1210000000).toISOString().slice(0, -5);
-    const newspaperNow = await newsapi.v2.everything({
+    const newspaperNow = await global.newsapi.v2.everything({
       q: arguments.join(" "),
       language: langCode,
       from: oldestAllowed
     });
 
-    if (!newspaperNow.articles.length) {
+    if (!newspaperNow.articles || !newspaperNow.articles.length) {
       await msg.channel.send(await ougi.text({ msg, stringID: "noNews" }));
       return;
     }
@@ -50,33 +50,37 @@ module.exports = async function newsCommand(arguments, msg) {
     if (langCode !== actualLangCode) {
       const localizedProperties = ["title", "description", "content"];
       for (let i = 0; i < localizedProperties.length; i++) {
-        article[localizedProperties[i]] = await ougi.text({ msg, stringID: article[localizedProperties[i]], dynamic: true });
+        const prop = localizedProperties[i];
+        if (article[prop] && typeof article[prop] === 'string') {
+          article[prop] = await ougi.text({ msg, stringID: article[prop], dynamic: true });
+        }
       }
     }
 
     if (!article.urlToImage?.length) {
-      article.urlToImage = "https://github.com/HakkinDavid/OugiBot/images/world.png?raw=true";
+      article.urlToImage = "https://github.com/HakkinDavid/OugiBot/blob/master/images/world.png?raw=true";
     }
 
+    const sourceName = article.source?.name || "News";
+    const descText = article.description ? article.description.slice(0, 1500) : "";
+    const readMore = await ougi.text({ msg, stringID: "readFullNews", values: { n: sourceName } }) || "Read full article";
+
     const embed = new EmbedBuilder()
-      .setFooter({ text: "newsArticleEmbed by Ougi", iconURL: client.user.avatarURL({ dynamic: true, size: 4096 }) })
+      .setFooter({ text: "newsArticleEmbed by Ougi", iconURL: client.user.displayAvatarURL({ dynamic: true, size: 4096 }) })
       .setColor(["#34EB43", "#34EBE1", "#EB3434", "#E2EB83"][Math.floor(Math.random() * 4)])
-      .setURL(article.url)
+      .setURL(article.url || null)
       .setImage(article.urlToImage)
       .setTimestamp()
-      .setAuthor({ name: article.source.name })
-      .setTitle(article.title)
+      .setAuthor({ name: sourceName })
+      .setTitle((article.title || "News").slice(0, 256))
       .setDescription(
-        article.description.slice(0, 1500) +
-        "\n\n[" +
-        (await ougi.text({ msg, stringID: "readFullNews", values: { n: article.source.name } })) +
-        "](" + article.url + ")"
+        `${descText}\n\n[${readMore}](${article.url || ""})`
       );
 
     await msg.channel.send({ embeds: [embed] });
 
   } catch (error) {
-    console.error("Error en newsCommand:", error);
-    await msg.channel.send(await ougi.text({ msg, stringID: "newsCommandError" }));
+    console.error("Error in newsCommand:", error);
+    await msg.channel.send(await ougi.text({ msg, stringID: "newsCommandError" })).catch(() => {});
   }
 };

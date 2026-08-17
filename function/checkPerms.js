@@ -1,25 +1,26 @@
-module.exports =
-
-    async function (msg, permissionsArray) {
-        if (msg.channel.type !== Discord.ChannelType.GuildText) {
-            return true
-        }
-        let missingPerms = []
-        try {
-            missingPerms = await msg.guild.members.me.permissionsIn(msg.channel).missing(permissionsArray);
-        }
-        catch (e) {
-            console.error(e);
-        }
-        if (missingPerms.length === 0) {
-            return true
-        }
-        let missingPermsLocalized = [];
-        for (i = 0; missingPerms.length > i; i++) {
-            missingPermsLocalized.push(await ougi.text({ msg, stringID: missingPerms[i] }))
-        }
-        let permsString = (await ougi.text({ msg, stringID: "insufficientPerms" })) + "\n•`" + missingPerms.join("`\n•`") + "`";
-        ougi.globalLog("Missing permissions handled as:\n" + permsString);
-        msg.channel.send(permsString);
-        return false;
+module.exports = async function (msg, permissionsArray) {
+    if (!msg || !msg.guild || !msg.channel?.isTextBased?.()) {
+        return true;
     }
+    let missingPerms = [];
+    try {
+        const me = msg.guild.members.me ?? await msg.guild.members.fetchMe().catch(() => null);
+        if (me) {
+            missingPerms = me.permissionsIn(msg.channel).missing(permissionsArray) || [];
+        }
+    }
+    catch (e) {
+        console.error(e);
+    }
+    if (missingPerms.length === 0) {
+        return true;
+    }
+    let missingPermsLocalized = [];
+    for (let i = 0; i < missingPerms.length; i++) {
+        missingPermsLocalized.push(await ougi.text({ msg, stringID: missingPerms[i] }) || missingPerms[i]);
+    }
+    let permsString = (await ougi.text({ msg, stringID: "insufficientPerms" })) + "\n•`" + missingPermsLocalized.join("`\n•`") + "`";
+    ougi.globalLog("Missing permissions handled as:\n" + permsString);
+    if (msg.channel?.send) msg.channel.send(permsString).catch(() => {});
+    return false;
+};

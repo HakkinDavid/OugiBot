@@ -44,7 +44,7 @@ module.exports = async function (arguments, msg) {
         return;
     }
     if (arguments[0] == "clear") {
-        guildRaffles.ongoingRaffles = [];
+        guildRaffles.ongoingRaffles = guildRaffles.ongoingRaffles.filter(r => !r.finished);
         msg.channel.send(await ougi.text({
             msg,
             stringID: "raffle_cleared",
@@ -54,7 +54,8 @@ module.exports = async function (arguments, msg) {
         return;
     }
 
-    if (guildRaffles.ongoingRaffles.length >= guildRaffles.allowedConcurrentRaffles) {
+    const activeRaffles = (guildRaffles.ongoingRaffles || []).filter(r => !r.finished);
+    if (activeRaffles.length >= guildRaffles.allowedConcurrentRaffles) {
         msg.channel.send(await ougi.text({
             msg,
             stringID: "raffle_maxConcurrent",

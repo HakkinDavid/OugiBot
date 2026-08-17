@@ -1,19 +1,21 @@
 const fs = require('fs');
-let responses = ougi.readFile(database.backup.file, 'utf-8');
-let links = [];
+const responses = (typeof global.ougi !== 'undefined' ? ougi.db().loadKnowledgeBase() : {});
+const links = [];
 
-for (trigger in responses) {
-    for (i=0; i < responses[trigger].length; i++) {
-        let response = responses[trigger][i];
-        let potentialLinks = response.match(/https{0,1}:\/\/[^ ]+/gi) || [];
-        if (potentialLinks.length > 0) {
-            links.push({
-                trigger,
-                response,
-                links: potentialLinks.join("\n")
-            });
+for (const trigger in responses) {
+    if (Object.prototype.hasOwnProperty.call(responses, trigger)) {
+        for (let i = 0; i < responses[trigger].length; i++) {
+            const response = responses[trigger][i];
+            const potentialLinks = response.match(/https?:\/\/[^ ]+/gi) || [];
+            if (potentialLinks.length > 0) {
+                links.push({
+                    trigger,
+                    response,
+                    links: potentialLinks.join("\n")
+                });
+            }
         }
     }
 }
 
-ougi.writeFileSync('./linksInReplies.txt', JSON.stringify(links, null, 4));
+fs.writeFileSync('./linksInReplies.txt', JSON.stringify(links, null, 4));

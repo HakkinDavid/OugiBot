@@ -456,8 +456,15 @@ module.exports = {
                     session.ytProc = null;
                 }
 
+                if (!session.queue || session.queue.length === 0) {
+                    if (session.mixer) {
+                        session.mixer.endMusic();
+                    }
+                    return;
+                }
+
                 // Advance or rotate queue
-                if (session.queue && session.queue[0] === song) {
+                if (session.queue[0] === song) {
                     if (session.isRadio) {
                         session.queue.shift();
                         this.replenishRadioQueue(msg.guildId);
@@ -528,64 +535,7 @@ module.exports = {
                 }
             }
 
-            // Strategy 2: In-Memory Cached PCM (Loop Replay)
-            if (song.cachedPcm && song.cachedPcm.length > 0) {
-                session.isCachedPlaying = true;
-                let chunkIndex = 0;
-                let isFeeding = false;
-
-                const feedCachedChunks = () => {
-                    if (isFeeding || !session.queue || session.queue[0] !== song) return;
-                    isFeeding = true;
-
-                    while (chunkIndex < song.cachedPcm.length) {
-                        if (session.mixer && !session.mixer.destroyed) {
-                            const chunk = song.cachedPcm[chunkIndex++];
-                            session.mixer.writeMusic(chunk);
-                            if (session.mixer.musicBytes > 48000) {
-                                break;
-                            }
-                        } else {
-                            break;
-                        }
-                    }
-
-                    isFeeding = false;
-
-                    if (chunkIndex >= song.cachedPcm.length) {
-                        if (session.mixer && !session.mixer.destroyed) {
-                            session.mixer.notifyMusicEof();
-                        }
-                        const checkMixerDrain = () => {
-                            if (!session.queue || session.queue[0] !== song) return;
-                            if (session.mixer && session.mixer.musicBytes > 0 && !session.mixer.destroyed) {
-                                setTimeout(checkMixerDrain, 100);
-                            } else {
-                                onSongComplete();
-                            }
-                        };
-                        checkMixerDrain();
-                    }
-                };
-
-                session.mixer.onBufferLow = () => {
-                    if (chunkIndex < song.cachedPcm.length) {
-                        feedCachedChunks();
-                    }
-                };
-
-                feedCachedChunks();
-
-                // Background prefetch next track in queue
-                if (session.queue.length > 1) {
-                    ougi.audioCacheManager.prefetch(session.queue[1]);
-                }
-                return;
-            }
-
-            // Strategy 3: Network stream + Cache Write (Disk & In-Memory)
-            song.cachedPcm = [];
-            let totalPcmCached = 0;
+            // Strategy 2: Network stream + Cache Write to Disk LRU Cache
             const cacheWriter = ougi.audioCacheManager.createCacheWriteStream(song.url, song);
             session.cacheWriter = cacheWriter;
 
@@ -659,12 +609,6 @@ module.exports = {
                     // Write to global disk cache
                     if (session.cacheWriter) {
                         session.cacheWriter.write(chunk);
-                    }
-
-                    // Write to in-memory cache for immediate loops
-                    if (totalPcmCached < 100 * 1024 * 1024) {
-                        song.cachedPcm.push(chunk);
-                        totalPcmCached += chunk.length;
                     }
 
                     // Flow control / Backpressure: pause if buffer > 48KB (~250ms)
@@ -816,9 +760,18 @@ module.exports = {
                 console.error("Error in TTS streaming queue item:", err);
             }
 
+            const wasPaused = session.isPaused;
+            if (wasPaused && session.player) {
+                session.player.unpause();
+            }
+
             // Wait until the decoded speech has been completely played by the mixer
             while (session.mixer && !session.mixer.destroyed && session.mixer.ttsBytes > 0) {
                 await new Promise(r => setTimeout(r, 100));
+            }
+
+            if (wasPaused && session.isPaused && session.player) {
+                session.player.pause(true);
             }
 
             msg?.react?.('🔊').catch(() => {});
@@ -1126,6 +1079,7 @@ module.exports = {
         if (!global.vc || !vc[guildId]) return;
         const session = vc[guildId];
 
+        session.queue = [];
         session.isCachedPlaying = false;
         session.isLooping = false;
         session.isRadio = false;

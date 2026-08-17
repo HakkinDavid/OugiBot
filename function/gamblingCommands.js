@@ -1,4 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
+const crypto = require('crypto');
 
 module.exports = async function gamblingCommands(args, msg, subCommand) {
     if (!msg.guild) {
@@ -10,16 +11,17 @@ module.exports = async function gamblingCommands(args, msg, subCommand) {
     const guildId = msg.guildId;
     const userId = msg.author.id;
     const guildEco = db.getGuildEconomy(guildId);
-    const user = db.getUser(guildId, userId);
     const currencySymbol = guildEco.currency;
 
     const bet = parseInt(args[0], 10);
-    if (isNaN(bet) || bet <= 0) {
+    if (isNaN(bet) || bet <= 0 || !Number.isInteger(bet)) {
         msg.channel.send(await ougi.text({ msg, stringID: "gamble_invalidBet" }));
         return;
     }
 
-    if ((user.money || 0) < bet) {
+    // Atomically debit the bet first
+    const debit = db.adjustMoney(guildId, userId, -bet);
+    if (!debit.success) {
         msg.channel.send(await ougi.text({
             msg,
             stringID: "gamble_notEnoughCurrency",
@@ -31,16 +33,22 @@ module.exports = async function gamblingCommands(args, msg, subCommand) {
         return;
     }
 
+    let finalBalance = debit.balance;
+
     if (subCommand === 'coinflip') {
         const choice = (args[1] || 'heads').toLowerCase();
         if (choice !== 'heads' && choice !== 'tails') {
+            // Refund bet if invalid choice
+            db.adjustMoney(guildId, userId, bet);
             msg.channel.send(await ougi.text({ msg, stringID: "coinflip_invalidChoice", values: { heads: "`heads`", tails: "`tails`", example: "`ougi coinflip 50 heads`" } }));
             return;
         }
-        const outcome = Math.random() < 0.5 ? 'heads' : 'tails';
+        const outcome = crypto.randomInt(0, 2) === 0 ? 'heads' : 'tails';
         const won = choice === outcome;
-        if (won) { user.money += bet; } else { user.money -= bet; }
-        db.saveUser(guildId, userId, user);
+        if (won) {
+            const credit = db.adjustMoney(guildId, userId, bet * 2);
+            finalBalance = credit.balance;
+        }
 
         const resultString = won
             ? await ougi.text({ msg, stringID: "coinflip_won", values: { bet, currency: currencySymbol } })
@@ -52,7 +60,7 @@ module.exports = async function gamblingCommands(args, msg, subCommand) {
             values: {
                 outcome: outcome.toUpperCase(),
                 result: resultString,
-                balance: user.money,
+                balance: finalBalance,
                 currency: currencySymbol
             }
         });
@@ -68,9 +76,9 @@ module.exports = async function gamblingCommands(args, msg, subCommand) {
 
     if (subCommand === 'slots') {
         const symbols = ['🍒', '🍋', '🍇', '🍉', '⭐', '7️⃣'];
-        const reel1 = symbols[Math.floor(Math.random() * symbols.length)];
-        const reel2 = symbols[Math.floor(Math.random() * symbols.length)];
-        const reel3 = symbols[Math.floor(Math.random() * symbols.length)];
+        const reel1 = symbols[crypto.randomInt(0, symbols.length)];
+        const reel2 = symbols[crypto.randomInt(0, symbols.length)];
+        const reel3 = symbols[crypto.randomInt(0, symbols.length)];
 
         let winnings = 0;
         if (reel1 === reel2 && reel2 === reel3) {
@@ -79,8 +87,10 @@ module.exports = async function gamblingCommands(args, msg, subCommand) {
             winnings = bet * 2;
         }
 
-        if (winnings > 0) { user.money += (winnings - bet); } else { user.money -= bet; }
-        db.saveUser(guildId, userId, user);
+        if (winnings > 0) {
+            const credit = db.adjustMoney(guildId, userId, winnings);
+            finalBalance = credit.balance;
+        }
 
         const resultString = winnings > 0
             ? await ougi.text({ msg, stringID: "slots_jackpot", values: { winnings, currency: currencySymbol } })
@@ -94,7 +104,7 @@ module.exports = async function gamblingCommands(args, msg, subCommand) {
                 reel2,
                 reel3,
                 result: resultString,
-                balance: user.money,
+                balance: finalBalance,
                 currency: currencySymbol
             }
         });
@@ -109,10 +119,12 @@ module.exports = async function gamblingCommands(args, msg, subCommand) {
     }
 
     if (subCommand === 'gamble') {
-        const userRoll = Math.floor(Math.random() * 100) + 1;
+        const userRoll = crypto.randomInt(1, 101);
         const won = userRoll > 55;
-        if (won) { user.money += bet; } else { user.money -= bet; }
-        db.saveUser(guildId, userId, user);
+        if (won) {
+            const credit = db.adjustMoney(guildId, userId, bet * 2);
+            finalBalance = credit.balance;
+        }
 
         const resultString = won
             ? await ougi.text({ msg, stringID: "coinflip_won", values: { bet, currency: currencySymbol } })
@@ -124,7 +136,7 @@ module.exports = async function gamblingCommands(args, msg, subCommand) {
             values: {
                 roll: userRoll,
                 result: resultString,
-                balance: user.money,
+                balance: finalBalance,
                 currency: currencySymbol
             }
         });

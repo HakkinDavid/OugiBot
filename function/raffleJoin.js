@@ -37,19 +37,23 @@ module.exports = async function (arguments, msg) {
     currentRaffle.participants[participantIdx].id = msg.author.id;
     ougi.db().saveRaffles();
     
-    const channel = msg.guild.channels.cache.get(currentRaffle.config.channelId);
+    const channel = msg.guild.channels.cache.get(currentRaffle.config.channelId) ?? 
+        await msg.guild.channels.fetch(currentRaffle.config.channelId).catch(() => null);
     if (!channel) {
         ougi.globalLog(`Raffle join failed: channel not found for channelId: ${currentRaffle.config.channelId}`);
         return;
     }
     try {
-        const joinedContent = await ougi.text({
-            msg,
-            stringID: "raffle_userJoined",
-            values: { user: msg.author.toString() }
-        });
-        await originalMessage.edit({ content: joinedContent, embeds: [currentRaffle.embed] });
+        const originalMessage = await channel.messages.fetch(messageId).catch(() => null);
+        if (originalMessage) {
+            const joinedContent = await ougi.text({
+                msg,
+                stringID: "raffle_userJoined",
+                values: { user: msg.author.toString() }
+            });
+            await originalMessage.edit({ content: joinedContent, embeds: [currentRaffle.embed] });
+        }
     } catch (error) {
         ougi.globalLog(`Raffle joining failed for raffle ${messageId}: ${error}`);
     }
-}
+};

@@ -155,23 +155,29 @@ global.channels = {
 
 ougi.db().unloadAll();
 
-let logMessages = [];
 global.errorBackup = console.error;
 
 /* ===== Manejo de Errores ===== */
-console.error = async (...args) => {
-    logMessages.push(...args);
-    if (!logMessages.at(-1)) return logMessages.pop();
+console.error = (...args) => {
+    global.errorBackup.apply(console, args);
+    const errText = args.map(a => (a instanceof Error ? (a.stack || a.message) : String(a))).join(' ').slice(0, 4000);
+    if (!errText) return;
 
-    const criticalEmbed = new Discord.EmbedBuilder()
-        .setAuthor({ name: await ougi.text({ lang: 'en', stringID: "log_consoleErrorAuthor" }) })
-        .setColor("#c20d00")
-        .setFooter({ text: await ougi.text({ lang: 'en', stringID: "log_errorEmbedFooter" }), iconURL: "https://github.com/HakkinDavid/OugiBot/blob/master/images/ougi.png?raw=true" })
-        .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/fatal.png?raw=true")
-        .setDescription(logMessages.pop().toString().slice(0, 4000));
+    (async () => {
+        try {
+            const authorName = await ougi.text({ lang: 'en', stringID: "log_consoleErrorAuthor" }).catch(() => "Console Error");
+            const footerText = await ougi.text({ lang: 'en', stringID: "log_errorEmbedFooter" }).catch(() => "Fatal");
+            const criticalEmbed = new Discord.EmbedBuilder()
+                .setAuthor({ name: authorName || "Console Error" })
+                .setColor("#c20d00")
+                .setFooter({ text: footerText || "Fatal", iconURL: "https://github.com/HakkinDavid/OugiBot/blob/master/images/ougi.png?raw=true" })
+                .setThumbnail("https://github.com/HakkinDavid/OugiBot/blob/master/images/fatal.png?raw=true")
+                .setDescription(errText);
 
-    errorBackup.apply(console, args);
-    client.channels.cache.get(consoleLogging)?.send({ embeds: [criticalEmbed] }).catch(errorBackup);
+            const ch = client.channels.cache.get(consoleLogging) ?? await client.channels.fetch(consoleLogging).catch(() => null);
+            if (ch) await ch.send({ embeds: [criticalEmbed] }).catch(() => {});
+        } catch { }
+    })();
 };
 
 /* ===== Sincronización de Base de Datos ===== */
@@ -272,7 +278,7 @@ client.on('messageCreate', async (msg) => {
             ougi.genAIAbility(msg);
             ourConcern = true;
         }
-    } else if (msg.channel.type === Discord.ChannelType.GuildText && msg.content.length > 0) {
+    } else if (msg.inGuild() && msg.channel.isTextBased() && msg.content.length > 0) {
         let isCommand = false;
 
         if (prefixMatch?.isCustom) {
@@ -307,11 +313,15 @@ client.on('messageReactionAdd', async (reaction, user) => {
     const shortcut = ougi.db().getShortcuts(guildId)?.[emojiKey];
     if (!shortcut) return;
 
+    const member = reaction.message.guild?.members.cache.get(user.id) ?? 
+        await reaction.message.guild?.members.fetch(user.id).catch(() => null);
+
     const msg = {
-        id: 0,
+        id: reaction.message.id,
         content: ougi.helperFunctions.prependPrefix(ougi.helperFunctions.stripPrefixStr(shortcut.action, guildId)),
         author: user,
-        channelId: reaction.message.id,
+        member: member,
+        channelId: reaction.message.channelId,
         channel: reaction.message.channel,
         guild: reaction.message.guild,
         guildId: reaction.message.guildId,
@@ -319,12 +329,9 @@ client.on('messageReactionAdd', async (reaction, user) => {
         client: reaction.message.client,
         reference: { messageId: reaction.message.id, guildId: reaction.message.guildId, channelId: reaction.message.channelId },
         isReactionShortcut: true,
-        delete: () => {
-            return { catch: (__) => { } };
-        },
-        reply: (_) => {
-            return { catch: (__) => { } };
-        }
+        inGuild: () => true,
+        delete: async () => {},
+        reply: async (opts) => reaction.message.channel.send(opts)
     };
 
     await ougi.processCommand(msg);
@@ -335,7 +342,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
     client.on(event, async (msg) => {
         if (!msg?.author || msg.author.bot) return;
         if (!ougi.startup() || ougi.db().isIgnored(msg.author.id)) return;
-        if (msg.channel.type === Discord.ChannelType.GuildText) {
+        if (msg.inGuild && msg.inGuild()) {
             const blacklist = ougi.db().getBlacklist(msg.guildId);
             if ((event === 'messageDelete' && blacklist.includes('snipe')) ||
                 (event === 'messageUpdate' && blacklist.includes('editsnipe'))) return;
@@ -371,7 +378,7 @@ setInterval(async () => {
                 stringID: "bumpNow",
                 values: { timeStamp: `<t:${Math.floor(now / 1000)}:t>` }
             });
-            const channel = client.channels.cache.get(bumpData.channel);
+            const channel = client.channels.cache.get(bumpData.channel) ?? await client.channels.fetch(bumpData.channel).catch(() => null);
             if (channel) await channel.send(`${message}${bumpData.role ? `\n<@&${bumpData.role}>` : ''}`);
             bumpData.reminded = true;
             ougi.db().setBumpConfig(bumpGuild, bumpData);
@@ -379,8 +386,6 @@ setInterval(async () => {
     }
 
     for (const [guildId, guildData] of Object.entries(global.rafflesOBJ || {})) {
-        if (guildData.licensedUntil < now) continue;
-
         (guildData.ongoingRaffles || []).forEach((raffle, idx) => {
             if (raffle.config.endsAt <= now && !raffle.finished) {
                 ougi.raffleExecute(guildId, idx);
@@ -392,16 +397,21 @@ setInterval(async () => {
 /* ===== Manejo de Excepciones Globales ===== */
 process.on('uncaughtException', async (e) => {
     try {
-        console.log(e);
+        console.error(e);
         let trimmed = JSON.stringify(e, Object.getOwnPropertyNames(e), 4).replace(/\\n/g, '\n');
+        const davidUser = client.users.cache.get(davidUserID) ?? await client.users.fetch(davidUserID).catch(() => null);
         while (trimmed.length > 0) {
-            await client.users.cache.get(davidUserID)?.send("```" + trimmed.slice(0, 1994) + "```");
+            await davidUser?.send("```" + trimmed.slice(0, 1994) + "```");
             trimmed = trimmed.slice(1994);
         }
     } catch {
-        console.log(await ougi.text({ lang: 'en', stringID: "console_dmDavidFailed" }));
-        console.log(e);
+        console.log(await ougi.text({ lang: 'en', stringID: "console_dmDavidFailed" }).catch(() => "Failed to DM developer."));
+        console.error(e);
     }
+});
+
+process.on('unhandledRejection', (reason) => {
+    console.error('Unhandled Promise Rejection:', reason);
 });
 
 /* ===== Login ===== */

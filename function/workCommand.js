@@ -1,6 +1,4 @@
-module.exports =
-
-async function (msg) {
+module.exports = async function (msg) {
     if (!(await ougi.guildCheck(msg))) return;
 
     const db = ougi.db();
@@ -14,8 +12,8 @@ async function (msg) {
     const user = db.getUser(msg.guildId, msg.author.id);
     const rn = Date.now();
 
-    if (user.worked && (rn - user.worked) <= guildEco.cooldown * 1000) {
-        const remaining = ((guildEco.cooldown * 1000) - (rn - user.worked)) / 1000;
+    if (user.worked && (rn - user.worked) <= (guildEco.cooldown || 10) * 1000) {
+        const remaining = Math.ceil(((guildEco.cooldown * 1000) - (rn - user.worked)) / 1000);
         msg.channel.send(await ougi.text({
             msg,
             stringID: "work_cooldown",
@@ -53,13 +51,13 @@ async function (msg) {
             values: { currency: guildEco.currency, amount: earned }
         });
         setTimeout(function () {
-            message.delete();
+            message.delete().catch(() => {});
             let workEmbed = new Discord.EmbedBuilder()
                 .setTitle(rewardTitle)
-                .setThumbnail(msg.author.avatarURL({ dynamic: true, size: 4096 }))
+                .setThumbnail(msg.author.displayAvatarURL({ dynamic: true, size: 4096 }))
                 .setDescription(rewardDesc)
                 .setColor("#281E87");
-            message.channel.send({ embeds: [workEmbed] });
-        }, Math.floor(Math.random() * 10000));
-    });
-}
+            message.channel.send({ embeds: [workEmbed] }).catch(console.error);
+        }, 2000 + Math.floor(Math.random() * 3000));
+    }).catch(console.error);
+};

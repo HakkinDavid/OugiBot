@@ -1,10 +1,7 @@
-module.exports =
-
-async function (action, msg, options) {
+module.exports = async function (action, msg, options) {
     if (!(await ougi.guildCheck(msg))) return;
 
-    if (!ougi.isAdmin(msg)) {
-        msg.channel.send(await ougi.text({ msg, stringID: "economy_adminOnly" }));
+    if (!(await ougi.adminCheck(msg))) {
         return;
     }
 
@@ -20,18 +17,24 @@ async function (action, msg, options) {
             }
             let expChannels = [];
 
-            if (options.length > 1) {
-                for (let i = 1; options.length > i; i++) {
-                    if (options[i].startsWith("<#") && options[i].endsWith(">")) {
-                        let channelMention = options[i].slice(2, -1);
+            if (options && options.length > 1) {
+                for (let i = 1; i < options.length; i++) {
+                    const raw = options[i];
+                    if (raw.startsWith("<#") && raw.endsWith(">")) {
+                        let channelMention = raw.slice(2, -1);
                         if (!msg.guild.channels.cache.has(channelMention)) {
                             msg.channel.send(await ougi.text({ msg, stringID: "manageEco_xpChannelHelp", values: { command: "ougi help xp-channel" } }));
                             return;
                         }
                         expChannels.push(channelMention);
-                    }
-                    else if (options[i] === 'all') {
-                        expChannels = guildEco.channels;
+                    } else if (/^\d{17,20}$/.test(raw)) {
+                        if (!msg.guild.channels.cache.has(raw)) {
+                            msg.channel.send(await ougi.text({ msg, stringID: "manageEco_xpChannelHelp", values: { command: "ougi help xp-channel" } }));
+                            return;
+                        }
+                        expChannels.push(raw);
+                    } else if (raw === 'all') {
+                        expChannels = [...guildEco.channels];
                         break;
                     }
                 }
@@ -41,11 +44,14 @@ async function (action, msg, options) {
             }
 
             switch (options[0]) {
-                case 'add':
-                    guildEco.channels.push(...expChannels);
+                case 'add': {
+                    const channelSet = new Set(guildEco.channels);
+                    expChannels.forEach(ch => channelSet.add(ch));
+                    guildEco.channels = Array.from(channelSet);
                     db.saveGuildEconomy(guildId, guildEco);
                     msg.channel.send(await ougi.text({ msg, stringID: "manageEco_xpChannelsAdd" }));
                     break;
+                }
                 case 'remove':
                     guildEco.channels = guildEco.channels.filter(ch => !expChannels.includes(ch));
                     db.saveGuildEconomy(guildId, guildEco);
@@ -58,6 +64,10 @@ async function (action, msg, options) {
             break;
         }
         case 'economy': {
+            if (!options || options.length === 0) {
+                msg.channel.send(await ougi.text({ msg, stringID: "manageEco_commandWrong" }));
+                return;
+            }
             switch (options[0]) {
                 case 'enable': {
                     const guildEco = db.getGuildEconomy(guildId);
@@ -91,7 +101,7 @@ async function (action, msg, options) {
                 }
                 case 'cooldown': {
                     const guildEco = db.getGuildEconomy(guildId);
-                    guildEco.cooldown = parseInt(options[1], 10) || 10;
+                    guildEco.cooldown = Math.max(1, parseInt(options[1], 10) || 10);
                     db.saveGuildEconomy(guildId, guildEco);
                     msg.channel.send(await ougi.text({ msg, stringID: "manageEco_cooldownSet" }));
                     break;
@@ -106,4 +116,4 @@ async function (action, msg, options) {
             msg.channel.send(await ougi.text({ msg, stringID: "manageEco_commandWrong" }));
             break;
     }
-}
+};

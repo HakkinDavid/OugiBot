@@ -41,7 +41,7 @@ module.exports = async function storytellCommand(args, msg) {
     .setTitle(await ougi.text({ msg, stringID: "storytell_startTitle" }))
     .setDescription(await ougi.text({ msg, stringID: "storytell_startDesc", values: { scenario } }))
     .setColor("#9B59B6")
-    .setFooter({ text: await ougi.text({ msg, stringID: "storytell_startFooter" }), iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) })
+    .setFooter({ text: await ougi.text({ msg, stringID: "storytell_startFooter" }), iconURL: msg.client.user.displayAvatarURL({ dynamic: true, size: 4096 }) })
     .setTimestamp();
 
   await msg.channel.send({ embeds: [startEmbed] });
@@ -59,7 +59,7 @@ module.exports = async function storytellCommand(args, msg) {
     session.turns.push({ author: m.author.username, id: m.author.id, text: m.content });
     m.react('📝').catch(() => {});
 
-    // Reset 5-minute timer for next turn
+    // Reset 1-minute timer for next turn
     collector.resetTimer({ time: 1 * 60 * 1000 });
   });
 
@@ -88,32 +88,26 @@ module.exports = async function storytellCommand(args, msg) {
     }
 
     const isReward = !aiResult.toLowerCase().includes("penalty");
-    const rewardAmount = isReward ? 200 : 100;
+    const rewardAmount = isReward ? 200 : -100;
     const db = ougi.db();
     const guildEco = db.getGuildEconomy(msg.guildId);
     const currencySymbol = guildEco.currency;
 
     for (const userId of session.participants) {
-      const user = db.getUser(msg.guildId, userId);
-      if (isReward) {
-        user.money = (user.money || 0) + rewardAmount;
-      } else {
-        user.money = Math.max(0, (user.money || 0) - rewardAmount);
-      }
-      db.saveUser(msg.guildId, userId, user);
+      db.adjustMoney(msg.guildId, userId, rewardAmount);
     }
 
     const outcomeNotice = isReward
-      ? await ougi.text({ msg, stringID: "storytell_rewardAll", values: { amount: rewardAmount, currency: currencySymbol } })
-      : await ougi.text({ msg, stringID: "storytell_penaltyAll", values: { amount: rewardAmount, currency: currencySymbol } });
+      ? await ougi.text({ msg, stringID: "storytell_rewardAll", values: { amount: 200, currency: currencySymbol } })
+      : await ougi.text({ msg, stringID: "storytell_penaltyAll", values: { amount: 100, currency: currencySymbol } });
 
     const endEmbed = new EmbedBuilder()
       .setTitle(await ougi.text({ msg, stringID: "storytell_concludedTitle" }))
       .setDescription(`**Conclusion:**\n${aiResult.slice(0, 1500)}\n\n${outcomeNotice}`)
       .setColor(isReward ? "#00FF00" : "#FF0000")
-      .setFooter({ text: await ougi.text({ msg, stringID: "storytell_participantsFooter", values: { count: session.participants.size } }), iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) })
+      .setFooter({ text: await ougi.text({ msg, stringID: "storytell_participantsFooter", values: { count: session.participants.size } }), iconURL: msg.client.user.displayAvatarURL({ dynamic: true, size: 4096 }) })
       .setTimestamp();
 
-    await msg.channel.send({ embeds: [endEmbed] });
+    await msg.channel.send({ embeds: [endEmbed] }).catch(console.error);
   });
 };

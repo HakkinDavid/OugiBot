@@ -1,10 +1,10 @@
 const { EmbedBuilder, ChannelType } = require('discord.js');
 
 module.exports = async function (msg) {
-    // Normalizar espacios y saltos de línea
-    const parts = msg.content.toLowerCase().replace(/\s+/g, ' ').replace(/\n+/g, ' ').trim().split(' ');
-    const spookyCommand = parts[1];
-    const args = parts.slice(2);
+    // Normalizar espacios y saltos de línea preservando mayúsculas/minúsculas de argumentos
+    const rawParts = msg.content.replace(/\s+/g, ' ').replace(/\n+/g, ' ').trim().split(' ');
+    const spookyCommand = rawParts[1]?.toLowerCase();
+    const args = rawParts.slice(2);
 
     const mustHavePerms = [
         "AddReactions",
@@ -45,8 +45,9 @@ module.exports = async function (msg) {
     }
 
     // Blacklist check
-    if (msg.channel.type === ChannelType.GuildText) {
-        if (ougi.db().isBlacklisted(msg.guildId, spookyCommand) || ougi.db().isBlacklisted(msg.guildId, parts.slice(1).join(' '))) {
+    if (msg.inGuild && msg.inGuild()) {
+        const fullCmdStr = rawParts.slice(1).join(' ').toLowerCase();
+        if (ougi.db().isBlacklisted(msg.guildId, spookyCommand) || ougi.db().isBlacklisted(msg.guildId, fullCmdStr)) {
             await msg.channel.send(await ougi.text({ msg, stringID: "command_blacklistedInGuild", values: { guild: msg.guild.toString() } })).catch(console.error);
             return;
         }
@@ -69,9 +70,9 @@ module.exports = async function (msg) {
     ];
     const urlPattern = /^https?:\/\/(www\.)?(youtube\.com|youtu\.be)/i;
 
-    if (commandMap[spookyCommand]) {
+    if (Object.prototype.hasOwnProperty.call(commandMap, spookyCommand) && typeof commandMap[spookyCommand] === 'function') {
         await commandMap[spookyCommand]();
-    } else if (urlPattern.test(spookyCommand)) {
+    } else if (spookyCommand && urlPattern.test(spookyCommand)) {
         msg.content = 'ougi music ' + ougi.helperFunctions.stripPrefixMsg(msg);
         await ougi.voiceCallMusic(msg).catch(console.error);
     } else if (spookyCommand === "subscribe" && args.length === 0) {

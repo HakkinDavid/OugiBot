@@ -1,39 +1,38 @@
-module.exports =
-
-async function(msg) {
-  /*-----------------------------------*/
-  while (msg.content.includes('  ')) {
-    msg.content = msg.content.replace('  ', ' ')
-  }
-  while (msg.content.includes('\n\n')) {
-    msg.content = msg.content.replace('\n\n', '\n')
-  }
-  let spookyCake = msg.content;
+module.exports = async function (msg) {
+  let spookyCake = msg.content.replace(/\s+/g, ' ').replace(/\n+/g, ' ').trim();
   let spookySlices = spookyCake.split(" ");
-  let spookyCommand = spookySlices[1];
-  var arguments = spookySlices.slice(2);
-  /*-----------------------------------*/
+  let args = spookySlices.slice(2);
+
   let ghostTweet = new Discord.EmbedBuilder()
     .setColor("#00acee")
     .setTimestamp()
-    .setFooter({text: "X", icon: "https://github.com/HakkinDavid/OugiBot/blob/master/images/xicon.png?raw=true"});
-  if (arguments.length < 1) {
+    .setFooter({ text: "X", iconURL: "https://github.com/HakkinDavid/OugiBot/blob/master/images/xicon.png?raw=true" });
+
+  if (args.length < 1) {
     msg.channel.send(await ougi.text({ msg, stringID: "tweet_empty" }));
     return;
   }
-  if (arguments[0].startsWith("<@") && arguments[0].endsWith(">")) {
-    let mentionedUser = arguments[0].slice(2, arguments[0].length-1).replace("!", "");
-    if (!client.users.cache.has(mentionedUser)) {
+
+  if (args[0].startsWith("<@") && args[0].endsWith(">")) {
+    let mentionedUserId = args[0].slice(2, -1).replace("!", "");
+    let mentionedUser = client.users.cache.get(mentionedUserId) ?? await client.users.fetch(mentionedUserId).catch(() => null);
+    if (!mentionedUser) {
       msg.channel.send(await ougi.text({ msg, stringID: "tweet_invalidUser" }));
       return;
     }
-    ghostTweet.setAuthor({name: client.users.cache.get(mentionedUser).username + " (@" + client.users.cache.get(mentionedUser).username + ")", icon: client.users.cache.get(mentionedUser).avatarURL({dynamic: true, size: 4096})});
-    arguments.shift();
+    ghostTweet.setAuthor({
+      name: `${mentionedUser.username} (@${mentionedUser.username})`,
+      iconURL: mentionedUser.displayAvatarURL({ dynamic: true, size: 4096 })
+    });
+    args.shift();
+  } else {
+    ghostTweet.setAuthor({
+      name: `${msg.author.username} (@${msg.author.username})`,
+      iconURL: msg.author.displayAvatarURL({ dynamic: true, size: 4096 })
+    });
   }
-  else {
-    ghostTweet.setAuthor({name: msg.author.username + " (@" + msg.author.username + ")", icon: msg.author.avatarURL({dynamic: true, size: 4096})});
-  }
-  ghostTweet.setDescription(arguments.join(" ").slice(0, 2048));
-  msg.delete().catch(O_o=>{});
-  msg.channel.send({embeds: [ghostTweet]}).catch(console.error);
-}
+
+  ghostTweet.setDescription(args.join(" ").slice(0, 2048));
+  if (msg.delete) msg.delete().catch(() => {});
+  msg.channel.send({ embeds: [ghostTweet] }).catch(console.error);
+};

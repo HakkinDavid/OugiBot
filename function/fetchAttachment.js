@@ -3,14 +3,14 @@ const https = require('https');
 const path = require('node:path');
 
 module.exports = async function (channelID, messageID, filename) {
-  const channel = client.channels.cache.get(channelID);
+  const channel = client.channels.cache.get(channelID) ?? await client.channels.fetch(channelID).catch(() => null);
   if (!channel) {
     console.log("Skipping nonexistent channel " + channelID);
     return null;
   }
 
   try {
-    const message = await channel.messages.fetch(messageID);
+    const message = await channel.messages.fetch(messageID).catch(() => null);
     if (!message || !message.attachments || !message.attachments.size) {
       console.log("No attachment found in message " + messageID);
       return null;

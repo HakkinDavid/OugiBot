@@ -7,33 +7,35 @@ module.exports = async function (msg) {
   try {
     if (msg.mentions.users.first()) {
       mentioned = msg.mentions.users.first();
-      thisOBJ = await client.users.fetch(mentioned.id);
+      thisOBJ = await client.users.fetch(mentioned.id).catch(() => null);
       if (!thisOBJ) {
         await msg.channel.send(await ougi.text({ msg, stringID: "userFetchFail" }));
         return;
       }
       curlType = "user";
       titleCurl = "User: " + thisOBJ.username;
-      iconCurl = thisOBJ.avatarURL({ dynamic: true, size: 4096 });
-      if (msg.channel.type === ChannelType.GuildText) {
-        memberCurl = await msg.guild.members.fetch(thisOBJ).catch(() => null);
+      iconCurl = thisOBJ.displayAvatarURL({ dynamic: true, size: 4096 });
+      if (msg.inGuild && msg.inGuild()) {
+        memberCurl = await msg.guild.members.fetch(thisOBJ.id).catch(() => null);
         if (memberCurl) {
           titleCurl = "Member: " + memberCurl.displayName;
-          colorCurl = memberCurl.displayHexColor;
+          colorCurl = memberCurl.displayHexColor || "#43B581";
         }
       }
     } else if (msg.mentions.channels.first()) {
-      thisOBJ = await msg.guild.channels.fetch(msg.mentions.channels.first().id);
+      thisOBJ = await msg.guild.channels.fetch(msg.mentions.channels.first().id).catch(() => null);
+      if (!thisOBJ) return;
       curlType = "channel";
       titleCurl = "Channel: #" + thisOBJ.name;
       colorCurl = "#7289DA";
     } else if (msg.mentions.roles.first()) {
-      thisOBJ = await msg.guild.roles.fetch(msg.mentions.roles.first().id);
+      thisOBJ = await msg.guild.roles.fetch(msg.mentions.roles.first().id).catch(() => null);
+      if (!thisOBJ) return;
       curlType = "role";
       titleCurl = "Role: @" + thisOBJ.name;
-      colorCurl = thisOBJ.hexColor;
-    } else if (msg.content.match(/<a{0,1}:[\w-]+:[0-9]+>/)) {
-      const potentialEmoji = msg.content.match(/<:[\w-]+:[0-9]+>/)[0];
+      colorCurl = thisOBJ.hexColor || "#7289DA";
+    } else if (msg.content.match(/<a?:\w+:[0-9]+>/)) {
+      const potentialEmoji = msg.content.match(/<a?:\w+:[0-9]+>/)[0];
       client.emojis.cache.each((e) => {
         if (e.toString() === potentialEmoji) {
           thisOBJ = e;
@@ -55,18 +57,18 @@ module.exports = async function (msg) {
       if (thisOBJ) {
         curlType = "user";
         titleCurl = "User: " + thisOBJ.username;
-        iconCurl = thisOBJ.avatarURL({ dynamic: true, size: 4096 });
-        if (msg.channel.type === ChannelType.GuildText) {
-          memberCurl = await msg.guild.members.fetch(thisOBJ).catch(() => null);
+        iconCurl = thisOBJ.displayAvatarURL({ dynamic: true, size: 4096 });
+        if (msg.inGuild && msg.inGuild()) {
+          memberCurl = await msg.guild.members.fetch(thisOBJ.id).catch(() => null);
           if (memberCurl) {
             titleCurl = "Member: " + memberCurl.displayName;
-            colorCurl = memberCurl.displayHexColor;
+            colorCurl = memberCurl.displayHexColor || "#43B581";
           }
         }
       }
     }
 
-    if (!curlType) {
+    if (!curlType || !thisOBJ) {
       await msg.channel.send(await ougi.text({ msg, stringID: "curlNoTarget" }));
       return;
     }
@@ -94,10 +96,10 @@ module.exports = async function (msg) {
       .setTimestamp()
       .setFooter({
         text: await ougi.text({ msg, stringID: "curl_footer" }),
-        iconURL: client.user.avatarURL({ dynamic: true, size: 4096 })
+        iconURL: client.user.displayAvatarURL({ dynamic: true, size: 4096 })
       });
 
-    if (memberCurl) {
+    if (memberCurl && memberCurl.joinedAt) {
       embed.addFields({
         name: await ougi.text({
           msg,
@@ -118,10 +120,6 @@ module.exports = async function (msg) {
         name: await ougi.text({ msg, stringID: "curl_mostDistinctiveRole" }),
         value: memberCurl.roles.hoist?.toString() || await ougi.text({ msg, stringID: "noDistinctRole" })
       });
-
-      if (lastMessage && !ougi.helperFunctions.checkForPrefixMsg(lastMessage)) {
-        embed.setDescription(`*"${lastMessage.content.slice(0, 2040)} ..."*`);
-      }
     }
 
     if (iconCurl) {
@@ -135,6 +133,6 @@ module.exports = async function (msg) {
 
   } catch (error) {
     console.error("Error in curlCommand:", error);
-    await msg.channel.send(await ougi.text({ msg, stringID: "curlError" }));
+    await msg.channel.send(await ougi.text({ msg, stringID: "curlError" })).catch(() => {});
   }
 };

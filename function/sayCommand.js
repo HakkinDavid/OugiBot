@@ -1,26 +1,20 @@
-module.exports =
-
-async function (arguments, msg) {
+module.exports = async function (arguments, msg) {
     if (msg.content.includes("@everyone") || msg.content.includes("@here")) {
       msg.channel.send("Ora ora ora ora! Remove that massive ping.").catch(console.error);
-      return
+      return;
     }
 
-    const sayMessage = arguments.join(" ");
-
-    while(sayMessage.startsWith(' ')) {
-      sayMessage = sayMessage.substring(1, sayMessage.length)
-    }
+    let sayMessage = Array.isArray(arguments) ? arguments.join(" ").trim() : "";
 
     if (sayMessage.length <= 0) {
-      var options = [
+      const options = [
         await ougi.text({ msg, stringID: "say_empty1" }),
         await ougi.text({ msg, stringID: "say_empty2" }),
         await ougi.text({ msg, stringID: "say_empty3" }),
         await ougi.text({ msg, stringID: "say_empty4" }),
         await ougi.text({ msg, stringID: "say_empty5" })
       ];
-      var response = options[Math.floor(Math.random()*options.length)];
+      const response = options[Math.floor(Math.random() * options.length)];
       msg.channel.send(response).catch(console.error);
       return;
     }
@@ -30,18 +24,16 @@ async function (arguments, msg) {
       return;
     }
 
-    var finalMessage = sayMessage.toString();
+    let finalMessage = sayMessage;
     if (msg.channel.type !== Discord.ChannelType.DM) {
-      while(finalMessage.includes("nigga") || finalMessage.includes("nigger") || finalMessage.includes("gay") || finalMessage.includes("cock") || finalMessage.includes("penis") || finalMessage.includes("n word")){
-        finalMessage = finalMessage
-        .replace("nigga", "unwhite")
-        .replace("nigger", "unwhiter")
-        .replace("gay", "unstraight")
-        .replace("cock", "coke")
-        .replace("penis", "coke")
-        .replace("n word", "word starting with n")
-      }
+      finalMessage = finalMessage
+        .replace(/nigga/gi, "unwhite")
+        .replace(/nigger/gi, "unwhiter")
+        .replace(/gay/gi, "unstraight")
+        .replace(/cock/gi, "coke")
+        .replace(/penis/gi, "coke")
+        .replace(/n word/gi, "word starting with n");
     }
-    msg.delete().catch(O_o=>{});
+    if (msg.delete) msg.delete().catch(() => {});
     msg.channel.send(finalMessage).catch(console.error);
-}
+};

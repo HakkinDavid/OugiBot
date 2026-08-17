@@ -1,9 +1,7 @@
-module.exports =
-
-async function (arguments, msg) {
-  if (arguments == instanceID) {
+module.exports = async function (arguments, msg) {
+  if (arguments[0] === instanceID || arguments.join(" ") === instanceID) {
     if (global.TEASEABLE) {
-      const TEASEABLE = false;
+      global.TEASEABLE = false;
       msg.channel.send(await ougi.text({
         msg,
         stringID: "switchy_exclusive",
@@ -12,9 +10,8 @@ async function (arguments, msg) {
           prefix: "`" + instanceID + "::Ougi`"
         }
       })).catch(console.error);
-    }
-    else {
-      const TEASEABLE = true;
+    } else {
+      global.TEASEABLE = true;
       msg.channel.send(await ougi.text({
         msg,
         stringID: "switchy_all",
@@ -22,4 +19,4 @@ async function (arguments, msg) {
       })).catch(console.error);
     }
   }
-}
+};

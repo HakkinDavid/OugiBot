@@ -62,7 +62,6 @@ module.exports = {
         { name: 'radio', aliases: ['live'], help: (msg) => ougi.radioHelp(msg) },
         { name: 'loop', aliases: [], help: (msg) => ougi.musicHelp(msg) },
         { name: 'unloop', aliases: [], help: (msg) => ougi.musicHelp(msg) },
-        { name: 'news', aliases: [], help: (msg) => ougi.newsHelp(msg) },
         { name: 'subscribe', aliases: [], help: (msg) => ougi.subscribeHelp(msg) },
         { name: 'unsubscribe', aliases: [], help: (msg) => ougi.unsubscribeHelp(msg) },
         { name: 'raffle', aliases: [], help: (msg) => ougi.raffleHelp(msg), execute: (args, msg) => ougi.raffleCommand(args, msg) },
@@ -76,7 +75,15 @@ module.exports = {
                 if (!(await ougi.guildCheck(msg))) return;
                 if (!(await ougi.adminCheck(msg, true))) return;
                 const guildRaffles = ougi.db().getGuildRaffles(msg.guildId);
-                await ougi.raffleExecute(msg.guildId, guildRaffles?.ongoingRaffles?.findIndex(r => r.messageId == msg.reference?.messageId));
+                const targetIdx = guildRaffles?.ongoingRaffles?.findIndex(r => r.messageId == msg.reference?.messageId);
+                if (targetIdx !== undefined && targetIdx >= 0) {
+                    await ougi.raffleExecute(msg.guildId, targetIdx);
+                } else if (guildRaffles?.ongoingRaffles?.length > 0) {
+                    await ougi.raffleExecute(msg.guildId, guildRaffles.ongoingRaffles.length - 1);
+                } else {
+                    const noRaffle = await ougi.text({ msg, stringID: "raffle_noneActive" }).catch(() => "No active raffle found.");
+                    if (msg.channel?.send) msg.channel.send(noRaffle).catch(() => {});
+                }
             }
         },
         { name: 'admin-register', aliases: [], help: (msg) => ougi.adminRegisterHelp(msg), execute: (args, msg) => ougi.adminRegister(args, msg) }

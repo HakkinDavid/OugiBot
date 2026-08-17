@@ -29,7 +29,7 @@ module.exports = async function dailyCommand(args, msg) {
         return;
     }
 
-    const dailyReward = Math.floor(250 * guildEco.multiplier);
+    const dailyReward = Math.floor(250 * (guildEco.multiplier || 1));
     user.money = (user.money || 0) + dailyReward;
     user.last_daily = now;
     db.saveUser(guildId, userId, user);
@@ -48,7 +48,7 @@ module.exports = async function dailyCommand(args, msg) {
         .setTitle(await ougi.text({ msg, stringID: "daily_claimedTitle" }))
         .setDescription(renderedDesc)
         .setColor("#FFD700")
-        .setFooter({ text: await ougi.text({ msg, stringID: "economy_footer" }), iconURL: msg.client.user.avatarURL({ dynamic: true, size: 4096 }) })
+        .setFooter({ text: await ougi.text({ msg, stringID: "economy_footer" }), iconURL: msg.client.user.displayAvatarURL({ dynamic: true, size: 4096 }) })
         .setTimestamp();
 
     msg.channel.send({ embeds: [embed] });
