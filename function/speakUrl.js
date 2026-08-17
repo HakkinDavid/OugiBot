@@ -46,43 +46,59 @@ function sanitizeTextForTts(text) {
     .trim();
 }
 
+function getRedditPostId(urlStr) {
+  try {
+    const url = new URL(urlStr);
+    if (url.hostname.toLowerCase() === 'redd.it') {
+      return url.pathname.replace(/^\/+/, '').split('/')[0];
+    }
+    const match = url.pathname.match(/\/comments\/([a-z0-9]+)/i);
+    if (match) return match[1];
+  } catch (_) {}
+  return null;
+}
+
+function isValidRedditTitle(title) {
+  if (!title || typeof title !== 'string') return false;
+  const clean = title.trim().toLowerCase();
+  return clean !== '' && clean !== 'reddit' && clean !== 'reddit - dive into anything' && !clean.includes('blocked by network security') && !clean.includes('access denied');
+}
+
 /**
- * Extracts content from Reddit posts (using HTML shreddit tags or JSON API fallback)
+ * Extracts content from Reddit posts (using HTML shreddit tags, JSON API, Arctic Shift API or Pullpush fallback)
  */
 async function extractRedditContent(urlStr) {
   const headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-    'Accept-Language': 'en-US,en;q=0.9,es;q=0.8'
+    'Accept-Language': 'es-ES,es;q=0.9,en;q=0.8'
   };
 
   let title = '';
   let body = '';
+  const postId = getRedditPostId(urlStr);
 
   // 1. Try HTML scraping with Cheerio
   try {
-    const response = await axios.get(urlStr, { headers, timeout: 10000 });
-    if (response.data) {
+    const response = await axios.get(urlStr, { headers, timeout: 8000 });
+    if (response.data && !response.data.includes('blocked by network security')) {
       const $ = cheerio.load(response.data);
 
-      // Extract title from <shreddit-title> or post attributes or meta/title
-      title = $('shreddit-title').attr('title') || $('shreddit-title').text().trim();
-      if (!title) {
-        title = $('shreddit-post').attr('post-title') || '';
-      }
-      if (!title) {
-        title = $('title').text().replace(/\s*:\s*r\/[^\s]+.*$/i, '').replace(/\s*-\s*Reddit$/i, '').trim();
-      }
+      const shredditTitle = $('shreddit-title').attr('title') || $('shreddit-title').text().trim();
+      const postAttrTitle = $('shreddit-post').attr('post-title');
+      const metaTitle = $('title').text().replace(/\s*:\s*r\/[^\s]+.*$/i, '').replace(/\s*-\s*Reddit$/i, '').trim();
+
+      if (isValidRedditTitle(shredditTitle)) title = shredditTitle;
+      else if (isValidRedditTitle(postAttrTitle)) title = postAttrTitle;
+      else if (isValidRedditTitle(metaTitle)) title = metaTitle;
 
       // Extract post body from <shreddit-post>
       const shredditPost = $('shreddit-post');
       if (shredditPost.length > 0) {
-        // Look for slotted text body or paragraphs inside shreddit-post
         const textBody = shredditPost.find('[slot="text-body"], .text-neutral-content, [data-post-click-location="text-body"]');
         if (textBody.length > 0) {
           body = textBody.text().trim();
         } else {
-          // Clone and remove comments, buttons, icons, action rows
           const postClone = shredditPost.clone();
           postClone.find('shreddit-comment-tree, shreddit-comment, [slot="comment"], [slot="action-row"], [slot="credit-bar"], button, svg, [slot="post-media-container"]').remove();
           body = postClone.text().trim();
@@ -90,28 +106,44 @@ async function extractRedditContent(urlStr) {
       }
     }
   } catch (err) {
-    // HTML scraping might fail due to Reddit bot protection; fallback to JSON API
+    // HTML scraping might fail due to Reddit bot protection; fallback to APIs
   }
 
   // 2. Fallback to Reddit JSON API if either title or body is missing/blocked
-  if (!title || !body) {
+  if (!isValidRedditTitle(title) || !body) {
     try {
       const jsonUrl = urlStr.split('?')[0].replace(/\/$/, '') + '.json';
-      const jsonRes = await axios.get(jsonUrl, {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:120.0) Gecko/20100101 Firefox/120.0'
-        },
-        timeout: 10000
-      });
-
+      const jsonRes = await axios.get(jsonUrl, { headers, timeout: 8000 });
       const postData = jsonRes.data?.[0]?.data?.children?.[0]?.data;
       if (postData) {
-        if (!title && postData.title) title = postData.title;
+        if (!isValidRedditTitle(title) && postData.title) title = postData.title;
         if (!body && postData.selftext) body = postData.selftext;
       }
-    } catch (err) {
-      // JSON fallback failed
-    }
+    } catch (err) {}
+  }
+
+  // 3. Fallback: Arctic Shift Public Reddit API
+  if ((!isValidRedditTitle(title) || !body) && postId) {
+    try {
+      const arcticRes = await axios.get(`https://arctic-shift.photon-reddit.com/api/posts/ids?ids=${postId}`, { timeout: 8000 });
+      const postData = arcticRes.data?.data?.[0];
+      if (postData) {
+        if (!isValidRedditTitle(title) && postData.title) title = postData.title;
+        if (!body && postData.selftext) body = postData.selftext;
+      }
+    } catch (err) {}
+  }
+
+  // 4. Fallback: Pullpush Public Reddit API
+  if ((!isValidRedditTitle(title) || !body) && postId) {
+    try {
+      const ppRes = await axios.get(`https://api.pullpush.io/reddit/search/submission/?ids=${postId}`, { timeout: 8000 });
+      const postData = ppRes.data?.data?.[0];
+      if (postData) {
+        if (!isValidRedditTitle(title) && postData.title) title = postData.title;
+        if (!body && postData.selftext) body = postData.selftext;
+      }
+    } catch (err) {}
   }
 
   return { title: title.trim(), body: body.trim() };
