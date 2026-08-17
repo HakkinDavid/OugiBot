@@ -61,7 +61,12 @@ module.exports = async function (msg) {
     // Comandos Map
     const commandMap = ougi.commandList.getCommandMap(args, msg);
 
-    const musicCommands = ["music", "skip", "stop", "play", "p", "loop", "unloop"];
+    const musicCommands = [
+        "music", "skip", "stop", "play", "p", "loop", "unloop",
+        "pause", "resume", "unpause", "queue", "q", "list",
+        "np", "nowplaying", "now-playing", "now",
+        "remove", "dequeue", "unqueue", "radio", "live"
+    ];
     const urlPattern = /^https?:\/\/(www\.)?(youtube\.com|youtu\.be)/i;
 
     if (commandMap[spookyCommand]) {

@@ -2,6 +2,45 @@ const { spawn } = require('child_process');
 const { Readable } = require('stream');
 const axios = require('axios');
 
+function parseDurationToSec(durationStr) {
+    if (!durationStr || typeof durationStr !== 'string') return 0;
+    if (durationStr.toLowerCase() === 'live') return 0;
+    const parts = durationStr.split(':').map(p => parseInt(p, 10));
+    if (parts.some(isNaN)) return 0;
+    if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+    if (parts.length === 2) return parts[0] * 60 + parts[1];
+    if (parts.length === 1) return parts[0];
+    return 0;
+}
+
+function formatSecondsToTime(sec) {
+    if (isNaN(sec) || sec < 0) sec = 0;
+    const s = Math.floor(sec % 60);
+    const m = Math.floor((sec / 60) % 60);
+    const h = Math.floor(sec / 3600);
+    const sStr = s < 10 ? `0${s}` : `${s}`;
+    const mStr = m < 10 ? `0${m}` : `${m}`;
+    if (h > 0) {
+        const hStr = h < 10 ? `0${h}` : `${h}`;
+        return `${hStr}:${mStr}:${sStr}`;
+    }
+    return `${mStr}:${sStr}`;
+}
+
+function generateProgressBar(elapsedSec, totalSec, length = 15) {
+    if (!totalSec || totalSec <= 0) {
+        return `🔘▬▬▬▬▬▬▬▬▬▬▬▬▬▬ [${formatSecondsToTime(elapsedSec)} / Live]`;
+    }
+    const ratio = Math.max(0, Math.min(1, elapsedSec / totalSec));
+    const position = Math.min(length - 1, Math.floor(ratio * length));
+    let bar = '';
+    for (let i = 0; i < length; i++) {
+        if (i === position) bar += '🔘';
+        else bar += '▬';
+    }
+    return `${bar} [${formatSecondsToTime(elapsedSec)} / ${formatSecondsToTime(totalSec)}]`;
+}
+
 class AudioMixer extends Readable {
     constructor(options = {}) {
         super(options);
@@ -221,6 +260,9 @@ class AudioMixer extends Readable {
 
 module.exports = {
     AudioMixer,
+    parseDurationToSec,
+    formatSecondsToTime,
+    generateProgressBar,
 
     async getOrCreateSession(guildId, vcChannel) {
         const V = global.Voice || require('@discordjs/voice');
@@ -232,6 +274,10 @@ module.exports = {
                 queue: [],
                 ttsQueue: [],
                 isLooping: false,
+                isRadio: false,
+                isPaused: false,
+                pausedAt: null,
+                totalPausedMs: 0,
                 isCachedPlaying: false,
                 player: null,
                 connection: null,
@@ -250,6 +296,8 @@ module.exports = {
         if (!session.queue) session.queue = [];
         if (!session.ttsQueue) session.ttsQueue = [];
         if (typeof session.isLooping !== 'boolean') session.isLooping = false;
+        if (typeof session.isRadio !== 'boolean') session.isRadio = false;
+        if (typeof session.isPaused !== 'boolean') session.isPaused = false;
         if (typeof session.isCachedPlaying !== 'boolean') session.isCachedPlaying = false;
 
         // Clear any pending idle disconnect timer
@@ -384,6 +432,12 @@ module.exports = {
         if (session.isCachedPlaying) return;
 
         const song = session.queue[0];
+        song.startTime = Date.now();
+        song.pausedAt = null;
+        song.totalPausedMs = 0;
+        song.durationSec = parseDurationToSec(song.duration);
+        session.isPaused = false;
+        session.pausedAt = null;
 
         try {
             if (!session.mixer || session.mixer.destroyed || session.mixer.ended) {
@@ -404,7 +458,10 @@ module.exports = {
 
                 // Advance or rotate queue
                 if (session.queue && session.queue[0] === song) {
-                    if (session.isLooping) {
+                    if (session.isRadio) {
+                        session.queue.shift();
+                        this.replenishRadioQueue(msg.guildId);
+                    } else if (session.isLooping) {
                         const finishedSong = session.queue.shift();
                         session.queue.push(finishedSong);
                     } else {
@@ -529,7 +586,7 @@ module.exports = {
             // Strategy 3: Network stream + Cache Write (Disk & In-Memory)
             song.cachedPcm = [];
             let totalPcmCached = 0;
-            const cacheWriter = ougi.audioCacheManager.createCacheWriteStream(song.url);
+            const cacheWriter = ougi.audioCacheManager.createCacheWriteStream(song.url, song);
             session.cacheWriter = cacheWriter;
 
             let musicProc = null;
@@ -829,6 +886,211 @@ module.exports = {
         return true;
     },
 
+    pauseMusic(guildId) {
+        const session = global.vc?.[guildId];
+        if (!session || !session.queue || session.queue.length === 0) {
+            return { success: false, reason: 'NOT_PLAYING' };
+        }
+        if (session.isPaused) {
+            return { success: false, reason: 'ALREADY_PAUSED', song: session.queue[0] };
+        }
+
+        session.isPaused = true;
+        session.pausedAt = Date.now();
+
+        if (session.player) {
+            session.player.pause(true);
+        }
+        if (session.diskReadStream && !session.diskReadStream.isPaused()) {
+            session.diskReadStream.pause();
+        }
+        if (session.musicProc && session.musicProc.stdout && !session.musicProc.stdout.isPaused()) {
+            session.musicProc.stdout.pause();
+        }
+
+        return { success: true, song: session.queue[0] };
+    },
+
+    resumeMusic(guildId) {
+        const session = global.vc?.[guildId];
+        if (!session || !session.queue || session.queue.length === 0) {
+            return { success: false, reason: 'NOT_PLAYING' };
+        }
+        if (!session.isPaused) {
+            return { success: false, reason: 'NOT_PAUSED', song: session.queue[0] };
+        }
+
+        if (session.pausedAt) {
+            session.totalPausedMs = (session.totalPausedMs || 0) + (Date.now() - session.pausedAt);
+            session.pausedAt = null;
+        }
+        session.isPaused = false;
+
+        if (session.player) {
+            session.player.unpause();
+        }
+        if (session.diskReadStream && session.diskReadStream.isPaused()) {
+            session.diskReadStream.resume();
+        }
+        if (session.musicProc && session.musicProc.stdout && session.musicProc.stdout.isPaused()) {
+            session.musicProc.stdout.resume();
+        }
+
+        return { success: true, song: session.queue[0] };
+    },
+
+    getNowPlaying(guildId) {
+        const session = global.vc?.[guildId];
+        if (!session || !session.queue || session.queue.length === 0) {
+            return null;
+        }
+
+        const song = session.queue[0];
+        let elapsedMs = 0;
+        if (song.startTime) {
+            let totalPaused = (song.totalPausedMs || 0);
+            if (session.isPaused && session.pausedAt) {
+                totalPaused += (Date.now() - session.pausedAt);
+            }
+            elapsedMs = Math.max(0, Date.now() - song.startTime - totalPaused);
+        }
+
+        const elapsedSec = Math.floor(elapsedMs / 1000);
+        const totalSec = song.durationSec || parseDurationToSec(song.duration);
+        const progressBar = generateProgressBar(elapsedSec, totalSec, 15);
+        const isCached = ougi.audioCacheManager.has(song.url);
+
+        return {
+            song,
+            isPaused: !!session.isPaused,
+            isLooping: !!session.isLooping,
+            isRadio: !!session.isRadio,
+            isCached,
+            elapsedSec,
+            totalSec,
+            progressBar,
+            nextSong: session.queue.length > 1 ? session.queue[1] : null,
+            totalQueueLength: session.queue.length
+        };
+    },
+
+    removeSong(guildId, target, msg, vcChannel) {
+        const session = global.vc?.[guildId];
+        if (!session || !session.queue || session.queue.length === 0) {
+            return { success: false, reason: 'EMPTY_QUEUE' };
+        }
+
+        const queue = session.queue;
+        const targetStr = String(target || '').trim();
+
+        // Check if numeric position (1-based index)
+        if (/^\d+$/.test(targetStr)) {
+            const position = parseInt(targetStr, 10);
+            if (position <= 0 || position > queue.length) {
+                return { success: false, reason: 'INVALID_POSITION', position, total: queue.length };
+            }
+
+            if (position === 1) {
+                const removedSong = queue[0];
+                this.skipMusic(guildId, msg, vcChannel);
+                return { success: true, removedSong, position: 1, wasCurrent: true, remaining: session.queue?.length || 0 };
+            }
+
+            const removedSong = queue.splice(position - 1, 1)[0];
+            return { success: true, removedSong, position, wasCurrent: false, remaining: queue.length };
+        }
+
+        // Match by title substring or fuzzy match
+        const query = targetStr.toLowerCase();
+        let matchIndex = -1;
+        let bestScore = -1;
+
+        for (let i = 0; i < queue.length; i++) {
+            const trackTitle = (queue[i].title || '').toLowerCase();
+            const trackUrl = (queue[i].url || '').toLowerCase();
+            if (trackTitle.includes(query) || trackUrl.includes(query)) {
+                matchIndex = i;
+                break;
+            }
+            if (global.stringSimilarity) {
+                const score = global.stringSimilarity.compareTwoStrings(query, trackTitle);
+                if (score > bestScore && score >= 0.35) {
+                    bestScore = score;
+                    matchIndex = i;
+                }
+            }
+        }
+
+        if (matchIndex === -1) {
+            return { success: false, reason: 'NOT_FOUND', query: targetStr };
+        }
+
+        const removedSong = queue[matchIndex];
+        if (matchIndex === 0) {
+            this.skipMusic(guildId, msg, vcChannel);
+            return { success: true, removedSong, position: 1, wasCurrent: true, remaining: session.queue?.length || 0 };
+        }
+
+        queue.splice(matchIndex, 1);
+        return { success: true, removedSong, position: matchIndex + 1, wasCurrent: false, remaining: queue.length };
+    },
+
+    async startRadio(guildId, msg, vcChannel) {
+        const session = await this.getOrCreateSession(guildId, vcChannel);
+        session.isRadio = true;
+        session.isLooping = false;
+
+        const cachedTracks = ougi.audioCacheManager.getAllCached();
+        await this.replenishRadioQueue(guildId, 5);
+
+        if (!session.musicProc && !session.isCachedPlaying && session.queue.length > 0) {
+            await this.playMusic(msg, vcChannel);
+        }
+
+        return {
+            success: true,
+            cachedCount: cachedTracks.length,
+            currentSong: session.queue[0]
+        };
+    },
+
+    async replenishRadioQueue(guildId, targetCount = 3) {
+        const session = global.vc?.[guildId];
+        if (!session || !session.isRadio) return;
+
+        const cachedTracks = ougi.audioCacheManager.getAllCached();
+        const seeds = ougi.audioCacheManager.getRadioSeeds();
+
+        while (session.queue.length < targetCount) {
+            let nextTrack = null;
+            if (cachedTracks.length > 0) {
+                const randomIndex = Math.floor(Math.random() * cachedTracks.length);
+                const candidate = cachedTracks[randomIndex];
+                nextTrack = {
+                    title: candidate.title,
+                    url: candidate.url,
+                    duration: candidate.duration,
+                    thumbnail: candidate.thumbnail
+                };
+            } else if (seeds.length > 0) {
+                const randomIndex = Math.floor(Math.random() * seeds.length);
+                const candidate = seeds[randomIndex];
+                nextTrack = {
+                    title: candidate.title,
+                    url: candidate.url,
+                    duration: candidate.duration,
+                    thumbnail: "https://github.com/HakkinDavid/OugiBot/blob/master/images/ougimusic.png?raw=true"
+                };
+            }
+
+            if (nextTrack) {
+                session.queue.push(nextTrack);
+            } else {
+                break;
+            }
+        }
+    },
+
     stop(guildId) {
         this.cleanup(guildId);
     },
@@ -866,6 +1128,10 @@ module.exports = {
 
         session.isCachedPlaying = false;
         session.isLooping = false;
+        session.isRadio = false;
+        session.isPaused = false;
+        session.pausedAt = null;
+        session.totalPausedMs = 0;
 
         if (session.disconnectTimer) {
             clearTimeout(session.disconnectTimer);

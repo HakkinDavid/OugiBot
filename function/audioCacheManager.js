@@ -8,6 +8,8 @@ class AudioCacheManager {
         this.maxSizeBytes = 500 * 1024 * 1024; // 500 MB max total disk cache
         this.maxAgeMs = 24 * 60 * 60 * 1000;  // 24-hour TTL
         this.cacheMap = new Map(); // videoId -> { filePath, sizeBytes, lastAccessedAt, createdAt }
+        this.metadataPath = path.join(this.cacheDir, 'metadata.json');
+        this.metadataMap = new Map(); // videoId -> { title, duration, thumbnail, url }
         this.prefetchQueue = [];
         this.activePrefetch = null;
         this.isInitialized = false;
@@ -20,6 +22,17 @@ class AudioCacheManager {
         try {
             if (!fs.existsSync(this.cacheDir)) {
                 fs.mkdirSync(this.cacheDir, { recursive: true });
+            }
+
+            // Load persistent metadata map
+            if (fs.existsSync(this.metadataPath)) {
+                try {
+                    const rawMeta = fs.readFileSync(this.metadataPath, 'utf8');
+                    const parsed = JSON.parse(rawMeta);
+                    for (const [k, v] of Object.entries(parsed)) {
+                        this.metadataMap.set(k, v);
+                    }
+                } catch (_) {}
             }
 
             const files = fs.readdirSync(this.cacheDir);
@@ -39,6 +52,7 @@ class AudioCacheManager {
                         const stat = fs.statSync(fullPath);
                         if (now - stat.mtimeMs > this.maxAgeMs) {
                             fs.unlinkSync(fullPath);
+                            this.metadataMap.delete(videoId);
                         } else {
                             this.cacheMap.set(videoId, {
                                 filePath: fullPath,
@@ -56,6 +70,67 @@ class AudioCacheManager {
         } catch (err) {
             global.ougi?.text({ lang: 'en', stringID: "console_cacheInitError" }).then(msg => console.error(msg, err));
         }
+    }
+
+    saveMetadata(videoId, meta) {
+        if (!videoId || !meta) return;
+        const existing = this.metadataMap.get(videoId) || {};
+        this.metadataMap.set(videoId, {
+            title: meta.title || existing.title || `Cached Track (${videoId})`,
+            duration: meta.duration || existing.duration || "Live",
+            thumbnail: meta.thumbnail || existing.thumbnail || "https://github.com/HakkinDavid/OugiBot/blob/master/images/ougimusic.png?raw=true",
+            url: meta.url || existing.url || `https://www.youtube.com/watch?v=${videoId}`
+        });
+
+        try {
+            const obj = {};
+            for (const [k, v] of this.metadataMap.entries()) {
+                if (this.cacheMap.has(k)) {
+                    obj[k] = v;
+                }
+            }
+            fs.writeFileSync(this.metadataPath, JSON.stringify(obj, null, 2), 'utf8');
+        } catch (_) {}
+    }
+
+    getMetadata(videoId) {
+        return this.metadataMap.get(videoId) || null;
+    }
+
+    getAllCached() {
+        const list = [];
+        for (const [videoId, entry] of this.cacheMap.entries()) {
+            if (fs.existsSync(entry.filePath)) {
+                const meta = this.getMetadata(videoId) || {};
+                list.push({
+                    videoId,
+                    filePath: entry.filePath,
+                    sizeBytes: entry.sizeBytes,
+                    title: meta.title || `Cached Track (${videoId})`,
+                    duration: meta.duration || "Live",
+                    thumbnail: meta.thumbnail || "https://github.com/HakkinDavid/OugiBot/blob/master/images/ougimusic.png?raw=true",
+                    url: meta.url || `https://www.youtube.com/watch?v=${videoId}`
+                });
+            }
+        }
+        return list;
+    }
+
+    getRadioSeeds() {
+        return [
+            { title: "Decent Black - Ougi Oshino (Monogatari Series)", query: "Decent Black Ougi Oshino Monogatari", duration: "04:36", url: "https://www.youtube.com/watch?v=HPOKr-Wyscw" },
+            { title: "Mathemagics - Sodachi Oikura (Owarimonogatari)", query: "Mathemagics Sodachi Oikura Monogatari", duration: "04:04", url: "https://www.youtube.com/watch?v=Q2yderDJKJA" },
+            { title: "Dark Cherry Mystery - Ougi Oshino (Owarimonogatari S2)", query: "Dark Cherry Mystery Ougi Oshino", duration: "04:18", url: "https://www.youtube.com/watch?v=MsHk2Z41riE" },
+            { title: "Renai Circulation - Nadeko Sengoku (Bakemonogatari)", query: "Renai Circulation Nadeko Sengoku", duration: "04:12", url: "https://www.youtube.com/watch?v=uKxyLmbOc0Q" },
+            { title: "Chocolate Insomnia - Tsubasa Hanekawa (Nekomonogatari Shiro)", query: "Chocolate Insomnia Tsubasa Hanekawa", duration: "04:36", url: "https://www.youtube.com/watch?v=7qZugJCf2eI" },
+            { title: "Staple Stable - Hitagi Senjougahara (Bakemonogatari)", query: "Staple Stable Hitagi Senjougahara", duration: "04:34", url: "https://www.youtube.com/watch?v=63vQ2g2fU4o" },
+            { title: "Orange Mint - Yotsugi Ononoki (Tsukimonogatari)", query: "Orange Mint Yotsugi Ononoki", duration: "04:34", url: "https://www.youtube.com/watch?v=uD9g0j93_gI" },
+            { title: "Platinum Disco - Tsukihi Araragi (Nisemonogatari)", query: "Platinum Disco Tsukihi Araragi", duration: "04:14", url: "https://www.youtube.com/watch?v=Y8SwZJgxF40" },
+            { title: "Sugar Sweet Nightmare - Tsubasa Hanekawa (Bakemonogatari)", query: "Sugar Sweet Nightmare Tsubasa Hanekawa", duration: "04:28", url: "https://www.youtube.com/watch?v=yYm_gQ55j6A" },
+            { title: "Marshmallow Justice - Karen Araragi (Nisemonogatari)", query: "Marshmallow Justice Karen Araragi", duration: "04:14", url: "https://www.youtube.com/watch?v=UqQY94PcvqA" },
+            { title: "Terminal Terminal - Mayoi Hachikuji (Owarimonogatari S2)", query: "Terminal Terminal Mayoi Hachikuji", duration: "04:29", url: "https://www.youtube.com/watch?v=rUj241wW49E" },
+            { title: "Dreamy Date Drive - Hitagi Senjougahara (Owarimonogatari S2)", query: "Dreamy Date Drive Hitagi Senjougahara", duration: "04:42", url: "https://www.youtube.com/watch?v=9jDkGz6-Q7g" }
+        ];
     }
 
     extractVideoId(urlOrId) {
@@ -118,7 +193,7 @@ class AudioCacheManager {
         });
     }
 
-    createCacheWriteStream(urlOrId) {
+    createCacheWriteStream(urlOrId, meta = null) {
         const videoId = this.extractVideoId(urlOrId);
         if (!videoId) return null;
 
@@ -151,6 +226,9 @@ class AudioCacheManager {
                         lastAccessedAt: Date.now(),
                         createdAt: Date.now()
                     });
+                    if (meta) {
+                        this.saveMetadata(videoId, meta);
+                    }
                     this.enforceSizeLimit();
                     const cachedMsg = await global.ougi?.text({
                         lang: 'en',
@@ -283,7 +361,7 @@ class AudioCacheManager {
         if (prefetchMsg) console.log(prefetchMsg);
 
         try {
-            const cacheWriter = this.createCacheWriteStream(videoId);
+            const cacheWriter = this.createCacheWriteStream(videoId, song);
             if (!cacheWriter) {
                 this.activePrefetch = null;
                 this.processNextPrefetch();

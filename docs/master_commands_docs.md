@@ -70,8 +70,15 @@ Dispatched via `commandMap` and command conditions in [processCommand.js](../fun
 | :--- | :--- | :--- | :--- |
 | **`speak`** | `ougi speak [::lang_code] <text>` | Text-To-Speech (TTS) audio output in voice channel. | [voice.js](../function/voice.js) | ✅
 | **`music`** / **`play`** / **`p`** | `ougi music <query\|URL>` | Play or queue audio in the user's voice channel. | [voiceCallMusic.js](../function/voiceCallMusic.js) | ✅
+| **`queue`** / **`q`** | `ougi queue` / `ougi music queue` | View the lined up songs in an interactive paginated queue. | [voiceCallMusic.js](../function/voiceCallMusic.js) | ✅
+| **`np`** / **`nowplaying`** | `ougi np` / `ougi music np` | View what's playing with a real-time progress bar, source, and up-next preview. | [voiceCallMusic.js](../function/voiceCallMusic.js) | ✅
+| **`pause`** | `ougi pause` / `ougi music pause` | Pause active music playback. | [voiceCallMusic.js](../function/voiceCallMusic.js) | ✅
+| **`resume`** / **`unpause`** | `ougi resume` / `ougi music resume` | Resume paused music playback. | [voiceCallMusic.js](../function/voiceCallMusic.js) | ✅
+| **`remove`** | `ougi remove <position\|name>` | Remove a song from the queue by 1-based index or search query. | [voiceCallMusic.js](../function/voiceCallMusic.js) | ✅
+| **`radio`** / **`live`** | `ougi radio` / `ougi music radio` | Tune in to Ougi's live radio — continuous shuffle of cached audio tracks with 0ms latency. | [voiceCallMusic.js](../function/voiceCallMusic.js) | ✅
+| **`loop`** / **`unloop`** | `ougi loop` / `ougi unloop` | Enable or disable repeating the current queue indefinitely. | [voiceCallMusic.js](../function/voiceCallMusic.js) | ✅
 | **`skip`** | `ougi skip` | Skip the currently playing track. | [voiceCallMusic.js](../function/voiceCallMusic.js) | ✅
-| **`stop`** | `ougi stop` | Stop playback and disconnect from the voice channel. | [voiceCallMusic.js](../function/voiceCallMusic.js) | ✅
+| **`stop`** | `ougi stop` | Stop playback, clear queue, and disconnect from the voice channel. | [voiceCallMusic.js](../function/voiceCallMusic.js) | ✅
 | *(URL Trigger)* | `ougi https://(www.)?youtube.com...` | Directly passing a YouTube link triggers music playback/queue. | [voiceCallMusic.js](../function/voiceCallMusic.js) | ✅
 
 #### Media, News & Content
