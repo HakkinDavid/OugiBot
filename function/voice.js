@@ -30,6 +30,10 @@ module.exports = async function (msg) {
     }
   }
 
+  if (args.length > 0 && /^<?https?:\/\//i.test(args[0])) {
+    return await ougi.speakUrl(msg, args, langCode, memberVC);
+  }
+
   let textToSpeak = args.join(" ");
 
   if ((!textToSpeak || textToSpeak.trim().length === 0) && msg.reference) {

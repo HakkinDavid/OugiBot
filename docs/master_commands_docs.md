@@ -68,7 +68,7 @@ Dispatched via `commandMap` and command conditions in [processCommand.js](../fun
 #### Voice, Audio & Music
 | Command | Syntax / Subcommands | Description | File |
 | :--- | :--- | :--- | :--- |
-| **`speak`** | `ougi speak [::lang_code] <text>` | Text-To-Speech (TTS) audio output in voice channel. | [voice.js](../function/voice.js) | ✅
+| **`speak`** | `ougi speak [::lang_code] <text \| url [tag] [id]>` | Text-To-Speech (TTS) audio output in voice channel. Supports direct text, Reddit post reading, and web URL extraction (atomic div by default or custom tag/id). | [voice.js](../function/voice.js), [speakUrl.js](../function/speakUrl.js) | ✅
 | **`music`** / **`play`** / **`p`** | `ougi music <query\|URL>` | Play or queue audio in the user's voice channel. | [voiceCallMusic.js](../function/voiceCallMusic.js) | ✅
 | **`queue`** / **`q`** | `ougi queue` / `ougi music queue` | View the lined up songs in an interactive paginated queue. | [voiceCallMusic.js](../function/voiceCallMusic.js) | ✅
 | **`np`** / **`nowplaying`** | `ougi np` / `ougi music np` | View what's playing with a real-time progress bar, source, and up-next preview. | [voiceCallMusic.js](../function/voiceCallMusic.js) | ✅

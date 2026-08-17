@@ -102,6 +102,8 @@ module.exports =
         "sameAs": "It's the same as executing",
         "speakHelpDesc": "This command makes Ougi join your voice channel and say the prompted phrase. By default, Ougi will use the language set for the Discord server through {c} command.",
         "speakSpecificLang": "You may as well include double colons ({separator}) and a language ISO code.",
+        "speakUrlHelp": "You can also provide a URL to read a webpage or Reddit post (with optional tag and id/selector).",
+        "speakUrlExample": "Read from URL or Reddit",
         "curlHelpDesc": "Use this command to get detailed information about an user, a role, an emoji, a channel or even a Discord server.",
         "surveyHelpDesc": "Are you interested on sharing your thoughts on Ougi? Execute this command and Ougi will check if there's any new survey you haven't been notified about already.",
         "featuredCOVID19modules": "Featured COVID-19 commands",
@@ -645,6 +647,13 @@ module.exports =
         "voice_needPermissions": "I need permissions to connect and speak in your voice channel.",
         "voice_specifySentence": "Please specify a sentence for me to read out loud.",
         "voice_ttsFail": "Failed to generate TTS audio.",
+        "voice_speakUrlTitle": "Reading Web Content",
+        "voice_speakUrlSource": "Source",
+        "voice_speakUrlChunks": "Audio Chunks",
+        "voice_speakUrlFetchFail": "Failed to fetch content from the provided URL.",
+        "voice_speakUrlNoText": "Could not find any readable text in the specified element.",
+        "voice_speakUrlSelectorFail": "No elements matched the selector `{selector}`.",
+        "voice_speakUrlReddit": "Reddit Post",
         "music_noQueueToLoop": "There is no active music queue to loop.",
         "music_loopEnabledTitle": "Queue Loop Enabled",
         "music_loopEnabledDesc": "The current music queue will now repeat indefinitely.",
@@ -892,7 +901,16 @@ module.exports =
         "availableCommandsList": "Por lo pronto, Ougi cuenta con estos comandos",
         "improving": "¡Echaremos caña para que algún día haya más!",
         "calories": "Calorías totales: {num}",
-        "bumpNow": "¡Chavales! ¡Que ya son las {timeStamp} y toca levantar la fiesta en Disboard!"
+        "bumpNow": "¡Chavales! ¡Que ya son las {timeStamp} y toca levantar la fiesta en Disboard!",
+        "voice_speakUrlTitle": "Leyendo Contenido Web",
+        "voice_speakUrlSource": "Fuente",
+        "voice_speakUrlChunks": "Fragmentos de audio",
+        "voice_speakUrlFetchFail": "No se pudo obtener contenido de la URL proporcionada.",
+        "voice_speakUrlNoText": "No se encontró texto legible en la ubicación especificada.",
+        "voice_speakUrlSelectorFail": "Ningún elemento coincidió con el selector `{selector}`.",
+        "voice_speakUrlReddit": "Publicación de Reddit",
+        "speakUrlHelp": "También puedes proporcionar una URL para leer una página web o post de Reddit (con tag e id/selector opcionales).",
+        "speakUrlExample": "Leer desde URL o Reddit"
     },
     "mx": {
         "helpTitle": "Ayuda de Ougi",
@@ -905,6 +923,15 @@ module.exports =
         "output": "Resultado",
         "availableCommands": "Comandos disponibles",
         "availableCommandsList": "Por ahora, Ougi tiene los siguientes comandos",
-        "improving": "¡Aún trabajando por mejorar!"
+        "improving": "¡Aún trabajando por mejorar!",
+        "voice_speakUrlTitle": "Leyendo Contenido Web",
+        "voice_speakUrlSource": "Fuente",
+        "voice_speakUrlChunks": "Fragmentos de audio",
+        "voice_speakUrlFetchFail": "No se pudo obtener contenido del enlace proporcionado.",
+        "voice_speakUrlNoText": "No se encontró texto legible en el elemento especificado.",
+        "voice_speakUrlSelectorFail": "Ningún elemento coincidió con el selector `{selector}`.",
+        "voice_speakUrlReddit": "Publicación de Reddit",
+        "speakUrlHelp": "También puedes proporcionar una URL para leer una página web o post de Reddit (con tag e id/selector opcionales).",
+        "speakUrlExample": "Leer desde URL o Reddit"
     }
 }
