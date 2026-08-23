@@ -218,7 +218,7 @@ class AudioCacheManager {
             isClosed = true;
 
             try {
-                if (fs.existsSync(tempFile) && totalBytesWritten >= 3840) {
+                if (fs.existsSync(tempFile)) {
                     fs.renameSync(tempFile, targetFile);
                     this.cacheMap.set(videoId, {
                         filePath: targetFile,
