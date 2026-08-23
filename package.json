@@ -50,7 +50,9 @@
     "youtube-sr": "^4.3.12"
   },
   "scripts": {
-    "start": "git pull && node fan.js"
+    "start": "npm i && update-ytdlp && git pull && node fan.js",
+    "update-ytdlp": "node -e \"const p=require('youtube-dl-exec').constants?.YOUTUBE_DL_PATH; if(p){require('child_process').spawnSync(p,['-U'],{stdio:'inherit'});}\"",
+    "postinstall": "node -e \"const p=require('youtube-dl-exec').constants?.YOUTUBE_DL_PATH; if(p){require('child_process').spawnSync(p,['-U'],{stdio:'inherit'});}\" || true"
   },
   "keywords": [],
   "author": "HakkinDavid",
