@@ -118,6 +118,8 @@ module.exports = async function text(options) {
             }
         } catch (err) {
             console.error(err);
+            returnableString = "oooh spooky.";
+            return;
         }
 
         ougi.db().saveDynamicLocale(langCode, stringID, returnableString, fromCode);
@@ -141,6 +143,8 @@ module.exports = async function text(options) {
             returnableString = unmaskTokens(res.text, tokens);
         } catch (err) {
             console.error(err);
+            returnableString = "oooh spooky.";
+            return;
         }
 
         ougi.db().saveStaticLocale(langCode, stringID, returnableString);
