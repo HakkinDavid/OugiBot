@@ -118,8 +118,7 @@ module.exports = async function text(options) {
             }
         } catch (err) {
             console.error(err);
-            returnableString = "oooh spooky.";
-            return;
+            return raw ? { value: "oooh spooky", fromCode: "null", stringEmoji: [], stringDiscordEmoji: [] } : "oooh spooky";
         }
 
         ougi.db().saveDynamicLocale(langCode, stringID, returnableString, fromCode);
@@ -143,8 +142,7 @@ module.exports = async function text(options) {
             returnableString = unmaskTokens(res.text, tokens);
         } catch (err) {
             console.error(err);
-            returnableString = "oooh spooky.";
-            return;
+            return raw ? { value: "oooh spooky", fromCode: "null", stringEmoji: [], stringDiscordEmoji: [] } : "oooh spooky";
         }
 
         ougi.db().saveStaticLocale(langCode, stringID, returnableString);
