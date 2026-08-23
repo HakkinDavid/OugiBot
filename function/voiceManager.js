@@ -542,67 +542,70 @@ module.exports = {
             let musicProc = null;
             let ytProc = null;
 
-            // Authenticated streaming with cookies via yt-dlp stdout pipe
-            if (global.cachedCookiesPath) {
-                try {
-                    ytProc = youtubedl.exec(song.url, {
-                        output: '-',
-                        format: 'bestaudio/best',
-                        jsRuntimes: 'node',
-                        cookies: global.cachedCookiesPath,
-                        noWarnings: true
-                    });
+            // Authenticated streaming via yt-dlp stdout pipe to ffmpeg
+            let ytStderr = '';
+            let ffmpegStderr = '';
+            let receivedData = false;
 
-                    // Catch SIGTERM / process kill cleanly to avoid ChildProcessError
-                    ytProc.catch(() => {});
-
-                    musicProc = spawn('ffmpeg', [
-                        '-loglevel', 'error',
-                        '-i', 'pipe:0',
-                        '-f', 's16le',
-                        '-ar', '48000',
-                        '-ac', '2',
-                        '-vn',
-                        'pipe:1'
-                    ]);
-
-                    ytProc.stdout.pipe(musicProc.stdin);
-                    session.ytProc = ytProc;
-
-                    ytProc.on('error', (err) => {
-                        console.error(`yt-dlp stream error for ${song.title}:`, err);
-                    });
-                } catch (cookieErr) {
-                    console.warn(`[VoiceManager] Direct yt-dlp cookie pipe failed for "${song.title}", falling back to client extractors:`, cookieErr.message);
-                }
+            const ytOpts = {
+                output: '-',
+                format: 'bestaudio/best',
+                jsRuntimes: 'node',
+                noCheckCertificates: true,
+                noWarnings: true
+            };
+            if (global.cachedCookiesPath && fs.existsSync(global.cachedCookiesPath)) {
+                ytOpts.cookies = global.cachedCookiesPath;
             }
 
-            // Fallback: direct stream URL extraction without cookies
-            if (!musicProc) {
-                const rawStreamUrl = (await youtubedl(song.url, {
-                    getUrl: true,
-                    format: 'bestaudio/best',
-                    extractorArgs: 'youtube:player_client=android,tv_embedded',
-                    noWarnings: true
-                })).trim();
+            try {
+                ytProc = youtubedl.exec(song.url, ytOpts);
+
+                if (ytProc.stderr) {
+                    ytProc.stderr.on('data', (d) => { ytStderr += d.toString(); });
+                }
+                if (ytProc.stdout) {
+                    ytProc.stdout.on('error', () => {});
+                }
+                ytProc.catch((err) => {
+                    if (err?.message) ytStderr += `\n${err.message}`;
+                });
 
                 musicProc = spawn('ffmpeg', [
                     '-loglevel', 'error',
-                    '-reconnect', '1',
-                    '-reconnect_streamed', '1',
-                    '-reconnect_delay_max', '5',
-                    '-i', rawStreamUrl,
+                    '-i', 'pipe:0',
                     '-f', 's16le',
                     '-ar', '48000',
                     '-ac', '2',
                     '-vn',
                     'pipe:1'
                 ]);
+
+                musicProc.stdin.on('error', () => {});
+
+                if (musicProc.stderr) {
+                    musicProc.stderr.on('data', (d) => { ffmpegStderr += d.toString(); });
+                }
+
+                ytProc.stdout.pipe(musicProc.stdin);
+                session.ytProc = ytProc;
+            } catch (err) {
+                console.error(`[VoiceManager] Failed to spawn yt-dlp/ffmpeg for "${song.title}":`, err.message);
+                musicProc = null;
+            }
+
+            if (!musicProc) {
+                if (session.cacheWriter) {
+                    session.cacheWriter.abort();
+                    session.cacheWriter = null;
+                }
+                throw new Error(`Failed to initialize audio stream for ${song.title}`);
             }
 
             session.musicProc = musicProc;
 
             musicProc.stdout.on('data', (chunk) => {
+                receivedData = true;
                 if (session.mixer && !session.mixer.destroyed) {
                     session.mixer.writeMusic(chunk);
 
@@ -619,7 +622,7 @@ module.exports = {
             });
 
             session.mixer.onBufferLow = () => {
-                if (session.musicProc && session.musicProc.stdout.isPaused()) {
+                if (session.musicProc && session.musicProc.stdout && session.musicProc.stdout.isPaused()) {
                     session.musicProc.stdout.resume();
                 }
             };
@@ -634,13 +637,21 @@ module.exports = {
 
             musicProc.on('close', (code) => {
                 if (session.cacheWriter) {
-                    if (code === 0 && !musicProc.killed) {
+                    if (code === 0 && receivedData && !musicProc.killed) {
                         session.cacheWriter.end();
                     } else {
                         session.cacheWriter.abort();
                     }
                     session.cacheWriter = null;
                 }
+
+                if (!receivedData && !musicProc.killed) {
+                    const errDetail = (ytStderr || ffmpegStderr).trim();
+                    if (errDetail) {
+                        console.warn(`[VoiceManager] Stream closed with 0 audio bytes for "${song.title}" [code ${code}]: ${errDetail.slice(0, 300)}`);
+                    }
+                }
+
                 onSongComplete();
             });
 

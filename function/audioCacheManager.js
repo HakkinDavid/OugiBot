@@ -218,7 +218,9 @@ class AudioCacheManager {
             isClosed = true;
 
             try {
-                if (fs.existsSync(tempFile) && totalBytesWritten >= 3840) {
+                // Minimum ~0.5s of PCM audio at 48kHz 16-bit stereo (192 KB/s) to ensure a valid audio track
+                const minValidBytes = 96000;
+                if (fs.existsSync(tempFile) && totalBytesWritten >= minValidBytes) {
                     fs.renameSync(tempFile, targetFile);
                     this.cacheMap.set(videoId, {
                         filePath: targetFile,
@@ -230,17 +232,21 @@ class AudioCacheManager {
                         this.saveMetadata(videoId, meta);
                     }
                     this.enforceSizeLimit();
+                    const mbFormatted = (totalBytesWritten / 1024 / 1024).toFixed(1);
                     const cachedMsg = await global.ougi?.text({
                         lang: 'en',
                         stringID: "console_cacheTrackSuccess",
                         values: {
                             id: videoId,
-                            mb: Math.round(totalBytesWritten / 1024 / 1024 * 10) / 10
+                            mb: mbFormatted
                         }
                     });
                     if (cachedMsg) console.log(cachedMsg);
                 } else if (fs.existsSync(tempFile)) {
                     fs.unlinkSync(tempFile);
+                    if (totalBytesWritten > 0 && totalBytesWritten < minValidBytes) {
+                        console.warn(`[AudioCacheManager] Discarded incomplete cache for track "${videoId}" (${totalBytesWritten} bytes received, minimum ${minValidBytes} bytes required).`);
+                    }
                 }
             } catch (err) {
                 const finalizeErrMsg = await global.ougi?.text({
@@ -371,72 +377,86 @@ class AudioCacheManager {
             const youtubedl = global.youtubedl || require('youtube-dl-exec');
             let ytProc = null;
             let ffmpegProc = null;
+            let ytStderr = '';
+            let ffmpegStderr = '';
+            let receivedData = false;
 
-            if (global.cachedCookiesPath) {
-                try {
-                    ytProc = youtubedl.exec(song.url, {
-                        output: '-',
-                        format: 'bestaudio/best',
-                        jsRuntimes: 'node',
-                        cookies: global.cachedCookiesPath,
-                        noWarnings: true
-                    });
-
-                    // Catch SIGTERM / tinyspawn rejection cleanly
-                    ytProc.catch(() => {});
-
-                    ffmpegProc = spawn('ffmpeg', [
-                        '-loglevel', 'error',
-                        '-i', 'pipe:0',
-                        '-f', 's16le',
-                        '-ar', '48000',
-                        '-ac', '2',
-                        '-vn',
-                        'pipe:1'
-                    ]);
-
-                    ytProc.stdout.pipe(ffmpegProc.stdin);
-                } catch (e) {
-                    ytProc = null;
-                    ffmpegProc = null;
-                }
+            const ytOpts = {
+                output: '-',
+                format: 'bestaudio/best',
+                jsRuntimes: 'node',
+                noCheckCertificates: true,
+                noWarnings: true
+            };
+            if (global.cachedCookiesPath && fs.existsSync(global.cachedCookiesPath)) {
+                ytOpts.cookies = global.cachedCookiesPath;
             }
 
-            if (!ffmpegProc) {
-                const rawStreamUrl = (await youtubedl(song.url, {
-                    getUrl: true,
-                    format: 'bestaudio/best',
-                    extractorArgs: 'youtube:player_client=android,tv_embedded',
-                    noWarnings: true
-                })).trim();
+            try {
+                ytProc = youtubedl.exec(song.url, ytOpts);
+
+                if (ytProc.stderr) {
+                    ytProc.stderr.on('data', (d) => { ytStderr += d.toString(); });
+                }
+                if (ytProc.stdout) {
+                    ytProc.stdout.on('error', () => {});
+                }
+                ytProc.catch((err) => {
+                    if (err?.message) ytStderr += `\n${err.message}`;
+                });
 
                 ffmpegProc = spawn('ffmpeg', [
                     '-loglevel', 'error',
-                    '-reconnect', '1',
-                    '-reconnect_streamed', '1',
-                    '-reconnect_delay_max', '5',
-                    '-i', rawStreamUrl,
+                    '-i', 'pipe:0',
                     '-f', 's16le',
                     '-ar', '48000',
                     '-ac', '2',
                     '-vn',
                     'pipe:1'
                 ]);
+
+                ffmpegProc.stdin.on('error', () => {});
+
+                if (ffmpegProc.stderr) {
+                    ffmpegProc.stderr.on('data', (d) => { ffmpegStderr += d.toString(); });
+                }
+
+                ytProc.stdout.pipe(ffmpegProc.stdin);
+            } catch (e) {
+                ytProc = null;
+                ffmpegProc = null;
+            }
+
+            if (!ffmpegProc) {
+                cacheWriter.abort();
+                this.activePrefetch = null;
+                this.processNextPrefetch();
+                return;
             }
 
             ffmpegProc.stdout.on('data', (chunk) => {
+                receivedData = true;
                 cacheWriter.write(chunk);
             });
 
-            const finishPrefetch = () => {
-                cacheWriter.end();
+            const finishPrefetch = (code) => {
+                if (code === 0 && receivedData) {
+                    cacheWriter.end();
+                } else {
+                    cacheWriter.abort();
+                    const errDetail = (ytStderr || ffmpegStderr).trim();
+                    if (errDetail) {
+                        console.warn(`[AudioCacheManager] Prefetch failed for "${song.title}" (${videoId}) [exit ${code}]: ${errDetail.slice(0, 300)}`);
+                    }
+                }
                 this.activePrefetch = null;
                 this.processNextPrefetch();
             };
 
             ffmpegProc.on('close', finishPrefetch);
-            ffmpegProc.on('error', () => {
+            ffmpegProc.on('error', (err) => {
                 cacheWriter.abort();
+                console.error(`[AudioCacheManager] FFmpeg spawn error for ${videoId}:`, err);
                 this.activePrefetch = null;
                 this.processNextPrefetch();
             });
