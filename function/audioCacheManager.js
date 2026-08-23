@@ -32,7 +32,7 @@ class AudioCacheManager {
                     for (const [k, v] of Object.entries(parsed)) {
                         this.metadataMap.set(k, v);
                     }
-                } catch (_) { }
+                } catch (_) {}
             }
 
             const files = fs.readdirSync(this.cacheDir);
@@ -42,7 +42,7 @@ class AudioCacheManager {
                 const fullPath = path.join(this.cacheDir, file);
                 if (file.endsWith('.temp')) {
                     // Remove incomplete temp files from previous bot sessions
-                    try { fs.unlinkSync(fullPath); } catch (_) { }
+                    try { fs.unlinkSync(fullPath); } catch (_) {}
                     continue;
                 }
 
@@ -61,7 +61,7 @@ class AudioCacheManager {
                                 createdAt: stat.ctimeMs
                             });
                         }
-                    } catch (_) { }
+                    } catch (_) {}
                 }
             }
 
@@ -90,7 +90,7 @@ class AudioCacheManager {
                 }
             }
             fs.writeFileSync(this.metadataPath, JSON.stringify(obj, null, 2), 'utf8');
-        } catch (_) { }
+        } catch (_) {}
     }
 
     getMetadata(videoId) {
@@ -218,26 +218,30 @@ class AudioCacheManager {
             isClosed = true;
 
             try {
-                fs.renameSync(tempFile, targetFile);
-                this.cacheMap.set(videoId, {
-                    filePath: targetFile,
-                    sizeBytes: totalBytesWritten,
-                    lastAccessedAt: Date.now(),
-                    createdAt: Date.now()
-                });
-                if (meta) {
-                    this.saveMetadata(videoId, meta);
-                }
-                this.enforceSizeLimit();
-                const cachedMsg = await global.ougi?.text({
-                    lang: 'en',
-                    stringID: "console_cacheTrackSuccess",
-                    values: {
-                        id: videoId,
-                        mb: Math.round(totalBytesWritten / 1024 / 1024 * 10) / 10
+                if (fs.existsSync(tempFile)) {
+                    fs.renameSync(tempFile, targetFile);
+                    this.cacheMap.set(videoId, {
+                        filePath: targetFile,
+                        sizeBytes: totalBytesWritten,
+                        lastAccessedAt: Date.now(),
+                        createdAt: Date.now()
+                    });
+                    if (meta) {
+                        this.saveMetadata(videoId, meta);
                     }
-                });
-                if (cachedMsg) console.log(cachedMsg);
+                    this.enforceSizeLimit();
+                    const cachedMsg = await global.ougi?.text({
+                        lang: 'en',
+                        stringID: "console_cacheTrackSuccess",
+                        values: {
+                            id: videoId,
+                            mb: Math.round(totalBytesWritten / 1024 / 1024 * 10) / 10
+                        }
+                    });
+                    if (cachedMsg) console.log(cachedMsg);
+                } else if (fs.existsSync(tempFile)) {
+                    fs.unlinkSync(tempFile);
+                }
             } catch (err) {
                 const finalizeErrMsg = await global.ougi?.text({
                     lang: 'en',
@@ -245,7 +249,7 @@ class AudioCacheManager {
                     values: { id: videoId }
                 });
                 if (finalizeErrMsg) console.error(finalizeErrMsg, err);
-                try { if (fs.existsSync(tempFile)) fs.unlinkSync(tempFile); } catch (_) { }
+                try { if (fs.existsSync(tempFile)) fs.unlinkSync(tempFile); } catch (_) {}
             }
         };
 
@@ -254,12 +258,12 @@ class AudioCacheManager {
             isClosed = true;
             try {
                 writeStream.destroy();
-            } catch (_) { }
+            } catch (_) {}
             try {
                 if (fs.existsSync(tempFile)) {
                     fs.unlinkSync(tempFile);
                 }
-            } catch (_) { }
+            } catch (_) {}
         };
 
         return {
@@ -267,10 +271,13 @@ class AudioCacheManager {
                 if (isClosed) return;
                 totalBytesWritten += chunk.length;
                 // Limit maximum file cache to 80MB (~7 mins of raw audio) to avoid unbounded disk
-
+                if (totalBytesWritten > 80 * 1024 * 1024) {
+                    abortWrite();
+                    return;
+                }
                 try {
                     writeStream.write(chunk);
-                } catch (_) { }
+                } catch (_) {}
             },
             end() {
                 if (isClosed) return;
@@ -314,7 +321,7 @@ class AudioCacheManager {
                 }).then(msg => {
                     if (msg) console.log(msg);
                 });
-            } catch (_) { }
+            } catch (_) {}
         }
     }
 
@@ -376,7 +383,7 @@ class AudioCacheManager {
                     });
 
                     // Catch SIGTERM / tinyspawn rejection cleanly
-                    ytProc.catch(() => { });
+                    ytProc.catch(() => {});
 
                     ffmpegProc = spawn('ffmpeg', [
                         '-loglevel', 'error',
