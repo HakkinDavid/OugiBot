@@ -228,7 +228,7 @@ class AudioCacheManager {
                 if (meta) {
                     this.saveMetadata(videoId, meta);
                 }
-                this.enforceSizeLimit();
+                //this.enforceSizeLimit();
                 const cachedMsg = await global.ougi?.text({
                     lang: 'en',
                     stringID: "console_cacheTrackSuccess",
@@ -278,7 +278,12 @@ class AudioCacheManager {
                     finishWrite();
                 });
             },
-            abort: abortWrite
+            abort() {
+                if (isClosed) return;
+                writeStream.end(() => {
+                    finishWrite();
+                });
+            }
         };
     }
 
