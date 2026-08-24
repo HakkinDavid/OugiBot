@@ -16,7 +16,7 @@ module.exports = async function newsCommand(arguments, msg) {
       actualLangCode = userLang
         .replace(/mx/gi, "es")
         .replace(/default|auto/gi, "en")
-        .replace(/zh\-CN|zh\-TW/gi, "zh");
+        .replace(/zh\-cn|zh\-tw/gi, "zh");
       langCode = actualLangCode;
     }
 
@@ -25,7 +25,7 @@ module.exports = async function newsCommand(arguments, msg) {
       actualLangCode = guildLang
         .replace(/mx/gi, "es")
         .replace(/default|auto/gi, "en")
-        .replace(/zh\-CN|zh\-TW/gi, "zh");
+        .replace(/zh\-cn|zh\-tw/gi, "zh");
       langCode = actualLangCode;
     }
 

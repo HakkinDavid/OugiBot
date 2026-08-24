@@ -3,7 +3,7 @@ module.exports =
 async function (msg, guild) {
   let anIndex = Math.floor(Math.random()*6);
   let possibleLangs = ["arabic", "french", "spanish", "english", "mexican spanish", "chinese", "japanese"];
-  let possibleCodes = ["ar", "fr", "es", "en", "mx", "zh-CN"];
+  let possibleCodes = ["ar", "fr", "es", "en", "mx", "zh-cn"];
   let embed;
   if (guild) {
     embed = await ougi.helpPreset(msg, "guildlanguage");

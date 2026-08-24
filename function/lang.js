@@ -7,12 +7,12 @@ async function (arguments, msg, guildExecution) {
     if (!(await ougi.adminCheck(msg))) return;
     preferencesID = msg.guildId;
   }
-  let toLang = arguments.join(" ").replace("-cn", "-CN").replace("-tw", "-TW");
+  let toLang = arguments.join(" ");
   if (toLang == "chinese" || toLang == "chinese-s" || toLang.includes("chinese") && toLang.includes("simplified")) {
-    toLang = "zh-CN"
+    toLang = "zh-cn"
   }
   else if (toLang == "chinese-t" || toLang.includes("chinese") && toLang.includes("traditional")) {
-    toLang = "zh-TW"
+    toLang = "zh-tw"
   }
   else if (toLang.includes("mexican") || toLang.includes("mexico")) {
     toLang = "mx"

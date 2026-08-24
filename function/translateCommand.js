@@ -40,7 +40,7 @@ module.exports = async function (msgOrInteraction) {
     toLang = selectedLangFromMenu ?? ougi.db().getLang(requester.id) ?? ougi.db().getLang(guildId);
 
     if (!toLang) {
-      const popularCodes = ['en', 'es', 'fr', 'de', 'ja', 'zh-CN', 'zh-TW', 'pt', 'it', 'ru', 'ko', 'nl', 'tl', 'ar', 'vi', 'tr', 'hi', 'id', 'pl', 'sv', 'uk', 'th', 'he', 'el', 'cs'];
+      const popularCodes = ['en', 'es', 'fr', 'de', 'ja', 'zh-cn', 'zh-TW', 'pt', 'it', 'ru', 'ko', 'nl', 'tl', 'ar', 'vi', 'tr', 'hi', 'id', 'pl', 'sv', 'uk', 'th', 'he', 'el', 'cs'];
       const dynamicOptions = popularCodes
         .filter(code => ougi.langCodes[code] && code !== 'mx' && code !== 'default' && code !== 'auto')
         .map(code => ({ label: ougi.langCodes[code], value: code }));
@@ -96,11 +96,11 @@ module.exports = async function (msgOrInteraction) {
     return;
   }
 
-  toLang = toLang.toLowerCase().replace("-cn", "-CN").replace("-tw", "-TW");
+  toLang = toLang.toLowerCase();
   if (toLang === "chinese" || toLang === "chinese-s") {
-    toLang = "zh-CN";
+    toLang = "zh-cn";
   } else if (toLang === "chinese-t") {
-    toLang = "zh-TW";
+    toLang = "zh-tw";
   } else if (toLang.includes("mexican") || toLang.includes("mexico")) {
     toLang = "mx";
   }
