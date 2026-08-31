@@ -275,7 +275,7 @@ client.on('messageCreate', async (msg) => {
             ougi.optout(msg);
         }
         else {
-            ougi.genAIAbility(msg);
+            ougi.judgementAbility(msg);
             ourConcern = true;
         }
     } else if (msg.inGuild() && msg.channel.isTextBased() && msg.content.length > 0) {
@@ -288,7 +288,7 @@ client.on('messageCreate', async (msg) => {
             isCommand = true;
         }
 
-        if (!isCommand && repliedToOugi) { ougi.genAIAbility(msg, repliedToOugi); ourConcern = true; }
+        if (!isCommand && repliedToOugi) { ougi.judgementAbility(msg, repliedToOugi); ourConcern = true; }
         const guildEco = ougi.db().getGuildEconomy(msg.guildId);
         if (!isCommand && guildEco.channels.includes(msg.channel.id)) ougi.economy('xp', msg);
     }
