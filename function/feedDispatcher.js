@@ -10,8 +10,8 @@ function buildFeedEmbed(item) {
     const platName = isTiktok ? 'TikTok' : 'Instagram';
     const platColor = isTiktok ? '#FE2C55' : '#C13584';
     const platIcon = isTiktok 
-        ? 'https://github.com/HakkinDavid/OugiBot/blob/master/images/tiktok.png?raw=true' 
-        : 'https://github.com/HakkinDavid/OugiBot/blob/master/images/instagram.png?raw=true';
+        ? 'https://github.com/HakkinDavid/OugiBot/blob/master/images/tt.png?raw=true' 
+        : 'https://github.com/HakkinDavid/OugiBot/blob/master/images/ig.png?raw=true';
 
     const embed = new EmbedBuilder()
         .setColor(platColor)
