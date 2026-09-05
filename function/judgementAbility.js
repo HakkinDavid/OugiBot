@@ -18,7 +18,7 @@ async function (msg, replied_to_ougi) {
       .setFooter({text: await ougi.text({ lang: 'en', stringID: "log_globalEmbedFooter" }), icon: client.user.avatarURL({dynamic: true, size: 4096})});
     
       let stringsArray = ougi.db().getKBTriggers();
-      let notSpookyDM = msg.content.toLowerCase();
+      let notSpookyDM = msg.content.toLowerCase() ?? "ougi";
       let usedLang;
       notSpookyDM = replied_to_ougi ? notSpookyDM : ougi.helperFunctions.stripPrefixMsg(msg);
       embed.addFields({name: await ougi.text({ lang: 'en', stringID: "log_contentField" }), value: notSpookyDM.slice(0, 1024)});

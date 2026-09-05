@@ -351,7 +351,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
     });
 });
 
-/* ===== Intervalos de Backup ===== */
+/* ===== Intervalos de Backup & Feeds ===== */
 setInterval(async () => {
     if (!TEASEABLE || !ougi.startup()) return;
     ougi.db().checkpointAll();
@@ -363,6 +363,7 @@ setInterval(async () => {
             }
         }
     }
+    ougi.feedDispatcher.tick().catch(console.error);
 }, 300_000);
 
 /* ===== Intervalo para Recordatorios de Bump ===== */

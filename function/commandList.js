@@ -86,7 +86,11 @@ module.exports = {
                 }
             }
         },
-        { name: 'admin-register', aliases: [], help: (msg) => ougi.adminRegisterHelp(msg), execute: (args, msg) => ougi.adminRegister(args, msg) }
+        { name: 'admin-register', aliases: [], help: (msg) => ougi.adminRegisterHelp(msg), execute: (args, msg) => ougi.adminRegister(args, msg) },
+        { name: 'feed-set', aliases: ['setfeed'], help: (msg) => ougi.feedSetHelp(msg), execute: (args, msg) => ougi.feedSet(args, msg) },
+        { name: 'feed-remove', aliases: ['removefeed'], help: (msg) => ougi.feedRemoveHelp(msg), execute: (args, msg) => ougi.feedRemove(args, msg) },
+        { name: 'feed-list', aliases: ['feedlist'], help: (msg) => ougi.feedListHelp(msg), execute: (args, msg) => ougi.feedList(args, msg) },
+        { name: 'feed', aliases: [], help: (msg) => ougi.feedHelp(msg), execute: (args, msg) => ougi.feedCommand(args, msg) }
     ],
 
     getNames() {

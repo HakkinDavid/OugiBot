@@ -59,5 +59,123 @@ module.exports = async function (interaction) {
         if (interaction.customId.startsWith('ougi_translate_select_lang:')) {
             await ougi.translateCommand(interaction);
         }
+    } else if (interaction.isButton()) {
+        if (interaction.customId.startsWith('feed_nav:')) {
+            const parts = interaction.customId.split(':');
+            let cacheItems = [];
+            let clampedIndex = 0;
+            let totalCount = 0;
+            let prevCustomId = '';
+            let nextCustomId = '';
+            let footerText = '';
+            let isTiktok = false;
+            let directUrl = 'https://instagram.com';
+
+            const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+
+            if (parts[1] === 'single') {
+                const platform = parts[2];
+                const handle = parts[3];
+                const targetIndex = parseInt(parts[4], 10) || 0;
+                const originalAuthorId = parts[5];
+                isTiktok = platform === 'tiktok';
+                const platName = isTiktok ? 'TikTok' : 'Instagram';
+
+                cacheItems = ougi.db().getFeedCache(platform, handle, 50);
+                if (!cacheItems || cacheItems.length === 0) {
+                    await interaction.reply({ content: "Feed cache is empty or expired.", flags: MessageFlags.Ephemeral }).catch(() => {});
+                    return;
+                }
+
+                totalCount = cacheItems.length;
+                clampedIndex = Math.max(0, Math.min(targetIndex, totalCount - 1));
+                const item = cacheItems[clampedIndex];
+                directUrl = item.url || `https://${isTiktok ? 'tiktok.com' : 'instagram.com'}`;
+                footerText = `feedEmbed by Ougi | @${item.handle} on ${platName} | Page ${clampedIndex + 1} of ${totalCount}`;
+
+                prevCustomId = `feed_nav:single:${platform}:${handle}:${clampedIndex - 1}:${originalAuthorId}`;
+                nextCustomId = `feed_nav:single:${platform}:${handle}:${clampedIndex + 1}:${originalAuthorId}`;
+
+            } else if (parts[1] === 'fyp') {
+                const guildId = parts[2];
+                const channelId = parts[3];
+                const targetIndex = parseInt(parts[4], 10) || 0;
+                const originalAuthorId = parts[5];
+
+                cacheItems = ougi.db().getBlendedFeedCacheForChannel(guildId, channelId, 50);
+                if (!cacheItems || cacheItems.length === 0) {
+                    await interaction.reply({ content: "Feed cache is empty or expired.", flags: MessageFlags.Ephemeral }).catch(() => {});
+                    return;
+                }
+
+                totalCount = cacheItems.length;
+                clampedIndex = Math.max(0, Math.min(targetIndex, totalCount - 1));
+                const item = cacheItems[clampedIndex];
+                isTiktok = item.platform === 'tiktok';
+                const platName = isTiktok ? 'TikTok' : 'Instagram';
+                const channel = interaction.guild?.channels?.cache?.get(channelId);
+                const channelName = channel?.name || 'feed';
+
+                directUrl = item.url || `https://${isTiktok ? 'tiktok.com' : 'instagram.com'}`;
+                footerText = `FYP #${channelName} • @${item.handle} on ${platName} | Page ${clampedIndex + 1} of ${totalCount}`;
+
+                prevCustomId = `feed_nav:fyp:${guildId}:${channelId}:${clampedIndex - 1}:${originalAuthorId}`;
+                nextCustomId = `feed_nav:fyp:${guildId}:${channelId}:${clampedIndex + 1}:${originalAuthorId}`;
+
+            } else {
+                // Fallback legacy format: feed_nav:platform:handle:index:authorId
+                const platform = parts[1];
+                const handle = parts[2];
+                const targetIndex = parseInt(parts[3], 10) || 0;
+                const originalAuthorId = parts[4];
+                isTiktok = platform === 'tiktok';
+                const platName = isTiktok ? 'TikTok' : 'Instagram';
+
+                cacheItems = ougi.db().getFeedCache(platform, handle, 50);
+                if (!cacheItems || cacheItems.length === 0) {
+                    await interaction.reply({ content: "Feed cache is empty or expired.", flags: MessageFlags.Ephemeral }).catch(() => {});
+                    return;
+                }
+
+                totalCount = cacheItems.length;
+                clampedIndex = Math.max(0, Math.min(targetIndex, totalCount - 1));
+                const item = cacheItems[clampedIndex];
+                directUrl = item.url || `https://${isTiktok ? 'tiktok.com' : 'instagram.com'}`;
+                footerText = `feedEmbed by Ougi | @${item.handle} on ${platName} | Page ${clampedIndex + 1} of ${totalCount}`;
+
+                prevCustomId = `feed_nav:single:${platform}:${handle}:${clampedIndex - 1}:${originalAuthorId}`;
+                nextCustomId = `feed_nav:single:${platform}:${handle}:${clampedIndex + 1}:${originalAuthorId}`;
+            }
+
+            const item = cacheItems[clampedIndex];
+            const embed = ougi.feedDispatcher.buildFeedEmbed(item);
+            embed.setFooter({
+                text: footerText,
+                iconURL: client.user.displayAvatarURL({ dynamic: true, size: 4096 })
+            });
+
+            const row = new ActionRowBuilder().addComponents(
+                new ButtonBuilder()
+                    .setCustomId(prevCustomId)
+                    .setLabel('◀️ Previous')
+                    .setStyle(ButtonStyle.Primary)
+                    .setDisabled(clampedIndex <= 0),
+                new ButtonBuilder()
+                    .setCustomId(nextCustomId)
+                    .setLabel('Next ▶️')
+                    .setStyle(ButtonStyle.Primary)
+                    .setDisabled(clampedIndex >= totalCount - 1),
+                new ButtonBuilder()
+                    .setLabel(isTiktok ? 'Open TikTok' : 'Open Instagram')
+                    .setStyle(ButtonStyle.Link)
+                    .setURL(directUrl)
+            );
+
+            await interaction.update({
+                content: item.embed_url ? item.embed_url : null,
+                embeds: [embed],
+                components: [row]
+            }).catch(console.error);
+        }
     }
 };

@@ -63,7 +63,7 @@ class OugiDatabaseManager {
     }
 
     initHashes() {
-        const dbKeys = ['settings', 'responses', 'embedPresets', 'localesCache', 'dynamicLocales', 'raffles', 'economy', 'newsChannel'];
+        const dbKeys = ['settings', 'responses', 'embedPresets', 'localesCache', 'dynamicLocales', 'raffles', 'economy', 'newsChannel', 'feeds'];
         for (const key of dbKeys) {
             this.recordFileHash(key);
         }
@@ -228,6 +228,72 @@ class OugiDatabaseManager {
                 key TEXT PRIMARY KEY,
                 value TEXT
             );
+        `);
+
+        // 11. Feeds & Universal Content Cache Table
+        const feedsDb = this.getDb('feeds');
+        try {
+            const tableSql = feedsDb.prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='guild_feeds'").get()?.sql || '';
+            if (tableSql.includes('UNIQUE(guild_id, channel_id, platform, handle)')) {
+                feedsDb.exec(`
+                    CREATE TABLE guild_feeds_new (
+                        id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+                        guild_id            TEXT NOT NULL,
+                        channel_id          TEXT NOT NULL,
+                        platform            TEXT NOT NULL,
+                        handle              TEXT NOT NULL,
+                        ping_role_id        TEXT DEFAULT NULL,
+                        filter_keywords     TEXT DEFAULT NULL,
+                        created_at          INTEGER NOT NULL,
+                        last_post_id        TEXT DEFAULT NULL,
+                        last_checked        INTEGER DEFAULT 0,
+                        consecutive_errors  INTEGER DEFAULT 0,
+                        status              TEXT DEFAULT 'active'
+                    );
+                    INSERT INTO guild_feeds_new SELECT * FROM guild_feeds;
+                    DROP TABLE guild_feeds;
+                    ALTER TABLE guild_feeds_new RENAME TO guild_feeds;
+                `);
+            }
+        } catch (e) {}
+
+        feedsDb.exec(`
+            CREATE TABLE IF NOT EXISTS guild_feeds (
+                id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+                guild_id            TEXT NOT NULL,
+                channel_id          TEXT NOT NULL,
+                platform            TEXT NOT NULL,
+                handle              TEXT NOT NULL,
+                ping_role_id        TEXT DEFAULT NULL,
+                filter_keywords     TEXT DEFAULT NULL,
+                created_at          INTEGER NOT NULL,
+                last_post_id        TEXT DEFAULT NULL,
+                last_checked        INTEGER DEFAULT 0,
+                consecutive_errors  INTEGER DEFAULT 0,
+                status              TEXT DEFAULT 'active'
+            );
+            CREATE INDEX IF NOT EXISTS idx_feeds_profile ON guild_feeds(platform, handle);
+            CREATE INDEX IF NOT EXISTS idx_feeds_guild_chan ON guild_feeds(guild_id, channel_id);
+            CREATE INDEX IF NOT EXISTS idx_feeds_sub ON guild_feeds(guild_id, channel_id, platform, handle, ping_role_id);
+
+            CREATE TABLE IF NOT EXISTS feed_cache (
+                id              TEXT PRIMARY KEY,
+                platform        TEXT NOT NULL,
+                handle          TEXT NOT NULL,
+                post_id         TEXT NOT NULL,
+                author_name     TEXT,
+                author_avatar   TEXT,
+                url             TEXT NOT NULL,
+                embed_url       TEXT NOT NULL,
+                caption         TEXT,
+                media_type      TEXT,
+                media_urls      TEXT,
+                thumbnail_url   TEXT,
+                published_at    INTEGER NOT NULL,
+                metrics         TEXT,
+                fetched_at      INTEGER NOT NULL
+            );
+            CREATE INDEX IF NOT EXISTS idx_cache_handle ON feed_cache(platform, handle, published_at DESC);
         `);
     }
 
@@ -554,8 +620,270 @@ class OugiDatabaseManager {
         this.markDirty('economy');
     }
 
-    getLeaderboard(guildId, limit = 10) {
-        return this.getDb('economy').prepare('SELECT user_id, money, xp, level FROM user_economy WHERE guild_id = ? ORDER BY money DESC LIMIT ?').all(guildId, limit);
+    // ─── Feeds & Universal Content Provider Cache (UCPC) ─────────────────────
+
+    addGuildFeed(guildId, channelId, platform, handle, pingRoleId = null, filterKeywords = null, initialLastPostId = null) {
+        const db = this.getDb('feeds');
+        const existing = db.prepare(`
+            SELECT id FROM guild_feeds 
+            WHERE guild_id = ? AND channel_id = ? AND platform = ? AND handle = ? AND (ping_role_id = ? OR (ping_role_id IS NULL AND ? IS NULL))
+        `).get(guildId, channelId, platform.toLowerCase(), handle.toLowerCase(), pingRoleId, pingRoleId);
+
+        if (existing) {
+            db.prepare(`
+                UPDATE guild_feeds 
+                SET filter_keywords = ?, status = 'active', consecutive_errors = 0
+                WHERE id = ?
+            `).run(filterKeywords, existing.id);
+        } else {
+            db.prepare(`
+                INSERT INTO guild_feeds (guild_id, channel_id, platform, handle, ping_role_id, filter_keywords, created_at, last_post_id, last_checked, status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')
+            `).run(
+                guildId,
+                channelId,
+                platform.toLowerCase(),
+                handle.toLowerCase(),
+                pingRoleId,
+                filterKeywords,
+                Date.now(),
+                initialLastPostId,
+                Date.now()
+            );
+        }
+        this.markDirty('feeds');
+    }
+
+    hasExactGuildFeed(guildId, channelId, platform, handle, pingRoleId = null) {
+        const db = this.getDb('feeds');
+        const row = db.prepare(`
+            SELECT id FROM guild_feeds 
+            WHERE guild_id = ? AND channel_id = ? AND platform = ? AND handle = ? AND (ping_role_id = ? OR (ping_role_id IS NULL AND ? IS NULL))
+        `).get(guildId, channelId, platform.toLowerCase(), handle.toLowerCase(), pingRoleId, pingRoleId);
+        return Boolean(row);
+    }
+
+    removeGuildFeed(guildId, handle = null, channelId = null, pingRoleId = null) {
+        const db = this.getDb('feeds');
+        let query = 'DELETE FROM guild_feeds WHERE guild_id = ?';
+        const params = [guildId];
+
+        if (handle) {
+            query += ' AND handle = ?';
+            params.push(handle.toLowerCase());
+        }
+        if (channelId) {
+            query += ' AND channel_id = ?';
+            params.push(channelId);
+        }
+        if (pingRoleId) {
+            query += ' AND ping_role_id = ?';
+            params.push(pingRoleId);
+        }
+
+        const info = db.prepare(query).run(...params);
+        if (info.changes > 0) {
+            this.markDirty('feeds');
+        }
+        return info.changes;
+    }
+
+    getGuildFeeds(guildId, filters = {}) {
+        const db = this.getDb('feeds');
+        let query = 'SELECT * FROM guild_feeds WHERE guild_id = ?';
+        const params = [guildId];
+
+        if (filters.channelId) {
+            query += ' AND channel_id = ?';
+            params.push(filters.channelId);
+        }
+        if (filters.platform) {
+            query += ' AND platform = ?';
+            params.push(filters.platform.toLowerCase());
+        }
+        if (filters.handle) {
+            query += ' AND handle = ?';
+            params.push(filters.handle.toLowerCase());
+        }
+        if (filters.pingRoleId) {
+            query += ' AND ping_role_id = ?';
+            params.push(filters.pingRoleId);
+        }
+
+        query += ' ORDER BY created_at DESC';
+        return db.prepare(query).all(...params);
+    }
+
+    getAllActiveFeeds() {
+        const db = this.getDb('feeds');
+        return db.prepare("SELECT * FROM guild_feeds WHERE status = 'active'").all();
+    }
+
+    updateFeedLastPost(guildId, channelId, platform, handle, lastPostId, lastChecked = Date.now()) {
+        const db = this.getDb('feeds');
+        db.prepare(`
+            UPDATE guild_feeds 
+            SET last_post_id = ?, last_checked = ?, consecutive_errors = 0 
+            WHERE guild_id = ? AND channel_id = ? AND platform = ? AND handle = ?
+        `).run(lastPostId, lastChecked, guildId, channelId, platform.toLowerCase(), handle.toLowerCase());
+        this.markDirty('feeds');
+    }
+
+    setFeedStatus(guildId, channelId, platform, handle, status, consecutiveErrors = 0) {
+        const db = this.getDb('feeds');
+        db.prepare(`
+            UPDATE guild_feeds 
+            SET status = ?, consecutive_errors = ? 
+            WHERE guild_id = ? AND channel_id = ? AND platform = ? AND handle = ?
+        `).run(status, consecutiveErrors, guildId, channelId, platform.toLowerCase(), handle.toLowerCase());
+        this.markDirty('feeds');
+    }
+
+    deleteGuildFeedById(id) {
+        const db = this.getDb('feeds');
+        const info = db.prepare('DELETE FROM guild_feeds WHERE id = ?').run(id);
+        if (info.changes > 0) this.markDirty('feeds');
+        return info.changes;
+    }
+
+    getFeedCache(platform, handle, limit = 20) {
+        const db = this.getDb('feeds');
+        const rows = db.prepare(`
+            SELECT * FROM feed_cache 
+            WHERE platform = ? AND handle = ? 
+            ORDER BY published_at DESC 
+            LIMIT ?
+        `).all(platform.toLowerCase(), handle.toLowerCase(), limit);
+
+        return rows.map(r => ({
+            ...r,
+            media_urls: JSON.parse(r.media_urls || '[]'),
+            metrics: JSON.parse(r.metrics || '{}')
+        }));
+    }
+
+    getBlendedFeedCacheForChannel(guildId, channelId, limit = 50) {
+        const db = this.getDb('feeds');
+        const rows = db.prepare(`
+            SELECT fc.* FROM feed_cache fc
+            INNER JOIN (
+                SELECT DISTINCT platform, handle FROM guild_feeds 
+                WHERE guild_id = ? AND channel_id = ? AND status = 'active'
+            ) gf ON fc.platform = gf.platform AND fc.handle = gf.handle
+            ORDER BY fc.published_at DESC 
+            LIMIT ?
+        `).all(guildId, channelId, limit);
+
+        return rows.map(r => ({
+            ...r,
+            media_urls: JSON.parse(r.media_urls || '[]'),
+            metrics: JSON.parse(r.metrics || '{}')
+        }));
+    }
+
+    getFeedCacheItem(platform, handle, index = 0) {
+        const db = this.getDb('feeds');
+        const row = db.prepare(`
+            SELECT * FROM feed_cache 
+            WHERE platform = ? AND handle = ? 
+            ORDER BY published_at DESC 
+            LIMIT 1 OFFSET ?
+        `).get(platform.toLowerCase(), handle.toLowerCase(), Math.max(0, index));
+
+        if (!row) return null;
+        return {
+            ...row,
+            media_urls: JSON.parse(row.media_urls || '[]'),
+            metrics: JSON.parse(row.metrics || '{}')
+        };
+    }
+
+    getFeedCacheCount(platform, handle) {
+        const db = this.getDb('feeds');
+        const row = db.prepare(`
+            SELECT COUNT(*) as count FROM feed_cache 
+            WHERE platform = ? AND handle = ?
+        `).get(platform.toLowerCase(), handle.toLowerCase());
+        return row?.count || 0;
+    }
+
+    saveFeedCacheItems(platform, handle, items = []) {
+        if (!items || items.length === 0) return;
+        const db = this.getDb('feeds');
+        const stmt = db.prepare(`
+            INSERT INTO feed_cache (
+                id, platform, handle, post_id, author_name, author_avatar,
+                url, embed_url, caption, media_type, media_urls, thumbnail_url,
+                published_at, metrics, fetched_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(id) DO UPDATE SET
+                author_name = excluded.author_name,
+                author_avatar = excluded.author_avatar,
+                url = excluded.url,
+                embed_url = excluded.embed_url,
+                caption = excluded.caption,
+                media_type = excluded.media_type,
+                media_urls = excluded.media_urls,
+                thumbnail_url = excluded.thumbnail_url,
+                metrics = excluded.metrics,
+                fetched_at = excluded.fetched_at
+        `);
+
+        const insertMany = db.transaction((rows) => {
+            for (const item of rows) {
+                stmt.run(
+                    item.id,
+                    platform.toLowerCase(),
+                    handle.toLowerCase(),
+                    item.post_id || item.id,
+                    item.author_name || handle,
+                    item.author_avatar || null,
+                    item.url,
+                    item.embed_url || item.url,
+                    item.caption || '',
+                    item.media_type || 'video',
+                    JSON.stringify(item.media_urls || []),
+                    item.thumbnail_url || null,
+                    item.published_at || Math.floor(Date.now() / 1000),
+                    JSON.stringify(item.metrics || {}),
+                    Date.now()
+                );
+            }
+        });
+
+        insertMany(items);
+        this.markDirty('feeds');
+    }
+
+    hasActiveSubscribers(platform, handle) {
+        const db = this.getDb('feeds');
+        const row = db.prepare(`
+            SELECT COUNT(*) as count FROM guild_feeds 
+            WHERE platform = ? AND handle = ? AND status = 'active'
+        `).get(platform.toLowerCase(), handle.toLowerCase());
+        return (row?.count || 0) > 0;
+    }
+
+    cleanupOrphanedFeedCache() {
+        const db = this.getDb('feeds');
+        const orphans = db.prepare(`
+            SELECT DISTINCT platform, handle FROM feed_cache
+            WHERE (platform, handle) NOT IN (
+                SELECT DISTINCT platform, handle FROM guild_feeds WHERE status = 'active'
+            )
+        `).all();
+
+        if (orphans.length > 0) {
+            const deleteStmt = db.prepare('DELETE FROM feed_cache WHERE platform = ? AND handle = ?');
+            const tx = db.transaction((list) => {
+                for (const o of list) {
+                    deleteStmt.run(o.platform, o.handle);
+                }
+            });
+            tx(orphans);
+            this.markDirty('feeds');
+        }
+        return orphans.length;
     }
 
     ensureSettingsLoaded() {
