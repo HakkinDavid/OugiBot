@@ -119,7 +119,7 @@ global.client = new Discord.Client({
 
 /* ===== Variables Globales ===== */
 global.instanceID = Date.now().toString().slice(-4);
-global.TEASEABLE = process.argv.slice(2)[0] !== 'silent';
+global.TEASEABLE = !process.env.SILENT ?? false;
 global.davidUserID = "265257341967007758";
 global.consoleLogging = "1140457399673688176";
 
@@ -187,7 +187,7 @@ async function syncData() {
         for (const [key, data] of Object.entries(database)) {
             if (!data.done) await ougi.fetch(data.id, data.file, key);
         }
-        await ougi.fetchAttachment(channels.cookies, "1537327306765504532", "cookies.txt").catch(() => {});
+        await ougi.fetchAttachment(channels.cookies, "1545929062340632677", "cookies.txt").catch(() => {});
         global.cachedCookiesPath = global.updateCookiesCache();
     } finally {
         global.isSyncing = false;
