@@ -56,12 +56,12 @@ module.exports = async function (args, msg) {
         const row = new ActionRowBuilder().addComponents(
             new ButtonBuilder()
                 .setCustomId(`feed_nav:single:${platform}:${handle}:${clampedIndex - 1}:${msg.author.id}`)
-                .setLabel('◀️ Previous')
+                .setLabel('🔼')
                 .setStyle(ButtonStyle.Primary)
                 .setDisabled(clampedIndex <= 0),
             new ButtonBuilder()
                 .setCustomId(`feed_nav:single:${platform}:${handle}:${clampedIndex + 1}:${msg.author.id}`)
-                .setLabel('Next ▶️')
+                .setLabel('🔽')
                 .setStyle(ButtonStyle.Primary)
                 .setDisabled(clampedIndex >= totalCount - 1),
             new ButtonBuilder()
@@ -120,12 +120,12 @@ module.exports = async function (args, msg) {
         const row = new ActionRowBuilder().addComponents(
             new ButtonBuilder()
                 .setCustomId(`feed_nav:fyp:${msg.guildId}:${msg.channelId}:${clampedIndex - 1}:${msg.author.id}`)
-                .setLabel('◀️ Previous')
+                .setLabel('🔼')
                 .setStyle(ButtonStyle.Primary)
                 .setDisabled(clampedIndex <= 0),
             new ButtonBuilder()
                 .setCustomId(`feed_nav:fyp:${msg.guildId}:${msg.channelId}:${clampedIndex + 1}:${msg.author.id}`)
-                .setLabel('Next ▶️')
+                .setLabel('🔽')
                 .setStyle(ButtonStyle.Primary)
                 .setDisabled(clampedIndex >= totalCount - 1),
             new ButtonBuilder()

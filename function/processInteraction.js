@@ -65,8 +65,8 @@ module.exports = async function (interaction) {
             let cacheItems = [];
             let clampedIndex = 0;
             let totalCount = 0;
-            let prevCustomId = '';
-            let nextCustomId = '';
+            let upCustomId = '';
+            let downCustomId = '';
             let footerText = '';
             let isTiktok = false;
             let directUrl = 'https://instagram.com';
@@ -90,11 +90,11 @@ module.exports = async function (interaction) {
                 totalCount = cacheItems.length;
                 clampedIndex = Math.max(0, Math.min(targetIndex, totalCount - 1));
                 const item = cacheItems[clampedIndex];
-                directUrl = item.url || `https://${isTiktok ? 'tiktok.com' : 'instagram.com'}`;
+                directUrl = item.url || `https://${isTiktok ? 'tiktok.com/@' + item.handle : 'instagram.com/' + item.handle}`;
                 footerText = `feedEmbed by Ougi | @${item.handle} on ${platName} | Page ${clampedIndex + 1} of ${totalCount}`;
 
-                prevCustomId = `feed_nav:single:${platform}:${handle}:${clampedIndex - 1}:${originalAuthorId}`;
-                nextCustomId = `feed_nav:single:${platform}:${handle}:${clampedIndex + 1}:${originalAuthorId}`;
+                upCustomId = `feed_nav:single:${platform}:${handle}:${clampedIndex - 1}:${originalAuthorId}`;
+                downCustomId = `feed_nav:single:${platform}:${handle}:${clampedIndex + 1}:${originalAuthorId}`;
 
             } else if (parts[1] === 'fyp') {
                 const guildId = parts[2];
@@ -116,11 +116,11 @@ module.exports = async function (interaction) {
                 const channel = interaction.guild?.channels?.cache?.get(channelId);
                 const channelName = channel?.name || 'feed';
 
-                directUrl = item.url || `https://${isTiktok ? 'tiktok.com' : 'instagram.com'}`;
+                directUrl = item.url || `https://${isTiktok ? 'tiktok.com/@' + item.handle : 'instagram.com/' + item.handle}`;
                 footerText = `FYP #${channelName} • @${item.handle} on ${platName} | Page ${clampedIndex + 1} of ${totalCount}`;
 
-                prevCustomId = `feed_nav:fyp:${guildId}:${channelId}:${clampedIndex - 1}:${originalAuthorId}`;
-                nextCustomId = `feed_nav:fyp:${guildId}:${channelId}:${clampedIndex + 1}:${originalAuthorId}`;
+                upCustomId = `feed_nav:fyp:${guildId}:${channelId}:${clampedIndex - 1}:${originalAuthorId}`;
+                downCustomId = `feed_nav:fyp:${guildId}:${channelId}:${clampedIndex + 1}:${originalAuthorId}`;
 
             } else {
                 // Fallback legacy format: feed_nav:platform:handle:index:authorId
@@ -140,24 +140,24 @@ module.exports = async function (interaction) {
                 totalCount = cacheItems.length;
                 clampedIndex = Math.max(0, Math.min(targetIndex, totalCount - 1));
                 const item = cacheItems[clampedIndex];
-                directUrl = item.url || `https://${isTiktok ? 'tiktok.com' : 'instagram.com'}`;
+                directUrl = item.url || `https://${isTiktok ? 'tiktok.com/@' + item.handle : 'instagram.com/' + item.handle}`;
                 footerText = `feedEmbed by Ougi | @${item.handle} on ${platName} | Page ${clampedIndex + 1} of ${totalCount}`;
 
-                prevCustomId = `feed_nav:single:${platform}:${handle}:${clampedIndex - 1}:${originalAuthorId}`;
-                nextCustomId = `feed_nav:single:${platform}:${handle}:${clampedIndex + 1}:${originalAuthorId}`;
+                upCustomId = `feed_nav:single:${platform}:${handle}:${clampedIndex - 1}:${originalAuthorId}`;
+                downCustomId = `feed_nav:single:${platform}:${handle}:${clampedIndex + 1}:${originalAuthorId}`;
             }
 
             const item = cacheItems[clampedIndex];
 
             const row = new ActionRowBuilder().addComponents(
                 new ButtonBuilder()
-                    .setCustomId(prevCustomId)
-                    .setLabel('◀️ Previous')
+                    .setCustomId(upCustomId)
+                    .setLabel('🔼')
                     .setStyle(ButtonStyle.Primary)
                     .setDisabled(clampedIndex <= 0),
                 new ButtonBuilder()
-                    .setCustomId(nextCustomId)
-                    .setLabel('Next ▶️')
+                    .setCustomId(downCustomId)
+                    .setLabel('🔽')
                     .setStyle(ButtonStyle.Primary)
                     .setDisabled(clampedIndex >= totalCount - 1),
                 new ButtonBuilder()
