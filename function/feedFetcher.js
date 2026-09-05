@@ -75,7 +75,7 @@ async function fetchTikTokProfile(handle, limit = 10) {
             if (!entry || !entry.id) continue;
             const videoId = entry.id;
             const directUrl = entry.url || `https://www.tiktok.com/@${sanitized}/video/${videoId}`;
-            const embedUrl = `https://vxtiktok.com/@${sanitized}/video/${videoId}`;
+            const embedUrl = `https://kktiktok.com/@${sanitized}/video/${videoId}`;
             const coverImg = entry.thumbnails?.[0]?.url || null;
 
             items.push({

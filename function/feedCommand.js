@@ -51,15 +51,7 @@ module.exports = async function (args, msg) {
         const totalCount = cacheItems.length;
         const clampedIndex = Math.min(pageIndex, totalCount - 1);
         const item = cacheItems[clampedIndex];
-
-        const embed = ougi.feedDispatcher.buildFeedEmbed(item);
         const isTiktok = platform === 'tiktok';
-        const platName = isTiktok ? 'TikTok' : 'Instagram';
-
-        embed.setFooter({
-            text: `feedEmbed by Ougi | @${item.handle} on ${platName} | Page ${clampedIndex + 1} of ${totalCount}`,
-            iconURL: client.user.displayAvatarURL({ dynamic: true, size: 4096 })
-        });
 
         const row = new ActionRowBuilder().addComponents(
             new ButtonBuilder()
@@ -75,14 +67,15 @@ module.exports = async function (args, msg) {
             new ButtonBuilder()
                 .setLabel(isTiktok ? 'Open TikTok' : 'Open Instagram')
                 .setStyle(ButtonStyle.Link)
-                .setURL(item.url || `https://${isTiktok ? 'tiktok.com' : 'instagram.com'}`)
+                .setURL(item.url || `https://${isTiktok ? 'tiktok.com/@' + item.handle : 'instagram.com/' + item.handle}`)
         );
 
-        await msg.channel.send({
-            content: item.embed_url ? item.embed_url : null,
-            embeds: [embed],
+        const payload = ougi.feedDispatcher.renderFeedItem(item, {
+            footerExtra: `Page ${clampedIndex + 1} of ${totalCount}`,
             components: [row]
-        }).catch(console.error);
+        });
+
+        await msg.channel.send(payload).catch(console.error);
 
     } else {
         // Mode 2: Channel-blended FYP Feed
@@ -121,16 +114,8 @@ module.exports = async function (args, msg) {
         const totalCount = cacheItems.length;
         const clampedIndex = Math.min(pageIndex, totalCount - 1);
         const item = cacheItems[clampedIndex];
-
-        const embed = ougi.feedDispatcher.buildFeedEmbed(item);
         const isTiktok = item.platform === 'tiktok';
-        const platName = isTiktok ? 'TikTok' : 'Instagram';
         const channelName = msg.channel.name || 'feed';
-
-        embed.setFooter({
-            text: `FYP #${channelName} • @${item.handle} on ${platName} | Page ${clampedIndex + 1} of ${totalCount}`,
-            iconURL: client.user.displayAvatarURL({ dynamic: true, size: 4096 })
-        });
 
         const row = new ActionRowBuilder().addComponents(
             new ButtonBuilder()
@@ -146,13 +131,14 @@ module.exports = async function (args, msg) {
             new ButtonBuilder()
                 .setLabel(isTiktok ? 'Open TikTok' : 'Open Instagram')
                 .setStyle(ButtonStyle.Link)
-                .setURL(item.url || `https://${isTiktok ? 'tiktok.com' : 'instagram.com'}`)
+                .setURL(item.url || `https://${isTiktok ? 'tiktok.com/@' + item.handle : 'instagram.com/' + item.handle}`)
         );
 
-        await msg.channel.send({
-            content: item.embed_url ? item.embed_url : null,
-            embeds: [embed],
+        const payload = ougi.feedDispatcher.renderFeedItem(item, {
+            footerExtra: `FYP #${channelName} | Page ${clampedIndex + 1} of ${totalCount}`,
             components: [row]
-        }).catch(console.error);
+        });
+
+        await msg.channel.send(payload).catch(console.error);
     }
 };

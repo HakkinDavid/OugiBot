@@ -148,11 +148,6 @@ module.exports = async function (interaction) {
             }
 
             const item = cacheItems[clampedIndex];
-            const embed = ougi.feedDispatcher.buildFeedEmbed(item);
-            embed.setFooter({
-                text: footerText,
-                iconURL: client.user.displayAvatarURL({ dynamic: true, size: 4096 })
-            });
 
             const row = new ActionRowBuilder().addComponents(
                 new ButtonBuilder()
@@ -171,11 +166,12 @@ module.exports = async function (interaction) {
                     .setURL(directUrl)
             );
 
-            await interaction.update({
-                content: item.embed_url ? item.embed_url : null,
-                embeds: [embed],
+            const payload = ougi.feedDispatcher.renderFeedItem(item, {
+                footerExtra: footerText.split(' | ').slice(2).join(' | '),
                 components: [row]
-            }).catch(console.error);
+            });
+
+            await interaction.update(payload).catch(console.error);
         }
     }
 };

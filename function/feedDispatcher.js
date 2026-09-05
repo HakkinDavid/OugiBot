@@ -3,9 +3,9 @@ const { EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 let isRunning = false;
 
 /**
- * Builds the standard DiscordEmbed for a feed item.
+ * Builds the standard DiscordEmbed for a feed item (image posts).
  */
-function buildFeedEmbed(item) {
+function buildFeedEmbed(item, options = {}) {
     const isTiktok = item.platform === 'tiktok';
     const platName = isTiktok ? 'TikTok' : 'Instagram';
     const platColor = isTiktok ? '#FE2C55' : '#C13584';
@@ -23,22 +23,28 @@ function buildFeedEmbed(item) {
         .setTitle((item.caption || `${platName} Post by @${item.handle}`).slice(0, 256))
         .setURL(item.url)
         .setDescription(item.caption ? item.caption.slice(0, 2048) : null)
-        .setTimestamp(item.published_at ? new Date(item.published_at * 1000) : new Date())
-        .setFooter({ 
-            text: `feedEmbed by Ougi | @${item.handle} on ${platName}`, 
-            iconURL: client.user?.displayAvatarURL({ dynamic: true, size: 4096 }) 
-        });
+        .setTimestamp(item.published_at ? new Date(item.published_at * 1000) : new Date());
 
-    if (item.thumbnail_url) {
-        embed.setImage(item.thumbnail_url);
+    let footerText = `feedEmbed by Ougi | @${item.handle} on ${platName}`;
+    if (options.footerExtra) {
+        footerText += ` | ${options.footerExtra}`;
+    }
+
+    embed.setFooter({ 
+        text: footerText, 
+        iconURL: client.user?.displayAvatarURL({ dynamic: true, size: 4096 }) 
+    });
+
+    if (item.thumbnail_url || (item.media_urls && item.media_urls[0])) {
+        embed.setImage(item.thumbnail_url || item.media_urls[0]);
     }
 
     // Add stats field if metrics are available
-    if (item.metrics && (item.metrics.views || item.metrics.likes)) {
+    if (item.metrics && (item.metrics.views || item.metrics.likes || item.metrics.comments)) {
         const stats = [];
-        if (item.metrics.views) stats.push(`👁️ ${item.metrics.views.toLocaleString()}`);
         if (item.metrics.likes) stats.push(`❤️ ${item.metrics.likes.toLocaleString()}`);
         if (item.metrics.comments) stats.push(`💬 ${item.metrics.comments.toLocaleString()}`);
+        if (item.metrics.views) stats.push(`👁️ ${item.metrics.views.toLocaleString()}`);
         if (stats.length > 0) {
             embed.addFields({ name: 'Metrics', value: stats.join('  •  '), inline: true });
         }
@@ -48,14 +54,68 @@ function buildFeedEmbed(item) {
 }
 
 /**
+ * Renders a feed item into a Discord message payload ({ content, embeds, components }).
+ * For video posts: formatted message with custom emojis and fixer link to unfurl native player.
+ * For image posts: Discord EmbedBuilder with HD thumbnail, metrics, author, and links.
+ */
+function renderFeedItem(item, options = {}) {
+    const isTiktok = item.platform === 'tiktok';
+    const platName = isTiktok ? 'TikTok' : 'Instagram';
+    const platEmoji = isTiktok ? '<:tiktok:1545938243617423420>' : '<:instagram:1545938308553773156>';
+    const rolePing = options.pingRoleId ? `<@&${options.pingRoleId}>\n` : '';
+    const isVideo = item.media_type === 'video';
+
+    if (isVideo) {
+        const lines = [];
+        if (rolePing) lines.push(rolePing.trim());
+
+        // Header: Emoji + Platform • @handle
+        lines.push(`${platEmoji} **[${platName} • @${item.handle}](${item.url || `https://${isTiktok ? 'tiktok.com/@' + item.handle : 'instagram.com/' + item.handle}`})**`);
+
+        // Caption (quoted)
+        if (item.caption && item.caption.trim()) {
+            const cleanCaption = item.caption.trim().split('\n').map(l => `> ${l}`).join('\n');
+            lines.push(cleanCaption.slice(0, 1024));
+        }
+
+        // Metrics: likes, comments, views
+        const metricsParts = [];
+        if (item.metrics) {
+            if (item.metrics.likes) metricsParts.push(`❤️ ${item.metrics.likes.toLocaleString()}`);
+            if (item.metrics.comments) metricsParts.push(`💬 ${item.metrics.comments.toLocaleString()}`);
+            if (item.metrics.views) metricsParts.push(`👁️ ${item.metrics.views.toLocaleString()}`);
+        }
+        if (metricsParts.length > 0) {
+            lines.push(metricsParts.join('  •  '));
+        }
+
+        // Fixer link for native Discord video unfurl
+        lines.push(item.embed_url || item.url);
+
+        return {
+            content: lines.join('\n'),
+            embeds: [],
+            components: options.components || []
+        };
+    } else {
+        const embed = buildFeedEmbed(item, options);
+        const contentStr = `${rolePing}${item.embed_url || item.url}`.trim();
+
+        return {
+            content: contentStr.length > 0 ? contentStr : null,
+            embeds: [embed],
+            components: options.components || []
+        };
+    }
+}
+
+/**
  * Dispatches a batch of new items to all subscribed channels for a given profile.
  */
 async function dispatchNewItems(platform, handle, newItems, subscriptions) {
     if (!newItems || newItems.length === 0 || !subscriptions || subscriptions.length === 0) return;
 
     for (const item of newItems) {
-        const embed = buildFeedEmbed(item);
-
         for (const sub of subscriptions) {
             try {
                 // Fetch channel
@@ -85,8 +145,8 @@ async function dispatchNewItems(platform, handle, newItems, subscriptions) {
                     if (!matches) continue;
                 }
 
-                const content = `${sub.ping_role_id ? `<@&${sub.ping_role_id}> ` : ''}${item.embed_url || item.url}`;
-                await channel.send({ content, embeds: [embed] }).catch(err => {
+                const payload = renderFeedItem(item, { pingRoleId: sub.ping_role_id });
+                await channel.send(payload).catch(err => {
                     console.error(`[FeedDispatcher] Error sending to channel ${sub.channel_id}:`, err.message);
                 });
 
@@ -207,6 +267,7 @@ async function tickFeedDispatcher() {
 
 module.exports = {
     buildFeedEmbed,
+    renderFeedItem,
     dispatchNewItems,
     tick: tickFeedDispatcher
 };
