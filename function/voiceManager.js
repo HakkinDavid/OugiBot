@@ -1005,7 +1005,7 @@ module.exports = {
         session.isLooping = false;
 
         const cachedTracks = ougi.audioCacheManager.getAllCached();
-        await this.replenishRadioQueue(guildId, 5);
+        await this.replenishRadioQueue(guildId, Infinity);
 
         if (!session.musicProc && !session.isCachedPlaying && session.queue.length > 0) {
             await this.playMusic(msg, vcChannel);
