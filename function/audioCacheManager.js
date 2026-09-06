@@ -6,7 +6,7 @@ class AudioCacheManager {
     constructor() {
         this.cacheDir = path.join(__dirname, '../cachedvoice/audio_cache');
         this.maxSizeBytes = 500 * 1024 * 1024; // 500 MB max total disk cache
-        this.maxAgeMs = 24 * 60 * 60 * 1000;  // 24-hour TTL
+        this.maxAgeMs = Infinity; //24 * 60 * 60 * 1000;  // 24-hour TTL
         this.cacheMap = new Map(); // videoId -> { filePath, sizeBytes, lastAccessedAt, createdAt }
         this.metadataPath = path.join(this.cacheDir, 'metadata.json');
         this.metadataMap = new Map(); // videoId -> { title, duration, thumbnail, url }
