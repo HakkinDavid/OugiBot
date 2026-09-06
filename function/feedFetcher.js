@@ -449,7 +449,7 @@ async function fetchInstagramProfile(handle, limit = 10) {
                         author_avatar: null,
                         url: postUrl,
                         embed_url: `https://kkinstagram.com/p/${code}/`,
-                        caption: `Instagram post by @${sanitized}`,
+                        caption: '',
                         media_type: 'image',
                         media_urls: [],
                         thumbnail_url: null,

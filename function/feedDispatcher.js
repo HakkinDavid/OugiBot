@@ -13,17 +13,26 @@ function buildFeedEmbed(item, options = {}) {
         ? 'https://github.com/HakkinDavid/OugiBot/blob/master/images/tt.png?raw=true' 
         : 'https://github.com/HakkinDavid/OugiBot/blob/master/images/ig.png?raw=true';
 
+    const authorDisplayName = item.author_name && item.author_name.toLowerCase() !== item.handle.toLowerCase()
+        ? `${item.author_name} (@${item.handle})`
+        : `${platName} • @${item.handle}`;
+
+    const postUrl = item.url || `https://${isTiktok ? 'tiktok.com/@' + item.handle : 'instagram.com/' + item.handle}`;
+
     const embed = new EmbedBuilder()
         .setColor(platColor)
         .setAuthor({ 
-            name: `${platName} • @${item.handle}`,
-            iconURL: platIcon,
-            url: item.url 
+            name: authorDisplayName.slice(0, 256),
+            iconURL: item.author_avatar || platIcon,
+            url: postUrl 
         })
-        .setTitle((item.caption || `${platName} Post by @${item.handle}`).slice(0, 256))
-        .setURL(item.url)
-        .setDescription(item.caption ? item.caption.slice(0, 2048) : null)
+        .setURL(postUrl)
         .setTimestamp(item.published_at ? new Date(item.published_at * 1000) : new Date());
+
+    // Only set description if a non-empty caption exists (prevents duplicated title/description)
+    if (item.caption && item.caption.trim()) {
+        embed.setDescription(item.caption.trim().slice(0, 4096));
+    }
 
     let footerText = `feedEmbed by Ougi | @${item.handle} on ${platName}`;
     if (options.footerExtra) {
@@ -32,7 +41,7 @@ function buildFeedEmbed(item, options = {}) {
 
     embed.setFooter({ 
         text: footerText, 
-        iconURL: client.user?.displayAvatarURL({ dynamic: true, size: 4096 }) 
+        iconURL: (typeof client !== 'undefined' && client.user) ? client.user.displayAvatarURL({ dynamic: true, size: 4096 }) : null
     });
 
     if (item.thumbnail_url || (item.media_urls && item.media_urls[0])) {
@@ -40,11 +49,11 @@ function buildFeedEmbed(item, options = {}) {
     }
 
     // Add stats field if metrics are available
-    if (item.metrics && (item.metrics.views || item.metrics.likes || item.metrics.comments)) {
+    if (item.metrics && (item.metrics.views > 0 || item.metrics.likes > 0 || item.metrics.comments > 0)) {
         const stats = [];
-        if (item.metrics.likes) stats.push(`❤️ ${item.metrics.likes.toLocaleString()}`);
-        if (item.metrics.comments) stats.push(`💬 ${item.metrics.comments.toLocaleString()}`);
-        if (item.metrics.views) stats.push(`👁️ ${item.metrics.views.toLocaleString()}`);
+        if (item.metrics.likes > 0) stats.push(`❤️ ${item.metrics.likes.toLocaleString()}`);
+        if (item.metrics.comments > 0) stats.push(`💬 ${item.metrics.comments.toLocaleString()}`);
+        if (item.metrics.views > 0) stats.push(`👁️ ${item.metrics.views.toLocaleString()}`);
         if (stats.length > 0) {
             embed.addFields({ name: 'Metrics', value: stats.join('  •  '), inline: true });
         }
@@ -56,7 +65,7 @@ function buildFeedEmbed(item, options = {}) {
 /**
  * Renders a feed item into a Discord message payload ({ content, embeds, components }).
  * For video posts: formatted message with custom emojis and fixer link to unfurl native player.
- * For image posts: Discord EmbedBuilder with HD thumbnail, metrics, author, and links.
+ * For image posts: Discord EmbedBuilder with HD thumbnail, metrics, author, and clean layout.
  */
 function renderFeedItem(item, options = {}) {
     const isTiktok = item.platform === 'tiktok';
@@ -69,8 +78,14 @@ function renderFeedItem(item, options = {}) {
         const lines = [];
         if (rolePing) lines.push(rolePing.trim());
 
+        const authorDisplayName = item.author_name && item.author_name.toLowerCase() !== item.handle.toLowerCase()
+            ? `${item.author_name} (@${item.handle})`
+            : `${platName} • @${item.handle}`;
+
+        const postUrl = item.url || `https://${isTiktok ? 'tiktok.com/@' + item.handle : 'instagram.com/' + item.handle}`;
+
         // Header: Emoji + Platform • @handle
-        lines.push(`${platEmoji} **[${platName} • @${item.handle}](${item.url || `https://${isTiktok ? 'tiktok.com/@' + item.handle : 'instagram.com/' + item.handle}`})**`);
+        lines.push(`${platEmoji} **[${authorDisplayName}](${postUrl})**`);
 
         // Caption (quoted)
         if (item.caption && item.caption.trim()) {
@@ -81,9 +96,9 @@ function renderFeedItem(item, options = {}) {
         // Metrics: likes, comments, views
         const metricsParts = [];
         if (item.metrics) {
-            if (item.metrics.likes) metricsParts.push(`❤️ ${item.metrics.likes.toLocaleString()}`);
-            if (item.metrics.comments) metricsParts.push(`💬 ${item.metrics.comments.toLocaleString()}`);
-            if (item.metrics.views) metricsParts.push(`👁️ ${item.metrics.views.toLocaleString()}`);
+            if (item.metrics.likes > 0) metricsParts.push(`❤️ ${item.metrics.likes.toLocaleString()}`);
+            if (item.metrics.comments > 0) metricsParts.push(`💬 ${item.metrics.comments.toLocaleString()}`);
+            if (item.metrics.views > 0) metricsParts.push(`👁️ ${item.metrics.views.toLocaleString()}`);
         }
         if (metricsParts.length > 0) {
             lines.push(metricsParts.join('  •  '));
@@ -99,7 +114,7 @@ function renderFeedItem(item, options = {}) {
         };
     } else {
         const embed = buildFeedEmbed(item, options);
-        const contentStr = `${rolePing}${item.embed_url || item.url}`.trim();
+        const contentStr = rolePing.trim();
 
         return {
             content: contentStr.length > 0 ? contentStr : null,
