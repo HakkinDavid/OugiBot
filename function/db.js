@@ -246,11 +246,11 @@ class OugiDatabaseManager {
                 last_post_id        TEXT DEFAULT NULL,
                 last_checked        INTEGER DEFAULT 0,
                 consecutive_errors  INTEGER DEFAULT 0,
-                status              TEXT DEFAULT 'active'
+                status              TEXT DEFAULT 'active',
+                UNIQUE(guild_id, channel_id, platform, handle)
             );
             CREATE INDEX IF NOT EXISTS idx_feeds_profile ON guild_feeds(platform, handle);
             CREATE INDEX IF NOT EXISTS idx_feeds_guild_chan ON guild_feeds(guild_id, channel_id);
-            CREATE INDEX IF NOT EXISTS idx_feeds_sub ON guild_feeds(guild_id, channel_id, platform, handle, ping_role_id);
 
             CREATE TABLE IF NOT EXISTS feed_cache (
                 id              TEXT PRIMARY KEY,
@@ -602,16 +602,17 @@ class OugiDatabaseManager {
     addGuildFeed(guildId, channelId, platform, handle, pingRoleId = null, filterKeywords = null, initialLastPostId = null) {
         const db = this.getDb('feeds');
         const existing = db.prepare(`
-            SELECT id FROM guild_feeds 
-            WHERE guild_id = ? AND channel_id = ? AND platform = ? AND handle = ? AND (ping_role_id = ? OR (ping_role_id IS NULL AND ? IS NULL))
-        `).get(guildId, channelId, platform.toLowerCase(), handle.toLowerCase(), pingRoleId, pingRoleId);
+            SELECT id, last_post_id FROM guild_feeds 
+            WHERE guild_id = ? AND channel_id = ? AND platform = ? AND handle = ?
+        `).get(guildId, channelId, platform.toLowerCase(), handle.toLowerCase());
 
         if (existing) {
             db.prepare(`
                 UPDATE guild_feeds 
-                SET filter_keywords = ?, status = 'active', consecutive_errors = 0
+                SET ping_role_id = ?, filter_keywords = ?, status = 'active', consecutive_errors = 0,
+                    last_post_id = COALESCE(last_post_id, ?)
                 WHERE id = ?
-            `).run(filterKeywords, existing.id);
+            `).run(pingRoleId, filterKeywords, initialLastPostId, existing.id);
         } else {
             db.prepare(`
                 INSERT INTO guild_feeds (guild_id, channel_id, platform, handle, ping_role_id, filter_keywords, created_at, last_post_id, last_checked, status)
@@ -629,6 +630,14 @@ class OugiDatabaseManager {
             );
         }
         this.markDirty('feeds');
+    }
+
+    getGuildFeed(guildId, channelId, platform, handle) {
+        const db = this.getDb('feeds');
+        return db.prepare(`
+            SELECT * FROM guild_feeds 
+            WHERE guild_id = ? AND channel_id = ? AND platform = ? AND handle = ?
+        `).get(guildId, channelId, platform.toLowerCase(), handle.toLowerCase());
     }
 
     hasExactGuildFeed(guildId, channelId, platform, handle, pingRoleId = null) {

@@ -58,8 +58,10 @@ module.exports = async function (args, msg) {
     const isTiktok = platform === 'tiktok';
     const platName = isTiktok ? 'TikTok' : 'Instagram';
 
+    const existing = ougi.db().getGuildFeed(msg.guildId, targetChannelId, platform, handle);
+
     // Check if identical subscription already exists
-    if (ougi.db().hasExactGuildFeed(msg.guildId, targetChannelId, platform, handle, targetRoleId)) {
+    if (existing && existing.ping_role_id === targetRoleId && existing.status === 'active') {
         msg.channel.send(await ougi.text({
             msg,
             stringID: "feed_alreadySubscribed",
