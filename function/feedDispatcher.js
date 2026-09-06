@@ -71,7 +71,16 @@ function renderFeedItem(item, options = {}) {
     const isTiktok = item.platform === 'tiktok';
     const platName = isTiktok ? 'TikTok' : 'Instagram';
     const platEmoji = isTiktok ? '<:tiktok:1545938243617423420>' : '<:instagram:1545938308553773156>';
-    const rolePing = options.pingRoleId ? `<@&${options.pingRoleId}>\n` : '';
+    
+    // Support multiple ping roles grouped into a single message
+    let rolePing = '';
+    if (Array.isArray(options.pingRoleIds) && options.pingRoleIds.length > 0) {
+        const pings = [...new Set(options.pingRoleIds.filter(Boolean))].map(r => `<@&${r}>`);
+        if (pings.length > 0) rolePing = pings.join(' ') + '\n';
+    } else if (options.pingRoleId) {
+        rolePing = `<@&${options.pingRoleId}>\n`;
+    }
+
     const isVideo = item.media_type === 'video';
 
     if (isVideo) {
@@ -126,20 +135,31 @@ function renderFeedItem(item, options = {}) {
 
 /**
  * Dispatches a batch of new items to all subscribed channels for a given profile.
+ * Groups subscriptions by channel so that multiple role subscriptions in the same channel
+ * receive a SINGLE message with combined role mentions.
  */
 async function dispatchNewItems(platform, handle, newItems, subscriptions) {
     if (!newItems || newItems.length === 0 || !subscriptions || subscriptions.length === 0) return;
 
+    // Group subscriptions by channelId
+    const channelMap = new Map();
+    for (const sub of subscriptions) {
+        if (!channelMap.has(sub.channel_id)) {
+            channelMap.set(sub.channel_id, []);
+        }
+        channelMap.get(sub.channel_id).push(sub);
+    }
+
     for (const item of newItems) {
-        for (const sub of subscriptions) {
+        for (const [channelId, subs] of channelMap.entries()) {
             try {
-                // Fetch channel
-                const channel = client.channels.cache.get(sub.channel_id) 
-                    ?? await client.channels.fetch(sub.channel_id).catch(() => null);
+                const sampleSub = subs[0];
+                const channel = client.channels.cache.get(channelId) 
+                    ?? await client.channels.fetch(channelId).catch(() => null);
 
                 if (!channel) {
-                    console.log(`[FeedDispatcher] Channel ${sub.channel_id} in guild ${sub.guild_id} not found. Removing subscription.`);
-                    ougi.db().removeGuildFeed(sub.guild_id, sub.handle, sub.channel_id);
+                    console.log(`[FeedDispatcher] Channel ${channelId} in guild ${sampleSub.guild_id} not found. Removing subscriptions.`);
+                    ougi.db().removeGuildFeed(sampleSub.guild_id, sampleSub.handle, channelId);
                     continue;
                 }
 
@@ -147,26 +167,36 @@ async function dispatchNewItems(platform, handle, newItems, subscriptions) {
                 if (channel.guild?.members?.me) {
                     const perms = channel.permissionsFor(channel.guild.members.me);
                     if (!perms || !perms.has(PermissionFlagsBits.SendMessages) || !perms.has(PermissionFlagsBits.EmbedLinks)) {
-                        console.log(`[FeedDispatcher] Missing permissions in channel ${sub.channel_id}.`);
+                        console.log(`[FeedDispatcher] Missing permissions in channel ${channelId}.`);
                         continue;
                     }
                 }
 
-                // Filter keywords check if configured
-                if (sub.filter_keywords) {
-                    const keywords = sub.filter_keywords.split(',').map(k => k.trim().toLowerCase()).filter(Boolean);
-                    const caption = (item.caption || '').toLowerCase();
-                    const matches = keywords.some(k => caption.includes(k));
-                    if (!matches) continue;
+                // Filter matching subscriptions in this channel
+                const matchingSubs = [];
+                for (const sub of subs) {
+                    if (sub.filter_keywords) {
+                        const keywords = sub.filter_keywords.split(',').map(k => k.trim().toLowerCase()).filter(Boolean);
+                        const caption = (item.caption || '').toLowerCase();
+                        const matches = keywords.some(k => caption.includes(k));
+                        if (matches) matchingSubs.push(sub);
+                    } else {
+                        matchingSubs.push(sub);
+                    }
                 }
 
-                const payload = renderFeedItem(item, { pingRoleId: sub.ping_role_id });
+                if (matchingSubs.length === 0) continue;
+
+                // Combine all unique roles to ping into a single message
+                const pingRoleIds = [...new Set(matchingSubs.map(s => s.ping_role_id).filter(Boolean))];
+
+                const payload = renderFeedItem(item, { pingRoleIds });
                 await channel.send(payload).catch(err => {
-                    console.error(`[FeedDispatcher] Error sending to channel ${sub.channel_id}:`, err.message);
+                    console.error(`[FeedDispatcher] Error sending to channel ${channelId}:`, err.message);
                 });
 
             } catch (err) {
-                console.error(`[FeedDispatcher] Failed delivering item ${item.id} to channel ${sub.channel_id}:`, err);
+                console.error(`[FeedDispatcher] Failed delivering item ${item.id} to channel ${channelId}:`, err);
             }
         }
     }
@@ -225,28 +255,46 @@ async function tickFeedDispatcher() {
                     // Update Universal Cache
                     ougi.db().saveFeedCacheItems(platform, handle, items);
 
-                    // For each subscription, detect new items
+                    // Group valid subscriptions by channel_id
+                    const channelGroups = new Map();
                     for (const sub of validSubs) {
-                        let newPosts = [];
+                        if (!channelGroups.has(sub.channel_id)) {
+                            channelGroups.set(sub.channel_id, []);
+                        }
+                        channelGroups.get(sub.channel_id).push(sub);
+                    }
 
-                        if (!sub.last_post_id) {
-                            // First time or uninitialized: set latest post ID without spamming
-                            ougi.db().updateFeedLastPost(sub.guild_id, sub.channel_id, platform, handle, items[0].post_id);
-                        } else {
-                            // Find posts newer than last_post_id
-                            const lastIdx = items.findIndex(it => it.post_id === sub.last_post_id);
-                            if (lastIdx > 0) {
-                                // Items before lastIdx are newer
-                                newPosts = items.slice(0, lastIdx).reverse();
-                            } else if (lastIdx === -1) {
-                                // If last_post_id not found in top 10, take top 3 as latest
-                                newPosts = items.slice(0, 3).reverse();
+                    for (const [channelId, subsInChannel] of channelGroups.entries()) {
+                        let allNewPosts = [];
+                        let hasUninitialized = false;
+
+                        for (const sub of subsInChannel) {
+                            if (!sub.last_post_id) {
+                                hasUninitialized = true;
+                                ougi.db().updateFeedLastPost(sub.guild_id, sub.channel_id, platform, handle, items[0].post_id);
+                            }
+                        }
+
+                        if (!hasUninitialized) {
+                            // Find posts newer than the most recently seen post among subscriptions in this channel
+                            let maxLastIdx = -1;
+                            for (const sub of subsInChannel) {
+                                const idx = items.findIndex(it => it.post_id === sub.last_post_id);
+                                if (idx > maxLastIdx) maxLastIdx = idx;
                             }
 
-                            if (newPosts.length > 0) {
-                                await dispatchNewItems(platform, handle, newPosts, [sub]);
+                            if (maxLastIdx > 0) {
+                                allNewPosts = items.slice(0, maxLastIdx).reverse();
+                            } else if (maxLastIdx === -1) {
+                                allNewPosts = items.slice(0, 3).reverse();
+                            }
+
+                            if (allNewPosts.length > 0) {
+                                await dispatchNewItems(platform, handle, allNewPosts, subsInChannel);
                                 const newestPostId = items[0].post_id;
-                                ougi.db().updateFeedLastPost(sub.guild_id, sub.channel_id, platform, handle, newestPostId);
+                                for (const sub of subsInChannel) {
+                                    ougi.db().updateFeedLastPost(sub.guild_id, sub.channel_id, platform, handle, newestPostId);
+                                }
                             }
                         }
                     }
