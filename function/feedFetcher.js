@@ -199,13 +199,195 @@ function fetchInstagramProfileSSR(username, userAgent = 'facebookexternalhit/1.1
     });
 }
 
+function getCookieFilePath() {
+    const candidates = [
+        path.join(process.cwd(), 'cookies.txt'),
+        path.join(process.cwd(), 'cookies.txt.clean'),
+        path.join(__dirname, '..', 'cookies.txt'),
+        path.join(__dirname, '..', 'cookies.txt.clean')
+    ];
+    for (const p of candidates) {
+        if (fs.existsSync(p)) return p;
+    }
+    return null;
+}
+
+function getInstagramCookies() {
+    const cookiePath = getCookieFilePath();
+    if (!cookiePath) return { cookieHeader: '', csrfToken: '', cookiePath: null };
+
+    try {
+        const content = fs.readFileSync(cookiePath, 'utf8');
+        const cookieMap = {};
+        for (const line of content.split('\n')) {
+            if (!line || line.startsWith('#')) continue;
+            const parts = line.split('\t');
+            if (parts.length >= 7 && parts[0].includes('instagram.com')) {
+                cookieMap[parts[5].trim()] = parts[6].trim();
+            }
+        }
+        if (Object.keys(cookieMap).length > 0) {
+            return {
+                cookieHeader: Object.entries(cookieMap).map(([k, v]) => `${k}=${v}`).join('; '),
+                csrfToken: cookieMap['csrftoken'] || '',
+                cookiePath
+            };
+        }
+    } catch (e) {}
+
+    return { cookieHeader: '', csrfToken: '', cookiePath: null };
+}
+
+function httpsJsonRequest(options) {
+    const https = require('https');
+    return new Promise((resolve) => {
+        try {
+            const req = https.request(options, (res) => {
+                let data = '';
+                res.on('data', c => data += c);
+                res.on('end', () => {
+                    try {
+                        resolve({ status: res.statusCode, headers: res.headers, data: JSON.parse(data) });
+                    } catch (e) {
+                        resolve({ status: res.statusCode, headers: res.headers, raw: data });
+                    }
+                });
+            });
+            req.on('error', () => resolve(null));
+            req.on('timeout', () => { req.destroy(); resolve(null); });
+            req.setTimeout(options.timeout || 8000);
+            req.end();
+        } catch (e) {
+            resolve(null);
+        }
+    });
+}
+
 /**
- * Fetches latest posts from an Instagram user profile using hybrid SSR shortcode discovery and single-post metadata resolution.
+ * Fetches user profile feed via Instagram Private Mobile API (iOS App ID).
+ * Completely immune to datacenter IP blocks when valid cookies are loaded.
+ */
+async function fetchInstagramViaMobileApi(handle, limit = 10) {
+    const sanitized = handle.replace(/^@/, '').toLowerCase();
+    const { cookieHeader, csrfToken } = getInstagramCookies();
+    if (!cookieHeader) return null;
+
+    try {
+        // 1. Resolve username to pk via topsearch
+        const searchRes = await httpsJsonRequest({
+            hostname: 'www.instagram.com',
+            path: `/web/search/topsearch/?query=${encodeURIComponent(sanitized)}`,
+            method: 'GET',
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
+                'Accept': '*/*',
+                'X-CSRFToken': csrfToken,
+                'X-IG-App-ID': '936619743392459',
+                'X-ASBD-ID': '129477',
+                'X-IG-WWW-Claim': '0',
+                'X-Requested-With': 'XMLHttpRequest',
+                'Referer': 'https://www.instagram.com/',
+                'Cookie': cookieHeader
+            },
+            timeout: 8000
+        });
+
+        let userId = null;
+        let authorAvatar = null;
+        let authorName = sanitized;
+
+        if (searchRes && searchRes.data && Array.isArray(searchRes.data.users)) {
+            const exact = searchRes.data.users.find(u => u.user?.username?.toLowerCase() === sanitized);
+            const userObj = exact?.user || searchRes.data.users[0]?.user;
+            if (userObj) {
+                userId = userObj.pk;
+                authorName = userObj.full_name || userObj.username || sanitized;
+                authorAvatar = userObj.profile_pic_url || null;
+            }
+        }
+
+        if (!userId) return null;
+
+        // 2. Fetch user feed via iOS endpoint
+        const feedRes = await httpsJsonRequest({
+            hostname: 'i.instagram.com',
+            path: `/api/v1/feed/user/${userId}/?count=${Math.max(12, limit)}`,
+            method: 'GET',
+            headers: {
+                'User-Agent': 'Instagram 320.0.0.18.106 (iPhone14,3; iOS 16_6; en_US; en-US; scale=3.00; 1284x2778; 564947094)',
+                'Accept': '*/*',
+                'X-IG-App-ID': '124024574287414',
+                'X-ASBD-ID': '359341',
+                'X-IG-WWW-Claim': '0',
+                'Cookie': cookieHeader
+            },
+            timeout: 8000
+        });
+
+        if (!feedRes || !feedRes.data || !Array.isArray(feedRes.data.items)) return null;
+
+        const items = [];
+        for (const item of feedRes.data.items.slice(0, limit)) {
+            if (!item || !item.code) continue;
+
+            const isVideo = item.media_type === 2;
+            const isCarousel = item.media_type === 8;
+            const mediaType = isVideo ? 'video' : (isCarousel ? 'carousel' : 'image');
+
+            const coverImg = item.image_versions2?.candidates?.[0]?.url || null;
+            const videoUrl = item.video_versions?.[0]?.url || null;
+
+            const mediaUrls = [];
+            if (isVideo && videoUrl) mediaUrls.push(videoUrl);
+            else if (coverImg) mediaUrls.push(coverImg);
+
+            items.push({
+                id: `instagram:${item.code}`,
+                platform: 'instagram',
+                handle: item.user?.username?.toLowerCase() || sanitized,
+                post_id: item.code,
+                author_name: item.user?.full_name || item.user?.username || authorName,
+                author_avatar: item.user?.profile_pic_url || authorAvatar,
+                url: `https://www.instagram.com/p/${item.code}/`,
+                embed_url: `https://kkinstagram.com/p/${item.code}/`,
+                caption: item.caption?.text || '',
+                media_type: mediaType,
+                media_urls: mediaUrls,
+                thumbnail_url: coverImg,
+                published_at: item.taken_at || Math.floor(Date.now() / 1000),
+                metrics: {
+                    views: item.view_count || item.play_count || 0,
+                    likes: item.like_count || 0,
+                    comments: item.comment_count || 0
+                }
+            });
+        }
+
+        return items;
+    } catch (e) {
+        console.error(`[Instagram Mobile API Error @${sanitized}]:`, e.message?.slice(0, 160));
+        return null;
+    }
+}
+
+/**
+ * Fetches latest posts from an Instagram user profile using hybrid mobile API and SSR fallback.
  */
 async function fetchInstagramProfile(handle, limit = 10) {
     const sanitized = handle.replace(/^@/, '').toLowerCase();
-    const items = [];
 
+    // 1. Primary Strategy: Native Mobile API with cookies
+    try {
+        const mobileItems = await fetchInstagramViaMobileApi(sanitized, limit);
+        if (mobileItems && mobileItems.length > 0) {
+            return mobileItems;
+        }
+    } catch (e) {
+        console.error(`[Instagram Mobile Strategy Error @${sanitized}]:`, e.message?.slice(0, 160));
+    }
+
+    // 2. Fallback Strategy: SSR crawler discovery + single-post resolution
+    const items = [];
     try {
         let { shortcodes } = await fetchInstagramProfileSSR(sanitized);
 
@@ -223,15 +405,15 @@ async function fetchInstagramProfile(handle, limit = 10) {
 
         if (shortcodes && shortcodes.length > 0) {
             const targetCodes = shortcodes.slice(0, Math.min(limit, 10));
+            const cookiePath = getCookieFilePath();
+            const ytdlOpts = { dumpSingleJson: true, noWarnings: true };
+            if (cookiePath) ytdlOpts.cookies = cookiePath;
             
             // Extract post metadata for discovered shortcodes
             for (const code of targetCodes) {
                 const postUrl = `https://www.instagram.com/p/${code}/`;
                 try {
-                    const data = await youtubedl(postUrl, {
-                        dumpSingleJson: true,
-                        noWarnings: true
-                    });
+                    const data = await youtubedl(postUrl, ytdlOpts);
 
                     if (data && data.id) {
                         const coverImg = data.thumbnail || data.thumbnails?.[0]?.url || null;
@@ -300,6 +482,8 @@ async function fetchProfile(platform, handle, limit = 10) {
 module.exports = {
     normalizeFeedInput,
     idToShortcode,
+    getInstagramCookies,
+    fetchInstagramViaMobileApi,
     fetchTikTokProfile,
     fetchInstagramProfile,
     fetchProfile
