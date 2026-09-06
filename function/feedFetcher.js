@@ -123,51 +123,103 @@ function idToShortcode(idStr) {
     }
 }
 
-function fetchInstagramProfileSSR(username) {
+function fetchInstagramProfileSSR(username, userAgent = 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)', maxRedirects = 5) {
     const https = require('https');
     return new Promise((resolve) => {
-        https.get(`https://www.instagram.com/${username}/`, {
-            headers: {
-                'User-Agent': 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                'Accept-Language': 'en-US,en;q=0.9'
-            }
-        }, (res) => {
-            let data = '';
-            res.on('data', c => data += c);
-            res.on('end', () => {
-                const shortcodes = [];
-                const cacheKeys = [...data.matchAll(/ig_cache_key=([A-Za-z0-9%_-]+)/g)].map(m => decodeURIComponent(m[1]));
-                
-                for (const k of cacheKeys) {
-                    try {
-                        const raw = Buffer.from(k, 'base64').toString('utf-8');
-                        const mediaId = raw.split('_')[0].slice(0, 19);
-                        if (/^\d+$/.test(mediaId)) {
-                            const code = idToShortcode(mediaId);
-                            if (code && !shortcodes.includes(code)) {
-                                shortcodes.push(code);
-                            }
-                        }
-                    } catch (e) {}
+        try {
+            const url = `https://www.instagram.com/${username}/`;
+            const u = new URL(url);
+            const req = https.get({
+                protocol: u.protocol,
+                hostname: u.hostname,
+                path: u.pathname + u.search,
+                headers: {
+                    'User-Agent': userAgent,
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                    'Accept-Language': 'en-US,en;q=0.9',
+                    'Cache-Control': 'no-cache',
+                    'Pragma': 'no-cache'
+                },
+                timeout: 10000
+            }, (res) => {
+                if ([301, 302, 303, 307, 308].includes(res.statusCode) && res.headers.location && maxRedirects > 0) {
+                    const nextUrl = new URL(res.headers.location, url).toString();
+                    return resolve(fetchInstagramProfileSSR(nextUrl, userAgent, maxRedirects - 1));
                 }
+                let data = '';
+                res.on('data', c => data += c);
+                res.on('end', () => {
+                    const shortcodes = [];
 
-                resolve({ shortcodes, rawHtml: data });
+                    // Extract shortcodes via ig_cache_key (Base64 media ID)
+                    const cacheKeys = [
+                        ...data.matchAll(/ig_cache_key=([A-Za-z0-9%_-]+)/g),
+                        ...data.matchAll(/ig_cache_key%3D([A-Za-z0-9%_-]+)/g),
+                        ...data.matchAll(/ig_cache_key["\s:=]+([A-Za-z0-9%_-]+)/g)
+                    ].map(m => decodeURIComponent(m[1]));
+
+                    for (const k of cacheKeys) {
+                        try {
+                            const raw = Buffer.from(k, 'base64').toString('utf-8');
+                            const mediaId = raw.split('_')[0].slice(0, 19);
+                            if (/^\d+$/.test(mediaId)) {
+                                const code = idToShortcode(mediaId);
+                                if (code && !shortcodes.includes(code)) {
+                                    shortcodes.push(code);
+                                }
+                            }
+                        } catch (e) {}
+                    }
+
+                    // Extract direct post or reel links from HTML
+                    const directMatches = [
+                        ...data.matchAll(/\/p\/([A-Za-z0-9_-]{11})/g),
+                        ...data.matchAll(/\/reel\/([A-Za-z0-9_-]{11})/g),
+                        ...data.matchAll(/"shortcode":"([A-Za-z0-9_-]{11})"/g)
+                    ].map(m => m[1]);
+
+                    for (const code of directMatches) {
+                        if (code && !shortcodes.includes(code)) {
+                            shortcodes.push(code);
+                        }
+                    }
+
+                    resolve({ shortcodes, rawHtml: data });
+                });
             });
-        }).on('error', () => resolve({ shortcodes: [], rawHtml: '' }));
+
+            req.on('error', () => resolve({ shortcodes: [], rawHtml: '' }));
+            req.on('timeout', () => {
+                req.destroy();
+                resolve({ shortcodes: [], rawHtml: '' });
+            });
+        } catch (e) {
+            resolve({ shortcodes: [], rawHtml: '' });
+        }
     });
 }
 
 /**
- * Fetches latest posts from an Instagram user profile using hybrid SSR shortcode extraction and post metadata resolution.
+ * Fetches latest posts from an Instagram user profile using hybrid SSR shortcode discovery and single-post metadata resolution.
  */
 async function fetchInstagramProfile(handle, limit = 10) {
     const sanitized = handle.replace(/^@/, '').toLowerCase();
     const items = [];
 
     try {
-        // Step 1: Discover recent post shortcodes via SSR / crawler metadata
-        const { shortcodes, rawHtml } = await fetchInstagramProfileSSR(sanitized);
+        let { shortcodes } = await fetchInstagramProfileSSR(sanitized);
+
+        if (!shortcodes || shortcodes.length === 0) {
+            // Fallback 1: Try Discordbot crawler UA
+            const resDiscord = await fetchInstagramProfileSSR(sanitized, 'Mozilla/5.0 (compatible; Discordbot/2.0; +https://discordapp.com)');
+            shortcodes = resDiscord.shortcodes;
+        }
+
+        if (!shortcodes || shortcodes.length === 0) {
+            // Fallback 2: Try Twitterbot crawler UA
+            const resTwitter = await fetchInstagramProfileSSR(sanitized, 'Twitterbot/1.0');
+            shortcodes = resTwitter.shortcodes;
+        }
 
         if (shortcodes && shortcodes.length > 0) {
             const targetCodes = shortcodes.slice(0, Math.min(limit, 10));
@@ -205,7 +257,7 @@ async function fetchInstagramProfile(handle, limit = 10) {
                         });
                     }
                 } catch (err) {
-                    // If yt-dlp fails on single post, still push basic post reference
+                    // If single-post yt-dlp fails, still return basic post reference
                     items.push({
                         id: `instagram:${code}`,
                         platform: 'instagram',
@@ -224,58 +276,7 @@ async function fetchInstagramProfile(handle, limit = 10) {
                     });
                 }
             }
-
-            if (items.length > 0) {
-                return items;
-            }
         }
-
-        // Step 2: Fallback to yt-dlp profile extraction if cookies are present
-        const url = `https://www.instagram.com/${sanitized}/`;
-        const cookiePath = global.cachedCookiesPath || path.join(__dirname, '..', 'cookies.txt');
-        const flags = {
-            dumpSingleJson: true,
-            flatPlaylist: true,
-            playlistEnd: limit,
-            noWarnings: true
-        };
-        if (fs.existsSync(cookiePath)) {
-            flags.cookies = cookiePath;
-        }
-
-        const data = await youtubedl(url, flags);
-        if (data && data.entries && data.entries.length > 0) {
-            for (const entry of data.entries) {
-                if (!entry || !entry.id) continue;
-                const postId = entry.id;
-                const directUrl = entry.url || `https://www.instagram.com/p/${postId}/`;
-                const embedUrl = `https://kkinstagram.com/p/${postId}/`;
-                const coverImg = entry.thumbnails?.[0]?.url || null;
-
-                items.push({
-                    id: `instagram:${postId}`,
-                    platform: 'instagram',
-                    handle: sanitized,
-                    post_id: postId,
-                    author_name: entry.uploader || sanitized,
-                    author_avatar: null,
-                    url: directUrl,
-                    embed_url: embedUrl,
-                    caption: entry.title || entry.description || '',
-                    media_type: entry._type === 'video' ? 'video' : 'image',
-                    media_urls: coverImg ? [coverImg] : [],
-                    thumbnail_url: coverImg,
-                    published_at: entry.timestamp || Math.floor(Date.now() / 1000),
-                    metrics: {
-                        views: entry.view_count || 0,
-                        likes: entry.like_count || 0,
-                        comments: entry.comment_count || 0
-                    }
-                });
-            }
-            return items;
-        }
-
     } catch (e) {
         console.error(`[Instagram Fetch Error @${sanitized}]:`, e.message?.slice(0, 160));
     }
