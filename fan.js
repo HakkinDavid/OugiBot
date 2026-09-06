@@ -150,7 +150,8 @@ global.channels = {
     dynamicLocales: "880322518139957299",
     raffles: "1411177261172002906",
     economy: "1536866624253075527",
-    cookies: "1537325636945846273"
+    cookies: "1537325636945846273",
+    feeds: "1545954243020587008"
 };
 
 ougi.db().unloadAll();

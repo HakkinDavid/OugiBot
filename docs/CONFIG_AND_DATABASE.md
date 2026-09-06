@@ -243,6 +243,7 @@ To prevent data loss on ephemerally hosted platforms (such as Heroku or containe
 | `dynamicLocales` | `./dynamicLocales.db` | `880322518139957299` | Dynamic phrase translation cache |
 | `raffles` | `./raffles.db` | `1411177261172002906` | Weighted raffle configurations |
 | `economy` | `./economy.db` | `1536866624253075527` | Guild economy & user balance/XP records |
+| `feeds` | `./feeds.db` | `1545954243020587008` | Channel subscriptions & Universal Content Cache |
 
 ### Background Synchronization Intervals
 - **Data Backup Interval (every 5 minutes / 300,000 ms in `fan.js`)**: Executes `ougi.db().checkpointAll()` and checks each database for modifications using dirty flags (`ougi.db().isDirty()`) and SHA-256 hash comparisons (`ougi.db().hasFileChanged()`). Backups via `ougi.backup()` are only dispatched to Discord channels if changes have occurred, preventing redundant network uploads.

@@ -232,30 +232,6 @@ class OugiDatabaseManager {
 
         // 11. Feeds & Universal Content Cache Table
         const feedsDb = this.getDb('feeds');
-        try {
-            const tableSql = feedsDb.prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='guild_feeds'").get()?.sql || '';
-            if (tableSql.includes('UNIQUE(guild_id, channel_id, platform, handle)')) {
-                feedsDb.exec(`
-                    CREATE TABLE guild_feeds_new (
-                        id                  INTEGER PRIMARY KEY AUTOINCREMENT,
-                        guild_id            TEXT NOT NULL,
-                        channel_id          TEXT NOT NULL,
-                        platform            TEXT NOT NULL,
-                        handle              TEXT NOT NULL,
-                        ping_role_id        TEXT DEFAULT NULL,
-                        filter_keywords     TEXT DEFAULT NULL,
-                        created_at          INTEGER NOT NULL,
-                        last_post_id        TEXT DEFAULT NULL,
-                        last_checked        INTEGER DEFAULT 0,
-                        consecutive_errors  INTEGER DEFAULT 0,
-                        status              TEXT DEFAULT 'active'
-                    );
-                    INSERT INTO guild_feeds_new SELECT * FROM guild_feeds;
-                    DROP TABLE guild_feeds;
-                    ALTER TABLE guild_feeds_new RENAME TO guild_feeds;
-                `);
-            }
-        } catch (e) {}
 
         feedsDb.exec(`
             CREATE TABLE IF NOT EXISTS guild_feeds (
@@ -321,7 +297,8 @@ class OugiDatabaseManager {
             locales: { id: channels.locales, file: './localesCache.db', done: false },
             dynamicLocales: { id: channels.dynamicLocales, file: './dynamicLocales.db', done: false },
             raffles: { id: channels.raffles, file: './raffles.db', done: false },
-            economy: { id: channels.economy, file: './economy.db', done: false }
+            economy: { id: channels.economy, file: './economy.db', done: false },
+            feeds: { id: channels.feeds, file: './feeds.db', done: false }
         };
     }
 

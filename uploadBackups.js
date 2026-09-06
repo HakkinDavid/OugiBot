@@ -16,7 +16,8 @@ const backupChannels = {
     locales: "820971831992647681",
     dynamicLocales: "880322518139957299",
     raffles: "1411177261172002906",
-    economy: "1536866624253075527"
+    economy: "1536866624253075527",
+    feeds: "1545954243020587008"
 };
 
 const databaseMapping = [
@@ -27,7 +28,8 @@ const databaseMapping = [
     { key: 'localesCache', channelId: backupChannels.locales, dbFile: './localesCache.db' },
     { key: 'dynamicLocales', channelId: backupChannels.dynamicLocales, dbFile: './dynamicLocales.db' },
     { key: 'raffles', channelId: backupChannels.raffles, dbFile: './raffles.db' },
-    { key: 'economy', channelId: backupChannels.economy, dbFile: './economy.db' }
+    { key: 'economy', channelId: backupChannels.economy, dbFile: './economy.db' },
+    { key: 'feeds', channelId: backupChannels.feeds, dbFile: './feeds.db' }
 ];
 
 function isSqliteHeader(filepath) {

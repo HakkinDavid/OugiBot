@@ -51,10 +51,10 @@ function downloadFile(url, dest) {
 
 module.exports = async function (channelID, filename, data_obj_name = undefined) {
 
-  const channel = client.channels.cache.get(channelID);
+  const channel = client.channels.cache.get(channelID) ?? await client.channels.fetch(channelID).catch(() => null);
   if (!channel) {
     console.log("Skipping nonexistent channel " + channelID);
-    if (data_obj_name && database[data_obj_name]) database[data_obj_name].done = true;
+    if (data_obj_name && global.database && global.database[data_obj_name]) global.database[data_obj_name].done = true;
     return;
   }
 

@@ -11,7 +11,7 @@ module.exports = async function (filename, where) {
     return false;
   }
 
-  const channel = client.channels.cache.get(where);
+  const channel = client.channels.cache.get(where) ?? await client.channels.fetch(where).catch(() => null);
   if (!channel) {
     console.error(`Backup channel ${where} not found or inaccessible for ${filename}.`);
     return false;
