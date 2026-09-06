@@ -20,6 +20,38 @@ module.exports = async function (args, msg) {
                     platform = parsed.platform;
                     handle = parsed.handle;
                     explicitProfile = true;
+                } else if (arg && typeof arg === 'string') {
+                    // Smart fallback for raw handles without prefix (e.g. "@eliextrada" or "vektor.ia_")
+                    const cleanHandle = arg.replace(/^@/, '').toLowerCase();
+                    if (/^[a-zA-Z0-9_.-]+$/.test(cleanHandle)) {
+                        const channelSubs = ougi.db().getGuildFeeds(msg.guildId, { channelId: msg.channelId });
+                        const matchingSub = channelSubs.find(s => s.handle.toLowerCase() === cleanHandle);
+                        if (matchingSub) {
+                            platform = matchingSub.platform;
+                            handle = matchingSub.handle;
+                            explicitProfile = true;
+                        } else {
+                            // Check if present in feed_cache
+                            const cached = ougi.db().getFeedCache('instagram', cleanHandle, 1);
+                            if (cached && cached.length > 0) {
+                                platform = 'instagram';
+                                handle = cleanHandle;
+                                explicitProfile = true;
+                            } else {
+                                const cachedTt = ougi.db().getFeedCache('tiktok', cleanHandle, 1);
+                                if (cachedTt && cachedTt.length > 0) {
+                                    platform = 'tiktok';
+                                    handle = cleanHandle;
+                                    explicitProfile = true;
+                                } else {
+                                    // Default to instagram
+                                    platform = 'instagram';
+                                    handle = cleanHandle;
+                                    explicitProfile = true;
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
