@@ -301,13 +301,7 @@ async function tickFeedDispatcher() {
                 } else {
                     // Handled empty or failed fetch
                     for (const sub of validSubs) {
-                        const errors = (sub.consecutive_errors || 0) + 1;
-                        if (errors >= 3) {
-                            ougi.db().setFeedStatus(sub.guild_id, sub.channel_id, platform, handle, 'paused', errors);
-                            console.error(`[FeedDispatcher] Feed @${handle} (${platform}) in guild ${sub.guild_id} paused due to 3 consecutive fetch failures.`);
-                        } else {
-                            ougi.db().setFeedStatus(sub.guild_id, sub.channel_id, platform, handle, 'active', errors);
-                        }
+                        console.error(`[FeedDispatcher] Feed @${handle} (${platform}) in guild ${sub.guild_id} has fetch failures.`);
                     }
                 }
             } catch (err) {
