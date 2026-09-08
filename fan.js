@@ -364,7 +364,9 @@ setInterval(async () => {
             }
         }
     }
-    ougi.feedDispatcher.tick().catch(console.error);
+    setTimeout(async () => {
+        await ougi.feedDispatcher.tick().catch(console.error);
+    }, Math.floor(Math.random() * 150_000));
 }, 300_000);
 
 /* ===== Intervalo para Recordatorios de Bump ===== */
