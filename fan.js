@@ -188,7 +188,7 @@ async function syncData() {
         for (const [key, data] of Object.entries(database)) {
             if (!data.done) await ougi.fetch(data.id, data.file, key);
         }
-        await ougi.fetchAttachment(channels.cookies, "1545929062340632677", "cookies.txt").catch(() => {});
+        await ougi.fetchAttachment(channels.cookies, "1546746948764172298", "cookies.txt").catch(() => {});
         global.cachedCookiesPath = global.updateCookiesCache();
     } finally {
         global.isSyncing = false;
