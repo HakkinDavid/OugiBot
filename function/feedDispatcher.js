@@ -299,10 +299,6 @@ async function tickFeedDispatcher() {
                         }
                     }
                 } else {
-                    // Handled empty or failed fetch
-                    for (const sub of validSubs) {
-                        console.error(`[FeedDispatcher] Feed @${handle} (${platform}) in guild ${sub.guild_id} has fetch failures.`);
-                    }
                 }
             } catch (err) {
                 console.error(`[FeedDispatcher] Error processing profile ${profileKey}:`, err.message);
