@@ -364,9 +364,10 @@ setInterval(async () => {
             }
         }
     }
-    setTimeout(async () => {
-        await ougi.feedDispatcher.tick().catch(console.error);
-    }, Math.floor(Math.random() * 45_000));
+    // we're getting sussed by ig, needs different approach
+    // setTimeout(async () => {
+    //     await ougi.feedDispatcher.tick().catch(console.error);
+    // }, Math.floor(Math.random() * 45_000));
 }, 300_000);
 
 /* ===== Intervalo para Recordatorios de Bump ===== */
