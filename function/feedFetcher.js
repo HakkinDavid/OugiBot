@@ -107,9 +107,6 @@ async function fetchTikTokProfile(handle, limit = 10) {
     }
 }
 
-const userPkCache = new Map();
-let cookieCooldownUntil = 0;
-
 const CRAWLER_USER_AGENTS = [
     'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)',
     'Twitterbot/1.0',
@@ -362,200 +359,10 @@ function extractPostsFromSSR(html, handle, limit = 10) {
     return uniqueItems.slice(0, limit);
 }
 
-function getCookieFilePath() {
-    const candidates = [
-        path.join(process.cwd(), 'cookies.txt'),
-        path.join(process.cwd(), 'cookies.txt.clean'),
-        path.join(__dirname, '..', 'cookies.txt'),
-        path.join(__dirname, '..', 'cookies.txt.clean')
-    ];
-    for (const p of candidates) {
-        if (fs.existsSync(p)) return p;
-    }
-    return null;
-}
-
-function getInstagramCookies() {
-    if (Date.now() < cookieCooldownUntil) {
-        return { cookieHeader: '', csrfToken: '', cookiePath: null };
-    }
-
-    const cookiePath = getCookieFilePath();
-    if (!cookiePath) return { cookieHeader: '', csrfToken: '', cookiePath: null };
-
-    try {
-        const content = fs.readFileSync(cookiePath, 'utf8');
-        const cookieMap = {};
-        for (const line of content.split('\n')) {
-            if (!line || line.startsWith('#')) continue;
-            const parts = line.split('\t');
-            if (parts.length >= 7 && parts[0].includes('instagram.com')) {
-                cookieMap[parts[5].trim()] = parts[6].trim();
-            }
-        }
-        if (Object.keys(cookieMap).length > 0) {
-            return {
-                cookieHeader: Object.entries(cookieMap).map(([k, v]) => `${k}=${v}`).join('; '),
-                csrfToken: cookieMap['csrftoken'] || '',
-                cookiePath
-            };
-        }
-    } catch (e) {}
-
-    return { cookieHeader: '', csrfToken: '', cookiePath: null };
-}
-
-function httpsJsonRequest(options) {
-    const https = require('https');
-    return new Promise((resolve) => {
-        try {
-            const req = https.request(options, (res) => {
-                let data = '';
-                res.on('data', c => data += c);
-                res.on('end', () => {
-                    try {
-                        resolve({ status: res.statusCode, headers: res.headers, data: JSON.parse(data) });
-                    } catch (e) {
-                        resolve({ status: res.statusCode, headers: res.headers, raw: data });
-                    }
-                });
-            });
-            req.on('error', () => resolve(null));
-            req.on('timeout', () => { req.destroy(); resolve(null); });
-            req.setTimeout(options.timeout || 8000);
-            req.end();
-        } catch (e) {
-            resolve(null);
-        }
-    });
-}
-
 /**
- * Fallback: Fetches user profile feed via Private Mobile API with trail obfuscation & PK caching.
- */
-async function fetchInstagramViaMobileApi(handle, limit = 10) {
-    const sanitized = handle.replace(/^@/, '').toLowerCase();
-    const { cookieHeader, csrfToken } = getInstagramCookies();
-    if (!cookieHeader) return null;
-
-    try {
-        let userId = userPkCache.get(sanitized) || null;
-        let authorAvatar = null;
-        let authorName = sanitized;
-
-        // Resolve PK only if not already cached
-        if (!userId) {
-            const searchRes = await httpsJsonRequest({
-                hostname: 'www.instagram.com',
-                path: `/web/search/topsearch/?query=${encodeURIComponent(sanitized)}`,
-                method: 'GET',
-                headers: {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
-                    'Accept': '*/*',
-                    'X-CSRFToken': csrfToken,
-                    'X-IG-App-ID': '936619743392459',
-                    'X-ASBD-ID': '129477',
-                    'X-IG-WWW-Claim': '0',
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Referer': 'https://www.instagram.com/',
-                    'Cookie': cookieHeader
-                },
-                timeout: 8000
-            });
-
-            if (searchRes && (searchRes.status === 401 || searchRes.status === 403 || searchRes.status === 429)) {
-                console.warn(`[Instagram Mobile API] Session challenged (status ${searchRes.status}). Cooling down cookie usage for 1h.`);
-                cookieCooldownUntil = Date.now() + 3600000;
-                return null;
-            }
-
-            if (searchRes && searchRes.data && Array.isArray(searchRes.data.users)) {
-                const exact = searchRes.data.users.find(u => u.user?.username?.toLowerCase() === sanitized);
-                const userObj = exact?.user || searchRes.data.users[0]?.user;
-                if (userObj) {
-                    userId = userObj.pk;
-                    authorName = userObj.full_name || userObj.username || sanitized;
-                    authorAvatar = userObj.profile_pic_url || null;
-                    userPkCache.set(sanitized, userId);
-                }
-            }
-        }
-
-        if (!userId) return null;
-
-        // Fetch user feed via iOS endpoint
-        const feedRes = await httpsJsonRequest({
-            hostname: 'i.instagram.com',
-            path: `/api/v1/feed/user/${userId}/?count=${Math.max(12, limit)}`,
-            method: 'GET',
-            headers: {
-                'User-Agent': 'Instagram 320.0.0.18.106 (iPhone14,3; iOS 16_6; en_US; en-US; scale=3.00; 1284x2778; 564947094)',
-                'Accept': '*/*',
-                'X-IG-App-ID': '124024574287414',
-                'X-ASBD-ID': '359341',
-                'X-IG-WWW-Claim': '0',
-                'Cookie': cookieHeader
-            },
-            timeout: 8000
-        });
-
-        if (feedRes && (feedRes.status === 401 || feedRes.status === 403)) {
-            console.warn(`[Instagram Mobile API] Endpoint rejected cookies (status ${feedRes.status}). Cooling down cookies.`);
-            cookieCooldownUntil = Date.now() + 3600000;
-            return null;
-        }
-
-        if (!feedRes || !feedRes.data || !Array.isArray(feedRes.data.items)) return null;
-
-        const items = [];
-        for (const item of feedRes.data.items.slice(0, limit)) {
-            if (!item || !item.code) continue;
-
-            const isVideo = item.media_type === 2;
-            const isCarousel = item.media_type === 8;
-            const mediaType = isVideo ? 'video' : (isCarousel ? 'carousel' : 'image');
-
-            const coverImg = item.image_versions2?.candidates?.[0]?.url || null;
-            const videoUrl = item.video_versions?.[0]?.url || null;
-
-            const mediaUrls = [];
-            if (isVideo && videoUrl) mediaUrls.push(videoUrl);
-            else if (coverImg) mediaUrls.push(coverImg);
-
-            items.push({
-                id: `instagram:${item.code}`,
-                platform: 'instagram',
-                handle: item.user?.username?.toLowerCase() || sanitized,
-                post_id: item.code,
-                author_name: item.user?.full_name || item.user?.username || authorName,
-                author_avatar: item.user?.profile_pic_url || authorAvatar,
-                url: `https://www.instagram.com/p/${item.code}/`,
-                embed_url: `https://kkinstagram.com/p/${item.code}/`,
-                caption: item.caption?.text || '',
-                media_type: mediaType,
-                media_urls: mediaUrls,
-                thumbnail_url: coverImg,
-                published_at: item.taken_at || Math.floor(Date.now() / 1000),
-                metrics: {
-                    views: item.view_count || item.play_count || 0,
-                    likes: item.like_count || 0,
-                    comments: item.comment_count || 0
-                }
-            });
-        }
-
-        return items;
-    } catch (e) {
-        console.error(`[Instagram Mobile API Error @${sanitized}]:`, e.message?.slice(0, 160));
-        return null;
-    }
-}
-
-/**
- * Fetches latest posts from an Instagram user profile using the resilient multi-tiered architecture:
+ * Fetches latest posts from an Instagram user profile using a 100% zero-cookie resilient architecture:
  * Tier 1: Zero-Cookie OpenGraph SSR Relay Parser (Primary)
- * Tier 2: Crawler Shortcode regex + single post resolver
- * Tier 3: Obfuscated Mobile API (Fallback)
+ * Tier 2: Secondary SSR shortcode regex discovery from public HTML
  */
 async function fetchInstagramProfile(handle, limit = 10) {
     const sanitized = handle.replace(/^@/, '').toLowerCase();
@@ -636,18 +443,6 @@ async function fetchInstagramProfile(handle, limit = 10) {
         }
     } catch (e) {}
 
-    // ─────────────────────────────────────────────────────────────
-    // TIER 3: Obfuscated Mobile API (Fallback if cookies are present)
-    // ─────────────────────────────────────────────────────────────
-    try {
-        const mobileItems = await fetchInstagramViaMobileApi(sanitized, limit);
-        if (mobileItems && mobileItems.length > 0) {
-            return mobileItems;
-        }
-    } catch (e) {
-        console.error(`[Instagram Mobile Strategy Error @${sanitized}]:`, e.message?.slice(0, 160));
-    }
-
     return [];
 }
 
@@ -667,8 +462,6 @@ async function fetchProfile(platform, handle, limit = 10) {
 module.exports = {
     normalizeFeedInput,
     idToShortcode,
-    getInstagramCookies,
-    fetchInstagramViaMobileApi,
     fetchTikTokProfile,
     fetchInstagramProfile,
     fetchProfile
