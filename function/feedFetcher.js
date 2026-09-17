@@ -117,6 +117,19 @@ const CRAWLER_USER_AGENTS = [
     'TelegramBot (like TwitterBot)'
 ];
 
+function shortcodeToId(shortcode) {
+    if (!shortcode || typeof shortcode !== 'string') return null;
+    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+    let id = 0n;
+    for (let i = 0; i < shortcode.length; i++) {
+        const char = shortcode[i];
+        const val = BigInt(alphabet.indexOf(char));
+        if (val === -1n) return null;
+        id = id * 64n + val;
+    }
+    return id.toString();
+}
+
 function idToShortcode(idStr) {
     const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
     try {
@@ -177,6 +190,7 @@ function fetchInstagramProfileSSR(username, userAgent = CRAWLER_USER_AGENTS[0], 
 
 /**
  * Extracts complete structured post and author data from Instagram's SSR RelayPrefetchedStreamCache JSON.
+ * Sorts posts chronologically by Snowflake ID to ensure pinned posts do not mask new publications.
  * Zero cookies required, 100% immune to account flagging.
  */
 function extractPostsFromSSR(html, handle, limit = 10) {
@@ -230,9 +244,9 @@ function extractPostsFromSSR(html, handle, limit = 10) {
             };
 
             const edges = findEdges(parsed);
-            for (const edge of edges.slice(0, limit)) {
+            for (const edge of edges) {
                 const node = edge.node;
-                if (!node || !node.pk) continue;
+                if (!node || (!node.pk && !node.code)) continue;
 
                 const shortcode = node.code || idToShortcode(node.pk);
                 if (!shortcode) continue;
@@ -243,7 +257,12 @@ function extractPostsFromSSR(html, handle, limit = 10) {
 
                 const coverImg = node.image_versions2?.candidates?.[0]?.url || node.display_url || node.display_uri || null;
                 const caption = node.caption?.text || node.edge_media_to_caption?.edges?.[0]?.node?.text || '';
-                const takenAt = node.taken_at || node.taken_at_timestamp || Math.floor(Date.now() / 1000);
+                
+                // Calculate timestamp accurately via Snowflake PK or taken_at
+                const rawPk = node.pk ? BigInt(String(node.pk).split('_')[0]) : BigInt(shortcodeToId(shortcode) || '0');
+                const snowflakeTs = rawPk > 0n ? Number((rawPk >> 23n) + 1314220021000n) : null;
+                const takenAt = node.taken_at ? node.taken_at : (snowflakeTs ? Math.floor(snowflakeTs / 1000) : Math.floor(Date.now() / 1000));
+
                 const viewCount = node.play_count || node.video_view_count || node.view_count || 0;
                 const likeCount = node.like_count || node.edge_media_preview_like?.count || 0;
                 const commentCount = node.comment_count || node.edge_media_to_comment?.count || 0;
@@ -256,6 +275,7 @@ function extractPostsFromSSR(html, handle, limit = 10) {
                     platform: 'instagram',
                     handle: authorInfo.username,
                     post_id: shortcode,
+                    numeric_id: rawPk,
                     author_name: authorInfo.full_name,
                     author_avatar: authorInfo.avatar,
                     url: directUrl,
@@ -265,6 +285,7 @@ function extractPostsFromSSR(html, handle, limit = 10) {
                     media_urls: coverImg ? [coverImg] : [],
                     thumbnail_url: coverImg,
                     published_at: takenAt,
+                    is_pinned: Boolean(node.is_timeline_pinned),
                     metrics: {
                         views: viewCount,
                         likes: likeCount,
@@ -275,7 +296,25 @@ function extractPostsFromSSR(html, handle, limit = 10) {
         } catch {}
     }
 
-    return items;
+    // Deduplicate by post_id
+    const seen = new Set();
+    const uniqueItems = [];
+    for (const it of items) {
+        if (!seen.has(it.post_id)) {
+            seen.add(it.post_id);
+            uniqueItems.push(it);
+        }
+    }
+
+    // Sort strictly chronologically descending (newest post first, ignoring pin status)
+    uniqueItems.sort((a, b) => {
+        if (b.numeric_id && a.numeric_id) {
+            return b.numeric_id > a.numeric_id ? 1 : (b.numeric_id < a.numeric_id ? -1 : 0);
+        }
+        return (b.published_at || 0) - (a.published_at || 0);
+    });
+
+    return uniqueItems.slice(0, limit);
 }
 
 function getCookieFilePath() {
