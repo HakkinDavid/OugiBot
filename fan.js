@@ -363,11 +363,17 @@ setInterval(async () => {
             }
         }
     }
-    // we're getting sussed by ig, needs different approach
-    // setTimeout(async () => {
-    //     await ougi.feedDispatcher.tick().catch(console.error);
-    // }, Math.floor(Math.random() * 45_000));
+    setTimeout(async () => {
+        await ougi.feedDispatcher.tick().catch(console.error);
+    }, Math.floor(Math.random() * 45_000));
 }, 300_000);
+
+// Initial feed dispatch check shortly after startup
+setTimeout(async () => {
+    if (TEASEABLE && ougi.startup()) {
+        await ougi.feedDispatcher.tick().catch(console.error);
+    }
+}, 25_000);
 
 /* ===== Intervalo para Recordatorios de Bump ===== */
 setInterval(async () => {
