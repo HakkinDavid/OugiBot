@@ -304,8 +304,8 @@ async function tickFeedDispatcher() {
                 console.error(`[FeedDispatcher] Error processing profile ${profileKey}:`, err.message);
             }
 
-            // Small jitter between profiles (1.5s)
-            await new Promise(r => setTimeout(r, 1500));
+            // Randomized organic jitter between profiles (2s - 5s)
+            await new Promise(r => setTimeout(r, 2000 + Math.floor(Math.random() * 3000)));
         }
 
         // Prune orphaned cached items if no servers listen to them
