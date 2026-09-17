@@ -150,7 +150,8 @@ function fetchInstagramProfileSSR(username, userAgent = CRAWLER_USER_AGENTS[0], 
     const https = require('https');
     return new Promise((resolve) => {
         try {
-            const url = `https://www.instagram.com/${username}/`;
+            const cleanUser = String(username).replace(/^https?:\/\/(?:www\.)?instagram\.com\//i, '').replace(/\/+$/, '').trim();
+            const url = `https://www.instagram.com/${cleanUser}/`;
             const u = new URL(url);
             const req = https.get({
                 protocol: u.protocol,
@@ -170,7 +171,7 @@ function fetchInstagramProfileSSR(username, userAgent = CRAWLER_USER_AGENTS[0], 
             }, (res) => {
                 // If challenged or redirected to login (datacenter IP block), fallback to Google Relay
                 if (res.statusCode === 302 || (res.headers.location && res.headers.location.includes('/accounts/login/'))) {
-                    return resolve(fetchInstagramViaGoogleRelay(username, userAgent));
+                    return resolve(fetchInstagramViaGoogleRelay(cleanUser, userAgent));
                 }
 
                 if ([301, 303, 307, 308].includes(res.statusCode) && res.headers.location && maxRedirects > 0) {
@@ -181,16 +182,16 @@ function fetchInstagramProfileSSR(username, userAgent = CRAWLER_USER_AGENTS[0], 
                 res.on('data', c => data += c);
                 res.on('end', () => {
                     if (!data || data.length < 5000 || data.includes('/accounts/login/')) {
-                        return resolve(fetchInstagramViaGoogleRelay(username, userAgent));
+                        return resolve(fetchInstagramViaGoogleRelay(cleanUser, userAgent));
                     }
                     resolve({ statusCode: res.statusCode, rawHtml: data });
                 });
             });
 
-            req.on('error', () => resolve(fetchInstagramViaGoogleRelay(username, userAgent)));
+            req.on('error', () => resolve(fetchInstagramViaGoogleRelay(cleanUser, userAgent)));
             req.on('timeout', () => {
                 req.destroy();
-                resolve(fetchInstagramViaGoogleRelay(username, userAgent));
+                resolve(fetchInstagramViaGoogleRelay(cleanUser, userAgent));
             });
         } catch (e) {
             resolve(fetchInstagramViaGoogleRelay(username, userAgent));
@@ -198,13 +199,13 @@ function fetchInstagramProfileSSR(username, userAgent = CRAWLER_USER_AGENTS[0], 
     });
 }
 
-function fetchInstagramViaGoogleRelay(username, userAgent = CRAWLER_USER_AGENTS[0]) {
+function fetchInstagramViaGoogleRelay(username, userAgent = CRAWLER_USER_AGENTS[0], maxRedirects = 5, targetUrl = null) {
     const https = require('https');
     return new Promise((resolve) => {
         try {
-            const target = `https://www.instagram.com/${username}/`;
-            const relayUrl = `https://translate.google.com/translate?sl=auto&tl=en&u=${encodeURIComponent(target)}`;
-            const u = new URL(relayUrl);
+            const cleanUser = String(username).replace(/^https?:\/\/(?:www\.)?instagram\.com\//i, '').replace(/\/+$/, '').trim();
+            const reqUrl = targetUrl || `https://translate.google.com/translate?sl=auto&tl=en&u=${encodeURIComponent(`https://www.instagram.com/${cleanUser}/`)}`;
+            const u = new URL(reqUrl);
             const req = https.get({
                 protocol: u.protocol,
                 hostname: u.hostname,
@@ -214,8 +215,12 @@ function fetchInstagramViaGoogleRelay(username, userAgent = CRAWLER_USER_AGENTS[
                     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
                     'Accept-Language': 'en-US,en;q=0.9'
                 },
-                timeout: 12000
+                timeout: 15000
             }, (res) => {
+                if ([301, 302, 303, 307, 308].includes(res.statusCode) && res.headers.location && maxRedirects > 0) {
+                    const nextUrl = new URL(res.headers.location, reqUrl).toString();
+                    return resolve(fetchInstagramViaGoogleRelay(cleanUser, userAgent, maxRedirects - 1, nextUrl));
+                }
                 let data = '';
                 res.on('data', c => data += c);
                 res.on('end', () => resolve({ statusCode: res.statusCode, rawHtml: data }));
@@ -239,9 +244,9 @@ function extractPostsFromSSR(html, handle, limit = 10) {
     let authorInfo = { username: handle, full_name: handle, avatar: null };
 
     // 1. Extract Profile Info from scripts
-    const scripts = [...html.matchAll(/<script type="application\/json"[^>]*data-sjs>([^<]+)<\/script>/g)].map(m => m[1]);
+    const scripts = [...html.matchAll(/<script[^>]*data-sjs[^>]*>([\s\S]*?)<\/script>/g)].map(m => m[1]);
     for (const jsonStr of scripts) {
-        if (!jsonStr.includes('full_name') && !jsonStr.includes('profile_pic_url')) continue;
+        if (!jsonStr.includes('full_name') && !jsonStr.includes('profile_pic_url') && !jsonStr.includes('profile_pic_url_hd')) continue;
         try {
             const parsed = JSON.parse(jsonStr);
             const findUser = (obj) => {
@@ -295,8 +300,8 @@ function extractPostsFromSSR(html, handle, limit = 10) {
                 const isCarousel = node.__typename === 'XIGPolarisCarouselMedia' || node.media_type === 8;
                 const mediaType = isVideo ? 'video' : (isCarousel ? 'carousel' : 'image');
 
-                const coverImg = node.image_versions2?.candidates?.[0]?.url || node.display_url || node.display_uri || null;
-                const caption = node.caption?.text || node.edge_media_to_caption?.edges?.[0]?.node?.text || '';
+                const coverImg = node.display_uri || node.display_url || node.image_versions2?.candidates?.[0]?.url || null;
+                const caption = node.caption?.text || (typeof node.caption === 'string' ? node.caption : '') || node.edge_media_to_caption?.edges?.[0]?.node?.text || '';
                 
                 // Calculate timestamp accurately via Snowflake PK or taken_at
                 const rawPk = node.pk ? BigInt(String(node.pk).split('_')[0]) : BigInt(shortcodeToId(shortcode) || '0');

@@ -164,9 +164,10 @@ async function dispatchNewItems(platform, handle, newItems, subscriptions) {
                 }
 
                 // Verify permissions
-                if (channel.guild?.members?.me) {
-                    const perms = channel.permissionsFor(channel.guild.members.me);
-                    if (!perms || !perms.has(PermissionFlagsBits.SendMessages) || !perms.has(PermissionFlagsBits.EmbedLinks)) {
+                const botMember = channel.guild?.members?.me || (channel.guild && client.user ? channel.guild.members.cache.get(client.user.id) : null);
+                if (botMember && typeof channel.permissionsFor === 'function') {
+                    const perms = channel.permissionsFor(botMember);
+                    if (perms && (!perms.has(PermissionFlagsBits.SendMessages) || !perms.has(PermissionFlagsBits.EmbedLinks))) {
                         console.log(`[FeedDispatcher] Missing permissions in channel ${channelId}.`);
                         continue;
                     }
@@ -265,36 +266,56 @@ async function tickFeedDispatcher() {
                     }
 
                     for (const [channelId, subsInChannel] of channelGroups.entries()) {
-                        let allNewPosts = [];
-                        let hasUninitialized = false;
+                        // Map of postId -> list of subscriptions that should receive it
+                        const itemSubMap = new Map();
+                        const newestPostId = items[0].post_id;
 
                         for (const sub of subsInChannel) {
                             if (!sub.last_post_id) {
-                                hasUninitialized = true;
-                                ougi.db().updateFeedLastPost(sub.guild_id, sub.channel_id, platform, handle, items[0].post_id);
+                                // Newly initialized feed: queue latest 1 post so channel gets immediate confirmation
+                                const topItem = items[0];
+                                if (!itemSubMap.has(topItem.post_id)) {
+                                    itemSubMap.set(topItem.post_id, { item: topItem, subs: [] });
+                                }
+                                itemSubMap.get(topItem.post_id).subs.push(sub);
+                            } else {
+                                const idx = items.findIndex(it => it.post_id === sub.last_post_id);
+                                if (idx > 0) {
+                                    // Subscription needs all posts from index 0 to idx - 1
+                                    for (let i = 0; i < idx; i++) {
+                                        const it = items[i];
+                                        if (!itemSubMap.has(it.post_id)) {
+                                            itemSubMap.set(it.post_id, { item: it, subs: [] });
+                                        }
+                                        itemSubMap.get(it.post_id).subs.push(sub);
+                                    }
+                                } else if (idx === -1) {
+                                    // Gap / unpinned / deleted post: catch up with top 1 post
+                                    const topItem = items[0];
+                                    if (!itemSubMap.has(topItem.post_id)) {
+                                        itemSubMap.set(topItem.post_id, { item: topItem, subs: [] });
+                                    }
+                                    itemSubMap.get(topItem.post_id).subs.push(sub);
+                                }
                             }
                         }
 
-                        if (!hasUninitialized) {
-                            // Find posts newer than the most recently seen post among subscriptions in this channel
-                            let maxLastIdx = -1;
-                            for (const sub of subsInChannel) {
-                                const idx = items.findIndex(it => it.post_id === sub.last_post_id);
-                                if (idx > maxLastIdx) maxLastIdx = idx;
-                            }
+                        if (itemSubMap.size > 0) {
+                            // Sort items chronologically ascending (oldest new post first)
+                            const sortedItemsToDispatch = items
+                                .filter(it => itemSubMap.has(it.post_id))
+                                .reverse();
 
-                            if (maxLastIdx > 0) {
-                                allNewPosts = items.slice(0, maxLastIdx).reverse();
-                            } else if (maxLastIdx === -1) {
-                                allNewPosts = items.slice(0, 3).reverse();
-                            }
-
-                            if (allNewPosts.length > 0) {
-                                await dispatchNewItems(platform, handle, allNewPosts, subsInChannel);
-                                const newestPostId = items[0].post_id;
-                                for (const sub of subsInChannel) {
-                                    ougi.db().updateFeedLastPost(sub.guild_id, sub.channel_id, platform, handle, newestPostId);
+                            for (const item of sortedItemsToDispatch) {
+                                const targetSubs = itemSubMap.get(item.post_id)?.subs || [];
+                                if (targetSubs.length > 0) {
+                                    await dispatchNewItems(platform, handle, [item], targetSubs);
                                 }
+                            }
+
+                            // Advance last_post_id to newest for all subscriptions in this channel
+                            for (const sub of subsInChannel) {
+                                ougi.db().updateFeedLastPost(sub.guild_id, sub.channel_id, platform, handle, newestPostId);
                             }
                         }
                     }
