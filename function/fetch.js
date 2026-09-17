@@ -28,15 +28,25 @@ function downloadFile(url, dest) {
       file.on('finish', () => {
         file.close(() => {
           try {
-            if (isSqliteHeader(tempDest)) {
-              try {
-                ougi.db().closeDb(path.basename(dest, '.db'));
-              } catch {}
-              fs.renameSync(tempDest, dest);
-              resolve();
+            const isDb = dest.endsWith('.db');
+            if (isDb) {
+              if (isSqliteHeader(tempDest)) {
+                try {
+                  ougi.db().closeDb(path.basename(dest, '.db'));
+                } catch {}
+                fs.renameSync(tempDest, dest);
+                resolve();
+              } else {
+                fs.unlink(tempDest, () => {});
+                reject(new Error(`Downloaded file ${tempDest} is not a valid SQLite database.`));
+              }
             } else {
-              fs.unlink(tempDest, () => {});
-              reject(new Error(`Downloaded file ${tempDest} is not a valid SQLite database.`));
+              // Non-SQLite asset (e.g. cookies.txt or text backups)
+              fs.renameSync(tempDest, dest);
+              if (dest.includes('cookies') && typeof global.updateCookiesCache === 'function') {
+                global.cachedCookiesPath = global.updateCookiesCache();
+              }
+              resolve();
             }
           } catch (e) {
             reject(e);
@@ -63,14 +73,15 @@ module.exports = async function (channelID, filename, data_obj_name = undefined)
     const lastMessage = messages.find(m => m.attachments && m.attachments.size > 0);
 
     if (!lastMessage || !lastMessage.attachments.size) {
-      if (data_obj_name && database[data_obj_name]) database[data_obj_name].done = true;
+      if (data_obj_name && global.database && global.database[data_obj_name]) global.database[data_obj_name].done = true;
       return;
     }
 
     const attachment = lastMessage.attachments.first();
     await downloadFile(attachment.url, filename);
-    console.log("[OK] Retrieved database file " + filename + ".");
-    if (data_obj_name && database[data_obj_name]) database[data_obj_name].done = true;
+    const label = filename.endsWith('.db') ? 'database file' : 'attachment';
+    console.log(`[OK] Retrieved ${label} ${filename}.`);
+    if (data_obj_name && global.database && global.database[data_obj_name]) global.database[data_obj_name].done = true;
   } catch (err) {
     console.error("Error fetching attachment in fetch.js:", err);
   }

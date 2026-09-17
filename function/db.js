@@ -31,11 +31,14 @@ class OugiDatabaseManager {
 
     getFileHash(name) {
         if (!name) return null;
-        const canonical = path.basename(name, '.db');
-        const dbPath = path.join(__dirname, '..', `${canonical}.db`);
-        if (!fs.existsSync(dbPath)) return null;
+        let filePath = path.isAbsolute(name) ? name : path.join(__dirname, '..', name);
+        if (!fs.existsSync(filePath)) {
+            const canonical = path.basename(name, '.db');
+            filePath = path.join(__dirname, '..', `${canonical}.db`);
+        }
+        if (!fs.existsSync(filePath)) return null;
         try {
-            const buffer = fs.readFileSync(dbPath);
+            const buffer = fs.readFileSync(filePath);
             return crypto.createHash('sha256').update(buffer).digest('hex');
         } catch {
             return null;
@@ -44,26 +47,26 @@ class OugiDatabaseManager {
 
     recordFileHash(name) {
         if (!name) return null;
-        const canonical = path.basename(name, '.db');
-        const hash = this.getFileHash(canonical);
+        const key = path.basename(name).replace(/\.(db|txt)$/, '');
+        const hash = this.getFileHash(name);
         if (hash) {
-            this.fileHashes[canonical] = hash;
+            this.fileHashes[key] = hash;
         }
-        this.clearDirty(canonical);
+        this.clearDirty(key);
         return hash;
     }
 
     hasFileChanged(name) {
         if (!name) return false;
-        const canonical = path.basename(name, '.db');
-        const currentHash = this.getFileHash(canonical);
+        const key = path.basename(name).replace(/\.(db|txt)$/, '');
+        const currentHash = this.getFileHash(name);
         if (!currentHash) return false;
-        const lastHash = this.fileHashes[canonical];
+        const lastHash = this.fileHashes[key];
         return !lastHash || currentHash !== lastHash;
     }
 
     initHashes() {
-        const dbKeys = ['settings', 'responses', 'embedPresets', 'localesCache', 'dynamicLocales', 'raffles', 'economy', 'newsChannel', 'feeds'];
+        const dbKeys = ['settings', 'responses', 'embedPresets', 'localesCache', 'dynamicLocales', 'raffles', 'economy', 'newsChannel', 'feeds', 'cookies'];
         for (const key of dbKeys) {
             this.recordFileHash(key);
         }
