@@ -1,6 +1,7 @@
 const fs = require('fs');
 const https = require('https');
 const path = require('node:path');
+const crypto = require('node:crypto');
 
 function isSqliteHeader(filepath) {
   if (!fs.existsSync(filepath)) return false;
@@ -15,7 +16,7 @@ function isSqliteHeader(filepath) {
   }
 }
 
-function downloadFile(url, dest) {
+function downloadFile(url, dest, remoteTimestamp = 0) {
   return new Promise((resolve, reject) => {
     const tempDest = `${dest}.tmp`;
     const file = fs.createWriteStream(tempDest);
@@ -30,24 +31,52 @@ function downloadFile(url, dest) {
           try {
             const isDb = dest.endsWith('.db');
             if (isDb) {
-              if (isSqliteHeader(tempDest)) {
-                try {
-                  ougi.db().closeDb(path.basename(dest, '.db'));
-                } catch {}
-                fs.renameSync(tempDest, dest);
-                resolve();
-              } else {
+              if (!isSqliteHeader(tempDest)) {
                 fs.unlink(tempDest, () => {});
-                reject(new Error(`Downloaded file ${tempDest} is not a valid SQLite database.`));
+                return reject(new Error(`Downloaded file ${tempDest} is not a valid SQLite database.`));
               }
-            } else {
-              // Non-SQLite asset (e.g. cookies.txt or text backups)
-              fs.renameSync(tempDest, dest);
-              if (dest.includes('cookies') && typeof global.updateCookiesCache === 'function') {
-                global.cachedCookiesPath = global.updateCookiesCache();
-              }
-              resolve();
             }
+
+            const tempHash = crypto.createHash('sha256').update(fs.readFileSync(tempDest)).digest('hex');
+
+            if (fs.existsSync(dest)) {
+              const localHash = crypto.createHash('sha256').update(fs.readFileSync(dest)).digest('hex');
+              if (tempHash === localHash) {
+                fs.unlinkSync(tempDest);
+                if (global.ougi && typeof global.ougi.db === 'function') {
+                  global.ougi.db().recordFileHash(dest);
+                }
+                return resolve();
+              }
+
+              const localMtime = fs.statSync(dest).mtimeMs;
+              if (remoteTimestamp && localMtime > remoteTimestamp) {
+                fs.unlinkSync(tempDest);
+                if (global.ougi && typeof global.ougi.db === 'function') {
+                  const key = global.ougi.db().getCanonicalKey(dest);
+                  global.ougi.db().fileHashes[key] = tempHash;
+                }
+                return resolve();
+              }
+            }
+
+            if (isDb) {
+              try {
+                ougi.db().closeDb(path.basename(dest, '.db'));
+              } catch {}
+            }
+
+            fs.renameSync(tempDest, dest);
+
+            if (dest.includes('cookies') && typeof global.updateCookiesCache === 'function') {
+              global.cachedCookiesPath = global.updateCookiesCache();
+            }
+
+            if (global.ougi && typeof global.ougi.db === 'function') {
+              global.ougi.db().recordFileHash(dest);
+            }
+
+            resolve();
           } catch (e) {
             reject(e);
           }
@@ -78,7 +107,7 @@ module.exports = async function (channelID, filename, data_obj_name = undefined)
     }
 
     const attachment = lastMessage.attachments.first();
-    await downloadFile(attachment.url, filename);
+    await downloadFile(attachment.url, filename, lastMessage.createdTimestamp || 0);
     const label = filename.endsWith('.db') ? 'database file' : 'attachment';
     console.log(`[OK] Retrieved ${label} ${filename}.`);
     if (data_obj_name && global.database && global.database[data_obj_name]) global.database[data_obj_name].done = true;

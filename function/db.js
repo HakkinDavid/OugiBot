@@ -11,43 +11,75 @@ class OugiDatabaseManager {
         this.init();
     }
 
+    getCanonicalKey(name) {
+        if (!name) return '';
+        if (global.database && global.database[name]?.file) {
+            return path.basename(global.database[name].file).replace(/\.[^.]+$/, '');
+        }
+        return path.basename(name).replace(/\.[^.]+$/, '');
+    }
+
     markDirty(name) {
         if (!name) return;
-        const canonical = path.basename(name, '.db');
+        const canonical = this.getCanonicalKey(name);
         this.dirty.add(canonical);
     }
 
     isDirty(name) {
         if (!name) return false;
-        const canonical = path.basename(name, '.db');
+        const canonical = this.getCanonicalKey(name);
         return this.dirty.has(canonical);
     }
 
     clearDirty(name) {
         if (!name) return;
-        const canonical = path.basename(name, '.db');
+        const canonical = this.getCanonicalKey(name);
         this.dirty.delete(canonical);
     }
 
     getFileHash(name) {
         if (!name) return null;
-        let filePath = path.isAbsolute(name) ? name : path.join(__dirname, '..', name);
-        if (!fs.existsSync(filePath)) {
-            const canonical = path.basename(name, '.db');
-            filePath = path.join(__dirname, '..', `${canonical}.db`);
+        const projectRoot = path.join(__dirname, '..');
+        const candidatePaths = [];
+
+        if (path.isAbsolute(name)) {
+            candidatePaths.push(name);
+        } else {
+            candidatePaths.push(path.join(projectRoot, name));
         }
-        if (!fs.existsSync(filePath)) return null;
-        try {
-            const buffer = fs.readFileSync(filePath);
-            return crypto.createHash('sha256').update(buffer).digest('hex');
-        } catch {
-            return null;
+
+        if (global.database) {
+            if (global.database[name]?.file) {
+                const dbFile = global.database[name].file;
+                candidatePaths.push(path.isAbsolute(dbFile) ? dbFile : path.join(projectRoot, dbFile));
+            }
+            for (const item of Object.values(global.database)) {
+                if (item.file && (item.file === name || path.basename(item.file) === path.basename(name))) {
+                    candidatePaths.push(path.isAbsolute(item.file) ? item.file : path.join(projectRoot, item.file));
+                }
+            }
         }
+
+        const base = path.basename(name).replace(/\.[^.]+$/, '');
+        candidatePaths.push(path.join(projectRoot, `${base}.db`));
+        candidatePaths.push(path.join(projectRoot, `${base}.txt`));
+
+        for (const filePath of candidatePaths) {
+            if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+                try {
+                    const buffer = fs.readFileSync(filePath);
+                    return crypto.createHash('sha256').update(buffer).digest('hex');
+                } catch {
+                    return null;
+                }
+            }
+        }
+        return null;
     }
 
     recordFileHash(name) {
         if (!name) return null;
-        const key = path.basename(name).replace(/\.(db|txt)$/, '');
+        const key = this.getCanonicalKey(name);
         const hash = this.getFileHash(name);
         if (hash) {
             this.fileHashes[key] = hash;
@@ -58,14 +90,26 @@ class OugiDatabaseManager {
 
     hasFileChanged(name) {
         if (!name) return false;
-        const key = path.basename(name).replace(/\.(db|txt)$/, '');
+        const key = this.getCanonicalKey(name);
         const currentHash = this.getFileHash(name);
         if (!currentHash) return false;
         const lastHash = this.fileHashes[key];
-        return !lastHash || currentHash !== lastHash;
+        if (lastHash === undefined) {
+            // First time seeing this file: record baseline hash so untouched files are not uploaded
+            this.fileHashes[key] = currentHash;
+            return false;
+        }
+        return currentHash !== lastHash;
     }
 
     initHashes() {
+        if (global.database) {
+            for (const [key, data] of Object.entries(global.database)) {
+                if (data.file) {
+                    this.recordFileHash(data.file);
+                }
+            }
+        }
         const dbKeys = ['settings', 'responses', 'embedPresets', 'localesCache', 'dynamicLocales', 'raffles', 'economy', 'newsChannel', 'feeds', 'cookies'];
         for (const key of dbKeys) {
             this.recordFileHash(key);
