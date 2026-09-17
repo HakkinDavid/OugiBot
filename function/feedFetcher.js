@@ -168,20 +168,60 @@ function fetchInstagramProfileSSR(username, userAgent = CRAWLER_USER_AGENTS[0], 
                 },
                 timeout: 10000
             }, (res) => {
-                if ([301, 302, 303, 307, 308].includes(res.statusCode) && res.headers.location && maxRedirects > 0) {
+                // If challenged or redirected to login (datacenter IP block), fallback to Google Relay
+                if (res.statusCode === 302 || (res.headers.location && res.headers.location.includes('/accounts/login/'))) {
+                    return resolve(fetchInstagramViaGoogleRelay(username, userAgent));
+                }
+
+                if ([301, 303, 307, 308].includes(res.statusCode) && res.headers.location && maxRedirects > 0) {
                     const nextUrl = new URL(res.headers.location, url).toString();
                     return resolve(fetchInstagramProfileSSR(nextUrl, userAgent, maxRedirects - 1));
                 }
                 let data = '';
                 res.on('data', c => data += c);
-                res.on('end', () => resolve({ statusCode: res.statusCode, rawHtml: data }));
+                res.on('end', () => {
+                    if (!data || data.length < 5000 || data.includes('/accounts/login/')) {
+                        return resolve(fetchInstagramViaGoogleRelay(username, userAgent));
+                    }
+                    resolve({ statusCode: res.statusCode, rawHtml: data });
+                });
             });
 
-            req.on('error', () => resolve({ statusCode: 0, rawHtml: '' }));
+            req.on('error', () => resolve(fetchInstagramViaGoogleRelay(username, userAgent)));
             req.on('timeout', () => {
                 req.destroy();
-                resolve({ statusCode: 0, rawHtml: '' });
+                resolve(fetchInstagramViaGoogleRelay(username, userAgent));
             });
+        } catch (e) {
+            resolve(fetchInstagramViaGoogleRelay(username, userAgent));
+        }
+    });
+}
+
+function fetchInstagramViaGoogleRelay(username, userAgent = CRAWLER_USER_AGENTS[0]) {
+    const https = require('https');
+    return new Promise((resolve) => {
+        try {
+            const target = `https://www.instagram.com/${username}/`;
+            const relayUrl = `https://translate.google.com/translate?sl=auto&tl=en&u=${encodeURIComponent(target)}`;
+            const u = new URL(relayUrl);
+            const req = https.get({
+                protocol: u.protocol,
+                hostname: u.hostname,
+                path: u.pathname + u.search,
+                headers: {
+                    'User-Agent': userAgent,
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                    'Accept-Language': 'en-US,en;q=0.9'
+                },
+                timeout: 12000
+            }, (res) => {
+                let data = '';
+                res.on('data', c => data += c);
+                res.on('end', () => resolve({ statusCode: res.statusCode, rawHtml: data }));
+            });
+            req.on('error', () => resolve({ statusCode: 0, rawHtml: '' }));
+            req.on('timeout', () => { req.destroy(); resolve({ statusCode: 0, rawHtml: '' }); });
         } catch (e) {
             resolve({ statusCode: 0, rawHtml: '' });
         }
