@@ -373,7 +373,7 @@ setTimeout(async () => {
     if (TEASEABLE && ougi.startup()) {
         await ougi.feedDispatcher.tick().catch(console.error);
     }
-}, 25_000);
+}, 60_000);
 
 /* ===== Intervalo para Recordatorios de Bump ===== */
 setInterval(async () => {
