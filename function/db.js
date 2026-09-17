@@ -298,7 +298,8 @@ class OugiDatabaseManager {
             dynamicLocales: { id: channels.dynamicLocales, file: './dynamicLocales.db', done: false },
             raffles: { id: channels.raffles, file: './raffles.db', done: false },
             economy: { id: channels.economy, file: './economy.db', done: false },
-            feeds: { id: channels.feeds, file: './feeds.db', done: false }
+            feeds: { id: channels.feeds, file: './feeds.db', done: false },
+            cookies: { id: channels.cookies, file: './cookies.txt', done: false}
         };
     }
 
